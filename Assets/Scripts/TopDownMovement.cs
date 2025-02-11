@@ -2,7 +2,13 @@ using UnityEngine;
 
 public class TopDownMovement : MonoBehaviour
 {
+    private static readonly int Property = Animator.StringToHash("2_Attack");
+    private static readonly int Property1 = Animator.StringToHash("1_Move");
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private float attackSpeed = 1f; // Tốc độ đánh (1 đòn/giây)
+    private float lastAttackTime;
+
+    [SerializeField] private GameObject slashVFX;
 
     private Vector2 moveInput;
     private Rigidbody2D rb;
@@ -16,36 +22,41 @@ public class TopDownMovement : MonoBehaviour
 
     void Update()
     {
-        moveInput.x = Input.GetAxisRaw("Horizontal");
-        moveInput.y = Input.GetAxisRaw("Vertical");
+        moveInput.x = UltimateJoystick.GetHorizontalAxis( "Move" );
+        moveInput.y = UltimateJoystick.GetVerticalAxis( "Move" );
 
-        // Nhấn Space để attack
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time - lastAttackTime >= 1f / attackSpeed)
         {
-            anim.SetTrigger("2_Attack");
+            lastAttackTime = Time.time; // Cập nhật thời gian đánh cuối cùng
+            anim.SetTrigger(Property);
+            slashVFX.SetActive(true);
+            Invoke(nameof(DisableVFX), 0.3f); // Tắt VFX nhanh hơn nếu cần
         }
-
+        
         UpdateAnimation();
     }
-
+    void DisableVFX()
+    {
+        slashVFX.SetActive(false);
+    }
     void FixedUpdate()
     {
         rb.linearVelocity = moveInput.normalized * moveSpeed;
-
-        // Chỉ xoay trái/phải theo hướng di chuyển
+        
         if (moveInput.x > 0)
         {
-            transform.rotation = Quaternion.Euler(0, 0, 0); // Hướng phải
+            transform.rotation = Quaternion.Euler(0, 0, 0); // Quay về hướng phải
         }
         else if (moveInput.x < 0)
         {
-            transform.rotation = Quaternion.Euler(0, 180, 0); // Hướng trái
+            transform.rotation = Quaternion.Euler(0, 180, 0); // Quay về hướng trái
         }
     }
+
 
     void UpdateAnimation()
     {
         bool isMoving = moveInput.magnitude > 0.01f;
-        anim.SetBool("1_Move", isMoving);
+        anim.SetBool(Property1, isMoving);
     }
 }

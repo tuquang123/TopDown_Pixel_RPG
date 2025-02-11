@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
+    private static readonly int Property = Animator.StringToHash("1_Move");
+    private static readonly int Property1 = Animator.StringToHash("2_Attack");
     [SerializeField] private float moveSpeed = 3f;  // Tốc độ di chuyển
     [SerializeField] private float attackRange = 1.5f;  // Tầm đánh
     [SerializeField] private float detectionRange = 5f; // Tầm phát hiện
@@ -36,13 +38,20 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            anim.SetBool("Move", false); // Đứng yên nếu không thấy người chơi
+            anim.SetBool(Property, false); // Đứng yên nếu không thấy người chơi
         }
     }
 
     void MoveTowardsPlayer()
     {
-        anim.SetBool("1_Move", true);
+        // Nếu đang tấn công thì không di chuyển
+        if (Time.time - lastAttackTime < attackCooldown)
+        {
+            anim.SetBool(Property, false);
+            return;
+        }
+
+        anim.SetBool(Property, true);
         transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
 
         // Xoay mặt theo hướng người chơi
@@ -56,14 +65,17 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+
     void AttackPlayer()
     {
         if (Time.time - lastAttackTime >= attackCooldown)
         {
-            anim.SetTrigger("2_Attack");
+            anim.SetBool(Property, false); // Dừng di chuyển khi đánh
+            anim.SetTrigger(Property1);
             lastAttackTime = Time.time;
         }
     }
+
     // 🔹 Vẽ Gizmos trong Scene View
     void OnDrawGizmosSelected()
     {
