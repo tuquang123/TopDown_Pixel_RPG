@@ -2,30 +2,42 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
-    private static readonly int Property = Animator.StringToHash("1_Move");
-    private static readonly int Property1 = Animator.StringToHash("2_Attack");
-    [SerializeField] private float moveSpeed = 3f;  // Tốc độ di chuyển
-    [SerializeField] private float attackRange = 1.5f;  // Tầm đánh
-    [SerializeField] private float detectionRange = 5f; // Tầm phát hiện
-    [SerializeField] private float attackCooldown = 1f; // Thời gian giữa các đòn tấn công
+    private static readonly int MoveBool = Animator.StringToHash("1_Move");
+    private static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
+    private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
+    private static readonly int DieTrigger = Animator.StringToHash("4_Death");
+
+    [SerializeField] private float moveSpeed = 3f;
+    [SerializeField] private float attackRange = 1.5f;
+    [SerializeField] private float detectionRange = 5f;
+    [SerializeField] private float attackCooldown = 1f;
+    [SerializeField] private int maxHealth = 100;
+    [SerializeField] private int attackDamage = 10;
+    [SerializeField] private float damagedStunTime = 0.3f;
 
     private Transform player;
     private Animator anim;
     private float lastAttackTime;
+    private int currentHealth;
+    private bool isDead = false;
+    private bool isTakingDamage = false;
 
     void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player").transform; // Tìm người chơi theo tag
+        player = GameObject.FindGameObjectWithTag("Player")?.transform;
         anim = GetComponentInChildren<Animator>();
+        currentHealth = maxHealth;
     }
 
     void Update()
     {
-        if (player == null) return;
+        if (isDead || player == null) return;
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        if (distanceToPlayer <= detectionRange) // Nếu người chơi trong tầm phát hiện
+        if (isTakingDamage) return;
+
+        if (distanceToPlayer <= detectionRange)
         {
             if (distanceToPlayer > attackRange)
             {
@@ -38,52 +50,78 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            anim.SetBool(Property, false); // Đứng yên nếu không thấy người chơi
+            anim.SetBool(MoveBool, false);
         }
     }
 
     void MoveTowardsPlayer()
     {
-        // Nếu đang tấn công thì không di chuyển
         if (Time.time - lastAttackTime < attackCooldown)
         {
-            anim.SetBool(Property, false);
+            anim.SetBool(MoveBool, false);
             return;
         }
 
-        anim.SetBool(Property, true);
+        anim.SetBool(MoveBool, true);
         transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
-
-        // Xoay mặt theo hướng người chơi
-        if (player.position.x > transform.position.x)
-        {
-            transform.rotation = Quaternion.Euler(0, 0, 0); // Hướng phải
-        }
-        else
-        {
-            transform.rotation = Quaternion.Euler(0, 180, 0); // Hướng trái
-        }
+        transform.rotation = player.position.x > transform.position.x ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
     }
-
 
     void AttackPlayer()
     {
+        if (isTakingDamage) return;
+
         if (Time.time - lastAttackTime >= attackCooldown)
         {
-            anim.SetBool(Property, false); // Dừng di chuyển khi đánh
-            anim.SetTrigger(Property1);
+            anim.SetBool(MoveBool, false);
+            anim.SetTrigger(AttackTrigger);
             lastAttackTime = Time.time;
+
+            if (player.TryGetComponent(out PlayerHealth playerHealth))
+            {
+                playerHealth.TakeDamage(attackDamage);
+            }
         }
     }
 
-    // 🔹 Vẽ Gizmos trong Scene View
+    public void TakeDamage(int damage)
+    {
+        if (isDead) return;
+
+        currentHealth -= damage;
+        anim.SetTrigger(DamagedTrigger);
+        isTakingDamage = true;
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            Invoke(nameof(EndDamageStun), damagedStunTime);
+        }
+    }
+
+    void EndDamageStun()
+    {
+        isTakingDamage = false;
+    }
+
+    void Die()
+    {
+        if (isDead) return;
+
+        isDead = true;
+        anim.SetTrigger(DieTrigger);
+        GetComponent<Collider2D>().enabled = false;
+        this.enabled = false;
+        Destroy(gameObject, .7f);
+    }
+
     void OnDrawGizmosSelected()
     {
-        // Màu xanh: Tầm phát hiện
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
-
-        // Màu đỏ: Tầm tấn công
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
