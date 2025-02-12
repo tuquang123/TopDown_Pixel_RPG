@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TopDownMovement : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     private static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     private static readonly int MoveBool = Animator.StringToHash("1_Move");
