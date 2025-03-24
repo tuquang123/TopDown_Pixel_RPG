@@ -3169,7 +3169,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6567697642770602259}
   - component: {fileID: 5542545045414514686}
-  - component: {fileID: 2337143464894914830}
   m_Layer: 5
   m_Name: Arrcher
   m_TagString: Untagged
@@ -6193,29 +6192,6 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 4c70df3312bb83346a1bf065b30d3467, type: 2}
   - {fileID: 7400000, guid: 1ef525d53ae254f7d82ef364ced85490, type: 2}
   - {fileID: 7400000, guid: fabe4f140fdb9cb448bc941c7c93e8b6, type: 2}
---- !u!114 &2337143464894914830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5979782657606155748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7eb65cd11b894b6cbb7cfd3bc33453db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 5
-  attackSpeed: 1
-  detectionRange: 3
-  attackRange: 1
-  attackDamage: 20
-  attackPoint: {fileID: 0}
-  attackRadius: 0.8
-  slashVFX: {fileID: 0}
-  arrowPrefab: {fileID: 0}
-  shootPoint: {fileID: 0}
-  arrowSpeed: 10
 --- !u!1 &6047431145789770377
 GameObject:
   m_ObjectHideFlags: 0

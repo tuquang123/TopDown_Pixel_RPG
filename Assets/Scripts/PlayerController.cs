@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     protected Animator anim;
     protected Transform targetEnemy;
     protected float lastAttackTime;
-    protected Vector2 moveInput;
+    public Vector2 moveInput;
 
     protected virtual void Start()
     {
@@ -31,19 +31,25 @@ public class PlayerController : MonoBehaviour
         moveInput.x = UltimateJoystick.GetHorizontalAxis("Move");
         moveInput.y = UltimateJoystick.GetVerticalAxis("Move");
         bool isMoving = moveInput.magnitude > 0.01f;
+
         anim.SetBool(MoveBool, isMoving);
 
         if (isMoving)
         {
-            MovePlayer();
+            MovePlayer();  // Nếu player di chuyển, thì di chuyển
             targetEnemy = null;
         }
         else
         {
-            FindClosestEnemy();
+            FindClosestEnemy();  // Nếu không di chuyển, tìm và tấn công kẻ thù
             if (targetEnemy != null)
             {
                 MoveToAttackPosition();
+            }
+            else
+            {
+                rb.linearVelocity = Vector2.zero;
+                anim.SetBool(MoveBool, false);
             }
         }
     }
@@ -96,8 +102,6 @@ public class PlayerController : MonoBehaviour
     {
         lastAttackTime = Time.time;
         anim.SetTrigger(AttackTrigger);
-        slashVFX.SetActive(true);
-        Invoke(nameof(DisableVFX), 0.3f);
 
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
         foreach (Collider2D enemy in hitEnemies)
@@ -109,17 +113,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    protected void DisableVFX()
-    {
-        slashVFX.SetActive(false);
-    }
-
     protected void FindClosestEnemy()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         float minDistance = detectionRange;
         targetEnemy = null;
-        
+
         foreach (GameObject enemy in enemies)
         {
             float distance = Vector2.Distance(transform.position, enemy.transform.position);
@@ -129,6 +128,11 @@ public class PlayerController : MonoBehaviour
                 targetEnemy = enemy.transform;
             }
         }
+    }
+
+    public bool IsMoving()
+    {
+        return moveInput.magnitude > 0.01f;
     }
 
     protected void RotateCharacter(float direction)
@@ -141,14 +145,15 @@ public class PlayerController : MonoBehaviour
         if (targetEnemy == null) return;
         RotateCharacter(targetEnemy.position.x - transform.position.x);
     }
+
     protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
-        
+
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
-        
+
         if (attackPoint != null)
         {
             Gizmos.color = Color.yellow;

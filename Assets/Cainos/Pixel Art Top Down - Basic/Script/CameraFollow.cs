@@ -20,6 +20,12 @@ namespace Cainos.PixelArtTopDown_Basic
 
             offset = transform.position - target.position;
         }
+        void Awake()
+        {
+            Application.targetFrameRate = 60; // Giới hạn FPS ở 30
+            QualitySettings.vSyncCount = 0;   // Tắt VSync để targetFrameRate có hiệu lực
+        }
+
 
         private void Update()
         {

@@ -13,8 +13,8 @@ public class ArcherController : PlayerController
         if (targetEnemy == null) return;
 
         lastAttackTime = Time.time;
-        anim.SetTrigger(ShotTrigger);
-        //Invoke("PlayAnimation",.5f);
+        //anim.SetTrigger(ShotTrigger);
+        Invoke("PlayAnimation",.5f);
 
         GameObject arrow = Instantiate(arrowPrefab, shootPoint.position, Quaternion.identity);
         arrow.GetComponent<Arrow>()?.SetTarget(targetEnemy, attackDamage);
