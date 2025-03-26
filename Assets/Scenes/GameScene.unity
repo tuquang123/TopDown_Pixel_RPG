@@ -35521,8 +35521,34 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4361065584042700207, guid: 76709e67031dff842bc82a3c8586d3e7,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2467078943654436617}
   m_SourcePrefab: {fileID: 100100000, guid: 76709e67031dff842bc82a3c8586d3e7, type: 3}
+--- !u!1 &2467078943654436616 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4361065584042700207, guid: 76709e67031dff842bc82a3c8586d3e7,
+    type: 3}
+  m_PrefabInstance: {fileID: 2467078943654436615}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2467078943654436617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2467078943654436616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 530b9b95a7d8b6e4197b1d2aaf554f0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shurikenPrefab: {fileID: 4670708323387926946, guid: 57d1413cdac60fb4cb871417559eee64,
+    type: 3}
+  player: {fileID: 1451905612564869218}
+  shootInterval: 5
 --- !u!1001 &2577585254724549886
 PrefabInstance:
   m_ObjectHideFlags: 0
