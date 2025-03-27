@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
@@ -21,6 +22,8 @@ public class EnemyAI : MonoBehaviour
     private int currentHealth;
     private bool isDead = false;
     private bool isTakingDamage = false;
+    
+    public static event Action<float> OnEnemyDefeated;
 
     void Start()
     {
@@ -116,6 +119,9 @@ public class EnemyAI : MonoBehaviour
         GetComponent<Collider2D>().enabled = false;
         this.enabled = false;
         Destroy(gameObject, .7f);
+        
+        OnEnemyDefeated?.Invoke(50);
+
     }
 
     void OnDrawGizmosSelected()
