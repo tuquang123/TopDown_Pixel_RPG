@@ -14,13 +14,16 @@ public class Inventory : MonoBehaviour
     }
 
     // Xóa item khỏi túi đồ
-    public void RemoveItem(ItemData item)
+    public bool RemoveItem(ItemData item)
     {
-        if (item == null || !items.Contains(item)) return; // Kiểm tra item null và tồn tại trong túi đồ
-        items.Remove(item);
-        Debug.Log($"Đã xóa {item.itemName} khỏi túi đồ.");
+        if (items.Contains(item))
+        {
+            items.Remove(item);
+            return true;
+        }
+        return false;
     }
-
+    
     // Sử dụng item
     public void UseItem(ItemData item, PlayerStats playerStats)
     {

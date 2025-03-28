@@ -23,11 +23,16 @@ public class Equipment : MonoBehaviour
     {
         if (equippedItems.ContainsKey(type))
         {
-            RemoveStats(equippedItems[type], playerStats);
-            Debug.Log($"Đã gỡ bỏ {equippedItems[type].itemName}.");
+            ItemData removedItem = equippedItems[type];
+
+            // Gỡ bỏ chỉ số
+            RemoveStats(removedItem, playerStats);
+
+            Debug.Log($"Đã gỡ bỏ {removedItem.itemName}.");
             equippedItems.Remove(type);
         }
     }
+
 
     private void ApplyStats(ItemData item, PlayerStats playerStats)
     {
