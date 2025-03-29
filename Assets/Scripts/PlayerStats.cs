@@ -5,6 +5,8 @@ public class PlayerStats : MonoBehaviour
     public int maxHealth = 100;
     public int currentHealth;
     public int damage = 10;
+    public int armor;
+    public int speed;
 
     private void Start()
     {

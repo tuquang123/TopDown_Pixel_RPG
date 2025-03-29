@@ -13,27 +13,43 @@ public class EquipmentUI : MonoBehaviour
     public Button weaponButton;
     public Image armorSlot;
     public Button armorButton;
+    public Image helmetSlot;
+    public Button helmetButton;
+    public Image bootsSlot;
+    public Button bootsButton;
+    public Image hairSlot;
+    public Button hairButton;
 
     private Dictionary<ItemType, Image> slotMapping;
     private Dictionary<ItemType, Button> buttonMapping;
 
     private void Start()
     {
+        // Cập nhật slot và button mapping cho các item mới
         slotMapping = new Dictionary<ItemType, Image>
         {
             { ItemType.Weapon, weaponSlot },
-            { ItemType.Armor, armorSlot }
+            { ItemType.Armor, armorSlot },
+            { ItemType.Helmet, helmetSlot },
+            { ItemType.Boots, bootsSlot },
+            { ItemType.Hair, hairSlot }
         };
 
         buttonMapping = new Dictionary<ItemType, Button>
         {
             { ItemType.Weapon, weaponButton },
-            { ItemType.Armor, armorButton }
+            { ItemType.Armor, armorButton },
+            { ItemType.Helmet, helmetButton },
+            { ItemType.Boots, bootsButton },
+            { ItemType.Hair, hairButton }
         };
 
         // Gán sự kiện gỡ trang bị khi bấm vào slot
         weaponButton.onClick.AddListener(() => UnequipItem(ItemType.Weapon));
         armorButton.onClick.AddListener(() => UnequipItem(ItemType.Armor));
+        helmetButton.onClick.AddListener(() => UnequipItem(ItemType.Helmet));
+        bootsButton.onClick.AddListener(() => UnequipItem(ItemType.Boots));
+        hairButton.onClick.AddListener(() => UnequipItem(ItemType.Hair));
 
         UpdateEquipmentUI();
     }
@@ -42,11 +58,16 @@ public class EquipmentUI : MonoBehaviour
     {
         if (equipmentManager.equippedItems.ContainsKey(item.itemType))
         {
-            UnequipItem(item.itemType); // Gỡ item cũ trước khi trang bị mới
+            UnequipItem(item.itemType);
         }
 
         equipmentManager.EquipItem(item, playerStats);
+
+        // Xóa item khỏi inventory sau khi trang bị
+        inventoryUI.inventory.RemoveItem(item);
+
         UpdateEquipmentUI();
+        inventoryUI.UpdateInventoryUI(); // Cập nhật lại inventory UI
     }
 
     public void UnequipItem(ItemType itemType)
@@ -58,15 +79,14 @@ public class EquipmentUI : MonoBehaviour
             // Gỡ item khỏi Equipment
             equipmentManager.UnequipItem(itemType, playerStats);
 
-            // Chỉ thêm lại vào Inventory nếu gỡ bỏ thành công
+            // Trả item về inventory
             inventoryUI.inventory.AddItem(removedItem);
 
-            // Cập nhật lại UI
+            // Cập nhật UI
             UpdateEquipmentUI();
             inventoryUI.UpdateInventoryUI();
         }
     }
-
 
     public void UpdateEquipmentUI()
     {
@@ -87,3 +107,4 @@ public class EquipmentUI : MonoBehaviour
         }
     }
 }
+
