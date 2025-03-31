@@ -3,21 +3,26 @@ using UnityEngine;
 public class PlayerLevel : MonoBehaviour
 {
     public LevelSystem levelSystem = new LevelSystem();
+    public PlayerStats playerStats; // Tham chiếu đến hệ thống chỉ số
+    public int skillPoints = 0; // Điểm kỹ năng nhận được khi lên cấp
 
     private void Start()
     {
+        playerStats = GetComponent<PlayerStats>();
         levelSystem.OnLevelUp += HandleLevelUp;
         EnemyAI.OnEnemyDefeated += GainExp; // Đăng ký sự kiện khi kẻ địch bị tiêu diệt
     }
 
     private void OnDestroy()
     {
+        levelSystem.OnLevelUp -= HandleLevelUp;
         EnemyAI.OnEnemyDefeated -= GainExp; // Hủy đăng ký sự kiện để tránh lỗi
     }
 
     private void HandleLevelUp(int newLevel)
     {
-        Debug.Log($"Lên cấp {newLevel}! Bạn nhận được 1 điểm kỹ năng.");
+        skillPoints++; // Cộng điểm kỹ năng khi lên cấp
+        Debug.Log($"Lên cấp {newLevel}! Bạn nhận được 1 điểm kỹ năng. Tổng điểm: {skillPoints}");
     }
 
     private void GainExp(float amount)

@@ -44,7 +44,7 @@ public class ItemUI : MonoBehaviour
         equipButton.gameObject.SetActive(false);
 
         // Trang bị item
-        inventoryUI.equipmentManager.EquipItem(itemData, inventoryUI.playerStats);
+        //inventoryUI.equipmentManager.EquipItem(itemData, inventoryUI.playerStats);
         inventoryUI.equipmentUI.EquipItem(itemData);
 
         // Xóa item khỏi Inventory UI (CHỈ NẾU TRANG BỊ THÀNH CÔNG)

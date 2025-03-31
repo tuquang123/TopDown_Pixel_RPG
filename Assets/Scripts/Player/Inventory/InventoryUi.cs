@@ -38,10 +38,10 @@ public class InventoryUI : MonoBehaviour
     // Gọi khi bấm "Trang bị"
     public void EquipItem(ItemData item)
     {
-        equipmentManager.EquipItem(item, playerStats);
+        /*equipmentManager.EquipItem(item, playerStats);
         equipmentUI.EquipItem(item); // Cập nhật UI Equipment
         inventory.RemoveItem(item);
-        UpdateInventoryUI();
+        UpdateInventoryUI();*/
     }
 
     

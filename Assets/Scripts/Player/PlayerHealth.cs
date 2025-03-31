@@ -2,22 +2,21 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    private static readonly int Property = Animator.StringToHash("4_Death");
-    [SerializeField] private int maxHealth = 100;
-    private int currentHealth;
+    private static readonly int DeathHash = Animator.StringToHash("4_Death");
     private Animator anim;
+    private PlayerStats playerStats;
 
     void Start()
     {
-        currentHealth = maxHealth;
         anim = GetComponentInChildren<Animator>();
+        playerStats = GetComponent<PlayerStats>();
     }
 
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
-        
-        if (currentHealth <= 0)
+        playerStats.TakeDamage(damage);
+
+        if (playerStats.maxHealth.Value <= 0)
         {
             Die();
         }
@@ -26,8 +25,7 @@ public class PlayerHealth : MonoBehaviour
     void Die()
     {
         Debug.Log("Player died!");
-        anim.SetTrigger(Property);
+        anim.SetTrigger(DeathHash);
         Destroy(gameObject, .5f);
     }
-   
 }
