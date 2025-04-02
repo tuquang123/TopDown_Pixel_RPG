@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 2613357651426011288}
   - component: {fileID: 7844456509731803571}
   - component: {fileID: 5063110942146426859}
+  - component: {fileID: 2731963387134551748}
   m_Layer: 19
   m_Name: PlayerMain
   m_TagString: Player
@@ -126,7 +127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b734fcc34931948ba00af69d816251, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 15000
 --- !u!114 &2661294073716672217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,6 +166,8 @@ MonoBehaviour:
     baseExp: 100
     growthFactor: 1.5
     skillPoints: 0
+  playerStats: {fileID: 5158872465570570490}
+  skillPoints: 0
 --- !u!114 &5158872465570570490
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,9 +180,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55c81952bf6b4cdc86681b5c47b850bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 0
-  damage: 10
+  level: 1
+  skillPoints: 0
+  maxHealth:
+    baseValue: 10000
+  maxMana:
+    baseValue: 50
+  attack:
+    baseValue: 10
+  defense:
+    baseValue: 5
+  speed:
+    baseValue: 5
+  currentMana: 0
 --- !u!114 &2613357651426011288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -219,13 +231,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponRenderer: {fileID: 2869413966435941855}
-  armorRenderer: {fileID: 2980506670233031535}
+  armorRenderer: {fileID: 5249636480561518149}
   armorLeftArmRenderer: {fileID: 5434881610694050911}
   armorRightArmRenderer: {fileID: 5524038509643120522}
-  helmetRenderer: {fileID: 1409394666343812098}
+  helmetRenderer: {fileID: 2980506670233031535}
   bootsLeftRenderer: {fileID: 2900372705233091402}
   bootsRightRenderer: {fileID: 2596221531600459456}
-  hairRenderer: {fileID: 6899745945645327679}
+--- !u!114 &2731963387134551748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4361065584042700207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 588e747cb21c9c54ea65d1bac3c47f8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillList:
+  - {fileID: 11400000, guid: f010834ec5c7b024299485a4530cc290, type: 2}
+  - {fileID: 11400000, guid: 6d966789c8247d045aaafe8ca9109750, type: 2}
+  buttonSkill1: {fileID: 0}
 --- !u!1001 &3427439068565670893
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -234,6 +261,36 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4029127336532869738}
     m_Modifications:
+    - target: {fileID: 563095327873118375, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 563095327873118375, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 595180353804727858, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 595180353804727858, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 835158341400599853, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 835158341400599853, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1050629358581664624, guid: 4e41955d05df31e4da20911564608d4f,
         type: 3}
       propertyPath: m_Name
@@ -359,6 +416,36 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7149999242205738087, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7149999242205738087, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7276728120317562802, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7276728120317562802, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7442973801331695016, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7442973801331695016, guid: 4e41955d05df31e4da20911564608d4f,
+        type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8093082664737091282, guid: 4e41955d05df31e4da20911564608d4f,
         type: 3}
       propertyPath: m_Color.b
@@ -395,12 +482,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 3427439068565670893}
   m_PrefabAsset: {fileID: 0}
---- !u!212 &1409394666343812098 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 4332349966449625071, guid: 4e41955d05df31e4da20911564608d4f,
-    type: 3}
-  m_PrefabInstance: {fileID: 3427439068565670893}
-  m_PrefabAsset: {fileID: 0}
 --- !u!212 &2596221531600459456 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 835158341400599853, guid: 4e41955d05df31e4da20911564608d4f,
@@ -425,6 +506,12 @@ SpriteRenderer:
     type: 3}
   m_PrefabInstance: {fileID: 3427439068565670893}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &5249636480561518149 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7442973801331695016, guid: 4e41955d05df31e4da20911564608d4f,
+    type: 3}
+  m_PrefabInstance: {fileID: 3427439068565670893}
+  m_PrefabAsset: {fileID: 0}
 --- !u!212 &5434881610694050911 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 7276728120317562802, guid: 4e41955d05df31e4da20911564608d4f,
@@ -440,12 +527,6 @@ SpriteRenderer:
 --- !u!4 &5820598554832273788 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9175624814890125969, guid: 4e41955d05df31e4da20911564608d4f,
-    type: 3}
-  m_PrefabInstance: {fileID: 3427439068565670893}
-  m_PrefabAsset: {fileID: 0}
---- !u!212 &6899745945645327679 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 8093082664737091282, guid: 4e41955d05df31e4da20911564608d4f,
     type: 3}
   m_PrefabInstance: {fileID: 3427439068565670893}
   m_PrefabAsset: {fileID: 0}

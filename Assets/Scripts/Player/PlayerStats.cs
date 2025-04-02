@@ -16,9 +16,11 @@ public class PlayerStats : MonoBehaviour
 
     // Giá trị hiện tại của HP và Mana
     private int currentHealth;
-    private int currentMana;
+    public int currentMana;
+    public int baseDamage => attack.Value; 
 
     public event Action OnStatsChanged; // Sự kiện khi stats thay đổi
+    public int Mana { get; set; }
 
     private void Start()
     {
@@ -84,5 +86,10 @@ public class PlayerStats : MonoBehaviour
         }
 
         OnStatsChanged?.Invoke();
+    }
+
+    public void UseMana(int skillManaCost)
+    {
+        throw new NotImplementedException();
     }
 }
