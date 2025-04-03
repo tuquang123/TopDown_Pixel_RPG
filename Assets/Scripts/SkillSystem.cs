@@ -33,6 +33,8 @@ public class SkillSystem : MonoBehaviour
     private PlayerStats playerStats;
     private Dictionary<SkillID, bool> unlockedSkills = new Dictionary<SkillID, bool>(); // Quản lý trạng thái mở khóa
     private Dictionary<SkillID, float> skillCooldownTimes = new Dictionary<SkillID, float>(); // Quản lý thời gian hồi chiêu
+    private Dictionary<int, SkillID> assignedSkills = new Dictionary<int, SkillID>(); // Gán skill vào ô
+    public event Action<int, SkillID> OnSkillAssigned; // Sự kiện thông báo UI khi gán skill
 
     public Button buttonSkill1;
 
@@ -54,10 +56,12 @@ public class SkillSystem : MonoBehaviour
             Debug.Log($"Đã học kỹ năng: {skill.skillName}");
         }
     }
+
     public void UseSkill(SkillID skillID)
     {
         SkillData skill = skillList.Find(s => s.skillID == skillID);
-        if (skill == null || !unlockedSkills.ContainsKey(skillID) || !unlockedSkills[skillID])  // Kiểm tra trong unlockedSkills
+        if (skill == null || !unlockedSkills.ContainsKey(skillID) ||
+            !unlockedSkills[skillID]) // Kiểm tra trong unlockedSkills
         {
             Debug.Log("Skill not unlocked!");
             return;
@@ -73,11 +77,28 @@ public class SkillSystem : MonoBehaviour
         // Kiểm tra mana thông qua skillData
         ISkill skillInstance = SkillFactory.CreateSkill(skillID);
 
-        if (skillInstance.CanUse(playerStats, skill))  // Kiểm tra có thể sử dụng kỹ năng
+        if (skillInstance.CanUse(playerStats, skill)) // Kiểm tra có thể sử dụng kỹ năng
         {
-            skillCooldownTimes[skillID] = Time.time;  // Lưu thời gian sử dụng skill
-            skillInstance.ExecuteSkill(playerStats,skill);  // Thực thi kỹ năng
+            skillCooldownTimes[skillID] = Time.time; // Lưu thời gian sử dụng skill
+            skillInstance.ExecuteSkill(playerStats, skill); // Thực thi kỹ năng
         }
+    }
+
+    public void AssignSkillToSlot(int slotIndex, SkillID skillID)
+    {
+        if (slotIndex >= 0 && slotIndex < 5)
+        {
+            assignedSkills[slotIndex] = skillID;
+            Debug.Log($"✔ Đã gán kỹ năng: {skillID} vào ô {slotIndex + 1}");
+
+            OnSkillAssigned?.Invoke(slotIndex, skillID); // Gửi sự kiện cho UI cập nhật
+        }
+    }
+
+
+    public SkillID GetAssignedSkill(int slotIndex)
+    {
+        return assignedSkills.ContainsKey(slotIndex) ? assignedSkills[slotIndex] : SkillID.None;
     }
 
 }

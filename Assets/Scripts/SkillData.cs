@@ -2,7 +2,9 @@ using System;
 using UnityEngine;
 
 public enum SkillType { Passive, Active }
-public enum SkillID { DamageBoost, ShurikenThrow }
+public enum SkillID { DamageBoost, ShurikenThrow,
+    None
+}
 
 [Serializable]
 [CreateAssetMenu(fileName = "New Skill", menuName = "Skill System/Skill Data")]

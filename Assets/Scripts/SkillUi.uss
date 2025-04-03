@@ -1,0 +1,32 @@
+.skill-container {
+    position: absolute;
+    bottom: 20px; /* Cách đáy màn hình 20px */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: 100px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.title {
+    text-align: center;
+    color: white;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.skill-slots {
+    display: flex;
+    justify-content: space-between;
+}
+
+.skill-slot {
+    width: 70px;
+    height: 70px;
+    background-color: gray;
+    border-radius: 10px;
+    font-size: 18px;
+    color: white;
+}
