@@ -27,7 +27,7 @@ namespace Cainos.PixelArtTopDown_Basic
         }
 
 
-        private void Update()
+        private void LateUpdate()
         {
             if (target == null) return;
 
