@@ -18,4 +18,5 @@ public class SkillData : ScriptableObject
     public int value;
     public float cooldown;
     public GameObject prefab;
+    public Sprite icon;
 }

@@ -2,11 +2,12 @@ using UnityEngine;
 
 public class SpawnEnemy : MonoBehaviour
 {
-    [SerializeField] private GameObject enemyPrefab; // Prefab của enemy
-    [SerializeField] private float spawnInterval = 2f; // Khoảng thời gian giữa các lần spawn
-    [SerializeField] private int enemiesPerWave = 3; // Số lượng enemy mỗi lần spawn
-
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private float spawnInterval = 2f;
+    [SerializeField] private int enemiesPerWave = 3;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private GameObject enemyUI;  // Tham chiếu đến UI cho enemy
+    [SerializeField] private GameObject canvasHp;
 
     void Start()
     {
@@ -25,36 +26,32 @@ public class SpawnEnemy : MonoBehaviour
     private void SpawnerEnemy()
     {
         Vector2 spawnPosition = GetRandomSpawnPosition();
-        Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+
+        // Tạo UI cho enemy mới
+        CreateEnemyUI(enemy);
+    }
+
+    private void CreateEnemyUI(GameObject enemy)
+    {
+        // Tạo đối tượng UI thanh HP và gán vào vị trí của enemy
+        var enemyHealthUI = Instantiate(enemyUI, canvasHp.transform, false);
+        enemyHealthUI.GetComponent<EnemyHealthUI>().SetTarget(enemy);  // Gán đối tượng enemy cho UI
+        enemy.GetComponent<EnemyAI>().enemyHealthUI = enemyHealthUI.GetComponent<EnemyHealthUI>();
     }
 
     private Vector2 GetRandomSpawnPosition()
     {
         float screenX, screenY;
-        int edge = Random.Range(0, 4); // Chọn cạnh spawn ngẫu nhiên (0: Trên, 1: Dưới, 2: Trái, 3: Phải)
+        int edge = Random.Range(0, 4); // Chọn cạnh spawn ngẫu nhiên
 
         switch (edge)
         {
-            case 0: // Trên
-                screenX = Random.Range(0f, 1f);
-                screenY = 1.1f;
-                break;
-            case 1: // Dưới
-                screenX = Random.Range(0f, 1f);
-                screenY = -0.1f;
-                break;
-            case 2: // Trái
-                screenX = -0.1f;
-                screenY = Random.Range(0f, 1f);
-                break;
-            case 3: // Phải
-                screenX = 1.1f;
-                screenY = Random.Range(0f, 1f);
-                break;
-            default:
-                screenX = 0.5f;
-                screenY = 0.5f;
-                break;
+            case 0: screenX = Random.Range(0f, 1f); screenY = 1.1f; break;
+            case 1: screenX = Random.Range(0f, 1f); screenY = -0.1f; break;
+            case 2: screenX = -0.1f; screenY = Random.Range(0f, 1f); break;
+            case 3: screenX = 1.1f; screenY = Random.Range(0f, 1f); break;
+            default: screenX = 0.5f; screenY = 0.5f; break;
         }
 
         return mainCamera.ViewportToWorldPoint(new Vector3(screenX, screenY, 0));

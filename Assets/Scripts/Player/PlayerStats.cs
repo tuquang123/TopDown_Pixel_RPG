@@ -8,7 +8,7 @@ public class PlayerStats : MonoBehaviour
     public int skillPoints = 0; // Điểm kỹ năng mỗi lần lên cấp
 
     // Các chỉ số cơ bản
-    public Stat maxHealth = new Stat(100);
+    public Stat maxHealth = new(100);
     public Stat maxMana = new Stat(50);
     public Stat attack = new Stat(10);
     public Stat defense = new Stat(5);
@@ -20,12 +20,16 @@ public class PlayerStats : MonoBehaviour
     public int baseDamage => attack.Value; 
 
     public event Action OnStatsChanged; // Sự kiện khi stats thay đổi
+    public event Action OnHealthChanged;
     public int Mana { get; set; }
+
+    public PlayerHealth playerHp;
 
     private void Start()
     {
         currentHealth = maxHealth.Value;
         currentMana = maxMana.Value;
+        OnHealthChanged?.Invoke();
     }
 
     public void LevelUp()
@@ -41,6 +45,7 @@ public class PlayerStats : MonoBehaviour
         currentHealth -= actualDamage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth.Value);
         Debug.Log($"Nhận {actualDamage} sát thương, HP còn: {currentHealth}");
+        OnHealthChanged?.Invoke();
 
         if (currentHealth <= 0)
         {
@@ -52,11 +57,15 @@ public class PlayerStats : MonoBehaviour
     {
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth.Value);
         Debug.Log($"Hồi {amount} HP, HP hiện tại: {currentHealth}");
+        
+        OnHealthChanged?.Invoke();
     }
 
     private void Die()
     {
         Debug.Log("Player đã chết!");
+
+        playerHp.Die();
         // Thêm logic hồi sinh hoặc game over tại đây
     }
 
@@ -91,5 +100,10 @@ public class PlayerStats : MonoBehaviour
     public void UseMana(int skillManaCost)
     {
         throw new NotImplementedException();
+    }
+
+    public float GetCurrentHealth()
+    {
+        return currentHealth;
     }
 }

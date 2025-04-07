@@ -22,8 +22,10 @@ public class EnemyAI : MonoBehaviour
     private int currentHealth;
     private bool isDead = false;
     private bool isTakingDamage = false;
-    
+
     public static event Action<float> OnEnemyDefeated;
+    public EnemyHealthUI enemyHealthUI;
+    public int Maxhealth => maxHealth;
 
     void Start()
     {
@@ -95,6 +97,14 @@ public class EnemyAI : MonoBehaviour
         anim.SetTrigger(DamagedTrigger);
         isTakingDamage = true;
 
+        // Cập nhật thanh HP khi bị damage
+        enemyHealthUI.UpdateHealth(currentHealth);
+        FloatingTextSpawner.Instance.SpawnText(
+            "-" + damage,
+            transform.position + Vector3.up * .5f,
+            Color.white);
+
+
         if (currentHealth <= 0)
         {
             Die();
@@ -118,10 +128,14 @@ public class EnemyAI : MonoBehaviour
         anim.SetTrigger(DieTrigger);
         GetComponent<Collider2D>().enabled = false;
         this.enabled = false;
-        Destroy(gameObject, .7f);
         
-        OnEnemyDefeated?.Invoke(50);
+        // Destroy UI luôn cho sạch
+        if(enemyHealthUI != null)
+            Destroy(enemyHealthUI.gameObject);
+        
+        Destroy(gameObject, .7f);
 
+        OnEnemyDefeated?.Invoke(50);
     }
 
     void OnDrawGizmosSelected()
