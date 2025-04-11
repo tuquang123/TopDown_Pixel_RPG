@@ -16,8 +16,7 @@ public class SkillFactory
         switch (skillID)
         {
             case SkillID.ShurikenThrow:
-                GameObject obj = new GameObject("ShurikenThrowSkill");
-                return obj.AddComponent<ShurikenThrow>();  // ✅ Đúng cách
+                return new ShurikenThrow();  
             case SkillID.DamageBoost:
                 return new DamageBoost();
             default:

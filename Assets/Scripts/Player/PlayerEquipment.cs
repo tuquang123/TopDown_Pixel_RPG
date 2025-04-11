@@ -10,6 +10,7 @@ public class PlayerEquipment : MonoBehaviour
     public SpriteRenderer helmetRenderer;
     public SpriteRenderer bootsLeftRenderer;
     public SpriteRenderer bootsRightRenderer;
+    public SpriteRenderer hair;
 
     private Dictionary<ItemType, ItemData> equippedItems = new Dictionary<ItemType, ItemData>();
 
@@ -37,6 +38,7 @@ public class PlayerEquipment : MonoBehaviour
         case ItemType.Helmet:
             helmetRenderer.sprite = newItem.icon;
             helmetRenderer.color = newItem.color;
+            hair.gameObject.SetActive(false); 
             break;
         case ItemType.Boots:
             bootsLeftRenderer.sprite = newItem.iconLeft;
@@ -71,6 +73,7 @@ public void RemoveEquipment(ItemType type)
         case ItemType.Helmet:
             helmetRenderer.sprite = null;
             helmetRenderer.color = Color.white;
+            hair.gameObject.SetActive(true); 
             break;
         case ItemType.Boots:
             bootsLeftRenderer.sprite = null;
