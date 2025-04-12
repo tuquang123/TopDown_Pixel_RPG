@@ -48,40 +48,39 @@ public class PlayerEquipment : MonoBehaviour
             break;
     }
 }
-
-public void RemoveEquipment(ItemType type)
-{
-    if (!equippedItems.ContainsKey(type)) return;
-
-    equippedItems.Remove(type);
-
-    // Xóa hình ảnh + reset màu sắc
-    switch (type)
+    public void RemoveEquipment(ItemType type)
     {
-        case ItemType.Weapon:
-            weaponRenderer.sprite = null;
-            weaponRenderer.color = Color.white;
-            break;
-        case ItemType.Armor:
-            armorRenderer.sprite = null;
-            armorLeftArmRenderer.sprite = null;
-            armorRightArmRenderer.sprite = null;
-            armorRenderer.color = Color.white;
-            armorLeftArmRenderer.color = Color.white;
-            armorRightArmRenderer.color = Color.white;
-            break;
-        case ItemType.Helmet:
-            helmetRenderer.sprite = null;
-            helmetRenderer.color = Color.white;
-            hair.gameObject.SetActive(true); 
-            break;
-        case ItemType.Boots:
-            bootsLeftRenderer.sprite = null;
-            bootsRightRenderer.sprite = null;
-            bootsLeftRenderer.color = Color.white;
-            bootsRightRenderer.color = Color.white;
-            break;
+        if (!equippedItems.ContainsKey(type)) return;
+
+        equippedItems.Remove(type);
+
+        // Xóa hình ảnh + reset màu sắc
+        switch (type)
+        {
+            case ItemType.Weapon:
+                weaponRenderer.sprite = null;
+                weaponRenderer.color = Color.white;
+                break;
+            case ItemType.Armor:
+                armorRenderer.sprite = null;
+                armorLeftArmRenderer.sprite = null;
+                armorRightArmRenderer.sprite = null;
+                armorRenderer.color = Color.white;
+                armorLeftArmRenderer.color = Color.white;
+                armorRightArmRenderer.color = Color.white;
+                break;
+            case ItemType.Helmet:
+                helmetRenderer.sprite = null;
+                helmetRenderer.color = Color.white;
+                hair.gameObject.SetActive(true); 
+                break;
+            case ItemType.Boots:
+                bootsLeftRenderer.sprite = null;
+                bootsRightRenderer.sprite = null;
+                bootsLeftRenderer.color = Color.white;
+                bootsRightRenderer.color = Color.white;
+                break;
+        }
     }
-}
 
 }

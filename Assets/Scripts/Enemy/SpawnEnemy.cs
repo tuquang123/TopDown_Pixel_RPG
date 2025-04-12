@@ -22,14 +22,29 @@ public class SpawnEnemy : MonoBehaviour
             SpawnerEnemy();
         }
     }
-
+    
     private void SpawnerEnemy()
     {
         Vector2 spawnPosition = GetRandomSpawnPosition();
-        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
 
-        // Tạo UI cho enemy mới
-        CreateEnemyUI(enemy);
+        // Dùng GetToPool thay cho SpawnFromPool để tự tạo pool nếu chưa có
+        GameObject enemy = ObjectPooler.Instance.GetToPool(
+            "Enemy",
+            enemyPrefab,                          // Prefab bạn truyền từ Inspector
+            spawnPosition,
+            Quaternion.identity,
+            initSize: 5,                          // Kích thước pool khởi tạo (tùy ý)
+            expandable: true                      // Cho phép mở rộng nếu thiếu
+        );
+
+        // Reset trạng thái cần thiết
+        enemy.GetComponent<EnemyAI>().ResetEnemy();
+
+        // Tạo lại UI nếu chưa có
+        if (enemy.GetComponent<EnemyAI>().enemyHealthUI == null)
+        {
+            CreateEnemyUI(enemy);
+        }
     }
 
     private void CreateEnemyUI(GameObject enemy)

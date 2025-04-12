@@ -2,8 +2,8 @@
 
 public class GameManager : MonoBehaviour
 {
-    public PlayerStats playerStats;
-    public Equipment equipment;
+    //public PlayerStats playerStats;
+    //public Equipment equipment;
     public ItemDatabase itemDatabase;
     public Inventory inventory;
 

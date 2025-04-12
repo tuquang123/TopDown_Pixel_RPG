@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
@@ -119,23 +120,41 @@ public class EnemyAI : MonoBehaviour
     {
         isTakingDamage = false;
     }
+    public void ResetEnemy()
+    {
+        currentHealth = maxHealth;
+        isDead = false;
+        isTakingDamage = false;
+        this.enabled = true;
+        GetComponent<Collider2D>().enabled = true;
+        //anim.Play("Idle"); // hoặc reset animation về mặc định
+        enemyHealthUI?.UpdateHealth(currentHealth);
+    }
+
 
     void Die()
     {
         if (isDead) return;
-
         isDead = true;
         anim.SetTrigger(DieTrigger);
         GetComponent<Collider2D>().enabled = false;
         this.enabled = false;
-        
-        // Destroy UI luôn cho sạch
-        if(enemyHealthUI != null)
-            Destroy(enemyHealthUI.gameObject);
-        
-        Destroy(gameObject, .7f);
 
+        if (enemyHealthUI != null)
+        {
+            Destroy(enemyHealthUI.gameObject); // hoặc pool nếu cần
+            enemyHealthUI = null;
+        }
+
+        // Ẩn enemy thay vì destroy
+        StartCoroutine(DisableAfterDelay(0.65f));
         OnEnemyDefeated?.Invoke(50);
+    }
+
+    private IEnumerator DisableAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        gameObject.SetActive(false);
     }
 
     void OnDrawGizmosSelected()

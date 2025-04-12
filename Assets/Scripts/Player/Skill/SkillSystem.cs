@@ -16,14 +16,13 @@ public class SkillFactory
         switch (skillID)
         {
             case SkillID.ShurikenThrow:
-                return new ShurikenThrow();  
+                return new ShurikenThrowSkill();  // class logic, không phải MonoBehaviour
             case SkillID.DamageBoost:
                 return new DamageBoost();
             default:
                 throw new ArgumentException("Không tìm thấy kỹ năng với ID này.");
         }
     }
-    
 }
 
 public class SkillSystem : MonoBehaviour
