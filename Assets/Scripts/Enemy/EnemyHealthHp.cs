@@ -13,8 +13,8 @@ public class EnemyHealthUI : MonoBehaviour
     public void SetTarget(GameObject enemy)
     {
         targetEnemy = enemy;
-        healthSlider.maxValue = enemy.GetComponent<EnemyAI>().Maxhealth;
-        healthSlider.value = enemy.GetComponent<EnemyAI>().Maxhealth;
+        healthSlider.maxValue = enemy.GetComponent<EnemyAI>().MaxHealth;
+        healthSlider.value = enemy.GetComponent<EnemyAI>().MaxHealth;
         gameObject.SetActive(false); // ẩn ban đầu
     }
 

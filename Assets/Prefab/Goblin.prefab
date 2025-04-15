@@ -318,6 +318,10 @@ MonoBehaviour:
   maxHealth: 100
   attackDamage: 10
   damagedStunTime: 0.3
+  goldPrefab: {fileID: 4356269681339680784, guid: 93d37029af8bbaf4aadb1753790fbef8,
+    type: 3}
+  goldDropAmount: 10
+  enemyHealthUI: {fileID: 0}
 --- !u!61 &2899345656469414829
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -654,7 +658,7 @@ SortingGroup:
   m_GameObject: {fileID: 1953536796750501253}
   m_Enabled: 1
   m_SortingLayerID: -1869315837
-  m_SortingLayer: 2
+  m_SortingLayer: -3
   m_SortingOrder: 5
   m_SortAtRoot: 0
 --- !u!95 &809456738900902476
