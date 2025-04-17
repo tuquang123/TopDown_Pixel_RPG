@@ -6,7 +6,8 @@ public class ArcherController : PlayerController
     [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private Transform shootPoint;
     [SerializeField] private float arrowSpeed = 10f;
-    [SerializeField] private float arrowArcHeight = 5f; 
+    [SerializeField] private float arrowArcHeight = 5f;
+    [SerializeField] private int attackDamage = 15;
 
     protected override void AttackEnemy()
     {

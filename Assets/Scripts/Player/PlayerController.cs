@@ -5,11 +5,9 @@ public class PlayerController : MonoBehaviour
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
 
-    [SerializeField] protected float moveSpeed = 5f;
     [SerializeField] protected float attackSpeed = 1f;
     [SerializeField] protected float detectionRange = 3f;
     [SerializeField] protected float attackRange = 1f;
-    [SerializeField] protected int attackDamage = 20;
     [SerializeField] protected Transform attackPoint;
     [SerializeField] protected float attackRadius = 0.8f;
     [SerializeField] protected GameObject slashVFX;
@@ -19,11 +17,13 @@ public class PlayerController : MonoBehaviour
     protected Transform targetEnemy;
     protected float lastAttackTime;
     public Vector2 moveInput;
+    protected PlayerStats stats;
 
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
+        stats = GetComponent<PlayerStats>();
     }
 
     protected virtual void Update()
@@ -36,12 +36,12 @@ public class PlayerController : MonoBehaviour
 
         if (isMoving)
         {
-            MovePlayer();  // Nếu player di chuyển, thì di chuyển
+            MovePlayer();
             targetEnemy = null;
         }
         else
         {
-            FindClosestEnemy();  // Nếu không di chuyển, tìm và tấn công kẻ thù
+            FindClosestEnemy();
             if (targetEnemy != null)
             {
                 MoveToAttackPosition();
@@ -58,6 +58,7 @@ public class PlayerController : MonoBehaviour
     {
         if (moveInput.magnitude > 0.01f)
         {
+            float moveSpeed = stats.speed.Value;
             rb.linearVelocity = moveInput.normalized * moveSpeed;
         }
         else if (targetEnemy == null)
@@ -69,6 +70,7 @@ public class PlayerController : MonoBehaviour
 
     protected virtual void MovePlayer()
     {
+        float moveSpeed = stats.speed.Value;
         rb.linearVelocity = moveInput.normalized * moveSpeed;
         RotateCharacter(moveInput.x);
     }
@@ -81,6 +83,7 @@ public class PlayerController : MonoBehaviour
 
         if (distanceToEnemy > attackRange * 0.8f)
         {
+            float moveSpeed = stats.speed.Value;
             Vector2 direction = (targetEnemy.position - transform.position).normalized;
             rb.linearVelocity = direction * moveSpeed;
             RotateCharacter(targetEnemy.position.x - transform.position.x);
@@ -91,7 +94,8 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
             anim.SetBool(MoveBool, false);
             FaceEnemy();
-            if (Time.time - lastAttackTime >= 1f / attackSpeed)
+
+            if (Time.time - lastAttackTime >= 1f / stats.attackSpeed.Value)
             {
                 AttackEnemy();
             }
@@ -108,7 +112,22 @@ public class PlayerController : MonoBehaviour
         {
             if (enemy.CompareTag("Enemy"))
             {
-                enemy.GetComponent<EnemyAI>()?.TakeDamage(attackDamage);
+                int finalDamage = (int)stats.attack.Value;
+
+                // Tính chí mạng
+                float roll = Random.Range(0f, 100f);
+                bool isCrit = roll < stats.GetCritChance();
+                if (isCrit)
+                {
+                    finalDamage = Mathf.RoundToInt(finalDamage * 1.5f);
+                    Debug.Log("Đòn chí mạng!");
+                }
+
+                // Gây sát thương cho enemy
+                enemy.GetComponent<EnemyAI>()?.TakeDamage(finalDamage, isCrit);
+
+                // Hút máu theo sát thương gây ra
+                stats.HealFromLifeSteal(finalDamage);
             }
         }
     }

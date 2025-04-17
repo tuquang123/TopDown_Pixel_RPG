@@ -3,19 +3,19 @@
 [System.Serializable]
 public class Stat
 {
-    public int baseValue;
+    public float baseValue;
     private List<StatModifier> modifiers = new List<StatModifier>();
 
-    public Stat(int baseValue)
+    public Stat(float baseValue)
     {
         this.baseValue = baseValue;
     }
 
-    public int Value
+    public float Value
     {
         get
         {
-            int finalValue = baseValue;
+            var finalValue = baseValue;
             foreach (var mod in modifiers)
             {
                 finalValue += mod.value;
@@ -40,16 +40,19 @@ public enum StatType
     MaxMana,
     Attack,
     Defense,
-    Speed
+    Speed,
+    CritChance,
+    LifeSteal,
+    AttackSpeed
 }
 
 [System.Serializable]
 public class StatModifier
 {
     public StatType statType;
-    public int value;
+    public float value;
 
-    public StatModifier(StatType type, int value)
+    public StatModifier(StatType type, float value)
     {
         this.statType = type;
         this.value = value;

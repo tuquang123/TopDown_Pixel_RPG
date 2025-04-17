@@ -79410,6 +79410,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2661294073716672217, guid: 76709e67031dff842bc82a3c8586d3e7,
+        type: 3}
+      propertyPath: stats
+      value: 
+      objectReference: {fileID: 2467078943654436626}
+    - target: {fileID: 2661294073716672217, guid: 76709e67031dff842bc82a3c8586d3e7,
+        type: 3}
+      propertyPath: movement
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2661294073716672217, guid: 76709e67031dff842bc82a3c8586d3e7,
+        type: 3}
+      propertyPath: playerCombat
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2661294073716672217, guid: 76709e67031dff842bc82a3c8586d3e7,
+        type: 3}
+      propertyPath: playerMovement
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4029127336532869738, guid: 76709e67031dff842bc82a3c8586d3e7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -79470,6 +79490,21 @@ PrefabInstance:
       propertyPath: hairRenderer
       value: 
       objectReference: {fileID: 552462840}
+    - target: {fileID: 5158872465570570490, guid: 76709e67031dff842bc82a3c8586d3e7,
+        type: 3}
+      propertyPath: lifeSteal.baseValue
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5158872465570570490, guid: 76709e67031dff842bc82a3c8586d3e7,
+        type: 3}
+      propertyPath: maxHealth.baseValue
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 5158872465570570490, guid: 76709e67031dff842bc82a3c8586d3e7,
+        type: 3}
+      propertyPath: critChance.baseValue
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

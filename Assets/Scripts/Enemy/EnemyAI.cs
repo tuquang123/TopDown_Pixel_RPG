@@ -184,7 +184,7 @@ public class EnemyAI : MonoBehaviour
         anim.SetTrigger(AttackTrigger);  // Or other triggers based on state
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, bool isCrit = false)
     {
         if (isDead) return;
 
@@ -193,13 +193,18 @@ public class EnemyAI : MonoBehaviour
         isTakingDamage = true;
 
         enemyHealthUI.UpdateHealth(currentHealth);
+
+        string damageText = isCrit ? $"CRIT -{damage}" : $"-{damage}";
+        Color damageColor = isCrit ? Color.red : Color.white;
+
         FloatingTextSpawner.Instance.SpawnText(
-            "-" + damage,
+            damageText,
             transform.position + Vector3.up * .5f,
-            Color.white);
+            damageColor);
 
         SetState(EnemyState.Damaged);
     }
+
     public void ResetEnemy()
     {
         currentHealth = maxHealth;

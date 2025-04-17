@@ -1,34 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
     public int level = 1;
-    public int skillPoints = 0; // Điểm kỹ năng mỗi lần lên cấp
+    public int skillPoints = 0;
 
-    // Các chỉ số cơ bản
     public Stat maxHealth = new(100);
-    public Stat maxMana = new Stat(50);
-    public Stat attack = new Stat(10);
-    public Stat defense = new Stat(5);
-    public Stat speed = new Stat(5);
+    public Stat maxMana = new(50);
+    public Stat attack = new(10);
+    public Stat defense = new(5);
+    public Stat speed = new(5);
+    public Stat critChance = new(10);    // phần trăm, ví dụ 10 nghĩa là 10%
+    public Stat lifeSteal = new(5);      // phần trăm hút máu
+    public Stat attackSpeed = new(1f);
 
-    // Giá trị hiện tại của HP và Mana
     private int currentHealth;
     public int currentMana;
-    public int baseDamage => attack.Value; 
 
-    public event Action OnStatsChanged; // Sự kiện khi stats thay đổi
+    public event Action OnStatsChanged;
     public event Action OnHealthChanged;
-    public int Mana { get; set; }
 
     public PlayerHealth playerHp;
 
     private void Start()
     {
-        currentHealth = maxHealth.Value;
-        currentMana = maxMana.Value;
+        currentHealth = (int)maxHealth.Value;
+        currentMana = (int)maxMana.Value;
         OnHealthChanged?.Invoke();
     }
 
@@ -41,9 +39,9 @@ public class PlayerStats : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        int actualDamage = Mathf.Max(damage - defense.Value, 1);
+        int actualDamage = Mathf.Max(damage - (int)defense.Value, 1);
         currentHealth -= actualDamage;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth.Value);
+        currentHealth = Mathf.Clamp(currentHealth, 0, (int)maxHealth.Value);
         Debug.Log($"Nhận {actualDamage} sát thương, HP còn: {currentHealth}");
         OnHealthChanged?.Invoke();
 
@@ -55,18 +53,15 @@ public class PlayerStats : MonoBehaviour
 
     public void Heal(int amount)
     {
-        currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth.Value);
+        currentHealth = Mathf.Clamp(currentHealth + amount, 0, (int)maxHealth.Value);
         Debug.Log($"Hồi {amount} HP, HP hiện tại: {currentHealth}");
-        
         OnHealthChanged?.Invoke();
     }
 
     private void Die()
     {
         Debug.Log("Player đã chết!");
-
         playerHp.Die();
-        // Thêm logic hồi sinh hoặc game over tại đây
     }
 
     public void ApplyStatModifier(StatModifier modifier)
@@ -78,8 +73,10 @@ public class PlayerStats : MonoBehaviour
             case StatType.Attack: attack.AddModifier(modifier); break;
             case StatType.Defense: defense.AddModifier(modifier); break;
             case StatType.Speed: speed.AddModifier(modifier); break;
+            case StatType.CritChance: critChance.AddModifier(modifier); break;
+            case StatType.LifeSteal: lifeSteal.AddModifier(modifier); break;
+            case StatType.AttackSpeed: lifeSteal.AddModifier(modifier); break;
         }
-
         OnStatsChanged?.Invoke();
     }
 
@@ -92,18 +89,22 @@ public class PlayerStats : MonoBehaviour
             case StatType.Attack: attack.RemoveModifier(modifier); break;
             case StatType.Defense: defense.RemoveModifier(modifier); break;
             case StatType.Speed: speed.RemoveModifier(modifier); break;
+            case StatType.CritChance: critChance.RemoveModifier(modifier); break;
+            case StatType.LifeSteal: lifeSteal.RemoveModifier(modifier); break;
+            case StatType.AttackSpeed: lifeSteal.RemoveModifier(modifier); break;
         }
-
         OnStatsChanged?.Invoke();
     }
 
-    public void UseMana(int skillManaCost)
-    {
-        throw new NotImplementedException();
-    }
+    public float GetCurrentHealth() => currentHealth;
 
-    public float GetCurrentHealth()
+    public float GetCritChance() => critChance.Value;
+
+    public float GetLifeStealPercent() => lifeSteal.Value;
+
+    public void HealFromLifeSteal(int damageDealt)
     {
-        return currentHealth;
+        int healAmount = Mathf.RoundToInt(damageDealt * (lifeSteal.Value / 100f));
+        if (healAmount > 0) Heal(healAmount);
     }
 }

@@ -16,6 +16,6 @@ public class ShurikenThrowSkill : ISkill
 
     public bool CanUse(PlayerStats playerStats, SkillData skill)
     {
-        return playerStats.Mana >= skill.manaCost;
+        return playerStats.currentMana >= skill.manaCost;
     }
 }
