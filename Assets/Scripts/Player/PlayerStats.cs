@@ -44,6 +44,13 @@ public class PlayerStats : MonoBehaviour
         currentHealth = Mathf.Clamp(currentHealth, 0, (int)maxHealth.Value);
         Debug.Log($"Nhận {actualDamage} sát thương, HP còn: {currentHealth}");
         OnHealthChanged?.Invoke();
+        string damageText = $"-{damage}";
+        Color damageColor = Color.white;
+
+        FloatingTextSpawner.Instance.SpawnText(
+            damageText,
+            transform.position + Vector3.up * .5f,
+            damageColor);
 
         if (currentHealth <= 0)
         {

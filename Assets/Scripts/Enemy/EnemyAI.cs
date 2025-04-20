@@ -14,44 +14,43 @@ public enum EnemyState
 
 public class EnemyAI : MonoBehaviour
 {
-    private static readonly int MoveBool = Animator.StringToHash("1_Move");
-    private static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
-    private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
-    private static readonly int DieTrigger = Animator.StringToHash("4_Death");
+    protected static readonly int MoveBool = Animator.StringToHash("1_Move");
+    protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
+    protected static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
+    protected static readonly int DieTrigger = Animator.StringToHash("4_Death");
 
-    [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float attackRange = 1.5f;
-    [SerializeField] private float detectionRange = 5f;
-    [SerializeField] private float attackCooldown = 1f;
-    [SerializeField] private int maxHealth = 100;
-    [SerializeField] private int attackDamage = 10;
-    [SerializeField] private float damagedStunTime = 0.3f;
-    [SerializeField] private GameObject goldPrefab;
-    [SerializeField] private int goldDropAmount = 10;
+    [SerializeField] protected float moveSpeed = 3f;
+    [SerializeField] protected float attackRange = 1.5f;
+    [SerializeField] protected float detectionRange = 5f;
+    [SerializeField] protected float attackCooldown = 1f;
+    [SerializeField] protected int maxHealth = 100;
+    [SerializeField] protected int attackDamage = 10;
+    [SerializeField] protected float damagedStunTime = 0.3f;
+    [SerializeField] protected GameObject goldPrefab;
+    [SerializeField] protected int goldDropAmount = 10;
 
-    private Transform player;
-    private Animator anim;
-    private float lastAttackTime;
-    private int currentHealth;
-    private bool isDead = false;
-    private bool isTakingDamage = false;
+    protected Transform player;
+    protected Animator anim;
+    protected float lastAttackTime;
+    protected int currentHealth;
+    protected bool isDead = false;
+    protected bool isTakingDamage = false;
 
-    private EnemyState currentState;
+    protected EnemyState currentState;
 
     public static event Action<float> OnEnemyDefeated;
     public EnemyHealthUI enemyHealthUI;
     public int MaxHealth => maxHealth;
-
-    void Start()
+    
+    protected virtual void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
         anim = GetComponentInChildren<Animator>();
         currentHealth = maxHealth;
-
         SetState(EnemyState.Idle);
     }
 
-    void Update()
+    protected virtual void Update()
     {
         if (isDead || player == null) return;
 
@@ -75,7 +74,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void HandleIdleState()
+    protected virtual void HandleIdleState()
     {
         if (Vector2.Distance(transform.position, player.position) <= detectionRange)
         {
@@ -83,7 +82,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    async void HandleMoveState()
+    protected virtual async void HandleMoveState()
     {
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
@@ -104,7 +103,7 @@ public class EnemyAI : MonoBehaviour
         transform.rotation = player.position.x > transform.position.x ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
     }
 
-    async void HandleAttackState()
+    protected virtual async void HandleAttackState()
     {
         if (isTakingDamage) return;
 
@@ -119,13 +118,12 @@ public class EnemyAI : MonoBehaviour
                 playerHealth.TakeDamage(attackDamage);
             }
 
-            // Use UniTask.Delay instead of coroutine here
             await UniTask.Delay(TimeSpan.FromSeconds(attackCooldown));
         }
-        SetState(EnemyState.Idle);  // Return to idle state after attacking
+        SetState(EnemyState.Idle);
     }
 
-    void HandleDamagedState()
+    protected virtual void HandleDamagedState()
     {
         if (currentHealth <= 0)
         {
@@ -133,11 +131,11 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            EndDamageStun().Forget();  // End damage stun asynchronously
+            EndDamageStun().Forget();
         }
     }
 
-    async void HandleDeadState()
+    protected virtual async void HandleDeadState()
     {
         if (isDead) return;
 
@@ -153,23 +151,21 @@ public class EnemyAI : MonoBehaviour
         }
 
         Vector3 spawnPos = transform.position + new Vector3(Random.Range(-0.5f, 0.5f), 0f, 0);
-        ObjectPooler.Instance.GetToPool("Gold", goldPrefab, spawnPos, Quaternion.identity);
+        ObjectPooler.Instance.Get("Gold", goldPrefab, spawnPos, Quaternion.identity);
 
-        // Using UniTask.Delay here
         await DisableAfterDelay(0.65f);
         OnEnemyDefeated?.Invoke(50);
     }
 
-    private async UniTask DisableAfterDelay(float delay)
+    protected virtual async UniTask DisableAfterDelay(float delay)
     {
         await UniTask.Delay(TimeSpan.FromSeconds(delay));
         gameObject.SetActive(false);
     }
 
-    // Using async void with UniTask to replace Invoke
-    private async UniTask EndDamageStun()
+    protected virtual async UniTask EndDamageStun()
     {
-        await UniTask.Delay(TimeSpan.FromSeconds(damagedStunTime));  // Wait for stun time
+        await UniTask.Delay(TimeSpan.FromSeconds(damagedStunTime));
         isTakingDamage = false;
         if (currentHealth > 0)
         {
@@ -177,14 +173,14 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void SetState(EnemyState newState)
+    protected virtual void SetState(EnemyState newState)
     {
         currentState = newState;
         anim.SetBool(MoveBool, newState == EnemyState.Moving);
-        anim.SetTrigger(AttackTrigger);  // Or other triggers based on state
+        anim.SetTrigger(AttackTrigger);  // Optional: adjust if needed
     }
 
-    public void TakeDamage(int damage, bool isCrit = false)
+    public virtual void TakeDamage(int damage, bool isCrit = false)
     {
         if (isDead) return;
 
@@ -192,7 +188,7 @@ public class EnemyAI : MonoBehaviour
         anim.SetTrigger(DamagedTrigger);
         isTakingDamage = true;
 
-        enemyHealthUI.UpdateHealth(currentHealth);
+        enemyHealthUI?.UpdateHealth(currentHealth);
 
         string damageText = isCrit ? $"CRIT -{damage}" : $"-{damage}";
         Color damageColor = isCrit ? Color.red : Color.white;
@@ -205,18 +201,17 @@ public class EnemyAI : MonoBehaviour
         SetState(EnemyState.Damaged);
     }
 
-    public void ResetEnemy()
+    public virtual void ResetEnemy()
     {
         currentHealth = maxHealth;
         isDead = false;
         isTakingDamage = false;
         this.enabled = true;
         GetComponent<Collider2D>().enabled = true;
-        //anim.Play("Idle"); // hoặc reset animation về mặc định
         enemyHealthUI?.UpdateHealth(currentHealth);
     }
 
-    void OnDrawGizmosSelected()
+    protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, detectionRange);

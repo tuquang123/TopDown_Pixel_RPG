@@ -273,11 +273,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4979966073556952606}
-  - component: {fileID: 5186425366369124732}
   - component: {fileID: 2899345656469414829}
   - component: {fileID: 1656737297614606585}
+  - component: {fileID: -6082871304063570843}
   m_Layer: 23
-  m_Name: Goblin
+  m_Name: Goblin 1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -299,29 +299,6 @@ Transform:
   - {fileID: 5255421836968861864}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5186425366369124732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1581309216436780966}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 2
-  attackRange: 1
-  detectionRange: 20
-  attackCooldown: 1
-  maxHealth: 100
-  attackDamage: 10
-  damagedStunTime: 0.3
-  goldPrefab: {fileID: 4356269681339680784, guid: 93d37029af8bbaf4aadb1753790fbef8,
-    type: 3}
-  goldDropAmount: 10
-  enemyHealthUI: {fileID: 0}
 --- !u!61 &2899345656469414829
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -395,6 +372,33 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &-6082871304063570843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1581309216436780966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 166adac5454d1fe4b98cbcf62a22bc5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 3
+  attackRange: 1.5
+  detectionRange: 20
+  attackCooldown: 1
+  maxHealth: 100
+  attackDamage: 10
+  damagedStunTime: 0.3
+  goldPrefab: {fileID: 4356269681339680784, guid: 93d37029af8bbaf4aadb1753790fbef8,
+    type: 3}
+  goldDropAmount: 10
+  enemyHealthUI: {fileID: 0}
+  projectilePrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9,
+    type: 3}
+  firePoint: {fileID: 5255421836968861864}
+  projectileSpeed: 2
 --- !u!1 &1642773182976143640
 GameObject:
   m_ObjectHideFlags: 0
@@ -5798,7 +5802,7 @@ SpriteRenderer:
   m_SortingOrder: 5
   m_Sprite: {fileID: 3923885903126733222, guid: 9f6f74f146203417fae095263bf53e7c,
     type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
