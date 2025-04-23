@@ -1,111 +1,99 @@
-using Cysharp.Threading.Tasks;
 using System;
+using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
-
-public enum EnemyState
-{
-    Idle,
-    Moving,
-    Attacking,
-    Damaged,
-    Dead
-}
 
 public class EnemyAI : MonoBehaviour
 {
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
-    protected static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
-    protected static readonly int DieTrigger = Animator.StringToHash("4_Death");
+    private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
+    private static readonly int DieTrigger = Animator.StringToHash("4_Death");
 
-    [SerializeField] protected float moveSpeed = 3f;
-    [SerializeField] protected float attackRange = 1.5f;
-    [SerializeField] protected float detectionRange = 5f;
+    [SerializeField] private float moveSpeed = 3f;
+    [SerializeField] private float attackRange = 1.5f;
+    [SerializeField] private float detectionRange = 5f;
     [SerializeField] protected float attackCooldown = 1f;
-    [SerializeField] protected int maxHealth = 100;
+    [SerializeField] private int maxHealth = 100;
     [SerializeField] protected int attackDamage = 10;
-    [SerializeField] protected float damagedStunTime = 0.3f;
-    [SerializeField] protected GameObject goldPrefab;
-    [SerializeField] protected int goldDropAmount = 10;
+    [SerializeField] private float damagedStunTime = 0.3f;
+    [SerializeField] private GameObject goldPrefab;
+    [SerializeField] private int goldDropAmount = 10;
 
     protected Transform player;
     protected Animator anim;
     protected float lastAttackTime;
-    protected int currentHealth;
+    private int currentHealth;
     protected bool isDead = false;
     protected bool isTakingDamage = false;
-
-    protected EnemyState currentState;
 
     public static event Action<float> OnEnemyDefeated;
     public EnemyHealthUI enemyHealthUI;
     public int MaxHealth => maxHealth;
-    
+
     protected virtual void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
         anim = GetComponentInChildren<Animator>();
         currentHealth = maxHealth;
-        SetState(EnemyState.Idle);
     }
 
-    protected virtual void Update()
+    void Update()
     {
         if (isDead || player == null) return;
 
-        switch (currentState)
-        {
-            case EnemyState.Idle:
-                HandleIdleState();
-                break;
-            case EnemyState.Moving:
-                HandleMoveState();
-                break;
-            case EnemyState.Attacking:
-                HandleAttackState();
-                break;
-            case EnemyState.Damaged:
-                HandleDamagedState();
-                break;
-            case EnemyState.Dead:
-                HandleDeadState();
-                break;
-        }
-    }
-
-    protected virtual void HandleIdleState()
-    {
-        if (Vector2.Distance(transform.position, player.position) <= detectionRange)
-        {
-            SetState(EnemyState.Moving);
-        }
-    }
-
-    protected virtual async void HandleMoveState()
-    {
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        if (distanceToPlayer <= attackRange)
-        {
-            SetState(EnemyState.Attacking);
-            return;
-        }
+        if (isTakingDamage) return;
 
+        if (distanceToPlayer <= detectionRange)
+        {
+            if (distanceToPlayer > attackRange)
+            {
+                MoveTowardsPlayer();
+            }
+            else
+            {
+                AttackPlayer();
+            }
+        }
+        else
+        {
+            anim.SetBool(MoveBool, false);
+        }
+    }
+
+    void MoveTowardsPlayer()
+    {
         if (Time.time - lastAttackTime < attackCooldown)
         {
             anim.SetBool(MoveBool, false);
             return;
         }
 
+        // Tính hướng và di chuyển đến gần player
+        Vector2 direction = (player.position - transform.position).normalized;
+        transform.position += (Vector3)(direction * moveSpeed * Time.deltaTime);
+
+        // Chỉ xoay trái/phải dựa vào X
+        if (player.position.x > transform.position.x)
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        else
+            transform.rotation = Quaternion.Euler(0, 180, 0);
+
         anim.SetBool(MoveBool, true);
-        transform.position = Vector2.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
-        transform.rotation = player.position.x > transform.position.x ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
     }
 
-    protected virtual async void HandleAttackState()
+
+    protected virtual void AttackPlayer()
     {
         if (isTakingDamage) return;
+
+        // Đảm bảo quay mặt
+        if (player.position.x > transform.position.x)
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        else
+            transform.rotation = Quaternion.Euler(0, 180, 0);
 
         if (Time.time - lastAttackTime >= attackCooldown)
         {
@@ -117,78 +105,17 @@ public class EnemyAI : MonoBehaviour
             {
                 playerHealth.TakeDamage(attackDamage);
             }
-
-            await UniTask.Delay(TimeSpan.FromSeconds(attackCooldown));
-        }
-        SetState(EnemyState.Idle);
-    }
-
-    protected virtual void HandleDamagedState()
-    {
-        if (currentHealth <= 0)
-        {
-            SetState(EnemyState.Dead);
-        }
-        else
-        {
-            EndDamageStun().Forget();
         }
     }
 
-    protected virtual async void HandleDeadState()
-    {
-        if (isDead) return;
 
-        isDead = true;
-        anim.SetTrigger(DieTrigger);
-        GetComponent<Collider2D>().enabled = false;
-        this.enabled = false;
-
-        if (enemyHealthUI != null)
-        {
-            Destroy(enemyHealthUI.gameObject);
-            enemyHealthUI = null;
-        }
-
-        Vector3 spawnPos = transform.position + new Vector3(Random.Range(-0.5f, 0.5f), 0f, 0);
-        ObjectPooler.Instance.Get("Gold", goldPrefab, spawnPos, Quaternion.identity);
-
-        await DisableAfterDelay(0.65f);
-        OnEnemyDefeated?.Invoke(50);
-    }
-
-    protected virtual async UniTask DisableAfterDelay(float delay)
-    {
-        await UniTask.Delay(TimeSpan.FromSeconds(delay));
-        gameObject.SetActive(false);
-    }
-
-    protected virtual async UniTask EndDamageStun()
-    {
-        await UniTask.Delay(TimeSpan.FromSeconds(damagedStunTime));
-        isTakingDamage = false;
-        if (currentHealth > 0)
-        {
-            SetState(EnemyState.Idle);
-        }
-    }
-
-    protected virtual void SetState(EnemyState newState)
-    {
-        currentState = newState;
-        anim.SetBool(MoveBool, newState == EnemyState.Moving);
-        anim.SetTrigger(AttackTrigger);  // Optional: adjust if needed
-    }
-
-    public virtual void TakeDamage(int damage, bool isCrit = false)
+    public void TakeDamage(int damage , bool isCrit = false)
     {
         if (isDead) return;
 
         currentHealth -= damage;
         anim.SetTrigger(DamagedTrigger);
         isTakingDamage = true;
-
-        enemyHealthUI?.UpdateHealth(currentHealth);
 
         string damageText = isCrit ? $"CRIT -{damage}" : $"-{damage}";
         Color damageColor = isCrit ? Color.red : Color.white;
@@ -197,21 +124,62 @@ public class EnemyAI : MonoBehaviour
             damageText,
             transform.position + Vector3.up * .5f,
             damageColor);
-
-        SetState(EnemyState.Damaged);
+        
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            Invoke(nameof(EndDamageStun), damagedStunTime);
+        }
     }
 
-    public virtual void ResetEnemy()
+    void EndDamageStun()
+    {
+        isTakingDamage = false;
+    }
+    public void ResetEnemy()
     {
         currentHealth = maxHealth;
         isDead = false;
         isTakingDamage = false;
         this.enabled = true;
         GetComponent<Collider2D>().enabled = true;
+        //anim.Play("Idle"); // hoặc reset animation về mặc định
         enemyHealthUI?.UpdateHealth(currentHealth);
     }
 
-    protected virtual void OnDrawGizmosSelected()
+
+    protected void Die()
+    {
+        if (isDead) return;
+        isDead = true;
+        anim.SetTrigger(DieTrigger);
+        GetComponent<Collider2D>().enabled = false;
+        this.enabled = false;
+        
+        Vector3 spawnPos = transform.position + new Vector3(Random.Range(-0.5f, 0.5f), 0f, 0);
+        ObjectPooler.Instance.Get("Gold", goldPrefab, spawnPos, Quaternion.identity);
+
+        if (enemyHealthUI != null)
+        {
+            Destroy(enemyHealthUI.gameObject); // hoặc pool nếu cần
+            enemyHealthUI = null;
+        }
+
+        // Ẩn enemy thay vì destroy
+        StartCoroutine(DisableAfterDelay(0.65f));
+        OnEnemyDefeated?.Invoke(50);
+    }
+    
+    private IEnumerator DisableAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        gameObject.SetActive(false);
+    }
+
+    void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, detectionRange);

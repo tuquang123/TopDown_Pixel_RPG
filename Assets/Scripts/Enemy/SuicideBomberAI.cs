@@ -7,44 +7,93 @@ public class SuicideBomberAI : EnemyAI
     [SerializeField] private int explosionDamage = 30;
     [SerializeField] private GameObject explosionEffect;
     [SerializeField] private float moveToTargetSpeed = 4f;
+    [SerializeField] private float explosionRange = 2f;
+    [SerializeField] private float flashDuration = 0.1f;  // Thời gian một lần nháy
+    [SerializeField] private int flashCount = 5; // Số lần nháy
+    [SerializeField]private SpriteRenderer spriteRenderer;
 
     private Vector2 cachedTargetPosition;
     private bool isExploding = false;
+    private Color originalColor;
 
-    protected override async void HandleAttackState()
+    protected override void Start()
     {
-        if (isExploding) return;
+        base.Start();
+        //spriteRenderer = GetComponentInChildren<SpriteRenderer>();  // Lấy SpriteRenderer của enemy
+        originalColor = spriteRenderer.color;  // Lưu lại màu gốc của sprite
+    }
 
-        // Khóa vị trí player tại thời điểm bắt đầu tấn công
+    protected override void AttackPlayer()
+    {
+        if (isExploding || player == null) return;
+
         cachedTargetPosition = player.position;
         isExploding = true;
 
+        anim.SetBool(MoveBool, true);
+        _ = StartExplosionSequence();
+    }
+
+    private async UniTaskVoid StartExplosionSequence()
+    {
         await MoveToTargetPosition();
 
-        // Đứng yên tại vị trí đã đến và đợi 3 giây rồi phát nổ
+        anim.SetBool(MoveBool, false);
         await UniTask.Delay(System.TimeSpan.FromSeconds(explosionDelay));
 
-        if (explosionEffect != null)
-            Instantiate(explosionEffect, transform.position, Quaternion.identity);
+        // Bắt đầu hiệu ứng nháy
+        _ = FlashEffect();
+        
+        // Đợi sau khi hiệu ứng nháy, rồi tiến hành nổ
+        await UniTask.Delay(System.TimeSpan.FromSeconds(flashDuration * flashCount));  // Delay thêm để nháy trước khi nổ
 
-        if (player.TryGetComponent(out PlayerHealth playerHealth))
-        {
-            playerHealth.TakeDamage(explosionDamage);
-        }
-
-        SetState(EnemyState.Dead);
+        Explode();
     }
 
     private async UniTask MoveToTargetPosition()
     {
-        while (Vector2.Distance(transform.position, cachedTargetPosition) > 0.1f)
+        while (Vector2.Distance(transform.position, cachedTargetPosition) > 0.1f && !isDead)
         {
             transform.position = Vector2.MoveTowards(transform.position, cachedTargetPosition, moveToTargetSpeed * Time.deltaTime);
+
             transform.rotation = cachedTargetPosition.x > transform.position.x
                 ? Quaternion.Euler(0, 0, 0)
                 : Quaternion.Euler(0, 180, 0);
 
             await UniTask.Yield();
+        }
+    }
+
+    private void Explode()
+    {
+        if (explosionEffect != null)
+        {
+            Instantiate(explosionEffect, transform.position, Quaternion.identity);
+        }
+
+        if (player != null && Vector2.Distance(player.position, transform.position) <= explosionRange)
+        {
+            if (player.TryGetComponent(out PlayerHealth playerHealth))
+            {
+                playerHealth.TakeDamage(explosionDamage);
+            }
+        }
+
+        base.Die();
+    }
+
+    private async UniTask FlashEffect()
+    {
+        // Flash effect: Thay đổi màu sắc sprite trong thời gian ngắn để tạo hiệu ứng nháy
+        for (int i = 0; i < flashCount; i++)
+        {
+            // Thay đổi màu của sprite thành màu sáng
+            spriteRenderer.color = Color.red;  // Hoặc có thể thay đổi màu khác nếu muốn
+            await UniTask.Delay(System.TimeSpan.FromSeconds(flashDuration));
+
+            // Quay lại màu gốc
+            spriteRenderer.color = originalColor;
+            await UniTask.Delay(System.TimeSpan.FromSeconds(flashDuration));
         }
     }
 }

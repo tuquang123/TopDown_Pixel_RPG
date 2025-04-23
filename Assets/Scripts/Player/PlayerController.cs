@@ -75,7 +75,7 @@ public class PlayerController : MonoBehaviour
         RotateCharacter(moveInput.x);
     }
 
-    protected virtual void MoveToAttackPosition()
+    /*protected virtual void MoveToAttackPosition()
     {
         if (targetEnemy == null) return;
 
@@ -100,8 +100,54 @@ public class PlayerController : MonoBehaviour
                 AttackEnemy();
             }
         }
+    }*/
+    protected virtual void MoveToAttackPosition()
+    {
+        if (targetEnemy == null) return;
+
+        Vector2 playerPos = transform.position;
+        Vector2 enemyPos = targetEnemy.position;
+
+        float yDiff = Mathf.Abs(playerPos.y - enemyPos.y);
+        float xDiff = Mathf.Abs(playerPos.x - enemyPos.x);
+        float moveSpeed = stats.speed.Value;
+
+        // Ngưỡng sai lệch nhỏ để chấp nhận "đúng trục Y"
+        float yTolerance = 0.1f;
+
+        if (yDiff > yTolerance)
+        {
+            // Di chuyển để canh đúng trục Y trước
+            Vector2 directionY = new Vector2(0, enemyPos.y - playerPos.y).normalized;
+            rb.linearVelocity = directionY * moveSpeed;
+
+            // Không quay trong khi di chuyển trục Y
+            anim.SetBool(MoveBool, true);
+        }
+        else if (xDiff > attackRange * 0.8f)
+        {
+            // Khi đã gần đúng trục Y, thì canh trục X
+            Vector2 directionX = new Vector2(enemyPos.x - playerPos.x, 0).normalized;
+            rb.linearVelocity = directionX * moveSpeed;
+
+            RotateCharacter(directionX.x);
+            anim.SetBool(MoveBool, true);
+        }
+        else
+        {
+            // Đã vào vị trí chuẩn, dừng lại và tấn công
+            rb.linearVelocity = Vector2.zero;
+            anim.SetBool(MoveBool, false);
+            FaceEnemy();
+
+            if (Time.time - lastAttackTime >= 1f / stats.attackSpeed.Value)
+            {
+                AttackEnemy();
+            }
+        }
     }
 
+    
     protected virtual void AttackEnemy()
     {
         lastAttackTime = Time.time;

@@ -1,6 +1,4 @@
 using UnityEngine;
-using Cysharp.Threading.Tasks;
-using System;
 
 public class RangedEnemyAI : EnemyAI
 {
@@ -9,35 +7,41 @@ public class RangedEnemyAI : EnemyAI
     [SerializeField] private Transform firePoint;
     [SerializeField] private float projectileSpeed = 5f;
 
-    protected override async void HandleAttackState()
+    protected override void AttackPlayer()
     {
         if (isTakingDamage) return;
+
+        FacePlayer();
 
         if (Time.time - lastAttackTime >= attackCooldown)
         {
             anim.SetBool(MoveBool, false);
             anim.SetTrigger(AttackTrigger);
             lastAttackTime = Time.time;
-
             ShootProjectile();
-
-            await UniTask.Delay(TimeSpan.FromSeconds(attackCooldown));
         }
-
-        SetState(EnemyState.Idle);
     }
 
     private void ShootProjectile()
     {
-        if (projectilePrefab != null && firePoint != null)
+        if (projectilePrefab == null || firePoint == null) return;
+
+        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+
+        if (proj.TryGetComponent(out EnemyProjectile enemyProj))
         {
-            GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-            Vector2 dir = (player.position - firePoint.position).normalized;
-            Rigidbody2D rb = proj.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                rb.linearVelocity = dir * projectileSpeed;
-            }
+            enemyProj.speed = projectileSpeed;
+            enemyProj.Init(player.position, attackDamage);
         }
+    }
+
+    private void FacePlayer()
+    {
+        if (player == null) return;
+
+        if (player.position.x > transform.position.x)
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        else
+            transform.rotation = Quaternion.Euler(0, 180, 0);
     }
 }

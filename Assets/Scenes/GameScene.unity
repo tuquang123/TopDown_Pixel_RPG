@@ -3742,7 +3742,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 352.08588, y: 736}
+  m_AnchoredPosition: {x: 334, y: 421}
   m_SizeDelta: {x: -704.1718, y: -2097.9539}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &152888935
@@ -21981,9 +21981,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefabs:
+  - {fileID: 1581309216436780966, guid: 77349efd2b9255b4797798b8cb750019, type: 3}
+  - {fileID: 1581309216436780966, guid: 8f00030f966e2c041b397f4a7e9ada45, type: 3}
   - {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
-  spawnInterval: 5
-  enemiesPerWave: 5
+  - {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
+  - {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
+  spawnInterval: 10
+  enemiesPerWave: 2
   enemyUI: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
   canvasHp: {fileID: 71306075}
 --- !u!1001 &567302881
@@ -32675,7 +32679,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.98490566, g: 0.57793516, b: 0.57793516, a: 0.39607844}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -61600,7 +61604,7 @@ MonoBehaviour:
   - {fileID: 1317138560}
   - {fileID: 1089092816}
   - {fileID: 1936067999}
-  heroManager: {fileID: 0}
+  heroManager: {fileID: 637887265}
 --- !u!1 &1691089120
 GameObject:
   m_ObjectHideFlags: 0
@@ -81112,6 +81116,11 @@ PrefabInstance:
         type: 3}
       propertyPath: critChance.baseValue
       value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 5158872465570570490, guid: 76709e67031dff842bc82a3c8586d3e7,
+        type: 3}
+      propertyPath: attackSpeed.baseValue
+      value: 0.7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

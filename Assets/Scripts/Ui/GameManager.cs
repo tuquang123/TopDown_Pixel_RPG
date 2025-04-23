@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
         ItemData hair = itemDatabase.GetItemByName("Hair");
         ItemData boosts = itemDatabase.GetItemByName("Boosts");
         ItemData helmet = itemDatabase.GetItemByName("Helmet");
+        ItemData sword1 = itemDatabase.GetItemByName("Sword2");
+        ItemData swordv = itemDatabase.GetItemByName("Swordv");
 
         // Thêm item vào Inventory mà không trang bị ngay
         inventory.AddItem(sword);
@@ -22,6 +24,8 @@ public class GameManager : MonoBehaviour
         inventory.AddItem(hair);
         inventory.AddItem(boosts);
         inventory.AddItem(helmet);
+        inventory.AddItem(swordv);
+        inventory.AddItem(sword1);
 
         Debug.Log("Item đã được thêm vào Inventory.");
     }

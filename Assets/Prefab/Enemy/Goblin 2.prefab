@@ -275,9 +275,9 @@ GameObject:
   - component: {fileID: 4979966073556952606}
   - component: {fileID: 2899345656469414829}
   - component: {fileID: 1656737297614606585}
-  - component: {fileID: -6082871304063570843}
+  - component: {fileID: 7036338023097875601}
   m_Layer: 23
-  m_Name: Goblin 1
+  m_Name: Goblin 2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -372,7 +372,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &-6082871304063570843
+--- !u!114 &7036338023097875601
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -381,13 +381,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1581309216436780966}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 166adac5454d1fe4b98cbcf62a22bc5c, type: 3}
+  m_Script: {fileID: 11500000, guid: aebb3355a95846b5b79217451532f75b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 2.5
-  attackRange: 4.5
+  moveSpeed: 3
+  attackRange: 1.5
   detectionRange: 20
-  attackCooldown: 1.5
+  attackCooldown: 1
   maxHealth: 100
   attackDamage: 10
   damagedStunTime: 0.3
@@ -395,11 +395,15 @@ MonoBehaviour:
     type: 3}
   goldDropAmount: 10
   enemyHealthUI: {fileID: 0}
-  projectilePrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9,
+  explosionDelay: 3
+  explosionDamage: 30
+  explosionEffect: {fileID: 3533435376319919130, guid: ffe419f6459a3ec4093834ac1ccf0398,
     type: 3}
-  firePoint: {fileID: 5255421836968861864}
-  projectileSpeed: 2
-  safeDistance: 3
+  moveToTargetSpeed: 4
+  explosionRange: 2
+  flashDuration: 0.1
+  flashCount: 5
+  spriteRenderer: {fileID: 8165449109750072581}
 --- !u!1 &1642773182976143640
 GameObject:
   m_ObjectHideFlags: 0
@@ -5803,7 +5807,7 @@ SpriteRenderer:
   m_SortingOrder: 5
   m_Sprite: {fileID: 3923885903126733222, guid: 9f6f74f146203417fae095263bf53e7c,
     type: 3}
-  m_Color: {r: 0.9223423, g: 0, b: 1, a: 1}
+  m_Color: {r: 0.9245283, g: 0.8380927, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
