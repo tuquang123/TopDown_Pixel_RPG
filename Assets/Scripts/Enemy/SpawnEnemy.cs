@@ -1,13 +1,34 @@
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public class SpawnEnemy : MonoBehaviour
 {
+    [Title("Enemy Settings")]
+    [Tooltip("Danh sách prefab kẻ địch sẽ được spawn")]
+    [AssetsOnly]
+    [Required]
+    [ListDrawerSettings(Expanded = true)]
     [SerializeField] private GameObject[] enemyPrefabs;
+
+    [MinValue(0.1f)]
+    [Tooltip("Thời gian giữa các đợt spawn (giây)")]
     [SerializeField] private float spawnInterval = 2f;
+
+    [MinValue(1)]
+    [Tooltip("Số lượng kẻ địch spawn mỗi đợt")]
     [SerializeField] private int enemiesPerWave = 3;
+
+    [Title("UI Settings")]
+    [Tooltip("Prefab UI máu của kẻ địch")]
+    [Required]
     [SerializeField] private GameObject enemyUI;
+
+    [Tooltip("Canvas chứa các UI máu kẻ địch")]
+    [SceneObjectsOnly]
     [SerializeField] private GameObject canvasHp;
 
+    [ReadOnly]
+    [ShowInInspector]
     private Camera mainCamera;
 
     private void Start()
@@ -16,6 +37,7 @@ public class SpawnEnemy : MonoBehaviour
         InvokeRepeating(nameof(SpawnWave), 1f, spawnInterval);
     }
 
+    [Button("Force Spawn Wave")]
     private void SpawnWave()
     {
         for (int i = 0; i < enemiesPerWave; i++)
@@ -26,7 +48,6 @@ public class SpawnEnemy : MonoBehaviour
 
     private void TrySpawnEnemy()
     {
-        // Nếu không tìm được vị trí phù hợp sau nhiều lần, spawn đại
         SpawnAt(GetRandomSpawnPosition());
     }
 
@@ -34,14 +55,14 @@ public class SpawnEnemy : MonoBehaviour
     {
         int index = Random.Range(0, enemyPrefabs.Length);
         GameObject prefab = enemyPrefabs[index];
-        string tag = prefab.name;  // Sử dụng tên prefab làm tag
+        string tag = prefab.name;
 
         GameObject enemy = ObjectPooler.Instance.Get(
             tag, prefab, position, Quaternion.identity, initSize: 10, expandable: true
         );
 
         if (enemy == null) return;
-        
+
         enemy.GetComponent<EnemyAI>().ResetEnemy();
 
         if (enemy.GetComponent<EnemyAI>().enemyHealthUI == null)
@@ -57,7 +78,7 @@ public class SpawnEnemy : MonoBehaviour
         uiComponent.SetTarget(enemy);
         enemy.GetComponent<EnemyAI>().enemyHealthUI = uiComponent;
     }
-    
+
     private Vector2 GetRandomSpawnPosition()
     {
         int edge = Random.Range(0, 4);
