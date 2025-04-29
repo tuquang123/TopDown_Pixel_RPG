@@ -74,33 +74,6 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = moveInput.normalized * moveSpeed;
         RotateCharacter(moveInput.x);
     }
-
-    /*protected virtual void MoveToAttackPosition()
-    {
-        if (targetEnemy == null) return;
-
-        float distanceToEnemy = Vector2.Distance(transform.position, targetEnemy.position);
-
-        if (distanceToEnemy > attackRange * 0.8f)
-        {
-            float moveSpeed = stats.speed.Value;
-            Vector2 direction = (targetEnemy.position - transform.position).normalized;
-            rb.linearVelocity = direction * moveSpeed;
-            RotateCharacter(targetEnemy.position.x - transform.position.x);
-            anim.SetBool(MoveBool, true);
-        }
-        else
-        {
-            rb.linearVelocity = Vector2.zero;
-            anim.SetBool(MoveBool, false);
-            FaceEnemy();
-
-            if (Time.time - lastAttackTime >= 1f / stats.attackSpeed.Value)
-            {
-                AttackEnemy();
-            }
-        }
-    }*/
     protected virtual void MoveToAttackPosition()
     {
         if (targetEnemy == null) return;
@@ -202,9 +175,12 @@ public class PlayerController : MonoBehaviour
 
     protected void RotateCharacter(float direction)
     {
-        transform.rotation = Quaternion.Euler(0, direction < 0 ? 180 : 0, 0);
+        if (direction < 0)
+            transform.localScale = new Vector3(1, 1, 1); // Quay trái
+        else if (direction > 0)
+            transform.localScale = new Vector3(-1, 1, 1);  // Quay phải
     }
-
+    
     protected void FaceEnemy()
     {
         if (targetEnemy == null) return;

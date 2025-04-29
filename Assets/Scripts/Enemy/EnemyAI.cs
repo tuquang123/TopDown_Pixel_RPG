@@ -17,7 +17,7 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private int maxHealth = 100;
     [SerializeField] protected int attackDamage = 10;
     [SerializeField] private float damagedStunTime = 0.3f;
-    [SerializeField] private GameObject goldPrefab;
+    //[SerializeField] private GameObject goldPrefab;
     [SerializeField] private int goldDropAmount = 10;
 
     protected Transform player;
@@ -160,7 +160,7 @@ public class EnemyAI : MonoBehaviour
         this.enabled = false;
         
         Vector3 spawnPos = transform.position + new Vector3(Random.Range(-0.5f, 0.5f), 0f, 0);
-        ObjectPooler.Instance.Get("Gold", goldPrefab, spawnPos, Quaternion.identity);
+        ObjectPooler.Instance.Get("Gold", RefVFX.Instance.goldPrefab, spawnPos, Quaternion.identity);
 
         if (enemyHealthUI != null)
         {
