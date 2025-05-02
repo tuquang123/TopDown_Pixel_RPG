@@ -69,7 +69,7 @@ public class PlayerStats : MonoBehaviour
         int actualDamage = Mathf.Max(damage - (int)defense.Value, 1);
         currentHealth -= actualDamage;
         currentHealth = Mathf.Clamp(currentHealth, 0, (int)maxHealth.Value);
-        Debug.Log($"Nhận {actualDamage} sát thương, HP còn: {currentHealth}");
+        //.Log($"Nhận {actualDamage} sát thương, HP còn: {currentHealth}");
         OnHealthChanged?.Invoke();
 
         FloatingTextSpawner.Instance.SpawnText(

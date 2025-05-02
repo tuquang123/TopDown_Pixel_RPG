@@ -26,10 +26,29 @@ public class PlayerController : MonoBehaviour
         stats = GetComponent<PlayerStats>();
     }
 
+    public Vector2 GetMoveInput()
+    {
+        // Joystick
+        float joystickX = UltimateJoystick.GetHorizontalAxis("Move");
+        float joystickY = UltimateJoystick.GetVerticalAxis("Move");
+
+        // Bàn phím
+        float keyboardX = Input.GetKey(KeyCode.A) ? -1 : Input.GetKey(KeyCode.D) ? 1 : 0;
+        float keyboardY = Input.GetKey(KeyCode.S) ? -1 : Input.GetKey(KeyCode.W) ? 1 : 0;
+
+        // Tổng hợp lại
+        Vector2 combined = new Vector2(joystickX + keyboardX, joystickY + keyboardY);
+
+        // Giới hạn lại trong khoảng -1 đến 1 nếu cần
+        return combined.magnitude > 1 ? combined.normalized : combined;
+    }
+
+
+
     protected virtual void Update()
     {
-        moveInput.x = UltimateJoystick.GetHorizontalAxis("Move");
-        moveInput.y = UltimateJoystick.GetVerticalAxis("Move");
+        moveInput = GetMoveInput();
+
         bool isMoving = moveInput.magnitude > 0.01f;
 
         anim.SetBool(MoveBool, isMoving);
@@ -54,8 +73,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public bool IsDashing => GetComponent<PlayerDash>()?.IsDashing == true;
+
     protected virtual void FixedUpdate()
     {
+        if (IsDashing) return; // ĐANG DASH => không can thiệp
+
         if (moveInput.magnitude > 0.01f)
         {
             float moveSpeed = stats.speed.Value;
@@ -67,6 +90,7 @@ public class PlayerController : MonoBehaviour
             anim.SetBool(MoveBool, false);
         }
     }
+
 
     protected virtual void MovePlayer()
     {

@@ -9,26 +9,31 @@ public class EnemyAI : MonoBehaviour
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
     private static readonly int DieTrigger = Animator.StringToHash("4_Death");
+    
 
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float attackRange = 1.5f;
     [SerializeField] private float detectionRange = 5f;
     [SerializeField] protected float attackCooldown = 1f;
-    [SerializeField] private int maxHealth = 100;
+    [SerializeField] protected int maxHealth = 100;
     [SerializeField] protected int attackDamage = 10;
     [SerializeField] private float damagedStunTime = 0.3f;
-    //[SerializeField] private GameObject goldPrefab;
-    [SerializeField] private int goldDropAmount = 10;
 
     protected Transform player;
     protected Animator anim;
     protected float lastAttackTime;
-    private int currentHealth;
+    protected int currentHealth;
     protected bool isDead = false;
     protected bool isTakingDamage = false;
 
     public static event Action<float> OnEnemyDefeated;
-    public EnemyHealthUI enemyHealthUI;
+    protected EnemyHealthUI enemyHealthUI;
+    public EnemyHealthUI EnemyHealthUI
+    {
+        get => enemyHealthUI;
+        set => enemyHealthUI = value;
+    }
+
     public int MaxHealth => maxHealth;
 
     protected virtual void Start()
@@ -109,7 +114,7 @@ public class EnemyAI : MonoBehaviour
     }
 
 
-    public void TakeDamage(int damage , bool isCrit = false)
+    public virtual void TakeDamage(int damage , bool isCrit = false)
     {
         if (isDead) return;
 
@@ -151,7 +156,7 @@ public class EnemyAI : MonoBehaviour
     }
 
 
-    protected void Die()
+    protected virtual void Die()
     {
         if (isDead) return;
         isDead = true;

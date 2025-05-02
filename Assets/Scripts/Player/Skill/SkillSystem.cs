@@ -19,6 +19,8 @@ public class SkillFactory
                 return new ShurikenThrowSkill();  // class logic, không phải MonoBehaviour
             case SkillID.DamageBoost:
                 return new DamageBoost();
+            case SkillID.Dash:
+                return new DashSkill();
             default:
                 throw new ArgumentException("Không tìm thấy kỹ năng với ID này.");
         }

@@ -26,6 +26,12 @@ public class SpawnEnemy : MonoBehaviour
     [Tooltip("Canvas chứa các UI máu kẻ địch")]
     [SceneObjectsOnly]
     [SerializeField] private GameObject canvasHp;
+    
+    [Title("Boss Settings")]
+    [Tooltip("Prefab Boss")]
+    [Required]
+    [SerializeField] private GameObject bossPrefab;
+
 
     [ReadOnly]
     [ShowInInspector]
@@ -35,7 +41,23 @@ public class SpawnEnemy : MonoBehaviour
     {
         mainCamera = Camera.main;
         InvokeRepeating(nameof(SpawnWave), 1f, spawnInterval);
+        Invoke(nameof(SpawnBoss), 60f); // 1 phút
     }
+    private void SpawnBoss()
+    {
+        Vector2 bossPos = GetRandomSpawnPosition(); 
+        GameObject boss = Instantiate(bossPrefab, bossPos, Quaternion.identity);
+
+        if (boss.GetComponent<BossAI>() != null)
+        {
+            boss.GetComponent<BossAI>().ResetEnemy(); 
+        }
+        boss.SetActive(true);
+        
+        Debug.Log("Boss spawned!");
+    }
+
+
 
     [Button("Force Spawn Wave")]
     private void SpawnWave()
@@ -65,7 +87,7 @@ public class SpawnEnemy : MonoBehaviour
 
         enemy.GetComponent<EnemyAI>().ResetEnemy();
 
-        if (enemy.GetComponent<EnemyAI>().enemyHealthUI == null)
+        if (enemy.GetComponent<EnemyAI>().EnemyHealthUI == null)
         {
             SetupHealthUI(enemy);
         }
@@ -76,7 +98,7 @@ public class SpawnEnemy : MonoBehaviour
         GameObject ui = Instantiate(enemyUI, canvasHp.transform, false);
         var uiComponent = ui.GetComponent<EnemyHealthUI>();
         uiComponent.SetTarget(enemy);
-        enemy.GetComponent<EnemyAI>().enemyHealthUI = uiComponent;
+        enemy.GetComponent<EnemyAI>().EnemyHealthUI = uiComponent;
     }
 
     private Vector2 GetRandomSpawnPosition()
