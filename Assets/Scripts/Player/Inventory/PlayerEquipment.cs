@@ -5,12 +5,15 @@ public class PlayerEquipment : MonoBehaviour
 {
     public SpriteRenderer weaponRenderer;
     public SpriteRenderer armorRenderer;
-    public SpriteRenderer armorLeftArmRenderer;  // ✅ Giáp tay trái
-    public SpriteRenderer armorRightArmRenderer; // ✅ Giáp tay phải
+    public SpriteRenderer armorLeftArmRenderer;  
+    public SpriteRenderer armorRightArmRenderer; 
     public SpriteRenderer helmetRenderer;
     public SpriteRenderer bootsLeftRenderer;
     public SpriteRenderer bootsRightRenderer;
     public SpriteRenderer hair;
+    
+    public GameObject hourse;
+    public GameObject player;
 
     private Dictionary<ItemType, ItemData> equippedItems = new Dictionary<ItemType, ItemData>();
 
@@ -19,8 +22,7 @@ public class PlayerEquipment : MonoBehaviour
     if (newItem == null) return;
     
     equippedItems[newItem.itemType] = newItem;
-
-    // Cập nhật hình ảnh + màu sắc
+    
     switch (newItem.itemType)
     {
         case ItemType.Weapon:
@@ -30,8 +32,8 @@ public class PlayerEquipment : MonoBehaviour
         case ItemType.Armor:
             armorRenderer.sprite = newItem.icon;
             armorRenderer.color = newItem.color;
-            armorLeftArmRenderer.sprite = newItem.iconLeft;  // ✅ Giáp tay trái
-            armorRightArmRenderer.sprite = newItem.iconRight; // ✅ Giáp tay phải
+            armorLeftArmRenderer.sprite = newItem.iconLeft; 
+            armorRightArmRenderer.sprite = newItem.iconRight; 
             armorLeftArmRenderer.color = newItem.color;
             armorRightArmRenderer.color = newItem.color;
             break;
@@ -46,6 +48,11 @@ public class PlayerEquipment : MonoBehaviour
             bootsLeftRenderer.color = newItem.color;
             bootsRightRenderer.color = newItem.color;
             break;
+        case ItemType.Horse:
+            hourse?.SetActive(true);
+            player?.SetActive(false);
+            GameEvents.OnUpdateAnimation.Raise();
+            break;
     }
 }
     public void RemoveEquipment(ItemType type)
@@ -53,8 +60,7 @@ public class PlayerEquipment : MonoBehaviour
         if (!equippedItems.ContainsKey(type)) return;
 
         equippedItems.Remove(type);
-
-        // Xóa hình ảnh + reset màu sắc
+        
         switch (type)
         {
             case ItemType.Weapon:
@@ -79,6 +85,11 @@ public class PlayerEquipment : MonoBehaviour
                 bootsRightRenderer.sprite = null;
                 bootsLeftRenderer.color = Color.white;
                 bootsRightRenderer.color = Color.white;
+                break;
+            case ItemType.Horse:
+                hourse?.SetActive(false);
+                player?.SetActive(true);
+                GameEvents.OnUpdateAnimation.Raise();
                 break;
         }
     }

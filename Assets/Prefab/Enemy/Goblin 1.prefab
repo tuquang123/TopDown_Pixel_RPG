@@ -384,22 +384,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 166adac5454d1fe4b98cbcf62a22bc5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 2.5
+  moveSpeed: 1
   attackRange: 4.5
   detectionRange: 20
   attackCooldown: 1.5
   maxHealth: 100
   attackDamage: 10
   damagedStunTime: 0.3
-  goldPrefab: {fileID: 4356269681339680784, guid: 93d37029af8bbaf4aadb1753790fbef8,
-    type: 3}
-  goldDropAmount: 10
-  enemyHealthUI: {fileID: 0}
   projectilePrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9,
     type: 3}
   firePoint: {fileID: 5255421836968861864}
   projectileSpeed: 2
-  safeDistance: 3
 --- !u!1 &1642773182976143640
 GameObject:
   m_ObjectHideFlags: 0

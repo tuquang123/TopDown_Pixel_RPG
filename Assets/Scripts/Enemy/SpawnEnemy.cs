@@ -41,7 +41,7 @@ public class SpawnEnemy : MonoBehaviour
     {
         mainCamera = Camera.main;
         InvokeRepeating(nameof(SpawnWave), 1f, spawnInterval);
-        Invoke(nameof(SpawnBoss), 60f); // 1 phút
+        Invoke(nameof(SpawnBoss), 30f); // 1 phút
     }
     private void SpawnBoss()
     {

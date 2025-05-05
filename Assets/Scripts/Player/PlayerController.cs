@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour , IGameEventListener
 {
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
@@ -25,6 +25,14 @@ public class PlayerController : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
         stats = GetComponent<PlayerStats>();
     }
+    public void OnEventRaised()
+    {
+        Debug.Log("Người chơi đã dùng ngựa.");
+        anim = GetComponentInChildren<Animator>();
+    }
+
+    private void OnEnable() => GameEvents.OnUpdateAnimation.RegisterListener(this);
+    private void OnDisable() => GameEvents.OnUpdateAnimation.UnregisterListener(this);
 
     public Vector2 GetMoveInput()
     {
@@ -42,9 +50,7 @@ public class PlayerController : MonoBehaviour
         // Giới hạn lại trong khoảng -1 đến 1 nếu cần
         return combined.magnitude > 1 ? combined.normalized : combined;
     }
-
-
-
+    
     protected virtual void Update()
     {
         moveInput = GetMoveInput();

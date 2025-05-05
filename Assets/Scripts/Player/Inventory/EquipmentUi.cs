@@ -8,7 +8,7 @@ public class EquipmentUI : MonoBehaviour
     public InventoryUI inventoryUI;
     public PlayerStats playerStats;
 
-    // Tham chiếu các slot trang bị
+    // Các slot UI
     public Image weaponSlot;
     public Button weaponButton;
     public Image armorSlot;
@@ -17,19 +17,22 @@ public class EquipmentUI : MonoBehaviour
     public Button helmetButton;
     public Image bootsSlot;
     public Button bootsButton;
+    public Image horseSlot;           // 🐎 Slot ngựa
+    public Button horseButton;        // 🐎 Nút gỡ ngựa
 
     private Dictionary<ItemType, Image> slotMapping;
     private Dictionary<ItemType, Button> buttonMapping;
 
     private void Start()
     {
-        // Cập nhật slot và button mapping cho các item mới
+        // Ánh xạ slot và nút theo loại item
         slotMapping = new Dictionary<ItemType, Image>
         {
             { ItemType.Weapon, weaponSlot },
             { ItemType.Armor, armorSlot },
             { ItemType.Helmet, helmetSlot },
             { ItemType.Boots, bootsSlot },
+            { ItemType.Horse, horseSlot } // 🐎
         };
 
         buttonMapping = new Dictionary<ItemType, Button>
@@ -38,13 +41,15 @@ public class EquipmentUI : MonoBehaviour
             { ItemType.Armor, armorButton },
             { ItemType.Helmet, helmetButton },
             { ItemType.Boots, bootsButton },
+            { ItemType.Horse, horseButton } // 🐎
         };
 
-        // Gán sự kiện gỡ trang bị khi bấm vào slot
+        // Gán sự kiện click để gỡ trang bị
         weaponButton.onClick.AddListener(() => UnequipItem(ItemType.Weapon));
         armorButton.onClick.AddListener(() => UnequipItem(ItemType.Armor));
         helmetButton.onClick.AddListener(() => UnequipItem(ItemType.Helmet));
         bootsButton.onClick.AddListener(() => UnequipItem(ItemType.Boots));
+        horseButton.onClick.AddListener(() => UnequipItem(ItemType.Horse)); // 🐎
 
         UpdateEquipmentUI();
     }
@@ -58,29 +63,23 @@ public class EquipmentUI : MonoBehaviour
 
         equipmentManager.EquipItem(item, playerStats);
 
-        // Xóa item khỏi inventory sau khi trang bị
         inventoryUI.inventory.RemoveItem(item);
 
         UpdateEquipmentUI();
-        inventoryUI.UpdateInventoryUI(); // Cập nhật lại inventory UI
+        inventoryUI.UpdateInventoryUI();
     }
 
     public void UnequipItem(ItemType itemType)
     {
-        if (equipmentManager.equippedItems.ContainsKey(itemType))
-        {
-            ItemData removedItem = equipmentManager.equippedItems[itemType];
+        if (!equipmentManager.equippedItems.ContainsKey(itemType)) return;
 
-            // Gỡ item khỏi Equipment
-            equipmentManager.UnequipItem(itemType, playerStats);
+        ItemData removedItem = equipmentManager.equippedItems[itemType];
 
-            // Trả item về inventory
-            inventoryUI.inventory.AddItem(removedItem);
+        equipmentManager.UnequipItem(itemType, playerStats);
+        inventoryUI.inventory.AddItem(removedItem);
 
-            // Cập nhật UI
-            UpdateEquipmentUI();
-            inventoryUI.UpdateInventoryUI();
-        }
+        UpdateEquipmentUI();
+        inventoryUI.UpdateInventoryUI();
     }
 
     public void UpdateEquipmentUI()
@@ -91,15 +90,14 @@ public class EquipmentUI : MonoBehaviour
             {
                 slot.Value.sprite = equipmentManager.equippedItems[slot.Key].icon;
                 slot.Value.color = Color.white;
-                buttonMapping[slot.Key].gameObject.SetActive(true); // Hiện nút gỡ bỏ
+                buttonMapping[slot.Key].gameObject.SetActive(true);
             }
             else
             {
                 slot.Value.sprite = null;
-                slot.Value.color = new Color(1, 1, 1, 0); // Làm trong suốt nếu không có item
-                buttonMapping[slot.Key].gameObject.SetActive(false); // Ẩn nút gỡ bỏ
+                slot.Value.color = new Color(1, 1, 1, 0); // Làm trong suốt
+                buttonMapping[slot.Key].gameObject.SetActive(false);
             }
         }
     }
 }
-

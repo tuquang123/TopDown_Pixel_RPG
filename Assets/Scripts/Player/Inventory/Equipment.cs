@@ -5,11 +5,12 @@ public class Equipment : MonoBehaviour
 {
     public Dictionary<ItemType, ItemData> equippedItems = new Dictionary<ItemType, ItemData>();
     private Dictionary<ItemType, StatModifier> statModifiers = new Dictionary<ItemType, StatModifier>(); // Lưu modifiers để gỡ bỏ chính xác
-    private PlayerEquipment playerEquipment;
+    [SerializeField] private PlayerEquipment playerEquipment;
+    [SerializeField] private PlayerEquipment playerEquipmentHourse;
 
     private void Start()
     {
-        playerEquipment = FindObjectOfType<PlayerEquipment>(); // Tìm PlayerEquipment
+       // playerEquipment = FindObjectOfType<PlayerEquipment>(); // Tìm PlayerEquipment
     }
 
     public void EquipItem(ItemData item, PlayerStats playerStats)
@@ -32,7 +33,9 @@ public class Equipment : MonoBehaviour
 
         // ✅ Cập nhật hình ảnh trang bị
         playerEquipment?.UpdateEquipment(item);
-
+        
+        playerEquipmentHourse?.UpdateEquipment(item);
+        
         Debug.Log($"Đã trang bị {item.itemName}. + value: {playerStats.attack.Value}");
     }
 
@@ -53,6 +56,8 @@ public class Equipment : MonoBehaviour
 
             // ✅ Gỡ bỏ hình ảnh trang bị
             playerEquipment?.RemoveEquipment(type);
+            
+            playerEquipmentHourse?.RemoveEquipment(type);
 
             Debug.Log($"Gỡ bỏ {removedItem.itemName}, + value: {playerStats.attack.Value}  kiểm tra inventory!");
         }
@@ -66,6 +71,7 @@ public class Equipment : MonoBehaviour
             ItemType.Armor => StatType.MaxHealth,
             ItemType.Helmet => StatType.Defense,
             ItemType.Boots => StatType.Speed,
+            ItemType.Horse => StatType.Speed,
             _ => throw new System.ArgumentException("Loại item không hợp lệ")
         };
     }

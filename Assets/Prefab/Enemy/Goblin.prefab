@@ -311,17 +311,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 2
+  moveSpeed: 0.8
   attackRange: 1
   detectionRange: 20
   attackCooldown: 1
   maxHealth: 100
   attackDamage: 15
   damagedStunTime: 0
-  goldPrefab: {fileID: 4356269681339680784, guid: 93d37029af8bbaf4aadb1753790fbef8,
-    type: 3}
-  goldDropAmount: 10
-  enemyHealthUI: {fileID: 0}
 --- !u!61 &2899345656469414829
 BoxCollider2D:
   m_ObjectHideFlags: 0

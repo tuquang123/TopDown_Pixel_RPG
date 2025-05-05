@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public enum ItemType { Weapon, Armor, Consumable,Helmet,Boots,
+public enum ItemType { Weapon, Armor, Consumable,Helmet,Boots,Horse
 }
 
 [CreateAssetMenu(fileName = "NewItem", menuName = "Inventory/Item")]

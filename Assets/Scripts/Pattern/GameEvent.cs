@@ -28,9 +28,41 @@ public class GameEvent<T>
         }
     }
 }
+public interface IGameEventListener
+{
+    void OnEventRaised();
+}
+
+public class GameEvent
+{
+    private readonly List<IGameEventListener> listeners = new();
+
+    public void RegisterListener(IGameEventListener listener)
+    {
+        if (!listeners.Contains(listener))
+            listeners.Add(listener);
+    }
+
+    public void UnregisterListener(IGameEventListener listener)
+    {
+        listeners.Remove(listener);
+    }
+
+    public void Raise()
+    {
+        foreach (var listener in listeners)
+        {
+            listener.OnEventRaised();
+        }
+    }
+}
+
 public static class GameEvents
 {
-    public static GameEvent<EnemyAI> OnEnemyDefeated = new();
+    /*public static GameEvent<EnemyAI> OnEnemyDefeated = new();
     public static GameEvent<int> OnPlayerTakeDamage = new();
-    public static GameEvent<string> OnItemPickedUp = new();
+    public static GameEvent<string> OnItemPickedUp = new();*/
+    
+    public static GameEvent OnUpdateAnimation = new(); 
+
 }
