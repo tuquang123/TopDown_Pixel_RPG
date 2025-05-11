@@ -13,10 +13,12 @@ public class LevelSystem
     public float ExpRequired => baseExp * Mathf.Pow(level, growthFactor);
 
     public event Action<int> OnLevelUp;
+    public event Action<float, float> OnExpChanged; // current, required
 
     public void AddExp(float amount)
     {
         exp += amount;
+        OnExpChanged?.Invoke(exp, ExpRequired);
         while (exp >= ExpRequired)
         {
             LevelUp();

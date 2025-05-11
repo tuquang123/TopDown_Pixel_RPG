@@ -57,14 +57,24 @@ public class HeroUIManager : MonoBehaviour
             Debug.Log("Đội hình đã đầy!");
             return;
         }
-
+        
+        GameEvents.OnDeloyTeamAssist.Raise($"{hero.data.id}|add");
+        Debug.Log("Deloy : " + hero.data.id);
+        
         heroManager.battleTeam.AddHeroToSlot(hero, emptySlot);
         UpdateTeamSlotUI();
     }
 
     void OnClickRemove(int slotIndex)
     {
+        var hero = heroManager.battleTeam.teamSlots[slotIndex];
+        if (hero != null)
+        {
+            GameEvents.OnDeloyTeamAssist.Raise($"{hero.data.id}|remove");
+        }
+
         heroManager.battleTeam.RemoveHeroFromSlot(slotIndex);
         UpdateTeamSlotUI();
     }
+
 }

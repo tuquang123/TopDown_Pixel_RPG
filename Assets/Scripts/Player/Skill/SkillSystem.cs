@@ -1,8 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 public interface ISkill
 {
@@ -21,6 +20,8 @@ public class SkillFactory
                 return new DamageBoost();
             case SkillID.Dash:
                 return new DashSkill();
+            case SkillID.Slash:
+                return new SlashSkill();
             default:
                 throw new ArgumentException("Không tìm thấy kỹ năng với ID này.");
         }
@@ -35,11 +36,51 @@ public class SkillSystem : MonoBehaviour
     private Dictionary<SkillID, float> skillCooldownTimes = new Dictionary<SkillID, float>();
     private Dictionary<int, SkillID> assignedSkills = new Dictionary<int, SkillID>();
     public event Action<int, SkillID> OnSkillAssigned;
+    public bool autoCastEnabled = true;
 
     private void Start()
     {
         _playerStats = GetComponent<PlayerStats>();
+        StartCoroutine(AutoCastRoutine());
     }
+
+    private bool isCasting = false;
+
+    private IEnumerator AutoCastRoutine()
+    {
+        while (true)
+        {
+            if (autoCastEnabled && !isCasting)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    if (assignedSkills.ContainsKey(i))
+                    {
+                        SkillID skillID = assignedSkills[i];
+                        if (skillID != SkillID.None && CanUseSkill(skillID))
+                        {
+                            StartCoroutine(ExecuteSkillWithLock(skillID));
+                            break; // chỉ thi triển 1 skill mỗi vòng
+                        }
+                    }
+                }
+            }
+
+            yield return new WaitForSeconds(0.1f); // giảm delay để phản hồi nhanh
+        }
+    }
+
+    private IEnumerator ExecuteSkillWithLock(SkillID skillID)
+    {
+        isCasting = true;
+        UseSkill(skillID);
+
+        // Thời gian khóa phụ thuộc loại skill hoặc animation
+        yield return new WaitForSeconds(.5f); // ví dụ 0.5s
+
+        isCasting = false;
+    }
+
 
     public void UnlockSkill(SkillID skillID)
     {
@@ -108,33 +149,42 @@ public class SkillSystem : MonoBehaviour
     {
         return assignedSkills.ContainsKey(slotIndex) ? assignedSkills[slotIndex] : SkillID.None;
     }
+    
+    public bool CanUseSkill(SkillID skillID)
+    {
+        SkillData skill = GetSkillData(skillID);
+        if (skill == null) return false;
 
-    // Thực thi một kỹ năng
+        // Cooldown check
+        if (Time.time < skillCooldownTimes.GetValueOrDefault(skillID, -Mathf.Infinity) + skill.cooldown)
+            return false;
+
+        // Mana check
+        ISkill skillInstance = SkillFactory.CreateSkill(skillID);
+        return skillInstance.CanUse(_playerStats, skill);
+    }
+
+
+    public event Action<SkillID> OnSkillUsed;
+
     public void UseSkill(SkillID skillID)
     {
         SkillData skill = skillList.Find(s => s.skillID == skillID);
-        if (skill == null || !unlockedSkills.ContainsKey(skillID) || !unlockedSkills[skillID]) // Kiểm tra xem kỹ năng có mở khóa không
-        {
-            Debug.Log("Kỹ năng chưa được mở khóa!");
-            return;
-        }
+        if (skill == null || !IsSkillUnlocked(skillID)) return;
 
-        // Kiểm tra cooldown từ Dictionary
         if (Time.time < skillCooldownTimes.GetValueOrDefault(skillID, -Mathf.Infinity) + skill.cooldown)
-        {
-            Debug.Log("Kỹ năng đang trong thời gian hồi chiêu!");
             return;
-        }
 
-        // Kiểm tra mana thông qua skillData
         ISkill skillInstance = SkillFactory.CreateSkill(skillID);
-
-        if (skillInstance.CanUse(_playerStats, skill)) // Kiểm tra có thể sử dụng kỹ năng
+        if (skillInstance.CanUse(_playerStats, skill))
         {
-            skillCooldownTimes[skillID] = Time.time; // Lưu thời gian sử dụng kỹ năng
-            skillInstance.ExecuteSkill(_playerStats, skill); // Thực thi kỹ năng
+            skillCooldownTimes[skillID] = Time.time;
+            skillInstance.ExecuteSkill(_playerStats, skill);
+            
+            OnSkillUsed?.Invoke(skillID);
         }
     }
+
     public int GetFirstAvailableSlot()
     {
         // Kiểm tra các slot từ 0 đến 4 để tìm ô trống

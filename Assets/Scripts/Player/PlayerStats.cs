@@ -42,6 +42,7 @@ public class PlayerStats : MonoBehaviour
 
     [Required] // Bắt buộc phải gán playerHp trên Inspector
     public PlayerHealth playerHp;
+    //public PlayerLevel  playerLv;
 
     private void Start()
     {

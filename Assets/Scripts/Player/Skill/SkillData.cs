@@ -2,8 +2,7 @@ using System;
 using UnityEngine;
 
 public enum SkillType { Passive, Active }
-public enum SkillID { DamageBoost, ShurikenThrow, Dash,
-    None
+public enum SkillID { DamageBoost, ShurikenThrow, Dash, Slash ,None
 }
 
 [Serializable]

@@ -18,10 +18,10 @@ public class PlayerLevel : MonoBehaviour
         levelSystem.OnLevelUp -= HandleLevelUp;
         EnemyAI.OnEnemyDefeated -= GainExp; // Hủy đăng ký sự kiện để tránh lỗi
     }
-
     private void HandleLevelUp(int newLevel)
     {
         skillPoints++; // Cộng điểm kỹ năng khi lên cấp
+        playerStats.skillPoints ++; 
         Debug.Log($"Lên cấp {newLevel}! Bạn nhận được 1 điểm kỹ năng. Tổng điểm: {skillPoints}");
     }
 

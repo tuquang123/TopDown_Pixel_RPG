@@ -64,5 +64,6 @@ public static class GameEvents
     public static GameEvent<string> OnItemPickedUp = new();*/
     
     public static GameEvent OnUpdateAnimation = new(); 
+    public static GameEvent<string> OnDeloyTeamAssist = new(); 
 
 }

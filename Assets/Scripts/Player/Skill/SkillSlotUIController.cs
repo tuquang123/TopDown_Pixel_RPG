@@ -10,15 +10,39 @@ public class SkillSlotUIController : MonoBehaviour
 
     private void OnEnable()
     {
-        // Lắng nghe sự kiện khi có kỹ năng được gán vào slot
         skillSystem.OnSkillAssigned += UpdateSkillSlots;
-        UpdateSkillSlots(0, SkillID.None); // Set initial state
+        skillSystem.OnSkillUsed += OnSkillUsed;
+
+        // Cập nhật tất cả các slot khi bật UI
+        for (int i = 0; i < skillSlots.Length; i++)
+        {
+            UpdateSkillSlots(i, skillSystem.GetAssignedSkill(i));
+        }
 
         // Đăng ký sự kiện cho các nút
         for (int i = 0; i < skillSlots.Length; i++)
         {
-            int index = i;  // Thêm một bản sao của index để tránh vấn đề closure trong event handler
+            int index = i; 
             skillSlots[i].onClick.AddListener(() => OnSkillSlotClicked(index));
+        }
+    }
+
+
+    void OnDisable()
+    {
+        skillSystem.OnSkillUsed -= OnSkillUsed;
+    }
+
+    private void OnSkillUsed(SkillID skillID)
+    {
+        for (int i = 0; i < skillSlots.Length; i++)
+        {
+            if (skillSystem.GetAssignedSkill(i) == skillID)
+            {
+                float cooldown = skillSystem.GetSkillData(skillID).cooldown;
+                StartCooldown(i, cooldown);
+                break;
+            }
         }
     }
 
@@ -67,7 +91,7 @@ public class SkillSlotUIController : MonoBehaviour
         // Cập nhật UI slot theo kỹ năng đã gán
         if (skillID == SkillID.None)
         {
-            skillSlots[slotIndex].GetComponentInChildren<Text>().text = "Empty";
+            skillSlots[slotIndex].GetComponentInChildren<Text>().text = "Lock";
             skillSlots[slotIndex].image.sprite = null;
             cooldownOverlays[slotIndex].fillAmount = 0; // Reset overlay khi không có skill
         }

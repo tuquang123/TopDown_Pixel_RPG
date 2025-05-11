@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour , IGameEventListener
         anim = GetComponentInChildren<Animator>();
         stats = GetComponent<PlayerStats>();
     }
+    public Transform GetTargetEnemy() => targetEnemy;
+
     public void OnEventRaised()
     {
         Debug.Log("Người chơi đã dùng ngựa.");
@@ -169,7 +171,7 @@ public class PlayerController : MonoBehaviour , IGameEventListener
                 if (isCrit)
                 {
                     finalDamage = Mathf.RoundToInt(finalDamage * 1.5f);
-                    Debug.Log("Đòn chí mạng!");
+                    //Debug.Log("Đòn chí mạng!");
                 }
 
                 // Gây sát thương cho enemy

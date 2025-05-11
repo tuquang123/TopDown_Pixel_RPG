@@ -16,7 +16,7 @@ public class PlayerDash : MonoBehaviour
         playerMovement = GetComponent<PlayerController>();
     }
     
-    public void PerformDash(SkillData skill)
+    /*public void PerformDash(SkillData skill)
     {
         if (isDashing) return;
 
@@ -24,7 +24,21 @@ public class PlayerDash : MonoBehaviour
         if (inputDir == Vector2.zero) return; // không dash nếu không có hướng
 
         StartCoroutine(DashCoroutine(skill, inputDir.normalized));
+    }*/
+    
+    public void PerformDash(SkillData skill)
+    {
+        if (isDashing) return;
+
+        Transform target = playerMovement.GetTargetEnemy();
+
+        if (target == null) return; // Không có mục tiêu => không dash
+
+        Vector2 directionToTarget = (target.position - transform.position).normalized;
+
+        StartCoroutine(DashCoroutine(skill, directionToTarget));
     }
+
 
     private IEnumerator DashCoroutine(SkillData skill, Vector2 direction)
     {
