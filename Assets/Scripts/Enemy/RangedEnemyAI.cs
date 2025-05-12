@@ -9,6 +9,10 @@ public class RangedEnemyAI : EnemyAI
 
     protected override void AttackPlayer()
     {
+        if (player.TryGetComponent(out PlayerStats playerStats))
+        {
+            if(playerStats.isDead) return;
+        }
         if (isTakingDamage) return;
 
         FacePlayer();

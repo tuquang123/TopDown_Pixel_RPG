@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour , IGameEventListener
         stats = GetComponent<PlayerStats>();
     }
     public Transform GetTargetEnemy() => targetEnemy;
+    public bool IsPlayerDie() => stats.isDead;
 
     public void OnEventRaised()
     {
@@ -55,6 +56,8 @@ public class PlayerController : MonoBehaviour , IGameEventListener
     
     protected virtual void Update()
     {
+        if (stats.isDead) return;
+        
         moveInput = GetMoveInput();
 
         bool isMoving = moveInput.magnitude > 0.01f;
@@ -85,7 +88,8 @@ public class PlayerController : MonoBehaviour , IGameEventListener
 
     protected virtual void FixedUpdate()
     {
-        if (IsDashing) return; // ĐANG DASH => không can thiệp
+        if (stats.isDead) return;
+        if (IsDashing) return; 
 
         if (moveInput.magnitude > 0.01f)
         {

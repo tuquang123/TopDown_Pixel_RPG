@@ -1,8 +1,9 @@
 ﻿using System;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using UnityEngine.SceneManagement;
 
-public class PlayerStats : MonoBehaviour
+public class PlayerStats : Singleton<PlayerStats> 
 {
     [Title("Level & Skill Points")]
     [ReadOnly, ShowInInspector] public int level = 1;
@@ -39,13 +40,15 @@ public class PlayerStats : MonoBehaviour
 
     public event Action OnStatsChanged;
     public event Action OnHealthChanged;
+    
+    private static readonly int DeathHash = Animator.StringToHash("4_Death");
+    private Animator anim;
+    [ReadOnly, ShowInInspector] public bool isDead { get; private set; }
 
-    [Required] // Bắt buộc phải gán playerHp trên Inspector
-    public PlayerHealth playerHp;
-    //public PlayerLevel  playerLv;
 
     private void Start()
     {
+        anim = GetComponentInChildren<Animator>();
         currentHealth = (int)maxHealth.Value;
         currentMana = (int)maxMana.Value;
         OnHealthChanged?.Invoke();
@@ -67,6 +70,8 @@ public class PlayerStats : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (isDead) return;
+        
         int actualDamage = Mathf.Max(damage - (int)defense.Value, 1);
         currentHealth -= actualDamage;
         currentHealth = Mathf.Clamp(currentHealth, 0, (int)maxHealth.Value);
@@ -74,7 +79,7 @@ public class PlayerStats : MonoBehaviour
         OnHealthChanged?.Invoke();
 
         FloatingTextSpawner.Instance.SpawnText(
-            $"-{damage}",
+            $"-{actualDamage}",
             transform.position + Vector3.up * 0.5f,
             Color.white);
 
@@ -96,11 +101,32 @@ public class PlayerStats : MonoBehaviour
         Debug.Log($"Hồi {amount} HP, HP hiện tại: {currentHealth}");
         OnHealthChanged?.Invoke();
     }
-
-    private void Die()
+    
+    public void Revive()
     {
+        isDead = false;
+        currentHealth = (int)maxHealth.Value;
+        OnHealthChanged?.Invoke();
+        anim.Rebind();
+    }
+
+    
+    public void Die()
+    {
+        if (isDead) return;
+
+        isDead = true;
         Debug.Log("Player đã chết!");
-        playerHp.Die();
+        anim.SetTrigger(DeathHash);
+        StartCoroutine(HandleDeath());
+    }
+    
+    private System.Collections.IEnumerator HandleDeath()
+    {
+        yield return new WaitForSeconds(.5f); 
+        GameEvents.OnPlayerDied.Raise(); 
+        GameEvents.OnResetGame.Raise();
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name); 
     }
 
     public void ApplyStatModifier(StatModifier modifier)

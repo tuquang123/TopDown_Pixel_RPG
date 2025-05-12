@@ -26,6 +26,6 @@ public class PlayerHealth : MonoBehaviour
     {
         //Debug.Log("Player died!");
         anim.SetTrigger(DeathHash);
-        Destroy(gameObject, .5f);
+        //Destroy(gameObject, .5f);
     }
 }

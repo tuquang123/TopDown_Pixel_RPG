@@ -36,8 +36,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 93, y: 25}
-  m_SizeDelta: {x: 68.4105, y: 30}
+  m_AnchoredPosition: {x: 132.77402, y: 30}
+  m_SizeDelta: {x: 147.959, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7659334556572341830
 CanvasRenderer:
@@ -188,10 +188,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
-    m_FontStyle: 0
+    m_FontSize: 18
+    m_FontStyle: 1
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -313,8 +313,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 94, y: -28}
-  m_SizeDelta: {x: 68.4105, y: 30}
+  m_AnchoredPosition: {x: 133.27, y: -21.5003}
+  m_SizeDelta: {x: 146.96, y: 43.0007}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6241418150103256927
 CanvasRenderer:
@@ -465,10 +465,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 18
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -476,7 +476,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Button
+  m_Text: Learn
 --- !u!1 &6806613481149792246
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,10 +529,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2d4d801096705d49832f26c60a7d200, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skillData: {fileID: 0}
   learnButton: {fileID: 7624047140076296547}
   assignButton: {fileID: 422025290703887447}
-  skillSystem: {fileID: 0}
 --- !u!1 &8848982589894885013
 GameObject:
   m_ObjectHideFlags: 0
@@ -600,10 +598,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 18
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -611,4 +609,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Button
+  m_Text: Assign

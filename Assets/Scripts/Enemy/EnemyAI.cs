@@ -10,7 +10,6 @@ public class EnemyAI : MonoBehaviour
     private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
     private static readonly int DieTrigger = Animator.StringToHash("4_Death");
     
-
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float attackRange = 1.5f;
     [SerializeField] private float detectionRange = 5f;
@@ -38,13 +37,17 @@ public class EnemyAI : MonoBehaviour
 
     protected virtual void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        player = RefVFX.Instance.playerPrefab.transform;
         anim = GetComponentInChildren<Animator>();
         currentHealth = maxHealth;
     }
 
     void Update()
     {
+        if (player.TryGetComponent(out PlayerStats playerStats))
+        {
+            if(playerStats.isDead) return;
+        }
         if (isDead || player == null) return;
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
@@ -53,14 +56,9 @@ public class EnemyAI : MonoBehaviour
 
         if (distanceToPlayer <= detectionRange)
         {
-            if (distanceToPlayer > attackRange)
-            {
-                MoveTowardsPlayer();
-            }
-            else
-            {
-                AttackPlayer();
-            }
+            MoveToAttackPosition();
+            
+            RotateEnemy(player.position.x - transform.position.x);
         }
         else
         {
@@ -68,7 +66,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void MoveTowardsPlayer()
+    /*void MoveTowardsPlayer()
     {
         if (Time.time - lastAttackTime < attackCooldown)
         {
@@ -87,33 +85,76 @@ public class EnemyAI : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 180, 0);
 
         anim.SetBool(MoveBool, true);
+    }*/
+    protected virtual void MoveToAttackPosition()
+    {
+        Vector2 enemyPos = transform.position;
+        Vector2 playerPos = player.position;
+
+        float yDiff = Mathf.Abs(enemyPos.y - playerPos.y);
+        float xDiff = Mathf.Abs(enemyPos.x - playerPos.x);
+
+        float yTolerance = 0.1f;
+
+        // Nếu chưa canh được trục Y thì di chuyển theo Y
+        if (yDiff > yTolerance)
+        {
+            Vector2 directionY = new Vector2(0, playerPos.y - enemyPos.y).normalized;
+            transform.position += (Vector3)(directionY * moveSpeed * Time.deltaTime);
+            anim.SetBool(MoveBool, true);
+        }
+        else if (xDiff > attackRange * 0.8f)
+        {
+            Vector2 directionX = new Vector2(playerPos.x - enemyPos.x, 0).normalized;
+            transform.position += (Vector3)(directionX * moveSpeed * Time.deltaTime);
+            anim.SetBool(MoveBool, true);
+
+            RotateEnemy(directionX.x);
+
+        }
+        else
+        {
+            anim.SetBool(MoveBool, false);
+            // Gần đủ vị trí rồi thì tấn công
+            if (Time.time - lastAttackTime >= attackCooldown)
+            {
+                AttackPlayer();
+            }
+        }
+    }
+    protected void RotateEnemy(float direction)
+    {
+        if (direction < 0)
+            transform.localScale = new Vector3(1, 1, 1); // Quay trái
+        else if (direction > 0)
+            transform.localScale = new Vector3(-1, 1, 1); // Quay phải
     }
 
-
+    
     protected virtual void AttackPlayer()
     {
+        if (player.TryGetComponent(out PlayerStats playerStats))
+        {
+            if(playerStats.isDead) return;
+        }
+        
         if (isTakingDamage) return;
 
-        // Đảm bảo quay mặt
-        if (player.position.x > transform.position.x)
-            transform.rotation = Quaternion.Euler(0, 0, 0);
-        else
-            transform.rotation = Quaternion.Euler(0, 180, 0);
-
+        RotateEnemy(player.position.x - transform.position.x);
+        
         if (Time.time - lastAttackTime >= attackCooldown)
         {
             anim.SetBool(MoveBool, false);
             anim.SetTrigger(AttackTrigger);
             lastAttackTime = Time.time;
 
-            if (player.TryGetComponent(out PlayerHealth playerHealth))
+            if (player.TryGetComponent(out PlayerStats playerHealth))
             {
                 playerHealth.TakeDamage(attackDamage);
             }
         }
     }
-
-
+    
     public virtual void TakeDamage(int damage , bool isCrit = false)
     {
         if (isDead) return;

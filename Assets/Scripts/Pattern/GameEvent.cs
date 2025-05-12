@@ -65,5 +65,7 @@ public static class GameEvents
     
     public static GameEvent OnUpdateAnimation = new(); 
     public static GameEvent<string> OnDeloyTeamAssist = new(); 
+    public static GameEvent OnPlayerDied = new();
+    public static GameEvent OnResetGame = new();
 
 }

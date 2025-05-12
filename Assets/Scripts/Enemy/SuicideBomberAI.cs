@@ -25,6 +25,10 @@ public class SuicideBomberAI : EnemyAI
 
     protected override void AttackPlayer()
     {
+        if (player.TryGetComponent(out PlayerStats playerStats))
+        {
+            if(playerStats.isDead) return;
+        }
         if (isExploding || player == null) return;
 
         cachedTargetPosition = player.position;
@@ -73,7 +77,7 @@ public class SuicideBomberAI : EnemyAI
 
         if (player != null && Vector2.Distance(player.position, transform.position) <= explosionRange)
         {
-            if (player.TryGetComponent(out PlayerHealth playerHealth))
+            if (player.TryGetComponent(out PlayerStats playerHealth))
             {
                 playerHealth.TakeDamage(explosionDamage);
             }

@@ -20,7 +20,7 @@ public class EnemyProjectile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player") && other.TryGetComponent(out PlayerHealth health))
+        if (other.CompareTag("Player") && other.TryGetComponent(out PlayerStats health))
         {
             health.TakeDamage(damage);
             Destroy(gameObject);
