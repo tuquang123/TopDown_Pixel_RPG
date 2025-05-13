@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-public class PlayerSlash : MonoBehaviour
+public class PlayerSlash : MonoBehaviour, IGameEventListener
 {
     private Animator anim;
     private PlayerStats stats;
@@ -14,12 +14,20 @@ public class PlayerSlash : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
         stats = GetComponent<PlayerStats>();
     }
+    public void OnEventRaised()
+    {
+        Debug.Log("Người chơi đã dùng ngựa.");
+        anim = GetComponentInChildren<Animator>();
+    }
+
+    private void OnEnable() => GameEvents.OnUpdateAnimation.RegisterListener(this);
+    private void OnDisable() => GameEvents.OnUpdateAnimation.UnregisterListener(this);
 
     public void Slash(SkillData skill)
     {
         if (stats.currentMana < skill.manaCost) return;
 
-        stats.currentMana -= skill.manaCost;
+        //stats.UseMana(skill.manaCost);
 
         anim.SetTrigger("9_Slash"); // Gọi animation Skill (cần đảm bảo đã setup trên Animator)
 

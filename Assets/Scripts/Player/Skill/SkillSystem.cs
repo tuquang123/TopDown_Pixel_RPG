@@ -48,6 +48,8 @@ public class SkillSystem : MonoBehaviour
 
     private IEnumerator AutoCastRoutine()
     {
+        if (_playerStats.isDead) yield break;
+        
         while (true)
         {
             if (autoCastEnabled && !isCasting)
@@ -76,7 +78,7 @@ public class SkillSystem : MonoBehaviour
         UseSkill(skillID);
 
         // Thời gian khóa phụ thuộc loại skill hoặc animation
-        yield return new WaitForSeconds(.5f); // ví dụ 0.5s
+        yield return new WaitForSeconds(1.5f); // ví dụ 0.5s
 
         isCasting = false;
     }
@@ -178,6 +180,7 @@ public class SkillSystem : MonoBehaviour
         ISkill skillInstance = SkillFactory.CreateSkill(skillID);
         if (skillInstance.CanUse(_playerStats, skill))
         {
+            _playerStats.UseMana(skill.manaCost);
             skillCooldownTimes[skillID] = Time.time;
             skillInstance.ExecuteSkill(_playerStats, skill);
             

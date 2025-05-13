@@ -293,7 +293,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.26323435, y: 0.4864082, z: -0.017392695}
-  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5255421836968861864}
@@ -385,12 +385,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 1
-  attackRange: 4.5
+  attackRange: 4
   detectionRange: 20
-  attackCooldown: 1.5
+  attackCooldown: 2.5
   maxHealth: 100
   attackDamage: 10
-  damagedStunTime: 0.3
+  damagedStunTime: 0.1
+  enemyHealthUI: {fileID: 0}
   projectilePrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9,
     type: 3}
   firePoint: {fileID: 5255421836968861864}

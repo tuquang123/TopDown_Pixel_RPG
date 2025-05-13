@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -10,23 +11,40 @@ public class EnemyAI : MonoBehaviour
     private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
     private static readonly int DieTrigger = Animator.StringToHash("4_Death");
     
-    [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float attackRange = 1.5f;
-    [SerializeField] private float detectionRange = 5f;
+    [BoxGroup("Movement Settings"), LabelText("Move Speed"), Range(0f, 10f)]
+    [SerializeField]
+    protected float moveSpeed = 3f;
+
+    [BoxGroup("Combat Settings"), LabelText("Attack Range"), Range(0.1f, 10f)]
+    [SerializeField] protected float attackRange = 1.5f;
+
+    [BoxGroup("Combat Settings"), LabelText("Detection Range"), Range(0.1f, 20f)]
+    [SerializeField] protected float detectionRange = 5f;
+
+    [BoxGroup("Combat Settings"), LabelText("Attack Cooldown"), Range(0f, 10f)]
     [SerializeField] protected float attackCooldown = 1f;
+
+    [BoxGroup("Stats"), LabelText("Max Health")]
     [SerializeField] protected int maxHealth = 100;
+
+    [BoxGroup("Stats"), LabelText("Attack Damage")]
     [SerializeField] protected int attackDamage = 10;
+
+    [BoxGroup("Damage Settings"), LabelText("Stun Time After Hit"), Range(0f, 2f)]
     [SerializeField] private float damagedStunTime = 0.3f;
 
-    protected Transform player;
-    protected Animator anim;
-    protected float lastAttackTime;
-    protected int currentHealth;
-    protected bool isDead = false;
-    protected bool isTakingDamage = false;
+    [FoldoutGroup("Runtime Debug"), ReadOnly] protected Transform player;
+    [FoldoutGroup("Runtime Debug"), ReadOnly] protected Animator anim;
+    [FoldoutGroup("Runtime Debug"), ReadOnly] protected float lastAttackTime;
+    [FoldoutGroup("Runtime Debug"), ReadOnly] protected int currentHealth;
+    [FoldoutGroup("Runtime Debug"), ReadOnly] protected bool isDead = false;
+    [FoldoutGroup("Runtime Debug"), ReadOnly] protected bool isTakingDamage = false;
 
     public static event Action<float> OnEnemyDefeated;
+
+    [FoldoutGroup("UI"), LabelText("Health UI"), SerializeField]
     protected EnemyHealthUI enemyHealthUI;
+
     public EnemyHealthUI EnemyHealthUI
     {
         get => enemyHealthUI;
@@ -42,11 +60,15 @@ public class EnemyAI : MonoBehaviour
         currentHealth = maxHealth;
     }
 
-    void Update()
+    private void Update()
     {
         if (player.TryGetComponent(out PlayerStats playerStats))
         {
-            if(playerStats.isDead) return;
+            if (playerStats.isDead)
+            {
+                anim.SetBool(MoveBool, false);
+                return;
+            }
         }
         if (isDead || player == null) return;
 

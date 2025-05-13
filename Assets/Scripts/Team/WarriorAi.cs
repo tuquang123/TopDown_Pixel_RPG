@@ -57,7 +57,7 @@ public class WarriorAi : MonoBehaviour
         if (player == null) return;
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-        bool isPlayerMoving = playerController.moveInput.magnitude > 0.1f;
+        bool isPlayerMoving = playerController.MoveInput.magnitude > 0.1f;
 
         bool isMoving = false;
 

@@ -273,9 +273,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4979966073556952606}
-  - component: {fileID: 5186425366369124732}
   - component: {fileID: 2899345656469414829}
   - component: {fileID: 1656737297614606585}
+  - component: {fileID: 5186425366369124732}
   m_Layer: 23
   m_Name: Goblin
   m_TagString: Enemy
@@ -299,25 +299,6 @@ Transform:
   - {fileID: 5255421836968861864}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5186425366369124732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1581309216436780966}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 0.8
-  attackRange: 1
-  detectionRange: 20
-  attackCooldown: 1
-  maxHealth: 100
-  attackDamage: 15
-  damagedStunTime: 0
 --- !u!61 &2899345656469414829
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -391,6 +372,26 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &5186425366369124732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1581309216436780966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 1.5
+  attackRange: 1
+  detectionRange: 20
+  attackCooldown: 2
+  maxHealth: 100
+  attackDamage: 15
+  damagedStunTime: 0.2
+  enemyHealthUI: {fileID: 0}
 --- !u!1 &1642773182976143640
 GameObject:
   m_ObjectHideFlags: 0

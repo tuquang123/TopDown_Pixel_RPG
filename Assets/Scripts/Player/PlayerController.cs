@@ -5,19 +5,21 @@ public class PlayerController : MonoBehaviour , IGameEventListener
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
 
-    [SerializeField] protected float attackSpeed = 1f;
+     protected float attackSpeed = 1f;
     [SerializeField] protected float detectionRange = 3f;
     [SerializeField] protected float attackRange = 1f;
     [SerializeField] protected Transform attackPoint;
     [SerializeField] protected float attackRadius = 0.8f;
-    [SerializeField] protected GameObject slashVFX;
+    //[SerializeField] protected GameObject slashVFX;
 
     protected Rigidbody2D rb;
     protected Animator anim;
     protected Transform targetEnemy;
     protected float lastAttackTime;
-    public Vector2 moveInput;
+    protected Vector2 moveInput;
     protected PlayerStats stats;
+
+    public Vector2 MoveInput => moveInput;
 
     protected virtual void Start()
     {

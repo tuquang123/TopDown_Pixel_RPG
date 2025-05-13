@@ -44,7 +44,7 @@ public class PlayerDash : MonoBehaviour
     {
         isDashing = true;
         float startTime = Time.time;
-        GetComponent<PlayerStats>().currentMana -= skill.manaCost;
+        //GetComponent<PlayerStats>().UseMana(skill.manaCost);
 
         while (Time.time < startTime + dashDuration)
         {

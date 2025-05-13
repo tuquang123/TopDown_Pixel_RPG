@@ -54,9 +54,6 @@ public class SkillSlotUIController : MonoBehaviour
         {
             // Nếu có kỹ năng gán vào ô, sử dụng kỹ năng đó
             skillSystem.UseSkill(skillID);
-
-            // Kiểm tra cooldown sau khi sử dụng kỹ năng
-            StartCooldown(slotIndex, skillSystem.GetSkillData(skillID).cooldown);
         }
         else
         {

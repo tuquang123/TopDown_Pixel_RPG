@@ -1,9 +1,8 @@
 ﻿using System;
 using UnityEngine;
 using Sirenix.OdinInspector;
-using UnityEngine.SceneManagement;
 
-public class PlayerStats : Singleton<PlayerStats> 
+public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
 {
     [Title("Level & Skill Points")]
     [ReadOnly, ShowInInspector] public int level = 1;
@@ -40,6 +39,7 @@ public class PlayerStats : Singleton<PlayerStats>
 
     public event Action OnStatsChanged;
     public event Action OnHealthChanged;
+    public event Action OnManaChanged;
     
     private static readonly int DeathHash = Animator.StringToHash("4_Death");
     private Animator anim;
@@ -52,7 +52,17 @@ public class PlayerStats : Singleton<PlayerStats>
         currentHealth = (int)maxHealth.Value;
         currentMana = (int)maxMana.Value;
         OnHealthChanged?.Invoke();
+        OnManaChanged?.Invoke();
     }
+    
+    public void OnEventRaised()
+    {
+        Debug.Log("Người chơi đã dùng ngựa.");
+        anim = GetComponentInChildren<Animator>();
+    }
+
+    private void OnEnable() => GameEvents.OnUpdateAnimation.RegisterListener(this);
+    private void OnDisable() => GameEvents.OnUpdateAnimation.UnregisterListener(this);
 
     [Button("Level Up")]
     public void LevelUp()
@@ -94,7 +104,13 @@ public class PlayerStats : Singleton<PlayerStats>
     {
         Heal(50);
     }
-
+    
+    public void UseMana(int amount)
+    {
+        currentMana = Mathf.Clamp(currentMana - amount, 0, (int)maxMana.Value);
+        OnManaChanged?.Invoke(); 
+    }
+    
     public void Heal(int amount)
     {
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, (int)maxHealth.Value);
@@ -123,7 +139,7 @@ public class PlayerStats : Singleton<PlayerStats>
     
     private System.Collections.IEnumerator HandleDeath()
     {
-        yield return new WaitForSeconds(.5f); 
+        yield return new WaitForSeconds(1.5f); 
         GameEvents.OnPlayerDied.Raise(); 
         GameEvents.OnResetGame.Raise();
         //SceneManager.LoadScene(SceneManager.GetActiveScene().name); 
