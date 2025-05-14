@@ -112,10 +112,19 @@ public class PlayerController : MonoBehaviour , IGameEventListener
         rb.linearVelocity = moveInput.normalized * moveSpeed;
         RotateCharacter(moveInput.x);
     }
+    protected bool isAttacking = false;
+
     protected virtual void MoveToAttackPosition()
     {
-        if (targetEnemy == null) return;
-
+        if (targetEnemy == null || isAttacking) return;
+        
+        float distanceToTarget = Vector2.Distance(transform.position, targetEnemy.position);
+        if (distanceToTarget > detectionRange)
+        {
+            targetEnemy = null;
+            return;
+        }
+        
         Vector2 playerPos = transform.position;
         Vector2 enemyPos = targetEnemy.position;
 
@@ -162,6 +171,7 @@ public class PlayerController : MonoBehaviour , IGameEventListener
     protected virtual void AttackEnemy()
     {
         lastAttackTime = Time.time;
+        isAttacking = true;
         anim.SetTrigger(AttackTrigger);
 
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
@@ -171,29 +181,33 @@ public class PlayerController : MonoBehaviour , IGameEventListener
             {
                 int finalDamage = (int)stats.attack.Value;
 
-                // Tính chí mạng
+                // Crit
                 float roll = Random.Range(0f, 100f);
                 bool isCrit = roll < stats.GetCritChance();
                 if (isCrit)
-                {
                     finalDamage = Mathf.RoundToInt(finalDamage * 1.5f);
-                    //Debug.Log("Đòn chí mạng!");
-                }
 
-                // Gây sát thương cho enemy
+                // Damage + life steal
                 enemy.GetComponent<EnemyAI>()?.TakeDamage(finalDamage, isCrit);
-
-                // Hút máu theo sát thương gây ra
                 stats.HealFromLifeSteal(finalDamage);
             }
         }
+
+        // Reset lại sau delay
+        Invoke(nameof(ResetAttackState), 0.3f); // Chỉnh delay phù hợp animation của bạn
     }
+
+    private void ResetAttackState()
+    {
+        isAttacking = false;
+    }
+
 
     protected void FindClosestEnemy()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         float minDistance = detectionRange;
-        targetEnemy = null;
+        Transform closestEnemy = null;
 
         foreach (GameObject enemy in enemies)
         {
@@ -201,10 +215,17 @@ public class PlayerController : MonoBehaviour , IGameEventListener
             if (distance < minDistance)
             {
                 minDistance = distance;
-                targetEnemy = enemy.transform;
+                closestEnemy = enemy.transform;
             }
         }
+        
+        if (closestEnemy != null && 
+            (targetEnemy == null || Vector2.Distance(transform.position, closestEnemy.position) < Vector2.Distance(transform.position, targetEnemy.position) * 0.9f))
+        {
+            targetEnemy = closestEnemy;
+        }
     }
+
 
     public bool IsMoving()
     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
@@ -42,6 +43,8 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
     public event Action OnManaChanged;
     
     private static readonly int DeathHash = Animator.StringToHash("4_Death");
+    private static readonly int HurtAnm = Animator.StringToHash("3_Damaged");
+    
     private Animator anim;
     [ReadOnly, ShowInInspector] public bool isDead { get; private set; }
 
@@ -86,6 +89,11 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
         currentHealth -= actualDamage;
         currentHealth = Mathf.Clamp(currentHealth, 0, (int)maxHealth.Value);
         //.Log($"Nhận {actualDamage} sát thương, HP còn: {currentHealth}");
+        
+        GetComponentInChildren<Animator>().SetTrigger(HurtAnm);
+        // Knockback hoặc hiệu ứng bị choáng, rung màn hình...
+        StartCoroutine(HurtEffect());
+        
         OnHealthChanged?.Invoke();
 
         FloatingTextSpawner.Instance.SpawnText(
@@ -98,6 +106,17 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
             Die();
         }
     }
+    private IEnumerator HurtEffect()
+    {
+        // Có thể thêm logic như flinch, disable movement tạm thời...
+        float stunTime = 0.12f;
+        GetComponent<PlayerController>().enabled = false;
+
+        yield return new WaitForSeconds(stunTime);
+
+        GetComponent<PlayerController>().enabled = true;
+    }
+
 
     [Button("Heal 50 HP")]
     public void TestHeal()

@@ -32,6 +32,9 @@ public class EnemyAI : MonoBehaviour
 
     [BoxGroup("Damage Settings"), LabelText("Stun Time After Hit"), Range(0f, 2f)]
     [SerializeField] private float damagedStunTime = 0.3f;
+    
+    [SerializeField] float knockForce = 3f;
+    [SerializeField] float knockDuration = 0.3f;
 
     [FoldoutGroup("Runtime Debug"), ReadOnly] protected Transform player;
     [FoldoutGroup("Runtime Debug"), ReadOnly] protected Animator anim;
@@ -62,6 +65,8 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
+        if (isDead || isTakingDamage || isKnockbacked) return;
+
         if (player.TryGetComponent(out PlayerStats playerStats))
         {
             if (playerStats.isDead)
@@ -177,7 +182,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
     
-    public virtual void TakeDamage(int damage , bool isCrit = false)
+    public virtual void TakeDamage(int damage, bool isCrit = false)
     {
         if (isDead) return;
 
@@ -192,7 +197,10 @@ public class EnemyAI : MonoBehaviour
             damageText,
             transform.position + Vector3.up * .5f,
             damageColor);
-        
+
+        // Knockback (add this line)
+        StartCoroutine(ApplyKnockback());
+
         if (currentHealth <= 0)
         {
             Die();
@@ -202,6 +210,32 @@ public class EnemyAI : MonoBehaviour
             Invoke(nameof(EndDamageStun), damagedStunTime);
         }
     }
+
+    private bool isKnockbacked = false;
+
+    private IEnumerator ApplyKnockback()
+    {
+        if (player == null) yield break;
+
+        Vector2 knockDir = (transform.position - player.position).normalized;
+
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            isKnockbacked = true;
+            rb.linearVelocity = knockDir * knockForce;
+        }
+
+        yield return new WaitForSeconds(knockDuration);
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+        isKnockbacked = false;
+    }
+
+
 
     void EndDamageStun()
     {

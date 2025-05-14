@@ -384,13 +384,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1.5
+  moveSpeed: 1
   attackRange: 1
   detectionRange: 20
   attackCooldown: 2
   maxHealth: 100
   attackDamage: 15
   damagedStunTime: 0.2
+  knockForce: 2
+  knockDuration: 0.3
   enemyHealthUI: {fileID: 0}
 --- !u!1 &1642773182976143640
 GameObject:

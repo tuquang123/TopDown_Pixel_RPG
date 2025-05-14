@@ -85,11 +85,11 @@ public class SpawnEnemy : MonoBehaviour
 
         if (enemy == null) return;
 
-        enemy.GetComponent<EnemyAI>().ResetEnemy();
-
-        if (enemy.GetComponent<EnemyAI>().EnemyHealthUI == null)
+        if (enemy.TryGetComponent<EnemyAI>(out var enemyAI))
         {
-            SetupHealthUI(enemy);
+            enemyAI.ResetEnemy();
+            if (enemyAI.EnemyHealthUI == null)
+                SetupHealthUI(enemy);
         }
     }
 
