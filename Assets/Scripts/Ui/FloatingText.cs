@@ -13,7 +13,7 @@ public class FloatingText : MonoBehaviour
 
         // Tạo độ lệch ngang ngẫu nhiên (âm hoặc dương)
         float randomXOffset = Random.Range(-50f, 50f); // lệch từ -50 đến +50 pixel
-        Vector3 targetPosition = transform.position + new Vector3(randomXOffset, 70f, 0f);
+        Vector3 targetPosition = transform.position + new Vector3(randomXOffset, 100f, 0f);
 
         // Di chuyển lên với độ lệch ngẫu nhiên
         transform.DOMove(targetPosition, 1f).SetEase(Ease.OutCubic);

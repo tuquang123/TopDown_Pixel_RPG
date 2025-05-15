@@ -185,6 +185,8 @@ public class EnemyAI : MonoBehaviour
     public virtual void TakeDamage(int damage, bool isCrit = false)
     {
         if (isDead) return;
+        
+        enemyHealthUI?.UpdateHealth(currentHealth);
 
         currentHealth -= damage;
         anim.SetTrigger(DamagedTrigger);
@@ -199,7 +201,8 @@ public class EnemyAI : MonoBehaviour
             damageColor);
 
         // Knockback (add this line)
-        StartCoroutine(ApplyKnockback());
+        //StartCoroutine(ApplyKnockback());
+        
 
         if (currentHealth <= 0)
         {
@@ -234,9 +237,7 @@ public class EnemyAI : MonoBehaviour
         }
         isKnockbacked = false;
     }
-
-
-
+    
     void EndDamageStun()
     {
         isTakingDamage = false;
@@ -253,9 +254,11 @@ public class EnemyAI : MonoBehaviour
     }
 
 
+    public event System.Action OnDeath;
     protected virtual void Die()
     {
         if (isDead) return;
+        OnDeath?.Invoke();
         isDead = true;
         anim.SetTrigger(DieTrigger);
         GetComponent<Collider2D>().enabled = false;

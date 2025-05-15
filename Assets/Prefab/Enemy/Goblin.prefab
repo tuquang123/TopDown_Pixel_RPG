@@ -384,10 +384,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1
+  moveSpeed: 0.7
   attackRange: 1
-  detectionRange: 20
-  attackCooldown: 2
+  detectionRange: 1.5
+  attackCooldown: 3
   maxHealth: 100
   attackDamage: 15
   damagedStunTime: 0.2
@@ -1560,7 +1560,7 @@ GameObject:
   - component: {fileID: 87423845833769019}
   m_Layer: 23
   m_Name: Enemy
-  m_TagString: Enemy
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
