@@ -1,18 +1,45 @@
 ﻿using UnityEngine;
 
-public enum ItemType { Weapon, Armor, Consumable,Helmet,Boots,Horse
+public enum ItemType 
+{ 
+    Weapon, Armor, Consumable,Helmet,Boots,Horse
+}
+public enum ItemTier
+{
+    Common,
+    Uncommon,
+    Rare,
+    Epic,
+    Legendary,
+    Mythic
 }
 
-[CreateAssetMenu(fileName = "NewItem", menuName = "Inventory/Item")]
+[CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
 public class ItemData : ScriptableObject
 {
-    public string itemID;  // ID duy nhất cho mỗi item
+    public string itemID;
     public string itemName;
     public Sprite icon;
-    public Sprite iconRight;
-    public Sprite iconLeft;
     public ItemType itemType;
-    public int value;
-    public Color color =  Color.white;
+
+    public ItemTier tier;         // TIER
+    [TextArea] public string description; // MÔ TẢ
+
+    public int attackPower;
+    public int defense;
+    public int healthBonus;
+    public int manaBonus;
+
+    public float critChance;
+    public float attackSpeed;
+    public float lifeSteal;
+    public float moveSpeed;
+
+    public Color color;           // Màu cho vũ khí/giáp
+
+    // Chỉ dùng cho đồ có sprite riêng tay/trái/phải
+    public Sprite iconLeft;
+    public Sprite iconRight;
 }
+
 

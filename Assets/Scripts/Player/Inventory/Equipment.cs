@@ -3,17 +3,12 @@ using UnityEngine;
 
 public class Equipment : MonoBehaviour
 {
-    public Dictionary<ItemType, ItemData> equippedItems = new Dictionary<ItemType, ItemData>();
-    private Dictionary<ItemType, StatModifier> statModifiers = new Dictionary<ItemType, StatModifier>(); // Lưu modifiers để gỡ bỏ chính xác
+    public Dictionary<ItemType, ItemData> equippedItems = new ();
+    private Dictionary<ItemType, MultiStatModifier> statModifiers = new();
     [SerializeField] private PlayerEquipment playerEquipment;
     [SerializeField] private PlayerEquipment playerEquipmentHourse;
-
-    private void Start()
-    {
-       // playerEquipment = FindObjectOfType<PlayerEquipment>(); // Tìm PlayerEquipment
-    }
-
-    public void EquipItem(ItemData item, PlayerStats playerStats)
+    
+    /*public void EquipItem(ItemData item, PlayerStats playerStats)
     {
         if (item == null || item.itemType == ItemType.Consumable)
             return;
@@ -61,6 +56,65 @@ public class Equipment : MonoBehaviour
 
             Debug.Log($"Gỡ bỏ {removedItem.itemName}, + value: {playerStats.attack.Value}  kiểm tra inventory!");
         }
+    }*/
+    
+    
+    public void UnequipItem(ItemType type, PlayerStats playerStats)
+    {
+        if (equippedItems.ContainsKey(type))
+        {
+            ItemData removedItem = equippedItems[type];
+
+            if (statModifiers.TryGetValue(type, out MultiStatModifier multiMod))
+            {
+                foreach (var modifier in multiMod.modifiers)
+                {
+                    playerStats.RemoveStatModifier(modifier);
+                }
+                statModifiers.Remove(type);
+            }
+
+            equippedItems.Remove(type);
+
+            playerEquipment?.RemoveEquipment(type);
+            playerEquipmentHourse?.RemoveEquipment(type);
+
+            Debug.Log($"Gỡ bỏ {removedItem.itemName}. Stats đã được gỡ.");
+        }
+    }
+    public void EquipItem(ItemData item, PlayerStats playerStats)
+    {
+        if (item == null || item.itemType == ItemType.Consumable)
+            return;
+
+        if (equippedItems.ContainsKey(item.itemType))
+        {
+            UnequipItem(item.itemType, playerStats);
+        }
+
+        List<StatModifier> modifiers = new List<StatModifier>();
+
+        if (item.attackPower != 0)    modifiers.Add(new StatModifier(StatType.Attack, item.attackPower));
+        if (item.defense != 0)        modifiers.Add(new StatModifier(StatType.Defense, item.defense));
+        if (item.healthBonus != 0)    modifiers.Add(new StatModifier(StatType.MaxHealth, item.healthBonus));
+        if (item.manaBonus != 0)      modifiers.Add(new StatModifier(StatType.MaxMana, item.manaBonus));
+        if (item.critChance != 0)     modifiers.Add(new StatModifier(StatType.CritChance, item.critChance));
+        if (item.attackSpeed != 0)    modifiers.Add(new StatModifier(StatType.AttackSpeed, item.attackSpeed));
+        if (item.lifeSteal != 0)      modifiers.Add(new StatModifier(StatType.LifeSteal, item.lifeSteal));
+        if (item.moveSpeed != 0)      modifiers.Add(new StatModifier(StatType.Speed, item.moveSpeed));
+
+        foreach (var modifier in modifiers)
+        {
+            playerStats.ApplyStatModifier(modifier);
+        }
+
+        equippedItems[item.itemType] = item;
+        statModifiers[item.itemType] = new MultiStatModifier(modifiers);
+
+        playerEquipment?.UpdateEquipment(item);
+        playerEquipmentHourse?.UpdateEquipment(item);
+
+        Debug.Log($"Đã trang bị {item.itemName} với {modifiers.Count} chỉ số.");
     }
 
     private StatType ConvertToStatType(ItemType itemType)

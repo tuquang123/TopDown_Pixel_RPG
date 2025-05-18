@@ -15,10 +15,19 @@ MonoBehaviour:
   itemID: armor
   itemName: Armor
   icon: {fileID: -5138849381010601345, guid: da6895bd4082d441cbe5911031d0f43b, type: 3}
-  iconRight: {fileID: 5974945691945990517, guid: da6895bd4082d441cbe5911031d0f43b,
-    type: 3}
+  itemType: 1
+  tier: 0
+  description: armor
+  attackPower: 0
+  defense: 10
+  healthBonus: 50
+  manaBonus: 50
+  critChance: 0
+  attackSpeed: 0
+  lifeSteal: 0
+  moveSpeed: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: -9059333892809613461, guid: da6895bd4082d441cbe5911031d0f43b,
     type: 3}
-  itemType: 1
-  value: 15
-  color: {r: 1, g: 1, b: 1, a: 1}
+  iconRight: {fileID: 5974945691945990517, guid: da6895bd4082d441cbe5911031d0f43b,
+    type: 3}

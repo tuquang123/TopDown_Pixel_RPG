@@ -201,7 +201,7 @@ public class EnemyAI : MonoBehaviour
             damageColor);
 
         // Knockback (add this line)
-        //StartCoroutine(ApplyKnockback());
+        StartCoroutine(ApplyKnockback());
         
 
         if (currentHealth <= 0)

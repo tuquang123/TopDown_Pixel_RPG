@@ -58,3 +58,13 @@ public class StatModifier
         this.value = value;
     }
 }
+public class MultiStatModifier
+{
+    public List<StatModifier> modifiers;
+
+    public MultiStatModifier(List<StatModifier> modifiers)
+    {
+        this.modifiers = modifiers;
+    }
+}
+
