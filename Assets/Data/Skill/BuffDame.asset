@@ -15,9 +15,11 @@ MonoBehaviour:
   skillID: 0
   skillName: Buff Dame
   skillType: 0
-  requiredLevel: 0
-  manaCost: 0
-  value: 10
-  cooldown: 0
-  prefab: {fileID: 0}
+  requiredLevel: 1
   icon: {fileID: -997972493423046422, guid: 36b1b2a60a181d04590bdd35295ac922, type: 3}
+  manaCost: 0
+  value: 1
+  cooldown: 0.1
+  maxLevel: 10
+  prefab: {fileID: 0}
+  description: 

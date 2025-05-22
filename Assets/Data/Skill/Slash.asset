@@ -15,9 +15,11 @@ MonoBehaviour:
   skillID: 3
   skillName: Slash
   skillType: 1
-  requiredLevel: 0
-  manaCost: 5
-  value: 0
-  cooldown: 8
-  prefab: {fileID: 0}
+  requiredLevel: 1
   icon: {fileID: 21300000, guid: 9794293e4605a44d0826e3814ddc8431, type: 3}
+  manaCost: 5
+  value: 1
+  cooldown: 8
+  maxLevel: 2
+  prefab: {fileID: 0}
+  description: 

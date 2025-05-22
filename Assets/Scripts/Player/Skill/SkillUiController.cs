@@ -8,19 +8,21 @@ public class SkillUIController : MonoBehaviour
 
     private void OnEnable()
     {
-        // Clear UI trước khi cập nhật lại
+        // Chỉ xóa những item có SkillButton (tránh xóa BG hoặc layout cố định)
         foreach (Transform child in skillListContainer)
         {
-            Destroy(child.gameObject);
+            if (child.GetComponent<SkillButton>() != null)
+            {
+                Destroy(child.gameObject);
+            }
         }
 
-        // Hiển thị các kỹ năng
         foreach (SkillData skillData in skillSystem.skillList)
         {
             GameObject skillButtonObject = Instantiate(skillButtonPrefab, skillListContainer);
             SkillButton skillButton = skillButtonObject.GetComponent<SkillButton>();
-
             skillButton.Initialize(skillData, skillSystem);
         }
     }
+
 }

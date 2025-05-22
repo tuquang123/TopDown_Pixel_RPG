@@ -4,6 +4,8 @@ using UnityEngine.UI;
 public class ItemUI : MonoBehaviour
 {
     public Image itemIcon;
+    public Image backgroundImage; 
+
     private ItemData itemData;
     private InventoryUI inventoryUI;
 
@@ -13,16 +15,26 @@ public class ItemUI : MonoBehaviour
         inventoryUI = ui;
 
         itemIcon.sprite = itemData.icon;
+        backgroundImage.color = GetColorByTier(itemData.tier);
 
         GetComponent<Button>().onClick.AddListener(OnItemClicked);
     }
 
     private void OnItemClicked()
     {
-        // Ẩn các panel khác (nếu có)
         inventoryUI.itemDetailPanel.Hide();
-
-        // Hiện panel chi tiết + nút trang bị
         inventoryUI.itemDetailPanel.ShowDetails(itemData, inventoryUI);
+    }
+
+    private Color GetColorByTier(ItemTier tier)
+    {
+        switch (tier)
+        {
+            case ItemTier.Common:    return new Color(0.8f, 0.8f, 0.8f); // xám
+            case ItemTier.Rare:      return new Color(0.2f, 0.4f, 1f);   // xanh dương
+            case ItemTier.Epic:      return new Color(0.6f, 0.2f, 0.8f); // tím
+            case ItemTier.Legendary: return new Color(1f, 0.6f, 0f);     // cam
+            default: return Color.white;
+        }
     }
 }

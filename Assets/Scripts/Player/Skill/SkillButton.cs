@@ -1,17 +1,25 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SkillButton : MonoBehaviour
 {
     private SkillData _skillData;
+    private SkillSystem _skillSystem;
+
+    [Header("UI References")]
+    public TMP_Text skillNameText;        
+    public TMP_Text skillDescriptionText; 
+    public Image skillIconImage;
+    
     public Button learnButton;
     public Button assignButton;
-    private SkillSystem _skillSystem;
 
     public void Initialize(SkillData data, SkillSystem system)
     {
         _skillData = data;
         _skillSystem = system;
+
         learnButton.onClick.AddListener(OnLearnButtonClicked);
         assignButton.onClick.AddListener(OnAssignButtonClicked);
 
@@ -20,58 +28,47 @@ public class SkillButton : MonoBehaviour
 
     private void UpdateUI()
     {
-        learnButton.GetComponentInChildren<Text>().text = _skillData.skillName;
-        assignButton.GetComponent<Image>().sprite = _skillData.icon;
+        SkillState skillState = _skillSystem.GetSkillState(_skillData.skillID);
 
-        // Kiểm tra xem kỹ năng đã được học chưa, nếu rồi thì vô hiệu hóa nút học
-        if (_skillSystem.IsSkillUnlocked(_skillData.skillID))
-        {
-            learnButton.interactable = false; // Vô hiệu hóa nút học khi kỹ năng đã được học
+        int currentLevel = skillState?.level ?? 0;
+        bool isUnlocked = currentLevel > 0;
+        bool isMaxLevel = currentLevel >= _skillData.maxLevel;
 
-            // Nếu là kỹ năng chủ động, hiển thị nút gán nếu kỹ năng đã được học
-            if (_skillData.skillType == SkillType.Active)
-            {
-                assignButton.gameObject.SetActive(true); // Hiển thị nút gán
-            }
-        }
-        else
-        {
-            // Ẩn nút gán nếu kỹ năng chưa được học (cho cả kỹ năng chủ động và thụ động)
-            assignButton.gameObject.SetActive(false);
-        }
+        skillNameText.text = $"{_skillData.skillName} Lv.{currentLevel}/{_skillData.maxLevel}";
+        skillDescriptionText.text = _skillData.description;
+        skillIconImage.sprite = _skillData.icon;
 
-        // Nếu là kỹ năng thụ động, ẩn nút gán vì kỹ năng thụ động không cần gán vào slot
-        if (_skillData.skillType == SkillType.Passive)
-        {
-            assignButton.gameObject.SetActive(false); // Ẩn nút gán đối với kỹ năng thụ động
-        }
+        learnButton.interactable = !isMaxLevel;
+        assignButton.gameObject.SetActive(isUnlocked && _skillData.skillType == SkillType.Active);
     }
 
     private void OnLearnButtonClicked()
     {
         if (_skillSystem != null && _skillData != null)
         {
-            if (_skillSystem.CanUnlockSkill(_skillData.skillID)) // Kiểm tra nếu có đủ điểm kỹ năng
+            if (_skillSystem.CanUnlockSkill(_skillData.skillID))
             {
                 _skillSystem.UnlockSkill(_skillData.skillID);
-                _skillSystem.DecrementSkillPoint(); // Giảm điểm kỹ năng sau khi học
+                _skillSystem.DecrementSkillPoint();
 
-                // Nếu kỹ năng là thụ động, áp dụng ngay vào stats
+                SkillState skillState = _skillSystem.GetSkillState(_skillData.skillID);
+                int level = skillState?.level ?? 1;
+
                 if (_skillData.skillType == SkillType.Passive)
                 {
-                    _skillSystem.UseSkill(_skillData.skillID); // Áp dụng kỹ năng thụ động vào stats
-                    Debug.Log($"Đã học và áp dụng kỹ năng thụ động: {_skillData.skillName} vào stats");
+                    _skillSystem.UseSkill(_skillData.skillID);
+                    Debug.Log($"Đã học/lên cấp kỹ năng thụ động: {_skillData.skillName} Lv.{level}");
                 }
                 else
                 {
-                    Debug.Log($"Đã học kỹ năng chủ động: {_skillData.skillName}");
+                    Debug.Log($"Đã học/lên cấp kỹ năng chủ động: {_skillData.skillName} Lv.{level}");
                 }
 
-                UpdateUI(); // Cập nhật UI sau khi học kỹ năng
+                UpdateUI();
             }
             else
             {
-                Debug.Log("Không đủ điểm kỹ năng để học kỹ năng này.");
+                Debug.Log("Không đủ điểm kỹ năng để học hoặc đã đạt cấp tối đa.");
             }
         }
     }
@@ -89,4 +86,3 @@ public class SkillButton : MonoBehaviour
         }
     }
 }
-
