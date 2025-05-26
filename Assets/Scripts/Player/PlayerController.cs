@@ -1,25 +1,29 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour , IGameEventListener
+public class PlayerController : MonoBehaviour, IGameEventListener
 {
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
 
-     protected float attackSpeed = 1f;
     [SerializeField] protected float detectionRange = 3f;
     [SerializeField] protected float attackRange = 1f;
     [SerializeField] protected Transform attackPoint;
     [SerializeField] protected float attackRadius = 0.8f;
-    //[SerializeField] protected GameObject slashVFX;
+    [SerializeField] protected GameObject vfxDust;
 
     protected Rigidbody2D rb;
     protected Animator anim;
     protected Transform targetEnemy;
-    protected float lastAttackTime;
-    protected Vector2 moveInput;
+    protected Transform targetDestructible;
     protected PlayerStats stats;
+    protected Vector2 moveInput;
+    protected float lastAttackTime;
 
     public Vector2 MoveInput => moveInput;
+    public Transform GetTargetEnemy() => targetEnemy;
+    public bool IsPlayerDie() => stats.isDead;
+    public bool IsMoving() => moveInput.magnitude > 0.01f;
+    public bool IsDashing => GetComponent<PlayerDash>()?.IsDashing == true;
 
     protected virtual void Start()
     {
@@ -27,84 +31,64 @@ public class PlayerController : MonoBehaviour , IGameEventListener
         anim = GetComponentInChildren<Animator>();
         stats = GetComponent<PlayerStats>();
     }
-    public Transform GetTargetEnemy() => targetEnemy;
-    public bool IsPlayerDie() => stats.isDead;
 
-    public void OnEventRaised()
-    {
-        Debug.Log("Người chơi đã dùng ngựa.");
-        anim = GetComponentInChildren<Animator>();
-    }
-
-    private void OnEnable() => GameEvents.OnUpdateAnimation.RegisterListener(this);
-    private void OnDisable() => GameEvents.OnUpdateAnimation.UnregisterListener(this);
-
-    public Vector2 GetMoveInput()
-    {
-        // Joystick
-        float joystickX = UltimateJoystick.GetHorizontalAxis("Move");
-        float joystickY = UltimateJoystick.GetVerticalAxis("Move");
-
-        // Bàn phím
-        float keyboardX = Input.GetKey(KeyCode.A) ? -1 : Input.GetKey(KeyCode.D) ? 1 : 0;
-        float keyboardY = Input.GetKey(KeyCode.S) ? -1 : Input.GetKey(KeyCode.W) ? 1 : 0;
-
-        // Tổng hợp lại
-        Vector2 combined = new Vector2(joystickX + keyboardX, joystickY + keyboardY);
-
-        // Giới hạn lại trong khoảng -1 đến 1 nếu cần
-        return combined.magnitude > 1 ? combined.normalized : combined;
-    }
-    
     protected virtual void Update()
     {
         if (stats.isDead) return;
-        
+
         moveInput = GetMoveInput();
-
-        bool isMoving = moveInput.magnitude > 0.01f;
-
+        bool isMoving = IsMoving();
         anim.SetBool(MoveBool, isMoving);
 
         if (isMoving)
         {
             MovePlayer();
             targetEnemy = null;
+            targetDestructible = null;
         }
         else
         {
             FindClosestEnemy();
+
             if (targetEnemy != null)
-            {
-                MoveToAttackPosition();
-            }
+                MoveToTarget(targetEnemy, FaceEnemy);
             else
             {
-                rb.linearVelocity = Vector2.zero;
-                anim.SetBool(MoveBool, false);
+                FindClosestDestructible();
+
+                if (targetDestructible != null)
+                    MoveToTarget(targetDestructible);
+                else
+                {
+                    rb.linearVelocity = Vector2.zero;
+                    anim.SetBool(MoveBool, false);
+                }
             }
         }
     }
 
-    public bool IsDashing => GetComponent<PlayerDash>()?.IsDashing == true;
-
     protected virtual void FixedUpdate()
     {
-        if (stats.isDead) return;
-        if (IsDashing) return; 
+        if (stats.isDead || IsDashing) return;
 
-        if (moveInput.magnitude > 0.01f)
+        if (vfxDust != null)
+        {
+            bool shouldPlay = IsMoving();
+            if (vfxDust.activeSelf != shouldPlay)
+                vfxDust.SetActive(shouldPlay);
+        }
+
+        if (IsMoving())
         {
             float moveSpeed = stats.speed.Value;
             rb.linearVelocity = moveInput.normalized * moveSpeed;
         }
-        else if (targetEnemy == null)
+        else if (targetEnemy == null && targetDestructible == null)
         {
             rb.linearVelocity = Vector2.zero;
             anim.SetBool(MoveBool, false);
         }
     }
-
 
     protected virtual void MovePlayer()
     {
@@ -112,79 +96,66 @@ public class PlayerController : MonoBehaviour , IGameEventListener
         rb.linearVelocity = moveInput.normalized * moveSpeed;
         RotateCharacter(moveInput.x);
     }
-    protected virtual void MoveToAttackPosition()
+
+    protected virtual void MoveToTarget(Transform target, System.Action onFacing = null)
     {
-        if (targetEnemy == null) return;
+        if (target == null) return;
 
         Vector2 playerPos = transform.position;
-        Vector2 enemyPos = targetEnemy.position;
+        Vector2 targetPos = target.position;
 
-        float yDiff = Mathf.Abs(playerPos.y - enemyPos.y);
-        float xDiff = Mathf.Abs(playerPos.x - enemyPos.x);
+        float yDiff = Mathf.Abs(playerPos.y - targetPos.y);
+        float xDiff = Mathf.Abs(playerPos.x - targetPos.x);
         float moveSpeed = stats.speed.Value;
-
-        // Ngưỡng sai lệch nhỏ để chấp nhận "đúng trục Y"
         float yTolerance = 0.1f;
 
         if (yDiff > yTolerance)
         {
-            // Di chuyển để canh đúng trục Y trước
-            Vector2 directionY = new Vector2(0, enemyPos.y - playerPos.y).normalized;
-            rb.linearVelocity = directionY * moveSpeed;
-
-            // Không quay trong khi di chuyển trục Y
+            Vector2 dirY = new Vector2(0, targetPos.y - playerPos.y).normalized;
+            rb.linearVelocity = dirY * moveSpeed;
             anim.SetBool(MoveBool, true);
         }
         else if (xDiff > attackRange * 0.8f)
         {
-            // Khi đã gần đúng trục Y, thì canh trục X
-            Vector2 directionX = new Vector2(enemyPos.x - playerPos.x, 0).normalized;
-            rb.linearVelocity = directionX * moveSpeed;
-
-            RotateCharacter(directionX.x);
+            Vector2 dirX = new Vector2(targetPos.x - playerPos.x, 0).normalized;
+            rb.linearVelocity = dirX * moveSpeed;
+            RotateCharacter(dirX.x);
             anim.SetBool(MoveBool, true);
         }
         else
         {
-            // Đã vào vị trí chuẩn, dừng lại và tấn công
             rb.linearVelocity = Vector2.zero;
             anim.SetBool(MoveBool, false);
-            FaceEnemy();
+            RotateCharacter(targetPos.x - playerPos.x);
+            onFacing?.Invoke();
 
             if (Time.time - lastAttackTime >= 1f / stats.attackSpeed.Value)
-            {
                 AttackEnemy();
-            }
         }
     }
 
-    
     protected virtual void AttackEnemy()
     {
         lastAttackTime = Time.time;
         anim.SetTrigger(AttackTrigger);
 
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
-        foreach (Collider2D enemy in hitEnemies)
+        Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
+        foreach (Collider2D hit in hits)
         {
-            if (enemy.CompareTag("Enemy"))
+            if (hit.CompareTag("Enemy"))
             {
-                int finalDamage = (int)stats.attack.Value;
+                int damage = (int)stats.attack.Value;
+                bool isCrit = Random.Range(0f, 100f) < stats.GetCritChance();
 
-                // Tính chí mạng
-                float roll = Random.Range(0f, 100f);
-                bool isCrit = roll < stats.GetCritChance();
                 if (isCrit)
-                {
-                    finalDamage = Mathf.RoundToInt(finalDamage * 1.5f);
-                    //Debug.Log("Đòn chí mạng!");
-                }
+                    damage = Mathf.RoundToInt(damage * 1.5f);
 
-                // Gây sát thương cho enemy
-                enemy.GetComponent<EnemyAI>()?.TakeDamage(finalDamage, isCrit);
-
-                // Hút máu theo sát thương gây ra
-                stats.HealFromLifeSteal(finalDamage);
+                hit.GetComponent<EnemyAI>()?.TakeDamage(damage, isCrit);
+                stats.HealFromLifeSteal(damage);
+            }
+            else if (hit.CompareTag("Destructible"))
+            {
+                hit.GetComponent<DestructibleObject>()?.Hit();
             }
         }
     }
@@ -192,23 +163,47 @@ public class PlayerController : MonoBehaviour , IGameEventListener
     protected void FindClosestEnemy()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        float minDistance = detectionRange;
+        float minDist = detectionRange;
         targetEnemy = null;
 
         foreach (GameObject enemy in enemies)
         {
-            float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance < minDistance)
+            float dist = Vector2.Distance(transform.position, enemy.transform.position);
+            if (dist < minDist)
             {
-                minDistance = distance;
+                minDist = dist;
                 targetEnemy = enemy.transform;
             }
         }
     }
 
-    public bool IsMoving()
+    protected void FindClosestDestructible()
     {
-        return moveInput.magnitude > 0.01f;
+        GameObject[] destructibles = GameObject.FindGameObjectsWithTag("Destructible");
+        float minDist = detectionRange;
+        targetDestructible = null;
+
+        foreach (GameObject obj in destructibles)
+        {
+            float dist = Vector2.Distance(transform.position, obj.transform.position);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                targetDestructible = obj.transform;
+            }
+        }
+    }
+
+    public Vector2 GetMoveInput()
+    {
+        float joyX = UltimateJoystick.GetHorizontalAxis("Move");
+        float joyY = UltimateJoystick.GetVerticalAxis("Move");
+
+        float keyX = Input.GetKey(KeyCode.A) ? -1 : Input.GetKey(KeyCode.D) ? 1 : 0;
+        float keyY = Input.GetKey(KeyCode.S) ? -1 : Input.GetKey(KeyCode.W) ? 1 : 0;
+
+        Vector2 combined = new Vector2(joyX + keyX, joyY + keyY);
+        return combined.magnitude > 1 ? combined.normalized : combined;
     }
 
     protected void RotateCharacter(float direction)
@@ -216,9 +211,9 @@ public class PlayerController : MonoBehaviour , IGameEventListener
         if (direction < 0)
             transform.localScale = new Vector3(1, 1, 1); // Quay trái
         else if (direction > 0)
-            transform.localScale = new Vector3(-1, 1, 1);  // Quay phải
+            transform.localScale = new Vector3(-1, 1, 1); // Quay phải
     }
-    
+
     protected void FaceEnemy()
     {
         if (targetEnemy == null) return;
@@ -239,4 +234,12 @@ public class PlayerController : MonoBehaviour , IGameEventListener
             Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
         }
     }
+
+    public void OnEventRaised()
+    {
+        anim = GetComponentInChildren<Animator>();
+    }
+
+    private void OnEnable() => GameEvents.OnUpdateAnimation.RegisterListener(this);
+    private void OnDisable() => GameEvents.OnUpdateAnimation.UnregisterListener(this);
 }

@@ -33,6 +33,9 @@ public class EnemyAI : MonoBehaviour
     [BoxGroup("Damage Settings"), LabelText("Stun Time After Hit"), Range(0f, 2f)]
     [SerializeField] private float damagedStunTime = 0.3f;
     
+    [BoxGroup("VFX Settings"), LabelText("VFX Spawn Offset")]
+    [SerializeField] private Vector3 bloodVFXOffset = new Vector3(0, 0.5f, 0);
+    
     [SerializeField] float knockForce = 3f;
     [SerializeField] float knockDuration = 0.3f;
 
@@ -44,8 +47,6 @@ public class EnemyAI : MonoBehaviour
     [FoldoutGroup("Runtime Debug"), ReadOnly] protected bool isTakingDamage = false;
 
     public static event Action<float> OnEnemyDefeated;
-
-    [FoldoutGroup("UI"), LabelText("Health UI"), SerializeField]
     protected EnemyHealthUI enemyHealthUI;
 
     public EnemyHealthUI EnemyHealthUI
@@ -55,6 +56,8 @@ public class EnemyAI : MonoBehaviour
     }
 
     public int MaxHealth => maxHealth;
+    
+    [SerializeField] Transform vfxSpawnPoint;
 
     protected virtual void Start()
     {
@@ -199,11 +202,12 @@ public class EnemyAI : MonoBehaviour
             damageText,
             transform.position + Vector3.up * .5f,
             damageColor);
+        
+        SpawnBloodVFX();
 
         // Knockback (add this line)
-        StartCoroutine(ApplyKnockback());
+        //StartCoroutine(ApplyKnockback());
         
-
         if (currentHealth <= 0)
         {
             Die();
@@ -213,9 +217,33 @@ public class EnemyAI : MonoBehaviour
             Invoke(nameof(EndDamageStun), damagedStunTime);
         }
     }
+    
+    public void SpawnBloodVFX()
+    {
+        Vector3 basePosition = GetComponent<Collider2D>().bounds.center;
+
+        // Flip offset theo hướng của enemy
+        Vector3 flippedOffset = bloodVFXOffset;
+        flippedOffset.x *= Mathf.Sign(transform.localScale.x); // flip X nếu quay phải/trái
+
+        Vector3 vfxSpawnPos = basePosition + flippedOffset;
+
+        GameObject vfx = ObjectPooler.Instance.Get(
+            RefVFX.Instance.bloodVfxPrefab.name,
+            RefVFX.Instance.bloodVfxPrefab,
+            vfxSpawnPos,
+            Quaternion.identity
+        );
+
+        // Flip VFX scale theo enemy
+        Vector3 scale = vfx.transform.localScale;
+        scale.x = Mathf.Sign(transform.localScale.x) * Mathf.Abs(scale.x);
+        vfx.transform.localScale = scale;
+    }
+
 
     private bool isKnockbacked = false;
-
+    
     private IEnumerator ApplyKnockback()
     {
         if (player == null) yield break;

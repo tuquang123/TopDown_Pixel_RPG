@@ -6,4 +6,8 @@ public class DestroyVFX : MonoBehaviour
     {
         Destroy(gameObject);
     }
+    public void OnDeActive()
+    {
+        gameObject.SetActive(false);
+    }
 }

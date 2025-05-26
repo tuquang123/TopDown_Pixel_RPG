@@ -69,7 +69,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 50
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -139,7 +139,7 @@ TextureImporter:
         width: 9
         height: 10
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -161,7 +161,7 @@ TextureImporter:
         width: 34
         height: 41
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -178,12 +178,12 @@ TextureImporter:
       name: Hit Effect 01 1_2
       rect:
         serializedVersion: 2
-        x: 108
+        x: 106
         y: 2
         width: 36
         height: 45
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -197,37 +197,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hit Effect 01 1_3
-      rect:
-        serializedVersion: 2
-        x: 156
-        y: 22
-        width: 10
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8a55d172714a4c160800000000000000
-      internalID: 7044936136461735336
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Hit Effect 01 1_4
       rect:
         serializedVersion: 2
-        x: 163
+        x: 155
         y: 1
-        width: 30
+        width: 38
         height: 47
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -241,37 +219,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Hit Effect 01 1_5
-      rect:
-        serializedVersion: 2
-        x: 203
-        y: 22
-        width: 10
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2ece9e15e5875af50800000000000000
-      internalID: 6892047151256956130
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Hit Effect 01 1_6
       rect:
         serializedVersion: 2
-        x: 211
-        y: 1
-        width: 78
-        height: 47
+        x: 202
+        y: 0
+        width: 40
+        height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -284,11 +240,55 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Hit Effect 01 1_
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 0
+        width: 47
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1694b3117b661554fa6d11aa4d514c53
+      internalID: 7044936136461735336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Hit Effect 01 1_7
+      rect:
+        serializedVersion: 2
+        x: 294
+        y: 0
+        width: 42
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6417c46f598e922429a7cd0243094713
+      internalID: 6892047151256956130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 3d81396e05ef0054c941d80101b4b755
     internalID: 0
     vertices: []
     indices: 
@@ -297,7 +297,14 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Hit Effect 01 1_: 7044936136461735336
+      Hit Effect 01 1_0: 5544958156907145075
+      Hit Effect 01 1_1: 1410549382348425772
+      Hit Effect 01 1_2: -6504016608751082410
+      Hit Effect 01 1_4: 4952203022734778140
+      Hit Effect 01 1_6: -1580034404830379166
+      Hit Effect 01 1_7: 6892047151256956130
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

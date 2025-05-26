@@ -4,52 +4,44 @@ using System.Collections.Generic;
 
 public class EquipmentUI : MonoBehaviour
 {
+    [System.Serializable]
+    public class EquipmentSlotUI
+    {
+        public Image icon;
+        public Image background;
+        public Button button;
+    }
+
     public Equipment equipmentManager;
     public InventoryUI inventoryUI;
     public PlayerStats playerStats;
 
-    // Các slot UI
-    public Image weaponSlot;
-    public Button weaponButton;
-    public Image armorSlot;
-    public Button armorButton;
-    public Image helmetSlot;
-    public Button helmetButton;
-    public Image bootsSlot;
-    public Button bootsButton;
-    public Image horseSlot;           // 🐎 Slot ngựa
-    public Button horseButton;        // 🐎 Nút gỡ ngựa
+    public EquipmentSlotUI weaponSlot;
+    public EquipmentSlotUI armorSlot;
+    public EquipmentSlotUI helmetSlot;
+    public EquipmentSlotUI bootsSlot;
+    public EquipmentSlotUI horseSlot;
 
-    private Dictionary<ItemType, Image> slotMapping;
-    private Dictionary<ItemType, Button> buttonMapping;
+    private Dictionary<ItemType, EquipmentSlotUI> slotMapping;
 
     private void Start()
     {
-        // Ánh xạ slot và nút theo loại item
-        slotMapping = new Dictionary<ItemType, Image>
+        // Ánh xạ các loại item với slot UI
+        slotMapping = new Dictionary<ItemType, EquipmentSlotUI>
         {
             { ItemType.Weapon, weaponSlot },
             { ItemType.Armor, armorSlot },
             { ItemType.Helmet, helmetSlot },
             { ItemType.Boots, bootsSlot },
-            { ItemType.Horse, horseSlot } // 🐎
+            { ItemType.Horse, horseSlot }
         };
 
-        buttonMapping = new Dictionary<ItemType, Button>
+        // Gán sự kiện nút để gỡ trang bị
+        foreach (var kvp in slotMapping)
         {
-            { ItemType.Weapon, weaponButton },
-            { ItemType.Armor, armorButton },
-            { ItemType.Helmet, helmetButton },
-            { ItemType.Boots, bootsButton },
-            { ItemType.Horse, horseButton } // 🐎
-        };
-
-        // Gán sự kiện click để gỡ trang bị
-        weaponButton.onClick.AddListener(() => UnequipItem(ItemType.Weapon));
-        armorButton.onClick.AddListener(() => UnequipItem(ItemType.Armor));
-        helmetButton.onClick.AddListener(() => UnequipItem(ItemType.Helmet));
-        bootsButton.onClick.AddListener(() => UnequipItem(ItemType.Boots));
-        horseButton.onClick.AddListener(() => UnequipItem(ItemType.Horse)); // 🐎
+            ItemType type = kvp.Key;
+            kvp.Value.button.onClick.AddListener(() => UnequipItem(type));
+        }
 
         UpdateEquipmentUI();
     }
@@ -62,7 +54,6 @@ public class EquipmentUI : MonoBehaviour
         }
 
         equipmentManager.EquipItem(item, playerStats);
-
         inventoryUI.inventory.RemoveItem(item);
 
         UpdateEquipmentUI();
@@ -71,9 +62,7 @@ public class EquipmentUI : MonoBehaviour
 
     public void UnequipItem(ItemType itemType)
     {
-        if (!equipmentManager.equippedItems.ContainsKey(itemType)) return;
-
-        ItemData removedItem = equipmentManager.equippedItems[itemType];
+        if (!equipmentManager.equippedItems.TryGetValue(itemType, out ItemData removedItem)) return;
 
         equipmentManager.UnequipItem(itemType, playerStats);
         inventoryUI.inventory.AddItem(removedItem);
@@ -84,20 +73,37 @@ public class EquipmentUI : MonoBehaviour
 
     public void UpdateEquipmentUI()
     {
-        foreach (var slot in slotMapping)
+        foreach (var kvp in slotMapping)
         {
-            if (equipmentManager.equippedItems.ContainsKey(slot.Key))
+            ItemType type = kvp.Key;
+            EquipmentSlotUI slotUI = kvp.Value;
+
+            if (equipmentManager.equippedItems.TryGetValue(type, out ItemData item))
             {
-                slot.Value.sprite = equipmentManager.equippedItems[slot.Key].icon;
-                slot.Value.color = Color.white;
-                buttonMapping[slot.Key].gameObject.SetActive(true);
+                slotUI.icon.sprite = item.icon;
+                slotUI.icon.color = Color.white;
+                slotUI.background.color = GetColorByTier(item.tier);
+                slotUI.button.gameObject.SetActive(true);
             }
             else
             {
-                slot.Value.sprite = null;
-                slot.Value.color = new Color(1, 1, 1, 0); // Làm trong suốt
-                buttonMapping[slot.Key].gameObject.SetActive(false);
+                slotUI.icon.sprite = null;
+                slotUI.icon.color = new Color(1, 1, 1, 0); // Làm trong suốt
+                slotUI.background.color = new Color(1, 1, 1, 0); // Làm mờ nền
+                slotUI.button.gameObject.SetActive(false);
             }
         }
+    }
+
+    private Color GetColorByTier(ItemTier tier)
+    {
+        return tier switch
+        {
+            ItemTier.Common    => new Color(0.8f, 0.8f, 0.8f),
+            ItemTier.Rare      => new Color(0.2f, 0.4f, 1f),
+            ItemTier.Epic      => new Color(0.6f, 0.2f, 0.8f),
+            ItemTier.Legendary => new Color(1f, 0.6f, 0f),
+            _ => Color.white
+        };
     }
 }
