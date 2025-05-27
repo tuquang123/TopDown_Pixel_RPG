@@ -9015,6 +9015,10 @@ MonoBehaviour:
   playerPrefab: {fileID: 2213885562905277096}
   bloodVfxPrefab: {fileID: 6484301405218222007, guid: 83907561ca565a94c905d1a42da3e8f8,
     type: 3}
+  destructionVFXPrefab: {fileID: 3533435376319919130, guid: ffe419f6459a3ec4093834ac1ccf0398,
+    type: 3}
+  hitVFXPrefab: {fileID: 3533435376319919130, guid: ffe419f6459a3ec4093834ac1ccf0398,
+    type: 3}
 --- !u!4 &247927438
 Transform:
   m_ObjectHideFlags: 0
@@ -87549,6 +87553,7 @@ GameObject:
   - component: {fileID: 7153909089175243016}
   - component: {fileID: 4443795739692522034}
   - component: {fileID: 5040002032526106240}
+  - component: {fileID: 7153909089175243017}
   m_Layer: 0
   m_Name: HorseRoot
   m_TagString: Untagged
@@ -97121,6 +97126,7 @@ GameObject:
   - component: {fileID: 386326321542989739}
   - component: {fileID: 2825049293595982070}
   - component: {fileID: 7877615926247328651}
+  - component: {fileID: 7877615926247328652}
   m_Layer: 24
   m_Name: UnitRoot
   m_TagString: Untagged
@@ -103631,6 +103637,18 @@ Transform:
   - {fileID: 3501974933128128087}
   m_Father: {fileID: 2636446687835093077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7153909089175243017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1195576813525642542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df6cd91a71ba86d40893f709bcfe868e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7188952082179742704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104782,6 +104800,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7877615926247328652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3413708205551251843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df6cd91a71ba86d40893f709bcfe868e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7905807365113053273
 GameObject:
   m_ObjectHideFlags: 0

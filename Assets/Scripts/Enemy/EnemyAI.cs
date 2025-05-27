@@ -159,7 +159,18 @@ public class EnemyAI : MonoBehaviour
         else if (direction > 0)
             transform.localScale = new Vector3(-1, 1, 1); // Quay phải
     }
-
+    
+    public void DealDamageToPlayer()
+    {
+        if (player == null) return;
+        if (player.TryGetComponent(out PlayerStats playerStats))
+        {
+            if (!playerStats.isDead)
+            {
+                playerStats.TakeDamage(attackDamage);
+            }
+        }
+    }
     
     protected virtual void AttackPlayer()
     {
@@ -178,10 +189,10 @@ public class EnemyAI : MonoBehaviour
             anim.SetTrigger(AttackTrigger);
             lastAttackTime = Time.time;
 
-            if (player.TryGetComponent(out PlayerStats playerHealth))
+            /*if (player.TryGetComponent(out PlayerStats playerHealth))
             {
                 playerHealth.TakeDamage(attackDamage);
-            }
+            }*/
         }
     }
     

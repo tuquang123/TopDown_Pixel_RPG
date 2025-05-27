@@ -129,11 +129,42 @@ public class PlayerController : MonoBehaviour, IGameEventListener
             RotateCharacter(targetPos.x - playerPos.x);
             onFacing?.Invoke();
 
+            /*if (Time.time - lastAttackTime >= 1f / stats.attackSpeed.Value)
+                AttackEnemy();*/
+            
             if (Time.time - lastAttackTime >= 1f / stats.attackSpeed.Value)
-                AttackEnemy();
+            {
+                lastAttackTime = Time.time;
+                anim.SetTrigger(AttackTrigger);
+            }
+
         }
     }
+    
+    // Gọi trong Animation Event, KHÔNG gọi trong Update
+    public void ApplyAttackDamage()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.CompareTag("Enemy"))
+            {
+                int damage = (int)stats.attack.Value;
+                bool isCrit = Random.Range(0f, 100f) < stats.GetCritChance();
 
+                if (isCrit)
+                    damage = Mathf.RoundToInt(damage * 1.5f);
+
+                hit.GetComponent<EnemyAI>()?.TakeDamage(damage, isCrit);
+                stats.HealFromLifeSteal(damage);
+            }
+            else if (hit.CompareTag("Destructible"))
+            {
+                hit.GetComponent<DestructibleObject>()?.Hit();
+            }
+        }
+    }
+    
     protected virtual void AttackEnemy()
     {
         lastAttackTime = Time.time;

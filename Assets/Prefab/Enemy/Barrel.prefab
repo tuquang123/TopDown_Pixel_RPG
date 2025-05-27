@@ -107,8 +107,11 @@ MonoBehaviour:
     type: 3}
   minGold: 1
   maxGold: 3
-  destructionVFX: {fileID: 3533435376319919130, guid: ffe419f6459a3ec4093834ac1ccf0398,
-    type: 3}
+  spriteRenderer: {fileID: 7421191759399689306}
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  flashDuration: 0.1
+  shakeDuration: 0.1
+  shakeMagnitude: 0.05
 --- !u!61 &5930329737273603238
 BoxCollider2D:
   m_ObjectHideFlags: 0

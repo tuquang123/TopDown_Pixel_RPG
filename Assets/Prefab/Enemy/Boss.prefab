@@ -391,7 +391,10 @@ MonoBehaviour:
   maxHealth: 100
   attackDamage: 10
   damagedStunTime: 0
-  enemyHealthUI: {fileID: 0}
+  bloodVFXOffset: {x: 0, y: 0.5, z: 0}
+  knockForce: 3
+  knockDuration: 0.3
+  vfxSpawnPoint: {fileID: 0}
   specialAttackCooldown: 5
   bossHealthUI: {fileID: 0}
 --- !u!1 &1642773182976143640
@@ -624,6 +627,7 @@ GameObject:
   - component: {fileID: 2074976714708578397}
   - component: {fileID: 1465123227810605393}
   - component: {fileID: 809456738900902476}
+  - component: {fileID: 5372439757972808040}
   m_Layer: 23
   m_Name: UnitRoot
   m_TagString: Untagged
@@ -682,6 +686,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5372439757972808040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1953536796750501253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df6cd91a71ba86d40893f709bcfe868e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1973081927500831772
 GameObject:
   m_ObjectHideFlags: 0
