@@ -9,7 +9,8 @@ public enum SkillID { DamageBoost, ShurikenThrow, Dash, Slash, None,
     DefenseBoost,
     SpeedBoost,
     CritChanceBoost,
-    AttackSpeedBoost
+    AttackSpeedBoost,
+    Invincible
 }
 
 [CreateAssetMenu(fileName = "New Skill", menuName = "Skill System/Skill Data")]
@@ -59,4 +60,6 @@ public class SkillData : ScriptableObject
     [Title("Description")]
     [TextArea(3, 10)]
     public string description;
+
+    public float duration;
 }

@@ -21,6 +21,8 @@ public class ItemData : ScriptableObject
     public string itemName;
     public Sprite icon;
     public ItemType itemType;
+    
+    public int price; 
 
     public ItemTier tier;         // TIER
     [TextArea] public string description; // MÔ TẢ
@@ -40,6 +42,10 @@ public class ItemData : ScriptableObject
     // Chỉ dùng cho đồ có sprite riêng tay/trái/phải
     public Sprite iconLeft;
     public Sprite iconRight;
+    
+    [HideInInspector] public int upgradeLevel = 1;  // mặc định cấp 1
+    public int baseUpgradeCost = 100;              // giá cơ bản (sửa tuỳ ý)
+
 }
 
 

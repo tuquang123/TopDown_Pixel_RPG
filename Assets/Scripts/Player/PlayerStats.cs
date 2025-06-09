@@ -46,6 +46,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
     private static readonly int HurtAnm = Animator.StringToHash("3_Damaged");
     
     private Animator anim;
+    public bool isInvincible;
     [ReadOnly, ShowInInspector] public bool isDead { get; private set; }
 
 
@@ -83,7 +84,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
 
     public void TakeDamage(int damage)
     {
-        if (isDead) return;
+        if (isDead || isInvincible) return;
         
         int actualDamage = Mathf.Max(damage - (int)defense.Value, 1);
         currentHealth -= actualDamage;

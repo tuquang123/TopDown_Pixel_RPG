@@ -8,7 +8,10 @@ public class ItemDetailPanel : MonoBehaviour
     public TMP_Text descriptionText;
     public TMP_Text statText;
     public Button equipButton;
-
+    
+    public Button upgradeButton;
+    public TMP_Text upgradeCostText;
+    
     private ItemData currentItem;
     private InventoryUI inventoryUI;
     public PlayerStats playerStats;
@@ -20,7 +23,13 @@ public class ItemDetailPanel : MonoBehaviour
 
         nameText.text = item.itemName;
         descriptionText.text = item.description;
+        
+        int cost = currentItem.baseUpgradeCost * currentItem.upgradeLevel;
+        upgradeCostText.text = $"Nâng cấp ({cost} vàng)";
 
+        upgradeButton.onClick.RemoveAllListeners();
+        upgradeButton.onClick.AddListener(UpgradeItem);
+        
         string stats = "";
 
         if (item.attackPower != 0)
@@ -36,10 +45,12 @@ public class ItemDetailPanel : MonoBehaviour
         if (item.moveSpeed != 0)
             stats += $"Speed: {item.moveSpeed}\n";
         if (item.attackSpeed != 0)
-            stats += $"Tốc đánh: {item.attackSpeed}\n";
+            stats += $"Speed Attack: {item.attackSpeed}\n";
         if (item.lifeSteal != 0)
-            stats += $"Hút máu: {item.lifeSteal}%\n";
-
+            stats += $"Life Steal: {item.lifeSteal}%\n";
+        
+        nameText.text = $"{item.itemName} +{item.upgradeLevel}";
+        
         statText.text = stats.TrimEnd(); // Loại bỏ dòng trống cuối cùng nếu có
 
         equipButton.onClick.RemoveAllListeners();
@@ -47,6 +58,37 @@ public class ItemDetailPanel : MonoBehaviour
 
         gameObject.SetActive(true);
     }
+    
+    private void UpgradeItem()
+    {
+        int upgradeCost = currentItem.baseUpgradeCost * currentItem.upgradeLevel;
+
+        if (CurrencyManager.Instance.Gold >= upgradeCost)
+        {
+            CurrencyManager.Instance.SpendGold(upgradeCost);
+            currentItem.upgradeLevel++;
+
+            // Tăng chỉ số theo tỷ lệ hoặc cố định
+            currentItem.attackPower += Mathf.RoundToInt(currentItem.attackPower * 0.1f);
+            currentItem.defense += Mathf.RoundToInt(currentItem.defense * 0.1f);
+            currentItem.healthBonus += Mathf.RoundToInt(currentItem.healthBonus * 0.1f);
+            currentItem.manaBonus += Mathf.RoundToInt(currentItem.manaBonus * 0.1f);
+
+            currentItem.critChance += 1f;
+            currentItem.attackSpeed += 0.05f;
+            currentItem.lifeSteal += 0.5f;
+            currentItem.moveSpeed += 0.05f;
+
+            Debug.Log($"Nâng cấp thành công! Cấp độ mới: {currentItem.upgradeLevel}");
+
+            ShowDetails(currentItem, inventoryUI); // refresh UI
+        }
+        else
+        {
+            Debug.Log("Không đủ vàng để nâng cấp.");
+        }
+    }
+
 
 
     private void EquipItem()
