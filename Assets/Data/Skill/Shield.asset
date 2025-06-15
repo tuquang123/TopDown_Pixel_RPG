@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2747de31fde6094585c7a9e03383bcb, type: 3}
+  m_Name: Shield
+  m_EditorClassIdentifier: 
+  skillID: 12
+  skillName: Shield
+  skillType: 1
+  requiredLevel: 1
+  icon: {fileID: 2381433655103253379, guid: b452104514ec8fd43b1a1a64922e43d4, type: 3}
+  manaCost: 5
+  value: 1
+  cooldown: 7
+  maxLevel: 2
+  prefab: {fileID: 3339182698508551763, guid: 7fdb728974b268d4993a148dacd22ec1, type: 3}
+  description: 
+  duration: 5

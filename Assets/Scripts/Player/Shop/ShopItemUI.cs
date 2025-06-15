@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class ShopItemUI : MonoBehaviour
 {
     public Image icon;
-    public Text nameText;
-    public Text priceText;
+    public TMP_Text nameText;
+    public TMP_Text priceText;
     public Button buyButton;
 
     private ItemData itemData;
@@ -21,5 +22,12 @@ public class ShopItemUI : MonoBehaviour
         priceText.text = data.price.ToString();
 
         buyButton.onClick.AddListener(() => shopUI.BuyItem(itemData));
+        
+        // Disable nếu đã mua
+        if (shopUI.playerInventory.HasItem(data))
+        {
+            buyButton.interactable = false;
+            priceText.text = "Đã mua";
+        }
     }
 }

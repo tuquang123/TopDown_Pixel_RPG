@@ -12,9 +12,33 @@ public class ItemDetailPanel : MonoBehaviour
     public Button upgradeButton;
     public TMP_Text upgradeCostText;
     
+    public Button sellButton;
+    public TMP_Text sellPriceText;
+    
     private ItemData currentItem;
     private InventoryUI inventoryUI;
     public PlayerStats playerStats;
+
+    private int CalculateSellPrice(ItemData item)
+    {
+        int baseValue = item.baseUpgradeCost; 
+        float upgradeMultiplier = 0.6f + (item.upgradeLevel * 0.2f);
+        return Mathf.RoundToInt(baseValue * upgradeMultiplier);
+    }
+
+    private void SellItem()
+    {
+        int goldEarned = CalculateSellPrice(currentItem);
+        CurrencyManager.Instance.AddGold(goldEarned);
+
+        if (inventoryUI.inventory.RemoveItem(currentItem))
+        {
+            inventoryUI.UpdateInventoryUI();
+        }
+
+        Debug.Log($"Đã bán {currentItem.itemName} +{currentItem.upgradeLevel} với giá {goldEarned} vàng.");
+        gameObject.SetActive(false);
+    }
 
     public void ShowDetails(ItemData item, InventoryUI ui)
     {
@@ -23,6 +47,13 @@ public class ItemDetailPanel : MonoBehaviour
 
         nameText.text = item.itemName;
         descriptionText.text = item.description;
+        
+        int sellPrice = CalculateSellPrice(currentItem);
+        sellPriceText.text = $"Bán ({sellPrice} vàng)";
+
+        sellButton.onClick.RemoveAllListeners();
+        sellButton.onClick.AddListener(SellItem);
+
         
         int cost = currentItem.baseUpgradeCost * currentItem.upgradeLevel;
         upgradeCostText.text = $"Nâng cấp ({cost} vàng)";
@@ -45,7 +76,7 @@ public class ItemDetailPanel : MonoBehaviour
         if (item.moveSpeed != 0)
             stats += $"Speed: {item.moveSpeed}\n";
         if (item.attackSpeed != 0)
-            stats += $"Speed Attack: {item.attackSpeed}\n";
+            stats += $"Speed Attack: {item.attackSpeed.ToString("F1")}\n";
         if (item.lifeSteal != 0)
             stats += $"Life Steal: {item.lifeSteal}%\n";
         

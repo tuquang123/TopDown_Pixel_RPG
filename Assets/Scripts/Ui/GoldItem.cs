@@ -14,7 +14,7 @@ public class GoldItem : MonoBehaviour, IPooledObject
         if (rb == null) rb = GetComponent<Rigidbody2D>();
 
         // Reset lại velocity khi spawn
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0;
 
         // Random hướng bay: hơi lên trên và sang ngang

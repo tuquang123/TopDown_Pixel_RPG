@@ -12,6 +12,12 @@ public class Inventory : MonoBehaviour
         items.Add(item);
         Debug.Log($"Đã thêm {item.itemName} vào túi đồ.");
     }
+    
+    public bool HasItem(ItemData item)
+    {
+        return items.Contains(item);
+    }
+
 
     // Xóa item khỏi túi đồ
     public bool RemoveItem(ItemData item)
