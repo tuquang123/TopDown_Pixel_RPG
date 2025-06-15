@@ -6,6 +6,7 @@ public class ShopUI : MonoBehaviour
     public GameObject itemUIPrefab;
     public Transform contentParent;
     public Inventory playerInventory;
+    public InventoryUI inventoryUI;
 
     public void SetupShop(List<ItemData> items)
     {
@@ -24,9 +25,17 @@ public class ShopUI : MonoBehaviour
 
     public void BuyItem(ItemData item)
     {
-        CurrencyManager.Instance.SpendGold(item.price);
+        // Nếu đã có trong inventory thì không mua lại
+        if (playerInventory.HasItem(item))
+        {
+            Debug.Log($"{item.itemName} đã mua rồi.");
+            return;
+        }
         
+        CurrencyManager.Instance.SpendGold(item.price);
         playerInventory.AddItem(item);
+        inventoryUI.UpdateInventoryUI(); // cập nhật UI nếu có
         Debug.Log($"Đã mua {item.itemName}");
     }
+
 }
