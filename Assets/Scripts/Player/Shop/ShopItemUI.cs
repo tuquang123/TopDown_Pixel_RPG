@@ -5,8 +5,10 @@ using UnityEngine.UI;
 public class ShopItemUI : MonoBehaviour
 {
     public Image icon;
+    public Image backgroundImage; 
     public TMP_Text nameText;
     public TMP_Text priceText;
+    public TMP_Text tierText;
     public Button buyButton;
 
     private ItemData itemData;
@@ -17,17 +19,62 @@ public class ShopItemUI : MonoBehaviour
         itemData = data;
         shopUI = ui;
 
-        icon.sprite = data.icon;
-        nameText.text = data.itemName;
-        priceText.text = data.price.ToString();
+        if (itemData == null)
+        {
+            Debug.LogError("ItemData is null in ShopItemUI.Setup.");
+            return;
+        }
 
+        icon.sprite = data.icon;
+        nameText.text = data.itemName; // Chỉ hiển thị tên
+        tierText.text = data.tier.ToString(); // Hiển thị tier riêng
+        priceText.text = $"{data.price} vàng";
+        backgroundImage.color = ItemUtility.GetColorByTier(data.tier); // Đặt màu nền theo tier
+
+        buyButton.onClick.RemoveAllListeners();
         buyButton.onClick.AddListener(() => shopUI.BuyItem(itemData));
-        
-        // Disable nếu đã mua
-        if (shopUI.playerInventory.HasItem(data))
+
+        UpdateButtonState(CurrencyManager.Instance.Gold);
+        CurrencyManager.Instance.OnGoldChanged += UpdateButtonState;
+    }
+
+    public void RefreshState()
+    {
+        UpdateButtonState(CurrencyManager.Instance.Gold);
+    }
+
+    private void UpdateButtonState(int gold)
+    {
+        if (itemData == null || shopUI == null || shopUI.playerInventory == null) return;
+
+        bool isPurchased = false;
+        foreach (var item in shopUI.playerInventory.items)
+        {
+            if (item.itemData != null && item.itemData.itemID == itemData.itemID)
+            {
+                isPurchased = true;
+                Debug.Log($"Vật phẩm {itemData.itemName} (ID: {itemData.itemID}) đã có trong Inventory.");
+                break;
+            }
+        }
+
+        if (isPurchased)
         {
             buyButton.interactable = false;
             priceText.text = "Đã mua";
+        }
+        else
+        {
+            buyButton.interactable = gold >= itemData.price;
+            priceText.text = $"{itemData.price} vàng";
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (CurrencyManager.Instance != null)
+        {
+            CurrencyManager.Instance.OnGoldChanged -= UpdateButtonState;
         }
     }
 }

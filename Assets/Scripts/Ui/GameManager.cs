@@ -9,13 +9,17 @@ public class GameManager : MonoBehaviour
     {
         AddAllItemsToInventory();
     }
+
+    //Cheat
     private void AddAllItemsToInventory()
     {
         foreach (var item in itemDatabase.allItems)
         {
             if (item != null)
             {
-                inventory.AddItem(item);
+                // Tạo ItemInstance từ ItemData
+                ItemInstance itemInstance = new ItemInstance(item);
+                inventory.AddItem(itemInstance);
             }
         }
     }

@@ -1,27 +1,25 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; 
+using TMPro;
 
 public class ItemDetailPanel : MonoBehaviour
 {
-    public TMP_Text nameText;         // ← TextMeshPro
+    public TMP_Text nameText;
     public TMP_Text descriptionText;
     public TMP_Text statText;
     public Button equipButton;
-    
     public Button upgradeButton;
     public TMP_Text upgradeCostText;
-    
     public Button sellButton;
     public TMP_Text sellPriceText;
-    
-    private ItemData currentItem;
+
+    private ItemInstance currentItem;
     private InventoryUI inventoryUI;
     public PlayerStats playerStats;
 
-    private int CalculateSellPrice(ItemData item)
+    private int CalculateSellPrice(ItemInstance item)
     {
-        int baseValue = item.baseUpgradeCost; 
+        int baseValue = item.itemData.baseUpgradeCost;
         float upgradeMultiplier = 0.6f + (item.upgradeLevel * 0.2f);
         return Mathf.RoundToInt(baseValue * upgradeMultiplier);
     }
@@ -36,17 +34,18 @@ public class ItemDetailPanel : MonoBehaviour
             inventoryUI.UpdateInventoryUI();
         }
 
-        Debug.Log($"Đã bán {currentItem.itemName} +{currentItem.upgradeLevel} với giá {goldEarned} vàng.");
+        Debug.Log($"Đã bán {currentItem.itemData.itemName} +{currentItem.upgradeLevel} với giá {goldEarned} vàng.");
         gameObject.SetActive(false);
     }
 
-    public void ShowDetails(ItemData item, InventoryUI ui)
+    public void ShowDetails(ItemInstance item, InventoryUI ui)
     {
         currentItem = item;
         inventoryUI = ui;
 
-        nameText.text = item.itemName;
-        descriptionText.text = item.description;
+        ItemData itemData = item.itemData;
+        nameText.text = itemData.itemName;
+        descriptionText.text = itemData.description;
         
         int sellPrice = CalculateSellPrice(currentItem);
         sellPriceText.text = $"Bán ({sellPrice} vàng)";
@@ -54,65 +53,48 @@ public class ItemDetailPanel : MonoBehaviour
         sellButton.onClick.RemoveAllListeners();
         sellButton.onClick.AddListener(SellItem);
 
-        
-        int cost = currentItem.baseUpgradeCost * currentItem.upgradeLevel;
+        int cost = itemData.baseUpgradeCost * currentItem.upgradeLevel;
         upgradeCostText.text = $"Nâng cấp ({cost} vàng)";
 
         upgradeButton.onClick.RemoveAllListeners();
         upgradeButton.onClick.AddListener(UpgradeItem);
         
         string stats = "";
-
-        if (item.attackPower != 0)
-            stats += $"Dame: {item.attackPower}\n";
-        if (item.defense != 0)
-            stats += $"Giáp: {item.defense}\n";
-        if (item.healthBonus != 0)
-            stats += $"Máu: {item.healthBonus}\n";
-        if (item.manaBonus != 0)
-            stats += $"Mana: {item.manaBonus}\n";
-        if (item.critChance != 0)
-            stats += $"Crit: {item.critChance}%\n";
-        if (item.moveSpeed != 0)
-            stats += $"Speed: {item.moveSpeed}\n";
-        if (item.attackSpeed != 0)
-            stats += $"Speed Attack: {item.attackSpeed.ToString("F1")}\n";
-        if (item.lifeSteal != 0)
-            stats += $"Life Steal: {item.lifeSteal}%\n";
+        if (itemData.attackPower != 0)
+            stats += $"Dame: {itemData.attackPower + Mathf.RoundToInt(itemData.attackPower * 0.1f * (item.upgradeLevel - 1))}\n";
+        if (itemData.defense != 0)
+            stats += $"Giáp: {itemData.defense + Mathf.RoundToInt(itemData.defense * 0.1f * (item.upgradeLevel - 1))}\n";
+        if (itemData.healthBonus != 0)
+            stats += $"Máu: {itemData.healthBonus + Mathf.RoundToInt(itemData.healthBonus * 0.1f * (item.upgradeLevel - 1))}\n";
+        if (itemData.manaBonus != 0)
+            stats += $"Mana: {itemData.manaBonus + Mathf.RoundToInt(itemData.manaBonus * 0.1f * (item.upgradeLevel - 1))}\n";
+        if (itemData.critChance != 0)
+            stats += $"Crit: {itemData.critChance + 1f * (item.upgradeLevel - 1)}%\n";
+        if (itemData.moveSpeed != 0)
+            stats += $"Speed: {itemData.moveSpeed + 0.05f * (item.upgradeLevel - 1)}\n";
+        if (itemData.attackSpeed != 0)
+            stats += $"Speed Attack: {(itemData.attackSpeed + 0.05f * (item.upgradeLevel - 1)):F1}\n";
+        if (itemData.lifeSteal != 0)
+            stats += $"Life Steal: {itemData.lifeSteal + 0.5f * (item.upgradeLevel - 1)}%\n";
         
-        nameText.text = $"{item.itemName} +{item.upgradeLevel}";
-        
-        statText.text = stats.TrimEnd(); // Loại bỏ dòng trống cuối cùng nếu có
+        nameText.text = $"{itemData.itemName} +{item.upgradeLevel}";
+        statText.text = stats.TrimEnd();
 
         equipButton.onClick.RemoveAllListeners();
         equipButton.onClick.AddListener(EquipItem);
 
         gameObject.SetActive(true);
     }
-    
+
     private void UpgradeItem()
     {
-        int upgradeCost = currentItem.baseUpgradeCost * currentItem.upgradeLevel;
+        int upgradeCost = currentItem.itemData.baseUpgradeCost * currentItem.upgradeLevel;
 
-        if (CurrencyManager.Instance.Gold >= upgradeCost)
+        if (CurrencyManager.Instance.SpendGold(upgradeCost))
         {
-            CurrencyManager.Instance.SpendGold(upgradeCost);
             currentItem.upgradeLevel++;
-
-            // Tăng chỉ số theo tỷ lệ hoặc cố định
-            currentItem.attackPower += Mathf.RoundToInt(currentItem.attackPower * 0.1f);
-            currentItem.defense += Mathf.RoundToInt(currentItem.defense * 0.1f);
-            currentItem.healthBonus += Mathf.RoundToInt(currentItem.healthBonus * 0.1f);
-            currentItem.manaBonus += Mathf.RoundToInt(currentItem.manaBonus * 0.1f);
-
-            currentItem.critChance += 1f;
-            currentItem.attackSpeed += 0.05f;
-            currentItem.lifeSteal += 0.5f;
-            currentItem.moveSpeed += 0.05f;
-
             Debug.Log($"Nâng cấp thành công! Cấp độ mới: {currentItem.upgradeLevel}");
-
-            ShowDetails(currentItem, inventoryUI); // refresh UI
+            ShowDetails(currentItem, inventoryUI); // Làm mới UI
         }
         else
         {
@@ -120,13 +102,11 @@ public class ItemDetailPanel : MonoBehaviour
         }
     }
 
-
-
     private void EquipItem()
     {
         if (inventoryUI.equipmentUi != null && currentItem != null)
         {
-            inventoryUI.equipmentUi.EquipItem(currentItem);
+            inventoryUI.equipmentUi.EquipItem(currentItem); // Truyền ItemInstance
 
             if (inventoryUI.inventory.RemoveItem(currentItem))
             {

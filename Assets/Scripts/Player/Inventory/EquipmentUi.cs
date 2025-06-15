@@ -46,15 +46,19 @@ public class EquipmentUI : MonoBehaviour
         UpdateEquipmentUI();
     }
 
-    public void EquipItem(ItemData item)
+    public void EquipItem(ItemInstance itemInstance)
     {
+        if (itemInstance == null || itemInstance.itemData == null) return;
+
+        ItemData item = itemInstance.itemData;
+
         if (equipmentManager.equippedItems.ContainsKey(item.itemType))
         {
             UnequipItem(item.itemType);
         }
 
-        equipmentManager.EquipItem(item, playerStats);
-        inventoryUI.inventory.RemoveItem(item);
+        equipmentManager.EquipItemData(item, playerStats);
+        inventoryUI.inventory.RemoveItem(itemInstance);
 
         UpdateEquipmentUI();
         inventoryUI.UpdateInventoryUI();
@@ -65,7 +69,7 @@ public class EquipmentUI : MonoBehaviour
         if (!equipmentManager.equippedItems.TryGetValue(itemType, out ItemData removedItem)) return;
 
         equipmentManager.UnequipItem(itemType, playerStats);
-        inventoryUI.inventory.AddItem(removedItem);
+        inventoryUI.inventory.AddItem(new ItemInstance(removedItem)); // Tạo ItemInstance mới
 
         UpdateEquipmentUI();
         inventoryUI.UpdateInventoryUI();
@@ -82,7 +86,7 @@ public class EquipmentUI : MonoBehaviour
             {
                 slotUI.icon.sprite = item.icon;
                 slotUI.icon.color = Color.white;
-                slotUI.background.color = GetColorByTier(item.tier);
+                slotUI.background.color = ItemUtility.GetColorByTier(item.tier);
                 slotUI.button.gameObject.SetActive(true);
             }
             else
@@ -93,17 +97,5 @@ public class EquipmentUI : MonoBehaviour
                 slotUI.button.gameObject.SetActive(false);
             }
         }
-    }
-
-    private Color GetColorByTier(ItemTier tier)
-    {
-        return tier switch
-        {
-            ItemTier.Common    => new Color(0.8f, 0.8f, 0.8f),
-            ItemTier.Rare      => new Color(0.2f, 0.4f, 1f),
-            ItemTier.Epic      => new Color(0.6f, 0.2f, 0.8f),
-            ItemTier.Legendary => new Color(1f, 0.6f, 0f),
-            _ => Color.white
-        };
     }
 }

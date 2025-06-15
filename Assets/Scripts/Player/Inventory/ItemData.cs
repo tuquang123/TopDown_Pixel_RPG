@@ -2,16 +2,27 @@
 
 public enum ItemType 
 { 
-    Weapon, Armor, Consumable,Helmet,Boots,Horse
+    Weapon, Armor, Consumable, Helmet, Boots, Horse
 }
 public enum ItemTier
 {
-    Common,
-    Uncommon,
-    Rare,
-    Epic,
-    Legendary,
-    Mythic
+    Common, Uncommon, Rare, Epic, Legendary, Mythic
+}
+
+public static class ItemUtility
+{
+    public static Color GetColorByTier(ItemTier tier)
+    {
+        switch (tier)
+        {
+            case ItemTier.Common:    return new Color(0.8f, 0.8f, 0.8f); // Xám
+            case ItemTier.Rare:      return new Color(0.2f, 0.4f, 1f);  // Xanh dương
+            case ItemTier.Epic:      return new Color(0.6f, 0.2f, 0.8f); // Tím
+            case ItemTier.Legendary: return new Color(1f, 0.6f, 0f);   // Vàng
+            case ItemTier.Mythic:    return new Color(0.9f, 0.1f, 0.1f); // Đỏ tối ưu
+            default: return Color.white;
+        }
+    }
 }
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
@@ -23,9 +34,8 @@ public class ItemData : ScriptableObject
     public ItemType itemType;
     
     public int price; 
-
-    public ItemTier tier;         // TIER
-    [TextArea] public string description; // MÔ TẢ
+    public ItemTier tier;
+    [TextArea] public string description;
 
     public int attackPower;
     public int defense;
@@ -37,15 +47,10 @@ public class ItemData : ScriptableObject
     public float lifeSteal;
     public float moveSpeed;
 
-    public Color color;           // Màu cho vũ khí/giáp
+    public Color color;
 
-    // Chỉ dùng cho đồ có sprite riêng tay/trái/phải
     public Sprite iconLeft;
     public Sprite iconRight;
     
-    [HideInInspector] public int upgradeLevel = 1;  // mặc định cấp 1
-    public int baseUpgradeCost = 100;              // giá cơ bản (sửa tuỳ ý)
-
+    public int baseUpgradeCost = 100; 
 }
-
-

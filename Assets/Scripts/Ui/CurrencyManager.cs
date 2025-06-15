@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CurrencyManager : MonoBehaviour
@@ -7,6 +8,7 @@ public class CurrencyManager : MonoBehaviour
 
     public int Gold { get; private set; }
     public int Gems { get; private set; }
+    public List<ItemData> shopItems; // Danh sách vật phẩm cửa hàng
 
     public event Action<int> OnGoldChanged;
     public event Action<int> OnGemsChanged;
@@ -25,6 +27,7 @@ public class CurrencyManager : MonoBehaviour
         Gold += amount;
         OnGoldChanged?.Invoke(Gold);
         SaveCurrency();
+        Debug.Log($"Đã thêm {amount} vàng. Tổng vàng: {Gold}");
     }
 
     public void AddGems(int amount)
@@ -32,14 +35,20 @@ public class CurrencyManager : MonoBehaviour
         Gems += amount;
         OnGemsChanged?.Invoke(Gems);
         SaveCurrency();
+        Debug.Log($"Đã thêm {amount} ngọc. Tổng ngọc: {Gems}");
     }
 
     public bool SpendGold(int amount)
     {
-        if (Gold < amount) return false;
+        if (Gold < amount)
+        {
+            Debug.Log($"Không đủ vàng để tiêu {amount}. Tổng vàng hiện tại: {Gold}");
+            return false;
+        }
         Gold -= amount;
         OnGoldChanged?.Invoke(Gold);
         SaveCurrency();
+        Debug.Log($"Đã tiêu {amount} vàng. Tổng vàng: {Gold}");
         return true;
     }
 
@@ -53,5 +62,7 @@ public class CurrencyManager : MonoBehaviour
     {
         Gold = PlayerPrefs.GetInt("Gold", 0);
         Gems = PlayerPrefs.GetInt("Gems", 0);
+        OnGoldChanged?.Invoke(Gold);
+        OnGemsChanged?.Invoke(Gems);
     }
 }

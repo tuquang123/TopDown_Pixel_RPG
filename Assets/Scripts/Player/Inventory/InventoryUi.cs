@@ -4,13 +4,13 @@ public class InventoryUI : MonoBehaviour
 {
     public Transform itemContainer;
     public Inventory inventory;
-    public Equipment equipment;
-    public EquipmentUI equipmentUi;
+    public EquipmentUI equipmentUI;
     public PlayerStats playerStats;
-    public GameObject itemPrefab; 
+    public GameObject itemPrefab;
 
-    public ItemDetailPanel itemDetailPanel; // ← kéo prefab panel detail vào trong Inspector
-    
+    public ItemDetailPanel itemDetailPanel;
+    public EquipmentUI equipmentUi;
+
     private void Start()
     {
         UpdateInventoryUI();
@@ -25,14 +25,13 @@ public class InventoryUI : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (ItemData item in inventory.items)
+        foreach (ItemInstance item in inventory.items)
         {
-            Debug.Log($"Tạo item: {item.itemName}");
+            Debug.Log($"Tạo item: {item.itemData.itemName}");
             GameObject newItem = Instantiate(itemPrefab, itemContainer);
             newItem.GetComponent<ItemUI>().Setup(item, this);
         }
 
         itemDetailPanel.Hide();
     }
-
 }

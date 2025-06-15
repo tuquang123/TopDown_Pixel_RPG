@@ -7,35 +7,69 @@ public class ShopUI : MonoBehaviour
     public Transform contentParent;
     public Inventory playerInventory;
     public InventoryUI inventoryUI;
+    private List<ShopItemUI> shopItemUIs = new List<ShopItemUI>();
 
     public void SetupShop(List<ItemData> items)
     {
         foreach (Transform child in contentParent)
         {
-            Destroy(child.gameObject); // Xoá UI cũ
+            Destroy(child.gameObject);
+        }
+        shopItemUIs.Clear();
+
+        if (items == null || items.Count == 0)
+        {
+            Debug.LogWarning("Danh sách vật phẩm cửa hàng rỗng hoặc null.");
+            return;
         }
 
         foreach (var item in items)
         {
+            if (item == null) continue;
             var uiObj = Instantiate(itemUIPrefab, contentParent);
             var shopItemUI = uiObj.GetComponent<ShopItemUI>();
             shopItemUI.Setup(item, this);
+            shopItemUIs.Add(shopItemUI);
         }
     }
 
     public void BuyItem(ItemData item)
     {
-        // Nếu đã có trong inventory thì không mua lại
-        if (playerInventory.HasItem(item))
+        if (item == null)
         {
-            Debug.Log($"{item.itemName} đã mua rồi.");
+            Debug.LogError("ItemData is null in BuyItem.");
             return;
         }
-        
-        CurrencyManager.Instance.SpendGold(item.price);
-        playerInventory.AddItem(item);
-        inventoryUI.UpdateInventoryUI(); // cập nhật UI nếu có
-        Debug.Log($"Đã mua {item.itemName}");
+
+        ItemInstance itemInstance = new ItemInstance(item);
+
+        foreach (var invItem in playerInventory.items)
+        {
+            if (invItem.itemData.itemID == item.itemID)
+            {
+                Debug.Log($"{item.itemName} đã mua rồi.");
+                return;
+            }
+        }
+
+        if (CurrencyManager.Instance.SpendGold(item.price))
+        {
+            playerInventory.AddItem(itemInstance);
+            inventoryUI.UpdateInventoryUI();
+            RefreshShopUI(); // Làm mới trạng thái UI mà không tạo lại
+            Debug.Log($"Đã mua {item.itemName} với giá {item.price} vàng.");
+        }
+        else
+        {
+            Debug.Log("Không đủ vàng để mua vật phẩm.");
+        }
     }
 
+    private void RefreshShopUI()
+    {
+        foreach (var shopItemUI in shopItemUIs)
+        {
+            shopItemUI.RefreshState();
+        }
+    }
 }
