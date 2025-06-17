@@ -199,26 +199,23 @@ public class EnemyAI : MonoBehaviour
     public virtual void TakeDamage(int damage, bool isCrit = false)
     {
         if (isDead) return;
-        
-        enemyHealthUI?.UpdateHealth(currentHealth);
 
         currentHealth -= damage;
+        enemyHealthUI?.UpdateHealth(currentHealth);
+
         anim.SetTrigger(DamagedTrigger);
         isTakingDamage = true;
 
         string damageText = isCrit ? $"CRIT -{damage}" : $"-{damage}";
-        Color damageColor = isCrit ? Color.red : Color.white;
+        Color damageColor = isCrit ? new Color(1f, 0.84f, 0.2f) : Color.white; // Vàng gold đẹp
 
         FloatingTextSpawner.Instance.SpawnText(
             damageText,
-            transform.position + Vector3.up * .5f,
+            transform.position + Vector3.up * 0.5f,
             damageColor);
-        
+
         SpawnBloodVFX();
 
-        // Knockback (add this line)
-        //StartCoroutine(ApplyKnockback());
-        
         if (currentHealth <= 0)
         {
             Die();
@@ -228,7 +225,7 @@ public class EnemyAI : MonoBehaviour
             Invoke(nameof(EndDamageStun), damagedStunTime);
         }
     }
-    
+
     public void SpawnBloodVFX()
     {
         Vector3 basePosition = GetComponent<Collider2D>().bounds.center;
@@ -330,4 +327,50 @@ public class EnemyAI : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
+    
+#if UNITY_EDITOR
+    [Button("Auto Setup Rigidbody & Collider")]
+    private void AutoAddRigidbodyAndCollider()
+    {
+        // Add Rigidbody2D nếu chưa có
+        if (GetComponent<Rigidbody2D>() == null)
+        {
+            Rigidbody2D rb = gameObject.AddComponent<Rigidbody2D>();
+            rb.gravityScale = 0;
+            rb.freezeRotation = true;
+            Debug.Log("Rigidbody2D added and configured.");
+        }
+
+        // Add BoxCollider2D nếu chưa có
+        if (GetComponent<BoxCollider2D>() == null)
+        {
+            gameObject.AddComponent<BoxCollider2D>();
+            Debug.Log("BoxCollider2D added.");
+        }
+
+        // Gán tag "Enemy"
+        gameObject.tag = "Enemy";
+        Debug.Log("Tag set to 'Enemy'.");
+
+        // Kiểm tra nếu tag "Enemy" chưa tồn tại
+        if (!IsTagDefined("Enemy"))
+        {
+            Debug.LogWarning("Tag 'Enemy' is not defined in Tag Manager. Please define it manually.");
+        }
+    }
+
+    /// <summary>
+    /// Kiểm tra tag đã tồn tại trong TagManager chưa
+    /// </summary>
+    private bool IsTagDefined(string tag)
+    {
+        for (int i = 0; i < UnityEditorInternal.InternalEditorUtility.tags.Length; i++)
+        {
+            if (UnityEditorInternal.InternalEditorUtility.tags[i] == tag)
+                return true;
+        }
+        return false;
+    }
+#endif
+
 }

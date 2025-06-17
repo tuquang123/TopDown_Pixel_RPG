@@ -156,7 +156,15 @@ public class PlayerController : MonoBehaviour, IGameEventListener
                     damage = Mathf.RoundToInt(damage * 1.5f);
 
                 hit.GetComponent<EnemyAI>()?.TakeDamage(damage, isCrit);
-                stats.HealFromLifeSteal(damage);
+
+                int healedAmount = stats.HealFromLifeSteal(damage);
+                if (healedAmount > 0)
+                {
+                    FloatingTextSpawner.Instance.SpawnText(
+                        $"+{healedAmount}",
+                        transform.position + Vector3.up * 1.2f,
+                        new Color(0.3f, 1f, 0.3f)); // Xanh lá non
+                }
             }
             else if (hit.CompareTag("Destructible"))
             {
@@ -164,6 +172,7 @@ public class PlayerController : MonoBehaviour, IGameEventListener
             }
         }
     }
+
     
     protected virtual void AttackEnemy()
     {

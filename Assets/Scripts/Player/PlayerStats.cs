@@ -203,10 +203,12 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
     public float GetCritChance() => critChance.Value;
 
     public float GetLifeStealPercent() => lifeSteal.Value;
-
-    public void HealFromLifeSteal(int damageDealt)
+    
+    public int HealFromLifeSteal(int damageDealt)
     {
         int healAmount = Mathf.RoundToInt(damageDealt * (lifeSteal.Value / 100f));
         if (healAmount > 0) Heal(healAmount);
+        return healAmount;
     }
+
 }
