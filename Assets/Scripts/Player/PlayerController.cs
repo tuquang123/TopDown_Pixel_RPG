@@ -24,6 +24,8 @@ public class PlayerController : MonoBehaviour, IGameEventListener
     public bool IsPlayerDie() => stats.isDead;
     public bool IsMoving() => moveInput.magnitude > 0.01f;
     public bool IsDashing => GetComponent<PlayerDash>()?.IsDashing == true;
+    public bool IsAttacking => anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
+
 
     protected virtual void Start()
     {
@@ -126,11 +128,9 @@ public class PlayerController : MonoBehaviour, IGameEventListener
         {
             rb.linearVelocity = Vector2.zero;
             anim.SetBool(MoveBool, false);
-            RotateCharacter(targetPos.x - playerPos.x);
+            if (!IsDashing)
+                RotateCharacter(targetPos.x - playerPos.x);
             onFacing?.Invoke();
-
-            /*if (Time.time - lastAttackTime >= 1f / stats.attackSpeed.Value)
-                AttackEnemy();*/
             
             if (Time.time - lastAttackTime >= 1f / stats.attackSpeed.Value)
             {
@@ -162,7 +162,7 @@ public class PlayerController : MonoBehaviour, IGameEventListener
                 {
                     FloatingTextSpawner.Instance.SpawnText(
                         $"+{healedAmount}",
-                        transform.position + Vector3.up * 1.2f,
+                        transform.position + Vector3.up,
                         new Color(0.3f, 1f, 0.3f)); // Xanh lá non
                 }
             }
@@ -246,16 +246,18 @@ public class PlayerController : MonoBehaviour, IGameEventListener
         return combined.magnitude > 1 ? combined.normalized : combined;
     }
 
-    protected void RotateCharacter(float direction)
+    public void RotateCharacter(float direction)
     {
+        if (IsDashing) return;
         if (direction < 0)
-            transform.localScale = new Vector3(1, 1, 1); // Quay trái
+            transform.localScale = new Vector3(1, 1, 1);
         else if (direction > 0)
-            transform.localScale = new Vector3(-1, 1, 1); // Quay phải
+            transform.localScale = new Vector3(-1, 1, 1); 
     }
 
     protected void FaceEnemy()
     {
+        if (stats.isDead || IsDashing) return;
         if (targetEnemy == null) return;
         RotateCharacter(targetEnemy.position.x - transform.position.x);
     }

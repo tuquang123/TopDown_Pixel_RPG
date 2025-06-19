@@ -46,7 +46,7 @@ public class SkillData : ScriptableObject
     public int value;
 
     [VerticalGroup("IconAndStats/Stats")]
-    [Range(0.1f, 10f)]
+    [Range(0.1f, 100f)]
     public float cooldown;
 
     [VerticalGroup("IconAndStats/Stats")]
