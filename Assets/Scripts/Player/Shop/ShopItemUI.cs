@@ -26,10 +26,10 @@ public class ShopItemUI : MonoBehaviour
         }
 
         icon.sprite = data.icon;
-        nameText.text = data.itemName; // Chỉ hiển thị tên
-        tierText.text = data.tier.ToString(); // Hiển thị tier riêng
-        priceText.text = $"{data.price} vàng";
-        backgroundImage.color = ItemUtility.GetColorByTier(data.tier); // Đặt màu nền theo tier
+        nameText.text = data.itemName; 
+        tierText.text = data.tier.ToString();
+        priceText.text = $"{data.price}";
+        backgroundImage.color = ItemUtility.GetColorByTier(data.tier); 
 
         buyButton.onClick.RemoveAllListeners();
         buyButton.onClick.AddListener(() => shopUI.BuyItem(itemData));
@@ -66,7 +66,7 @@ public class ShopItemUI : MonoBehaviour
         else
         {
             buyButton.interactable = gold >= itemData.price;
-            priceText.text = $"{itemData.price} vàng";
+            priceText.text = $"{itemData.price}";
         }
     }
 

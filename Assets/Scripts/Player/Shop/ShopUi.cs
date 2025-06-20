@@ -56,12 +56,14 @@ public class ShopUI : MonoBehaviour
         {
             playerInventory.AddItem(itemInstance);
             inventoryUI.UpdateInventoryUI();
-            RefreshShopUI(); // Làm mới trạng thái UI mà không tạo lại
+            RefreshShopUI();
             Debug.Log($"Đã mua {item.itemName} với giá {item.price} vàng.");
+            GameEvents.OnShowToast.Raise("Succes purchar Item!");
         }
         else
         {
             Debug.Log("Không đủ vàng để mua vật phẩm.");
+            GameEvents.OnShowToast.Raise("gold not enough!");
         }
     }
 

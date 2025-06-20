@@ -1,9 +1,11 @@
-﻿public class DamageBoost : ISkill
+﻿using UnityEngine;
+
+public class DamageBoost : ISkill
 {
     public void ExecuteSkill(PlayerStats playerStats, SkillData skillData)
     {
-        float damageIncrease = playerStats.attack.Value * skillData.value / 100;
-        playerStats.attack.AddModifier(new StatModifier(StatType.Attack, (int)damageIncrease)); 
+        int damageIncrease = Mathf.CeilToInt(playerStats.attack.Value * skillData.value / 100f);
+        playerStats.attack.AddModifier(new StatModifier(StatType.Attack, damageIncrease));
     }
 
     public bool CanUse(PlayerStats playerStats, SkillData skillData)
