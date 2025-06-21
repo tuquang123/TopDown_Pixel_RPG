@@ -26,8 +26,10 @@ public class PlayerStatsPopupUI : MonoBehaviour
             $"<color=#FFD700>Defense:</color> {stats.defense.Value}\n" +
             $"<color=#FFD700>Speed:</color> {stats.speed.Value}\n" +
             $"<color=#FFD700>Crit:</color> {stats.critChance.Value}%\n" +
-            $"<color=#FFD700>LifeSteal:</color> {stats.lifeSteal.Value}%";
+            $"<color=#FFD700>LifeSteal:</color> {stats.lifeSteal.Value}%\n" +
+            $"<color=#FFD700>Attack Speed:</color> {stats.attackSpeed.Value:F2}";
     }
+
     
     public void Hide()
     {

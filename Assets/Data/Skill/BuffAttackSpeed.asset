@@ -16,11 +16,12 @@ MonoBehaviour:
   skillName: Buff AttackSpeed
   skillType: 0
   requiredLevel: 1
-  icon: {fileID: -997972493423046422, guid: 36b1b2a60a181d04590bdd35295ac922, type: 3}
+  icon: {fileID: -480281958130896327, guid: 36b1b2a60a181d04590bdd35295ac922, type: 3}
   manaCost: 0
   value: 10
   cooldown: 0.1
   maxLevel: 10
   prefab: {fileID: 0}
-  description: Buff Att Speed 10%
+  description: 'Buff Att Speed '
+  descriptionTemplate: "T\u0103ng t\u1ED1c \u0111\xE1nh {value}% v\u0129nh vi\u1EC5n. "
   duration: 0
