@@ -5,8 +5,8 @@ using UnityEngine;
 
 public interface ISkill
 {
-    void ExecuteSkill(PlayerStats playerStats,SkillData data);
-    bool CanUse(PlayerStats playerStats,SkillData data);
+    void ExecuteSkill(PlayerStats playerStats, SkillData data);
+    bool CanUse(PlayerStats playerStats, SkillData data);
 }
 public class SkillFactory
 {
@@ -15,7 +15,7 @@ public class SkillFactory
         switch (skillID)
         {
             case SkillID.ShurikenThrow:
-                return new ShurikenThrowSkill();  // class logic, không phải MonoBehaviour
+                return new ShurikenThrowSkill();
             case SkillID.DamageBoost:
                 return new DamageBoost();
             case SkillID.Dash:
@@ -55,9 +55,9 @@ public class SkillSystem : MonoBehaviour
     private Dictionary<int, SkillID> assignedSkills = new();
     public event Action<int, SkillID> OnSkillAssigned;
     public bool autoCastEnabled = true;
+    public PlayerStats PlayerStats => _playerStats ; 
     
     private Dictionary<SkillID, SkillState> unlockedSkills = new();
-
 
     private void Start()
     {
@@ -83,13 +83,13 @@ public class SkillSystem : MonoBehaviour
                         if (skillID != SkillID.None && CanUseSkill(skillID))
                         {
                             StartCoroutine(ExecuteSkillWithLock(skillID));
-                            break; // chỉ thi triển 1 skill mỗi vòng
+                            break; 
                         }
                     }
                 }
             }
 
-            yield return new WaitForSeconds(0.1f); // giảm delay để phản hồi nhanh
+            yield return new WaitForSeconds(0.1f); 
         }
     }
 
@@ -97,14 +97,11 @@ public class SkillSystem : MonoBehaviour
     {
         isCasting = true;
         UseSkill(skillID);
-
-        // Thời gian khóa phụ thuộc loại skill hoặc animation
-        yield return new WaitForSeconds(1.5f); // ví dụ 0.5s
+        
+        yield return new WaitForSeconds(1.5f); 
 
         isCasting = false;
     }
-
-
     public bool UnlockSkill(SkillID skillID)
     {
         SkillData data = GetSkillData(skillID);
@@ -113,6 +110,7 @@ public class SkillSystem : MonoBehaviour
         if (!unlockedSkills.ContainsKey(skillID))
         {
             unlockedSkills[skillID] = new SkillState(skillID, data);
+            _playerStats.SetSkillLevel(skillID, 1); // Cập nhật cấp độ trong PlayerStats
             return true;
         }
 
@@ -120,11 +118,13 @@ public class SkillSystem : MonoBehaviour
         if (state.level < data.maxLevel)
         {
             state.level++;
+            _playerStats.SetSkillLevel(skillID, state.level); 
             return true;
         }
 
         return false;
     }
+    
     public SkillData GetSkillData(SkillID skillID)
     {
         return skillList.Find(s => s.skillID == skillID);
@@ -178,51 +178,58 @@ public class SkillSystem : MonoBehaviour
         return _playerStats.skillPoints > 0 && currentLevel < data.maxLevel;
     }
 
-
-
     public SkillID GetAssignedSkill(int slotIndex)
     {
         return assignedSkills.ContainsKey(slotIndex) ? assignedSkills[slotIndex] : SkillID.None;
     }
     
-    public bool CanUseSkill(SkillID skillID)
+    private SkillLevelStat GetCurrentLevelStat(SkillID skillID)
     {
-        SkillData skill = GetSkillData(skillID);
-        if (skill == null) return false;
+        SkillState skillState = GetSkillState(skillID);
+        if (skillState == null) return null;
 
-        // Cooldown check
-        if (Time.time < skillCooldownTimes.GetValueOrDefault(skillID, -Mathf.Infinity) + skill.cooldown)
-            return false;
+        SkillData skillData = GetSkillData(skillID);
+        if (skillData == null) return null;
 
-        // Mana check
-        ISkill skillInstance = SkillFactory.CreateSkill(skillID);
-        return skillInstance.CanUse(_playerStats, skill);
+        return skillData.GetLevelStat(skillState.level);
     }
 
+    public bool CanUseSkill(SkillID skillID)
+    {
+        SkillLevelStat currentLevelStat = GetCurrentLevelStat(skillID);
+        if (currentLevelStat == null) return false;
+        
+        if (Time.time < skillCooldownTimes.GetValueOrDefault(skillID, -Mathf.Infinity) + currentLevelStat.cooldown)
+            return false;
+        
+        ISkill skillInstance = SkillFactory.CreateSkill(skillID);
+        SkillData skillData = GetSkillData(skillID);
+        return skillInstance.CanUse(_playerStats, skillData);
+    }
 
     public event Action<SkillID> OnSkillUsed;
 
     public void UseSkill(SkillID skillID)
     {
-        if (!unlockedSkills.TryGetValue(skillID, out SkillState skillState)) return;
+        SkillLevelStat currentLevelStat = GetCurrentLevelStat(skillID);
+        if (currentLevelStat == null) return;
         
-        
-        float cooldown = skillState.GetCooldown();
-        if (Time.time < skillCooldownTimes.GetValueOrDefault(skillID, -Mathf.Infinity) + cooldown)
+        if (Time.time < skillCooldownTimes.GetValueOrDefault(skillID, -Mathf.Infinity) + currentLevelStat.cooldown)
             return;
-
-        if (_playerStats.currentMana < skillState.GetManaCost())
+        
+        if (_playerStats.currentMana < currentLevelStat.manaCost)
         {
             Debug.Log("Không đủ mana.");
             return;
         }
 
         ISkill skillInstance = SkillFactory.CreateSkill(skillID);
-        if (skillInstance.CanUse(_playerStats, skillState.skillData))
+        SkillData skillData = GetSkillData(skillID);
+        if (skillInstance.CanUse(_playerStats, skillData))
         {
-            _playerStats.UseMana(skillState.GetManaCost());
+            _playerStats.UseMana(currentLevelStat.manaCost);
             skillCooldownTimes[skillID] = Time.time;
-            skillInstance.ExecuteSkill(_playerStats, skillState.skillData);
+            skillInstance.ExecuteSkill(_playerStats, skillData);
 
             OnSkillUsed?.Invoke(skillID);
         }
@@ -237,19 +244,19 @@ public class SkillSystem : MonoBehaviour
     
     public int GetFirstAvailableSlot()
     {
-        // Kiểm tra các slot từ 0 đến 4 để tìm ô trống
         for (int i = 0; i < 5; i++)
         {
             if (!assignedSkills.ContainsKey(i) || assignedSkills[i] == SkillID.None)
             {
-                return i; // Trả về chỉ số của ô slot trống đầu tiên
+                return i; 
             }
         }
-        return -1; // Nếu không có ô trống, trả về -1
+        return -1; 
     }
+
     public bool IsSkillUnlocked(SkillID skillID)
     {
-        return unlockedSkills.ContainsKey(skillID) && unlockedSkills.ContainsKey(skillID);
+        return unlockedSkills.ContainsKey(skillID);
     }
 
     public SkillState GetSkillState(SkillID skillID)
@@ -258,8 +265,6 @@ public class SkillSystem : MonoBehaviour
         {
             return state;
         }
-        return null; // Trả về null nếu chưa học
+        return null; 
     }
 }
-
-

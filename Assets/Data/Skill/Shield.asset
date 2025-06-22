@@ -17,10 +17,37 @@ MonoBehaviour:
   skillType: 1
   requiredLevel: 1
   icon: {fileID: 2381433655103253379, guid: b452104514ec8fd43b1a1a64922e43d4, type: 3}
-  manaCost: 5
-  value: 1
-  cooldown: 20
-  maxLevel: 2
+  levelStats:
+  - level: 1
+    manaCost: 20
+    cooldown: 20
+    duration: 20
+    value: 10
+    overridePrefab: {fileID: 0}
+  - level: 2
+    manaCost: 15
+    cooldown: 15
+    duration: 15
+    value: 20
+    overridePrefab: {fileID: 0}
+  - level: 3
+    manaCost: 10
+    cooldown: 10
+    duration: 10
+    value: 30
+    overridePrefab: {fileID: 0}
+  - level: 4
+    manaCost: 8
+    cooldown: 8
+    duration: 8
+    value: 50
+    overridePrefab: {fileID: 0}
+  - level: 5
+    manaCost: 5
+    cooldown: 5
+    duration: 5
+    value: 60
+    overridePrefab: {fileID: 0}
   prefab: {fileID: 3339182698508551763, guid: 7fdb728974b268d4993a148dacd22ec1, type: 3}
-  description: 
-  duration: 5
+  descriptionTemplate: "Shiled g\xE2y {value}% s\xE1t th\u01B0\u01A1ng. Mana: {mana},
+    H\u1ED3i chi\xEAu: {cooldown}s. "

@@ -18,7 +18,7 @@ public class PlayerDash : MonoBehaviour
         playerMovement = GetComponent<PlayerController>();
     }
 
-    public void PerformDash(SkillData skill)
+    public void PerformDash(SkillData skill , PlayerStats playerStats)
     {
         if (isDashing) return;
         
@@ -26,10 +26,10 @@ public class PlayerDash : MonoBehaviour
         if (target == null) return;
 
         Vector2 directionToTarget = (target.position - transform.position).normalized;
-        StartCoroutine(DashCoroutine(skill, directionToTarget));
+        StartCoroutine(DashCoroutine(skill, directionToTarget, playerStats));
     }
 
-    private IEnumerator DashCoroutine(SkillData skill, Vector2 direction)
+    private IEnumerator DashCoroutine(SkillData skill, Vector2 direction , PlayerStats playerStats)
     {
         isDashing = true;
         float startTime = Time.time;
@@ -40,7 +40,8 @@ public class PlayerDash : MonoBehaviour
         }
         
         // ✅ Spawn dash VFX (ví dụ: khói hoặc hiệu ứng chớp nhoáng)
-        var vfx = Instantiate(skill.prefab, transform.position, Quaternion.identity, transform);
+        var prefab = skill.GetPrefabAtLevel(playerStats.GetSkillLevel(skill.skillID));
+        var vfx = Instantiate(prefab, transform.position, Quaternion.identity, transform);
 
         // ✅ Slow motion nhẹ
         float originalTimeScale = Time.timeScale;

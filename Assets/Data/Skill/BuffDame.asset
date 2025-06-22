@@ -17,10 +17,31 @@ MonoBehaviour:
   skillType: 0
   requiredLevel: 1
   icon: {fileID: -997972493423046422, guid: 36b1b2a60a181d04590bdd35295ac922, type: 3}
-  manaCost: 0
-  value: 10
-  cooldown: 0.1
-  maxLevel: 10
+  levelStats:
+  - level: 1
+    manaCost: 0
+    cooldown: 0
+    duration: 0
+    value: 10
+  - level: 2
+    manaCost: 0
+    cooldown: 0
+    duration: 0
+    value: 20
+  - level: 3
+    manaCost: 0
+    cooldown: 0
+    duration: 0
+    value: 30
+  - level: 4
+    manaCost: 0
+    cooldown: 0
+    duration: 0
+    value: 50
+  - level: 5
+    manaCost: 0
+    cooldown: 0
+    duration: 0
+    value: 60
   prefab: {fileID: 0}
-  description: 
-  duration: 0
+  descriptionTemplate: "T\u0103ng Dame {value}% v\u0129nh vi\u1EC5n. "

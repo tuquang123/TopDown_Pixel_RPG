@@ -36,7 +36,16 @@ public class SkillSlotUIController : MonoBehaviour
         {
             if (skillSystem.GetAssignedSkill(i) == skillID)
             {
-                float cd = skillSystem.GetSkillData(skillID).cooldown;
+                var skillData = skillSystem.GetSkillData(skillID);
+                int currentLevel = skillSystem.PlayerStats.GetSkillLevel(skillData.skillID);
+                SkillLevelStat currentLevelStat = skillData.GetLevelStat(currentLevel);
+
+                if (currentLevelStat == null)
+                {
+                    Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skillData.skillName}");
+                    return;
+                }
+                float cd = currentLevelStat.cooldown;
                 skillSlots[i].StartCooldown(cd);
                 break;
             }

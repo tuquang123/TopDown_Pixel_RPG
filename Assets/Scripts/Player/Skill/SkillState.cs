@@ -1,43 +1,28 @@
 ﻿using System;
-using UnityEngine;
 
 [Serializable]
 public class SkillState
 {
+    public SkillID skillID;
     public SkillData skillData;
     public int level;
 
-    public SkillState(SkillID skillID, SkillData data)
+    public SkillState(SkillID skillID, SkillData skillData)
     {
-        skillData = data;
-        level = 1;
+        this.skillID = skillID;
+        this.skillData = skillData;
+        this.level = 1; 
     }
 
-    public SkillState()
+    public float GetCooldown()
     {
-        level = 1; // Mặc định học kỹ năng sẽ ở cấp 1
-    }
-
-    public int GetValue()
-    {
-        return skillData.value * level; // Scale theo level
+        SkillLevelStat stat = skillData.GetLevelStat(level);
+        return stat?.cooldown ?? 0f;
     }
 
     public int GetManaCost()
     {
-        if (skillData == null) return 0;
-        return skillData.manaCost + (level - 1) * 1; // ví dụ
+        SkillLevelStat stat = skillData.GetLevelStat(level);
+        return stat?.manaCost ?? 0;
     }
-
-
-    public float GetCooldown()
-    {
-        if (skillData == null)
-        {
-            return 1f; // fallback cooldown
-        }
-
-        return Mathf.Max(0.5f, skillData.cooldown - (level - 1) * 0.1f);
-    }
-
 }

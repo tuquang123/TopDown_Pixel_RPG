@@ -25,9 +25,17 @@ public class PlayerSlash : MonoBehaviour, IGameEventListener
 
     public void Slash(SkillData skill)
     {
-        if (stats.currentMana < skill.manaCost) return;
+        int currentLevel = 1; 
+        SkillLevelStat currentLevelStat = skill.GetLevelStat(currentLevel);
 
-        //stats.UseMana(skill.manaCost);
+        if (currentLevelStat == null)
+        {
+            Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skill.skillName}");
+        }
+        
+        if (currentLevelStat != null && stats.currentMana < currentLevelStat.manaCost) return;
+
+        if (currentLevelStat != null) stats.UseMana(currentLevelStat.manaCost);
 
         anim.SetTrigger("9_Slash"); // Gọi animation Skill (cần đảm bảo đã setup trên Animator)
 

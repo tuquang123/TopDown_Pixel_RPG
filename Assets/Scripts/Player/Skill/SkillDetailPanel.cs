@@ -22,32 +22,50 @@ public class SkillDetailPanel : MonoBehaviour
         currentSkill = skillData;
         skillSystem = system;
 
-        // Set icon and name
         nameText.text = currentSkill.skillName;
         iconImage.sprite = currentSkill.icon;
 
-        // Get real level (allow level 0 if not yet learned)
-        int level = skillSystem.GetSkillLevel(currentSkill.skillID);
-        levelText.text = $"Cấp: {level}/{currentSkill.maxLevel}";
+        int currentLevel = skillSystem.GetSkillLevel(currentSkill.skillID);
+        levelText.text = $"Cấp: {currentLevel}/{currentSkill.maxLevel}";
 
-        // Preview level: if chưa học thì xem thử cấp 1, nếu đã học thì xem cấp hiện tại
-        int previewLevel = level > 0 ? level : 1;
+        string fullDescription = "";
 
-        int actualValue = currentSkill.value * previewLevel;
-        int manaCost = currentSkill.manaCost;
-        float cooldown = currentSkill.cooldown;
-        float duration = currentSkill.duration;
+        // Mô tả cấp hiện tại
+        if (currentLevel > 0)
+        {
+            SkillLevelStat currentStat = currentSkill.GetLevelStat(currentLevel);
+            if (currentStat != null)
+            {
+                string desc = currentSkill.descriptionTemplate
+                    .Replace("{value}", currentStat.value.ToString())
+                    .Replace("{mana}", currentStat.manaCost.ToString())
+                    .Replace("{cooldown}", currentStat.cooldown.ToString("0.#"))
+                    .Replace("{duration}", currentStat.duration.ToString("0.#"));
 
-        // Replace placeholders in template
-        string description = currentSkill.descriptionTemplate
-            .Replace("{value}", actualValue.ToString())
-            .Replace("{mana}", manaCost.ToString())
-            .Replace("{cooldown}", cooldown.ToString("0.#"))
-            .Replace("{duration}", duration.ToString("0.#"));
+                fullDescription += $"<b>Hiện tại (Cấp {currentLevel}):</b>\n{desc}\n\n";
+            }
+        }
 
-        descriptionText.text = description;
+        // Mô tả cấp tiếp theo
+        int nextLevel = currentLevel + 1;
+        if (nextLevel <= currentSkill.maxLevel)
+        {
+            SkillLevelStat nextStat = currentSkill.GetLevelStat(nextLevel);
+            if (nextStat != null)
+            {
+                string desc = currentSkill.descriptionTemplate
+                    .Replace("{value}", nextStat.value.ToString())
+                    .Replace("{mana}", nextStat.manaCost.ToString())
+                    .Replace("{cooldown}", nextStat.cooldown.ToString("0.#"))
+                    .Replace("{duration}", nextStat.duration.ToString("0.#"));
 
-        // Determine button visibility
+                fullDescription += $"<b>Cấp tiếp theo (Cấp {nextLevel}):</b>\n{desc}";
+            }
+        }
+
+        descriptionText.text = fullDescription;
+
+        // Kiểm tra điều kiện gán / học
         bool isUnlocked = skillSystem.IsSkillUnlocked(currentSkill.skillID);
         bool canLearn = skillSystem.CanUnlockSkill(currentSkill.skillID);
         bool isActive = currentSkill.skillType == SkillType.Active;
@@ -55,7 +73,7 @@ public class SkillDetailPanel : MonoBehaviour
         learnButton.gameObject.SetActive(canLearn);
         assignButton.gameObject.SetActive(isUnlocked && isActive);
 
-        // Reset listeners
+        // Gán sự kiện
         learnButton.onClick.RemoveAllListeners();
         assignButton.onClick.RemoveAllListeners();
         closeButton.onClick.RemoveAllListeners();
@@ -79,10 +97,10 @@ public class SkillDetailPanel : MonoBehaviour
                 if (currentSkill.skillType == SkillType.Passive)
                 {
                     skillSystem.UseSkill(currentSkill.skillID);
-                    Debug.Log($"Đã kích hoạt buff kỹ năng thụ động: {currentSkill.skillName}");
+                    Debug.Log($"Đã kích hoạt kỹ năng thụ động: {currentSkill.skillName}");
                 }
 
-                Setup(currentSkill, skillSystem); // Refresh UI
+                Setup(currentSkill, skillSystem); // Refresh
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
@@ -52,6 +53,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
 
     private void Start()
     {
+        LoadSkillLevels();
         anim = GetComponentInChildren<Animator>();
         currentHealth = (int)maxHealth.Value;
         currentMana = (int)maxMana.Value;
@@ -209,6 +211,48 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
         int healAmount = Mathf.RoundToInt(damageDealt * (lifeSteal.Value / 100f));
         if (healAmount > 0) Heal(healAmount);
         return healAmount;
+    }
+    
+    private Dictionary<SkillID, int> skillLevels = new ();
+
+    public int GetSkillLevel(SkillID skillID)
+    {
+        return skillLevels.GetValueOrDefault(skillID, 1);
+    }
+
+    public void SetSkillLevel(SkillID skillID, int level)
+    {
+        skillLevels[skillID] = level;
+        SaveSkillLevels();
+    }
+    public void SaveSkillLevels()
+    {
+        foreach (var pair in skillLevels)
+        {
+            PlayerPrefs.SetInt($"SkillLevel_{pair.Key}", pair.Value);
+        }
+        PlayerPrefs.Save();
+    }
+
+    public void LoadSkillLevels()
+    {
+        skillLevels.Clear();
+        foreach (SkillID skillID in System.Enum.GetValues(typeof(SkillID)))
+        {
+            if (PlayerPrefs.HasKey($"SkillLevel_{skillID}"))
+            {
+                skillLevels[skillID] = PlayerPrefs.GetInt($"SkillLevel_{skillID}");
+            }
+        }
+    }
+    private void OnApplicationQuit()
+    {
+        SaveSkillLevels();
+    }
+
+    private void OnDestroy()
+    {
+        SaveSkillLevels();
     }
 
 }
