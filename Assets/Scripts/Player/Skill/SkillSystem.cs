@@ -193,20 +193,25 @@ public class SkillSystem : MonoBehaviour
 
         return skillData.GetLevelStat(skillState.level);
     }
+    
 
     public bool CanUseSkill(SkillID skillID)
     {
         SkillLevelStat currentLevelStat = GetCurrentLevelStat(skillID);
         if (currentLevelStat == null) return false;
-        
+
         if (Time.time < skillCooldownTimes.GetValueOrDefault(skillID, -Mathf.Infinity) + currentLevelStat.cooldown)
             return false;
-        
+
+        if (_playerStats.currentMana < currentLevelStat.manaCost)
+            return false;
+
         ISkill skillInstance = SkillFactory.CreateSkill(skillID);
         SkillData skillData = GetSkillData(skillID);
-        return skillInstance.CanUse(_playerStats, skillData);
-    }
 
+        return skillInstance.CanUse(_playerStats, skillData); 
+    }
+    
     public event Action<SkillID> OnSkillUsed;
 
     public void UseSkill(SkillID skillID)

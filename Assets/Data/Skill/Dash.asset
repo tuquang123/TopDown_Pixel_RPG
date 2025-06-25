@@ -19,30 +19,35 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 30e47371660a44f038c174865e5af8d3, type: 3}
   levelStats:
   - level: 1
-    manaCost: 20
+    manaCost: 5
     cooldown: 20
     duration: 20
     value: 10
+    overridePrefab: {fileID: 0}
   - level: 2
-    manaCost: 15
+    manaCost: 5
     cooldown: 15
     duration: 15
     value: 20
+    overridePrefab: {fileID: 0}
   - level: 3
-    manaCost: 10
+    manaCost: 5
     cooldown: 10
     duration: 10
     value: 30
+    overridePrefab: {fileID: 0}
   - level: 4
-    manaCost: 8
+    manaCost: 4
     cooldown: 8
     duration: 8
     value: 50
+    overridePrefab: {fileID: 0}
   - level: 5
-    manaCost: 5
+    manaCost: 3
     cooldown: 5
     duration: 5
     value: 60
+    overridePrefab: {fileID: 0}
   prefab: {fileID: 4670708323387926946, guid: 740f04f019062df4bbf451bf5255c751, type: 3}
   descriptionTemplate: "N\xE9m phi ti\xEAu g\xE2y {value}% s\xE1t th\u01B0\u01A1ng.
     Mana: {mana}, H\u1ED3i chi\xEAu: {cooldown}s. "
