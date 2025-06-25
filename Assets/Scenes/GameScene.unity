@@ -86895,8 +86895,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2099838818}
-        m_TargetAssemblyTypeName: ButtonHandler, Assembly-CSharp
-        m_MethodName: OnClick
+        m_TargetAssemblyTypeName: UIButtonPopupTrigger, Assembly-CSharp
+        m_MethodName: TogglePlayerStatsPopup
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -86953,11 +86953,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2099838813}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1ca4519ea784c6bae3ebc59fd4b821d, type: 3}
+  m_Script: {fileID: 11500000, guid: 1c52752f5d1a471fab40bbb5fc19be26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  popupToControl: 1
-  action: 0
 --- !u!1001 &2102143623
 PrefabInstance:
   m_ObjectHideFlags: 0
