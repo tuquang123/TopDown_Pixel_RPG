@@ -1,13 +1,19 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class ShopUI : MonoBehaviour
+public class ShopUI : BasePopup
 {
     public GameObject itemUIPrefab;
     public Transform contentParent;
     public Inventory playerInventory;
     public InventoryUI inventoryUI;
-    private List<ShopItemUI> shopItemUIs = new List<ShopItemUI>();
+    private List<ShopItemUI> shopItemUIs = new();
+
+    public override void Show()
+    {
+        base.Show();
+        RefreshShopUI(); 
+    }
 
     public void SetupShop(List<ItemData> items)
     {
@@ -58,12 +64,12 @@ public class ShopUI : MonoBehaviour
             inventoryUI.UpdateInventoryUI();
             RefreshShopUI();
             Debug.Log($"Đã mua {item.itemName} với giá {item.price} vàng.");
-            GameEvents.OnShowToast.Raise("Succes purchar Item!");
+            GameEvents.OnShowToast.Raise("Succes purchase Item!");
         }
         else
         {
             Debug.Log("Không đủ vàng để mua vật phẩm.");
-            GameEvents.OnShowToast.Raise("gold not enough!");
+            GameEvents.OnShowToast.Raise("Gold not enough!");
         }
     }
 

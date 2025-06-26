@@ -15,7 +15,6 @@ public class ItemDetailPanel : MonoBehaviour
 
     private ItemInstance currentItem;
     private InventoryUI inventoryUI;
-    public PlayerStats playerStats;
 
     private int CalculateSellPrice(ItemInstance item)
     {

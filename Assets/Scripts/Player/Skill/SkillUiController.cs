@@ -1,13 +1,20 @@
 using UnityEngine;
 
-public class SkillUIController : MonoBehaviour
+public class SkillUIController : BasePopup
 {
     public GameObject skillButtonPrefab;
     public Transform skillListContainer;
     public SkillSystem skillSystem;
     public SkillDetailPanel skillDetailPanel;
 
-    private void OnEnable()
+    public override void Show()
+    {
+        base.Show();
+        RefreshSkillButtons();
+        skillDetailPanel.Hide();
+    }
+
+    private void RefreshSkillButtons()
     {
         foreach (Transform child in skillListContainer)
         {
@@ -23,7 +30,5 @@ public class SkillUIController : MonoBehaviour
             SkillButton skillButton = skillButtonObject.GetComponent<SkillButton>();
             skillButton.Initialize(skillData, skillSystem, skillDetailPanel);
         }
-
-        skillDetailPanel.Hide(); 
     }
 }

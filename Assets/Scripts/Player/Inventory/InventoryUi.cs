@@ -1,19 +1,24 @@
 ﻿using UnityEngine;
 
-public class InventoryUI : MonoBehaviour
+public class InventoryUI : BasePopup
 {
     public Transform itemContainer;
     public Inventory inventory;
-    public EquipmentUI equipmentUI;
-    public PlayerStats playerStats;
     public GameObject itemPrefab;
-
-    public ItemDetailPanel itemDetailPanel;
     public EquipmentUI equipmentUi;
 
-    private void Start()
+    public ItemDetailPanel itemDetailPanel;
+
+    public override void Show()
     {
+        base.Show();
         UpdateInventoryUI();
+    }
+
+    public override void Hide()
+    {
+        base.Hide();
+        itemDetailPanel.Hide(); // Ẩn panel chi tiết nếu có
     }
 
     public void UpdateInventoryUI()
