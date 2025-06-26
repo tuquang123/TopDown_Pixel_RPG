@@ -1,78 +1,76 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
 public class InvincibleSkill : ISkill
 {
     public void ExecuteSkill(PlayerStats playerStats, SkillData skillData)
     {
-        // Cập nhật thời gian cooldown và mana thông qua SkillSystem
-        SkillSystem skillSystem = playerStats.GetComponent<SkillSystem>();
-        if (skillSystem != null)
+        if (playerStats == null || skillData == null)
         {
-            skillSystem.UseSkill(skillData.skillID); // Gọi UseSkill để xử lý mana và cooldown
+            Debug.LogError("InvincibleSkill.ExecuteSkill: playerStats hoặc skillData null.");
+            return;
         }
+
+        SkillSystem skillSystem = playerStats.GetComponent<SkillSystem>();
+        if (skillSystem == null)
+        {
+            Debug.LogError("InvincibleSkill.ExecuteSkill: Không tìm thấy SkillSystem trên playerStats.");
+            return;
+        }
+
+        skillSystem.UseSkill(skillData.skillID); // xử lý cooldown & mana
 
         playerStats.StartCoroutine(ActivateInvincibility(playerStats, skillData));
     }
 
     private IEnumerator ActivateInvincibility(PlayerStats playerStats, SkillData skillData)
     {
-        // Lấy cấp độ hiện tại từ PlayerStats
-        int currentLevel = playerStats.GetSkillLevel(skillData.skillID);
-        SkillLevelStat currentLevelStat = skillData.GetLevelStat(currentLevel);
+        int level = playerStats.GetSkillLevel(skillData.skillID);
+        SkillLevelStat levelStat = skillData.GetLevelStat(level);
 
-        if (currentLevelStat == null)
+        if (levelStat == null)
         {
-            Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skillData.skillName}");
+            Debug.LogError($"Không tìm thấy level stat cho kỹ năng {skillData.skillName} cấp {level}");
             yield break;
         }
 
-        int defenseBoostAmount = (int)currentLevelStat.value;
+        int defenseBoost = (int)levelStat.value;
+        var modifier = new StatModifier(StatType.Defense, defenseBoost);
 
-        // Tăng giáp tạm thời
-        var modifier = new StatModifier(StatType.Defense, defenseBoostAmount);
         playerStats.defense.AddModifier(modifier);
         playerStats.isInvincible = true;
-        Debug.Log("Kích hoạt bất tử!");
+        Debug.Log($"[InvincibleSkill] Bất tử kích hoạt! +{defenseBoost} DEF");
 
-        // Spawn VFX shield
-        Vector3 spawnPosition = playerStats.transform.position + Vector3.up;
-        var prefab = skillData.GetPrefabAtLevel(playerStats.GetSkillLevel(skillData.skillID));
-        var vfx = Object.Instantiate(prefab, spawnPosition, Quaternion.identity, playerStats.transform);
-        vfx.SetActive(true);
+        // Spawn VFX nếu có
+        GameObject prefab = skillData.GetPrefabAtLevel(level);
+        GameObject vfx = null;
+        if (prefab != null)
+        {
+            vfx = Object.Instantiate(prefab, playerStats.transform.position + Vector3.up, Quaternion.identity, playerStats.transform);
+            vfx.SetActive(true);
+        }
 
-        yield return new WaitForSeconds(currentLevelStat.duration);
+        yield return new WaitForSeconds(levelStat.duration);
 
-        // Kết thúc hiệu ứng
         playerStats.defense.RemoveModifier(modifier);
         playerStats.isInvincible = false;
-        Debug.Log("Hết hiệu ứng bất tử!");
+        Debug.Log("[InvincibleSkill] Hiệu ứng bất tử kết thúc.");
 
-        // Hủy VFX
-        Object.Destroy(vfx);
+        if (vfx != null)
+            Object.Destroy(vfx);
     }
 
     public bool CanUse(PlayerStats playerStats, SkillData skillData)
     {
-        // Lấy cấp độ hiện tại từ PlayerStats
         int currentLevel = playerStats.GetSkillLevel(skillData.skillID);
-        SkillLevelStat currentLevelStat = skillData.GetLevelStat(currentLevel);
+        SkillLevelStat levelStat = skillData.GetLevelStat(currentLevel);
 
-        if (currentLevelStat == null)
-        {
-            Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skillData.skillName}");
-            return false;
-        }
+        if (levelStat == null) return false;
 
-        // Kiểm tra mana
-        if (playerStats.currentMana < currentLevelStat.manaCost)
-            return false;
-
-        // Kiểm tra cooldown thông qua SkillSystem
-        SkillSystem skillSystem = playerStats.GetComponent<SkillSystem>();
-        if (skillSystem == null || !skillSystem.CanUseSkill(skillData.skillID))
+        if (playerStats.currentMana < levelStat.manaCost)
             return false;
 
         return true;
     }
+
 }
