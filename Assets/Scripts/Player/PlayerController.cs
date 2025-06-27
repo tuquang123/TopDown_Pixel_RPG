@@ -91,7 +91,13 @@ public class PlayerController : MonoBehaviour, IGameEventListener
             anim.SetBool(MoveBool, false);
         }
     }
-
+    
+    public void PlayWalkSFX()
+    {
+        if (!stats.isDead && !IsDashing)
+            AudioManager.Instance.PlaySFX("Walk");
+    }
+    
     protected virtual void MovePlayer()
     {
         float moveSpeed = stats.speed.Value;
@@ -144,6 +150,8 @@ public class PlayerController : MonoBehaviour, IGameEventListener
     // Gọi trong Animation Event, KHÔNG gọi trong Update
     public void ApplyAttackDamage()
     {
+        AudioManager.Instance.PlaySFX("Attack");
+
         Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
         foreach (Collider2D hit in hits)
         {

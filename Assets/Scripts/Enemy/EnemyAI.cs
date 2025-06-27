@@ -56,8 +56,6 @@ public class EnemyAI : MonoBehaviour
     }
 
     public int MaxHealth => maxHealth;
-    
-    [SerializeField] Transform vfxSpawnPoint;
 
     protected virtual void Start()
     {
@@ -95,27 +93,6 @@ public class EnemyAI : MonoBehaviour
             anim.SetBool(MoveBool, false);
         }
     }
-
-    /*void MoveTowardsPlayer()
-    {
-        if (Time.time - lastAttackTime < attackCooldown)
-        {
-            anim.SetBool(MoveBool, false);
-            return;
-        }
-
-        // Tính hướng và di chuyển đến gần player
-        Vector2 direction = (player.position - transform.position).normalized;
-        transform.position += (Vector3)(direction * moveSpeed * Time.deltaTime);
-
-        // Chỉ xoay trái/phải dựa vào X
-        if (player.position.x > transform.position.x)
-            transform.rotation = Quaternion.Euler(0, 0, 0);
-        else
-            transform.rotation = Quaternion.Euler(0, 180, 0);
-
-        anim.SetBool(MoveBool, true);
-    }*/
     protected virtual void MoveToAttackPosition()
     {
         Vector2 enemyPos = transform.position;
@@ -125,8 +102,7 @@ public class EnemyAI : MonoBehaviour
         float xDiff = Mathf.Abs(enemyPos.x - playerPos.x);
 
         float yTolerance = 0.1f;
-
-        // Nếu chưa canh được trục Y thì di chuyển theo Y
+        
         if (yDiff > yTolerance)
         {
             Vector2 directionY = new Vector2(0, playerPos.y - enemyPos.y).normalized;
@@ -145,7 +121,6 @@ public class EnemyAI : MonoBehaviour
         else
         {
             anim.SetBool(MoveBool, false);
-            // Gần đủ vị trí rồi thì tấn công
             if (Time.time - lastAttackTime >= attackCooldown)
             {
                 AttackPlayer();
@@ -188,11 +163,6 @@ public class EnemyAI : MonoBehaviour
             anim.SetBool(MoveBool, false);
             anim.SetTrigger(AttackTrigger);
             lastAttackTime = Time.time;
-
-            /*if (player.TryGetComponent(out PlayerStats playerHealth))
-            {
-                playerHealth.TakeDamage(attackDamage);
-            }*/
         }
     }
     
@@ -288,8 +258,7 @@ public class EnemyAI : MonoBehaviour
         //anim.Play("Idle"); // hoặc reset animation về mặc định
         enemyHealthUI?.UpdateHealth(currentHealth);
     }
-
-
+    
     public event System.Action OnDeath;
     protected virtual void Die()
     {
@@ -305,11 +274,10 @@ public class EnemyAI : MonoBehaviour
 
         if (enemyHealthUI != null)
         {
-            Destroy(enemyHealthUI.gameObject); // hoặc pool nếu cần
+            Destroy(enemyHealthUI.gameObject); 
             enemyHealthUI = null;
         }
-
-        // Ẩn enemy thay vì destroy
+        
         StartCoroutine(DisableAfterDelay(0.65f));
         OnEnemyDefeated?.Invoke(50);
     }
@@ -329,7 +297,7 @@ public class EnemyAI : MonoBehaviour
     }
     
 #if UNITY_EDITOR
-    [Button("Auto Setup Rigidbody & Collider")]
+    [Button("Auto Setup Rigidbody, Collider, Layer & UnitRoot")]
     private void AutoAddRigidbodyAndCollider()
     {
         // Add Rigidbody2D nếu chưa có
@@ -352,13 +320,43 @@ public class EnemyAI : MonoBehaviour
         gameObject.tag = "Enemy";
         Debug.Log("Tag set to 'Enemy'.");
 
-        // Kiểm tra nếu tag "Enemy" chưa tồn tại
         if (!IsTagDefined("Enemy"))
         {
             Debug.LogWarning("Tag 'Enemy' is not defined in Tag Manager. Please define it manually.");
         }
-    }
 
+        // Gán Layer "Enemy" nếu tồn tại
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+        if (enemyLayer != -1)
+        {
+            gameObject.layer = enemyLayer;
+            Debug.Log("Layer set to 'Enemy'.");
+        }
+        else
+        {
+            Debug.LogWarning("Layer 'Enemy' is not defined. Please add it manually in the Tag Manager.");
+        }
+
+        // Tìm object con tên "UnitRoot" và gắn CommonAnimationEvents nếu cần
+        Transform unitRoot = transform.Find("UnitRoot");
+        if (unitRoot != null)
+        {
+            if (unitRoot.GetComponent<CommonAnimationEvents>() == null)
+            {
+                unitRoot.gameObject.AddComponent<CommonAnimationEvents>();
+                Debug.Log("CommonAnimationEvents component added to UnitRoot.");
+            }
+            else
+            {
+                Debug.Log("UnitRoot already has CommonAnimationEvents.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Child named 'UnitRoot' not found under this enemy.");
+        }
+    }
+    
     /// <summary>
     /// Kiểm tra tag đã tồn tại trong TagManager chưa
     /// </summary>

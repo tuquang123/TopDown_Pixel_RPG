@@ -42,6 +42,8 @@ public class PlayerDash : MonoBehaviour
         // ✅ Spawn dash VFX (ví dụ: khói hoặc hiệu ứng chớp nhoáng)
         var prefab = skill.GetPrefabAtLevel(playerStats.GetSkillLevel(skill.skillID));
         var vfx = Instantiate(prefab, transform.position, Quaternion.identity, transform);
+        
+        AudioManager.Instance.PlaySFX("Dash");
 
         // ✅ Slow motion nhẹ
         float originalTimeScale = Time.timeScale;

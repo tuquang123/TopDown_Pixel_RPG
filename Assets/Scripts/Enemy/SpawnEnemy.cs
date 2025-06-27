@@ -17,6 +17,8 @@ public class SpawnEnemy : MonoBehaviour
     [Tooltip("Prefab Boss")]
     [Required]
     [SerializeField] private GameObject bossPrefab;
+
+    public int timeBoss = 15;
     
     [Title("Spawn Points Settings")]
     [Tooltip("Các điểm spawn cố định")]
@@ -36,7 +38,7 @@ public class SpawnEnemy : MonoBehaviour
             sp.Spawn();
         }
 
-        Invoke(nameof(SpawnBoss), 90f);
+        Invoke(nameof(SpawnBoss), timeBoss);
     }
 
     private void SpawnBoss()

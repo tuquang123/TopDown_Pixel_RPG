@@ -386,7 +386,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2
   attackRange: 1.5
-  detectionRange: 35
+  detectionRange: 20
   attackCooldown: 1
   maxHealth: 100
   attackDamage: 10
@@ -394,7 +394,6 @@ MonoBehaviour:
   bloodVFXOffset: {x: 0, y: 0.5, z: 0}
   knockForce: 3
   knockDuration: 0.3
-  vfxSpawnPoint: {fileID: 0}
   specialAttackCooldown: 5
   bossHealthUI: {fileID: 0}
 --- !u!1 &1642773182976143640

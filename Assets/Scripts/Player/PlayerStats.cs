@@ -86,29 +86,34 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
 
     public void TakeDamage(int damage)
     {
-        if (isDead || isInvincible) return;
-        
+        if (isDead) return;
+
         int actualDamage = Mathf.Max(damage - (int)defense.Value, 1);
+
+        if (isInvincible)
+        {
+            actualDamage = 0;
+        }
+
         currentHealth -= actualDamage;
         currentHealth = Mathf.Clamp(currentHealth, 0, (int)maxHealth.Value);
-        //.Log($"Nhận {actualDamage} sát thương, HP còn: {currentHealth}");
-        
+
         GetComponentInChildren<Animator>().SetTrigger(HurtAnm);
-        // Knockback hoặc hiệu ứng bị choáng, rung màn hình...
         StartCoroutine(HurtEffect());
-        
+
         OnHealthChanged?.Invoke();
 
         FloatingTextSpawner.Instance.SpawnText(
             $"-{actualDamage}",
             transform.position + Vector3.up * 0.5f,
-            Color.white);
+            actualDamage == 0 ? Color.yellow : Color.white);
 
         if (currentHealth <= 0)
         {
             Die();
         }
     }
+
     private IEnumerator HurtEffect()
     {
         // Có thể thêm logic như flinch, disable movement tạm thời...
