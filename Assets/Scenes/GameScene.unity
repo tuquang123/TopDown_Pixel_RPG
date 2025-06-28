@@ -1742,7 +1742,6 @@ RectTransform:
   - {fileID: 565949678}
   - {fileID: 1656230805}
   - {fileID: 1358494192}
-  - {fileID: 1407789997}
   - {fileID: 143802749186979762}
   - {fileID: 1174800442}
   - {fileID: 1060358468}
@@ -3637,6 +3636,7 @@ MonoBehaviour:
   respawnDelay: 10
   enemyUI: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
   canvasHp: {fileID: 71306075}
+  enemyLevel: 1
 --- !u!1 &128768943
 GameObject:
   m_ObjectHideFlags: 0
@@ -19681,8 +19681,8 @@ GameObject:
   m_Component:
   - component: {fileID: 422630744}
   - component: {fileID: 422630746}
-  - component: {fileID: 422630745}
   - component: {fileID: 422630747}
+  - component: {fileID: 422630748}
   m_Layer: 5
   m_Name: SkillPanelUi
   m_TagString: Untagged
@@ -19712,23 +19712,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -48.225098}
   m_SizeDelta: {x: 0, y: -333.3342}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &422630745
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 422630743}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7944a98ca4d1b32408acfc70ea6aa55e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skillButtonPrefab: {fileID: 6806613481149792246, guid: 987ee34c950f17a4abd24cd7cf5b370a,
-    type: 3}
-  skillListContainer: {fileID: 389748881}
-  skillSystem: {fileID: 564411220360788419}
-  skillDetailPanel: {fileID: 753606849}
 --- !u!114 &422630746
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19767,6 +19750,23 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &422630748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 422630743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04b745e4cb0c4e34ea7445e1f88a4d4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillButtonPrefab: {fileID: 6806613481149792246, guid: 987ee34c950f17a4abd24cd7cf5b370a,
+    type: 3}
+  skillListContainer: {fileID: 389748881}
+  skillSystem: {fileID: 564411220360788419}
+  skillDetailPanel: {fileID: 753606849}
 --- !u!1001 &423381098
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22901,7 +22901,7 @@ Camera:
   far clip plane: 100
   field of view: 60
   orthographic: 1
-  orthographic size: 7
+  orthographic size: 5.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -23720,6 +23720,7 @@ MonoBehaviour:
   respawnDelay: 10
   enemyUI: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
   canvasHp: {fileID: 71306075}
+  enemyLevel: 1
 --- !u!1001 &546941171
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23973,6 +23974,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 681292d90042d014092cb88da479d97a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelDatabase: {fileID: 11400000, guid: 772ee1512c9cae04c94b3f8f8b705d05, type: 2}
   enemyUI: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
   canvasHp: {fileID: 128768943}
   bossPrefab: {fileID: 8640717683572217345}
@@ -26211,6 +26213,7 @@ Transform:
   - {fileID: 565268916}
   - {fileID: 1560121428}
   - {fileID: 247927438}
+  - {fileID: 1407789997}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &637887265
@@ -34612,6 +34615,7 @@ MonoBehaviour:
   respawnDelay: 10
   enemyUI: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
   canvasHp: {fileID: 71306075}
+  enemyLevel: 1
 --- !u!1 &926810035
 GameObject:
   m_ObjectHideFlags: 0
@@ -46590,11 +46594,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9f2e2f421f04368b0af051ef761de35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c,
+  enemyPrefab: {fileID: 2970206300379713479, guid: a69260f2b7402d149a15e280862de3b1,
     type: 3}
   respawnDelay: 10
   enemyUI: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
   canvasHp: {fileID: 71306075}
+  enemyLevel: 3
 --- !u!4 &1178471585
 Transform:
   m_ObjectHideFlags: 0
@@ -58970,12 +58975,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1407789995}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -562.5, y: -1218, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 71306079}
+  m_Father: {fileID: 637887264}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1410562136
 PrefabInstance:
@@ -61615,7 +61620,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b8783363067ea49b8d91075137b796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPopup: {fileID: 422630745}
+  targetPopup: {fileID: 422630748}
   hideOthers: 1
 --- !u!1001 &1511619258
 PrefabInstance:
@@ -91227,16 +91232,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef755446e5cb71a449b34f57e8ee4d59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 2
+  enemyName: Goblin
+  enemyLevel: 1
+  maxHealth: 1000
+  attackDamage: 10
   attackRange: 1.5
   detectionRange: 20
   attackCooldown: 1
-  maxHealth: 1000
-  attackDamage: 10
-  damagedStunTime: 0
-  bloodVFXOffset: {x: 0, y: 0.5, z: 0}
+  skipHurtAnimation: 0
+  moveSpeed: 2
   knockForce: 3
   knockDuration: 0.3
+  damagedStunTime: 0
+  bloodVFXOffset: {x: 0, y: 0.5, z: 0}
+  timeDieDelay: 0.65
   specialAttackCooldown: 5
   bossHealthUI: {fileID: 8384034433017363991}
 --- !u!4 &1481588237474307975
@@ -110400,6 +110409,7 @@ MonoBehaviour:
     baseValue: 0.7
   currentMana: 0
   isInvincible: 0
+  isUsingSkill: 0
 --- !u!4 &7327058868640556257
 Transform:
   m_ObjectHideFlags: 0

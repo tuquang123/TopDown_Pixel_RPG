@@ -10,7 +10,9 @@ public class SpawnPoint : MonoBehaviour
     public GameObject enemyUI;
     public GameObject canvasHp;
 
-    public void Spawn()
+    [SerializeField, Range(1, 10)] private int enemyLevel = 1; 
+
+    public void Spawn(EnemyLevelDatabase levelDB)
     {
         if (_currentEnemy != null) return;
 
@@ -21,6 +23,8 @@ public class SpawnPoint : MonoBehaviour
         if (_currentEnemy == null) return;
 
         var ai = _currentEnemy.GetComponent<EnemyAI>();
+        var levelData = levelDB.GetDataByLevel(enemyLevel); 
+        ai.ApplyLevelData(levelData);
         ai.ResetEnemy();
 
         if (ai.EnemyHealthUI == null)
@@ -34,13 +38,13 @@ public class SpawnPoint : MonoBehaviour
         ai.OnDeath += () =>
         {
             _currentEnemy = null;
-            StartCoroutine(RespawnAfterDelay());
+            StartCoroutine(RespawnAfterDelay(levelDB)); 
         };
     }
 
-    private IEnumerator RespawnAfterDelay()
+    private IEnumerator RespawnAfterDelay(EnemyLevelDatabase levelDB)
     {
         yield return new WaitForSeconds(respawnDelay);
-        Spawn();
+        Spawn(levelDB);
     }
 }

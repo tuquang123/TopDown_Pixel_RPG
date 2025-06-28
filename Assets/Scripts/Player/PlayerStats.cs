@@ -48,6 +48,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
     
     private Animator anim;
     public bool isInvincible;
+    public bool isUsingSkill;
     [ReadOnly, ShowInInspector] public bool isDead { get; private set; }
 
 
@@ -105,7 +106,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
 
         FloatingTextSpawner.Instance.SpawnText(
             $"-{actualDamage}",
-            transform.position + Vector3.up * 0.5f,
+            transform.position + Vector3.up * 0.85f,
             actualDamage == 0 ? Color.yellow : Color.white);
 
         if (currentHealth <= 0)

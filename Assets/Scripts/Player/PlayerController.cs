@@ -140,9 +140,25 @@ public class PlayerController : MonoBehaviour, IGameEventListener
             
             if (Time.time - lastAttackTime >= 1f / stats.attackSpeed.Value)
             {
-                lastAttackTime = Time.time;
-                anim.SetTrigger(AttackTrigger);
+                if (stats.isUsingSkill) return;
+                if (targetEnemy != null)
+                {
+                    if (targetEnemy.TryGetComponent(out EnemyAI enemy))
+                    {
+                        if (enemy != null && !enemy.IsDead)
+                        {
+                            lastAttackTime = Time.time;
+                            anim.SetTrigger(AttackTrigger);
+                        }
+                    }
+                }
+                else
+                {
+                    lastAttackTime = Time.time;
+                    anim.SetTrigger(AttackTrigger); 
+                }
             }
+
 
         }
     }

@@ -11,12 +11,18 @@ public class BossAI : EnemyAI
     {
         base.Start();
         bossHealthUI?.SetMaxHealth(maxHealth);
+        skipHurtAnimation = true;
     }
-
-    protected override void AttackPlayer()
+    
+    private void Update()
     {
-        base.AttackPlayer(); 
-        
+        if (isDead || isTakingDamage) return;
+
+        if (player == null) return;
+        if (Vector2.Distance(transform.position, player.position) > detectionRange) return;
+
+        RotateEnemy(player.position.x - transform.position.x);
+
         if (Time.time - _lastSpecialAttackTime >= specialAttackCooldown)
         {
             PerformSpecialAttack();
@@ -24,9 +30,15 @@ public class BossAI : EnemyAI
         }
     }
 
-    private void PerformSpecialAttack()
+
+    protected override void AttackPlayer()
     {
        
+    }
+
+    private void PerformSpecialAttack()
+    {
+        anim.SetTrigger(AttackTrigger);
     }
     public override void TakeDamage(int damage, bool isCrit = false)
     {

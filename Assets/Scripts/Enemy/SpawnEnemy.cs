@@ -3,7 +3,11 @@ using Sirenix.OdinInspector;
 
 public class SpawnEnemy : MonoBehaviour
 {
-    
+    [Title("Enemy Level Data")]
+    [SerializeField] private EnemyLevelDatabase levelDatabase;
+
+    public EnemyLevelDatabase LevelDatabase => levelDatabase;
+
     [Title("UI Settings")]
     [Tooltip("Prefab UI máu của kẻ địch")]
     [Required]
@@ -35,9 +39,8 @@ public class SpawnEnemy : MonoBehaviour
         {
             sp.enemyUI = enemyUI;
             sp.canvasHp = canvasHp;
-            sp.Spawn();
+            sp.Spawn(levelDatabase);
         }
-
         Invoke(nameof(SpawnBoss), timeBoss);
     }
 

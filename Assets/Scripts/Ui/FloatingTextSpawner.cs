@@ -1,26 +1,42 @@
 ﻿using UnityEngine;
 
-public class FloatingTextSpawner : MonoBehaviour
+public class FloatingTextSpawner : Singleton<FloatingTextSpawner>
 {
-    public static FloatingTextSpawner Instance;
-
+    [Header("Floating Text Settings")]
     public GameObject floatingTextPrefab;
-    public Transform floatingTextCanvas; // gán canvas ở scene
-    public Camera mainCam; // gán maincamera
+    public Transform floatingTextCanvas; 
+    public Camera mainCam;
 
-    private void Awake()
+    protected override void Awake()
     {
-        Instance = this;
+        base.Awake();
+
+        if (mainCam == null)
+        {
+            mainCam = Camera.main;
+        }
     }
 
     public void SpawnText(string text, Vector3 worldPosition, Color color)
     {
+        if (floatingTextPrefab == null || floatingTextCanvas == null || mainCam == null)
+        {
+            Debug.LogWarning("FloatingTextSpawner thiếu thiết lập (prefab/canvas/camera).");
+            return;
+        }
+
         Vector3 screenPosition = mainCam.WorldToScreenPoint(worldPosition);
 
-        var go = Instantiate(floatingTextPrefab, floatingTextCanvas);
+        GameObject go = Instantiate(floatingTextPrefab, floatingTextCanvas);
         go.transform.position = screenPosition;
 
-        var floatingText = go.GetComponent<FloatingText>();
-        floatingText.Setup(text, color);
+        if (go.TryGetComponent(out FloatingText floatingText))
+        {
+            floatingText.Setup(text, color);
+        }
+        else
+        {
+            Debug.LogWarning("Prefab không có component FloatingText.");
+        }
     }
 }

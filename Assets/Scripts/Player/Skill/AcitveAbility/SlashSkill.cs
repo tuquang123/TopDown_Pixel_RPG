@@ -7,20 +7,18 @@ public class SlashSkill : ISkill
         var slashComponent = playerStats.GetComponent<PlayerSlash>();
         if (slashComponent != null)
         {
-            slashComponent.Slash(skill); // Truyền skill để sử dụng các thông số như cooldown, damage, v.v.
+            slashComponent.Slash(skill); 
             
-            // Cập nhật thời gian cooldown và mana thông qua SkillSystem
             SkillSystem skillSystem = playerStats.GetComponent<SkillSystem>();
             if (skillSystem != null)
             {
-                skillSystem.UseSkill(skill.skillID); // Gọi UseSkill để xử lý mana và cooldown
+                skillSystem.UseSkill(skill.skillID); 
             }
         }
     }
 
     public bool CanUse(PlayerStats playerStats, SkillData skillData)
     {
-        // Lấy cấp độ hiện tại từ PlayerStats
         int currentLevel = playerStats.GetSkillLevel(skillData.skillID);
         SkillLevelStat currentLevelStat = skillData.GetLevelStat(currentLevel);
 
@@ -30,20 +28,14 @@ public class SlashSkill : ISkill
             return false;
         }
 
-        // Kiểm tra mana
         if (playerStats.currentMana < currentLevelStat.manaCost)
             return false;
 
-        // Kiểm tra cooldown và các điều kiện khác thông qua SkillSystem
-        SkillSystem skillSystem = playerStats.GetComponent<SkillSystem>();
-        if (skillSystem == null || !skillSystem.CanUseSkill(skillData.skillID))
-            return false;
-
-        // Kiểm tra component PlayerSlash
         var slashComponent = playerStats.GetComponent<PlayerSlash>();
         if (slashComponent == null)
             return false;
 
         return true;
     }
+
 }
