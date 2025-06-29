@@ -9,4 +9,5 @@ public class RefVFX : Singleton<RefVFX>
     public GameObject hitVFXPrefab;
     public BossHealthUI bossHealthUI;
     public GameObject  canvasHp;
+    public ItemDatabase itemDatabase;
 }

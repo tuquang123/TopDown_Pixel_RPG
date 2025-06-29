@@ -295,7 +295,10 @@ public class EnemyAI : MonoBehaviour
         anim.SetTrigger(DieTrigger);
         GetComponent<Collider2D>().enabled = false;
         enabled = false;
-
+        
+        //Quest
+        QuestManager.Instance.ReportProgress(ObjectiveType.KillEnemies, enemyName, 1);
+        
         Vector3 spawnPos = transform.position + new Vector3(Random.Range(-0.5f, 0.5f), 0f, 0);
         ObjectPooler.Instance.Get("Gold", RefVFX.Instance.goldPrefab, spawnPos, Quaternion.identity);
 

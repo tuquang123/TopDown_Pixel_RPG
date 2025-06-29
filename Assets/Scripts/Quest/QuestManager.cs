@@ -46,7 +46,7 @@ public class QuestManager : Singleton<QuestManager>
         }
     }
 
-    // Cập nhật tiến độ khi báo cáo
+    // Trong ReportProgress()
     public void ReportProgress(ObjectiveType type, string objectiveName, int amount = 1)
     {
         for (int i = activeQuests.Count - 1; i >= 0; i--)
@@ -57,11 +57,32 @@ public class QuestManager : Singleton<QuestManager>
                 if (obj.type == type && obj.objectiveName == objectiveName)
                 {
                     progressTracker[quest.questID][objectiveName] += amount;
-                    CheckQuestCompletion(quest);
-                    questUI?.UpdateQuestProgress(quest);
+
+                    bool wasCompleted = IsQuestCompleted(quest); // <- Check trước
+
+                    CheckQuestCompletion(quest); // <- Gọi hàm hoàn thành
+
+                    // Chỉ cập nhật UI nếu chưa hoàn thành (tránh bị ghi đè sau khi Clear)
+                    if (!wasCompleted)
+                        questUI?.UpdateQuestProgress(quest);
                 }
             }
         }
+    }
+
+    
+    private bool IsQuestCompleted(Quest quest)
+    {
+        foreach (var obj in quest.objectives)
+        {
+            if (!progressTracker.ContainsKey(quest.questID) ||
+                !progressTracker[quest.questID].ContainsKey(obj.objectiveName) ||
+                progressTracker[quest.questID][obj.objectiveName] < obj.requiredAmount)
+            {
+                return false;
+            }
+        }
+        return true;
     }
     
     public int GetObjectiveProgress(string questID, string objectiveName)
@@ -104,24 +125,60 @@ public class QuestManager : Singleton<QuestManager>
         completedQuests.Add(quest);
         Debug.Log($"Quest Completed: {quest.questName}");
 
-        // Trao thưởng cho người chơi
-        AwardQuestReward(quest);
+        AwardQuestReward(quest); // ← Thưởng xong rồi toast
+
+        // Clear UI
+        questUI?.Clear();
     }
 
     private void AwardQuestReward(Quest quest)
     {
-        Debug.Log($"Awarded {quest.reward.experienceReward} XP and {quest.reward.goldReward} Gold.");
-        // Ví dụ: Tăng XP và Gold
-        //PlayerStats.Instance.AddXP(quest.reward.experienceReward);
-        //PlayerStats.Instance.AddGold(quest.reward.goldReward);
-        
-        CurrencyManager.Instance.AddGold(99);
-        
-        // Thưởng vật phẩm (nếu có)
-        foreach (var item in quest.reward.itemsReward)
+        int exp = quest.reward.experienceReward;
+        int gold = quest.reward.goldReward;
+
+        // EXP
+        if (PlayerStats.Instance != null)
         {
-            Debug.Log($"Awarded item: {item.itemName}");
-            // Lưu vật phẩm vào hệ thống Inventory
+            var playerLevel = PlayerStats.Instance.GetComponent<PlayerLevel>();
+            if (playerLevel != null)
+            {
+                playerLevel.levelSystem.AddExp(exp);
+            }
         }
+
+        // GOLD
+        CurrencyManager.Instance.AddGold(gold);
+
+        // Bắt đầu ghi nội dung Toast
+        string toastMsg = $"Hoàn thành nhiệm vụ: <b>{quest.questName}</b>\n";
+
+        if (exp > 0)
+            toastMsg += $"<color=yellow>+{exp} EXP</color>\n";
+
+        if (gold > 0)
+            toastMsg += $"<color=#FFD700>+{gold} Vàng</color>\n";
+
+        // ITEMS từ ID
+        foreach (var itemID in quest.reward.itemIDs)
+        {
+            ItemData itemData = RefVFX.Instance.itemDatabase.GetItemByID(itemID);
+            if (itemData == null)
+            {
+                Debug.LogWarning($"Item ID không tồn tại: {itemID}");
+                continue;
+            }
+
+            ItemInstance itemInstance = new ItemInstance(itemData);
+            Inventory.Instance.AddItem(itemInstance);
+
+            toastMsg += $"<color=#00FFFF>+ {itemData.itemName}</color>\n";
+            Debug.Log($"Đã nhận item từ nhiệm vụ: {itemData.itemName}");
+        }
+
+        // ✅ Show toast sau khi cộng hết
+        GameEvents.OnShowToast.Raise(toastMsg);
     }
+
+
+
 }

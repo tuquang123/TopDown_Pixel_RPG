@@ -8,6 +8,17 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         AddAllItemsToInventory();
+        TriggerKillGoblinQuest();
+    }
+    
+    //Cheat
+    public void TriggerKillGoblinQuest()
+    {
+        var quest = QuestManager.Instance.questDatabase.GetQuestByID("NV1");
+        if (quest != null)
+        {
+            QuestManager.Instance.StartQuest(quest);
+        }
     }
 
     //Cheat

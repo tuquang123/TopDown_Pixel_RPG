@@ -13,14 +13,16 @@ MonoBehaviour:
   m_Name: QuestDatabase
   m_EditorClassIdentifier: 
   allQuests:
-  - questID: nv1
-    questName: jack
-    description: jack la cha be soi
+  - questID: NV1
+    questName: Goblin
+    description: destroy 5 goblin
     objectives:
-    - objectiveName: jack
+    - objectiveName: Goblin
       type: 0
-      requiredAmount: 2
+      requiredAmount: 1
     reward:
-      experienceReward: 0
-      goldReward: 0
+      experienceReward: 100
+      goldReward: 1000
+      itemIDs:
+      - sword
       itemsReward: []

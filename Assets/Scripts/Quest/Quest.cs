@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public class Quest
@@ -23,7 +24,8 @@ public class QuestReward
 {
     public int experienceReward;
     public int goldReward;
-    public Item[] itemsReward;
+    public List<string> itemIDs; 
+    [HideInInspector] public List<ItemData> itemsReward;
 }
 
 [System.Serializable]

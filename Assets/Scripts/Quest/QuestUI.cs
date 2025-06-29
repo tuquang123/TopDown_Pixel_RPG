@@ -9,7 +9,7 @@ public class QuestUI : MonoBehaviour
     {
         if (quest == null || quest.objectives == null || quest.objectives.Length == 0)
         {
-            questProgressText.text = "";
+            questProgressText.text = "khong co nhiem vu";
             return;
         }
 
@@ -25,4 +25,10 @@ public class QuestUI : MonoBehaviour
 
         questProgressText.text = progress;
     }
+    
+    public void Clear()
+    {
+        questProgressText.text = "khong co nhiem vu";
+    }
+
 }
