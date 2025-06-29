@@ -419,5 +419,28 @@ public class EnemyAI : MonoBehaviour
 
         return false;
     }
+    private void OnDrawGizmosSelected()
+    {
+        // Vẽ detection range (vòng xanh)
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+        // Vẽ attack range (vòng đỏ)
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        // Vẽ máu còn lại (thanh ngang)
+        Gizmos.color = Color.yellow;
+        float healthPercent = Application.isPlaying && maxHealth > 0 ? (float)currentHealth / maxHealth : 1f;
+        Vector3 barStart = transform.position + Vector3.up * 1.2f;
+        Vector3 barEnd = barStart + Vector3.right * healthPercent;
+        Gizmos.DrawLine(barStart, barEnd);
+
+        // Vẽ hướng đang quay mặt
+        Gizmos.color = Color.cyan;
+        Vector3 forwardDir = transform.right * Mathf.Sign(transform.localScale.x);
+        Gizmos.DrawRay(transform.position, forwardDir * 0.8f);
+    }
+
 #endif
 }
