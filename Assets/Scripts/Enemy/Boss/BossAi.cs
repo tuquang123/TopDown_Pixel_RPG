@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class BossAI : EnemyAI
@@ -9,6 +10,17 @@ public class BossAI : EnemyAI
     
     protected override void Start()
     {
+        bossHealthUI = RefVFX.Instance.bossHealthUI;
+        
+        if (bossHealthUI == null)
+        {
+            bossHealthUI = FindFirstObjectByType<BossHealthUI>(); 
+            if (bossHealthUI == null)
+            {
+                Debug.LogWarning("Không tìm thấy BossHealthUI trong scene!");
+            }
+        }
+        
         base.Start();
         bossHealthUI?.SetMaxHealth(maxHealth);
         skipHurtAnimation = true;

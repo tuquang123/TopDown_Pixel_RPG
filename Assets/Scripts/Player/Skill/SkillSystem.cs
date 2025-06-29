@@ -22,6 +22,8 @@ public class SkillFactory
                 return new DashSkill();
             case SkillID.Slash:
                 return new SlashSkill();
+            case SkillID.Invincible:
+                return new InvincibleSkill();
             
                     // Boost stat skills
             case SkillID.HealthBoost:
@@ -38,8 +40,6 @@ public class SkillFactory
                 return new CriticalBoost();
             case SkillID.AttackSpeedBoost:
                 return new AttackSpeedBoost();
-            case SkillID.Invincible:
-                return new InvincibleSkill();
             
             default:
                 throw new ArgumentException("Không tìm thấy kỹ năng với ID này.");

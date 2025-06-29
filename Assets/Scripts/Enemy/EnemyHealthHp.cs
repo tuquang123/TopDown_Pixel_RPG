@@ -16,6 +16,11 @@ public class EnemyHealthUI : MonoBehaviour
     private float hideTimer;
     private int maxHealth;
 
+    public void HideUI()
+    {
+        gameObject.SetActive(false);
+    }
+
     public void SetTarget(GameObject enemy)
     {
         targetEnemy = enemy;

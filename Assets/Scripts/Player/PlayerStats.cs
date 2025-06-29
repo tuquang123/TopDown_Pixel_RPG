@@ -50,8 +50,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
     public bool isInvincible;
     public bool isUsingSkill;
     [ReadOnly, ShowInInspector] public bool isDead { get; private set; }
-
-
+    
     private void Start()
     {
         LoadSkillLevels();
@@ -70,21 +69,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
 
     private void OnEnable() => GameEvents.OnUpdateAnimation.RegisterListener(this);
     private void OnDisable() => GameEvents.OnUpdateAnimation.UnregisterListener(this);
-
-    [Button("Level Up")]
-    public void LevelUp()
-    {
-        level++;
-        skillPoints++;
-        Debug.Log($"Lên cấp! Level: {level}, Điểm kỹ năng: {skillPoints}");
-    }
-
-    [Button("Take Test Damage (10)")]
-    public void TakeTestDamage()
-    {
-        TakeDamage(10);
-    }
-
+    
     public void TakeDamage(int damage)
     {
         if (isDead) return;
@@ -117,20 +102,12 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
 
     private IEnumerator HurtEffect()
     {
-        // Có thể thêm logic như flinch, disable movement tạm thời...
         float stunTime = 0.12f;
         GetComponent<PlayerController>().enabled = false;
 
         yield return new WaitForSeconds(stunTime);
 
         GetComponent<PlayerController>().enabled = true;
-    }
-
-
-    [Button("Heal 50 HP")]
-    public void TestHeal()
-    {
-        Heal(50);
     }
     
     public void UseMana(int amount)
@@ -150,11 +127,11 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
     {
         isDead = false;
         currentHealth = (int)maxHealth.Value;
+        currentMana = (int)maxMana.Value; 
         OnHealthChanged?.Invoke();
+        OnManaChanged?.Invoke();
         anim.Rebind();
     }
-
-    
     public void Die()
     {
         if (isDead) return;
@@ -165,13 +142,18 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
         StartCoroutine(HandleDeath());
     }
     
-    private System.Collections.IEnumerator HandleDeath()
+    private IEnumerator HandleDeath()
     {
         yield return new WaitForSeconds(1.5f); 
+    
         GameEvents.OnPlayerDied.Raise(); 
-        GameEvents.OnResetGame.Raise();
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().name); 
+        
+        LevelManager.Instance.LoadSpecificLevel(0, LevelManager.TravelDirection.Default);
+        
+        yield return new WaitForSeconds(0.1f); 
+        Revive(); 
     }
+
 
     public void ApplyStatModifier(StatModifier modifier)
     {
@@ -204,8 +186,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
         }
         OnStatsChanged?.Invoke();
     }
-
-    [Button("Show Current Health")]
+    
     public float GetCurrentHealth() => currentHealth;
 
     public float GetCritChance() => critChance.Value;

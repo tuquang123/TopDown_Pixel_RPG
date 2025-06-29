@@ -15,7 +15,19 @@ public class SpawnPoint : MonoBehaviour
     public void Spawn(EnemyLevelDatabase levelDB)
     {
         if (_currentEnemy != null) return;
-
+        
+        if (enemyPrefab == null)
+        {
+            Debug.LogError($"SpawnPoint at {transform.position} is missing enemyPrefab reference!");
+            return;
+        }
+        
+        if (ObjectPooler.Instance == null)
+        {
+            Debug.LogError("ObjectPooler.Instance is NULL! Bạn đã chắc chắn có ObjectPooler trong scene chưa?");
+            return;
+        }
+        
         _currentEnemy = ObjectPooler.Instance.Get(
             enemyPrefab.name, enemyPrefab, transform.position, Quaternion.identity, initSize: 10, expandable: true
         );

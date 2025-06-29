@@ -70,7 +70,7 @@ public class ObjectPooler : MonoBehaviour
 
     public GameObject Get(string tag, GameObject prefab, Vector3 position, Quaternion rotation, int initSize = 1, bool expandable = true)
     {
-        string poolTag = prefab.name;  // Sử dụng tên prefab làm tag
+        string poolTag = prefab.name; 
 
         if (!poolMap.ContainsKey(poolTag))
         {

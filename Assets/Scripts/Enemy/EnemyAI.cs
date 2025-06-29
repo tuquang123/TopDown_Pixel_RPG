@@ -31,7 +31,7 @@ public class EnemyAI : MonoBehaviour
     [BoxGroup("Combat"), LabelText("Attack Range"), Range(0.1f, 10f)] [SerializeField]
     protected float attackRange = 1.5f;
 
-    [BoxGroup("Combat"), LabelText("Detection Range"), Range(0.1f, 20f)] [SerializeField]
+    [BoxGroup("Combat"), LabelText("Detection Range"), Range(0.1f, 40f)] [SerializeField]
     protected float detectionRange = 5f;
 
     [BoxGroup("Combat"), LabelText("Attack Cooldown"), Range(0f, 10f)] [SerializeField]
@@ -120,6 +120,8 @@ public class EnemyAI : MonoBehaviour
         player = RefVFX.Instance.playerPrefab.transform;
         anim = GetComponentInChildren<Animator>();
         currentHealth = maxHealth;
+        
+        EnemyTracker.Instance.Register(this);
     }
 
     private void Update()
@@ -302,7 +304,10 @@ public class EnemyAI : MonoBehaviour
             Destroy(enemyHealthUI.gameObject);
             enemyHealthUI = null;
         }
-
+        
+        enemyHealthUI?.HideUI();
+        EnemyTracker.Instance.Unregister(this);
+        
         StartCoroutine(DisableAfterDelay(timeDieDelay));
         OnEnemyDefeated?.Invoke(50);
     }

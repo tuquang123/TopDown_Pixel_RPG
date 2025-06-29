@@ -7,4 +7,6 @@ public class RefVFX : Singleton<RefVFX>
     public GameObject bloodVfxPrefab;
     public GameObject destructionVFXPrefab;
     public GameObject hitVFXPrefab;
+    public BossHealthUI bossHealthUI;
+    public GameObject  canvasHp;
 }
