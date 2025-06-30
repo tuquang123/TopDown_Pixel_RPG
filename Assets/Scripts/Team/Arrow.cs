@@ -66,10 +66,11 @@ public class Arrow : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.TryGetComponent<IDamageable>(out var damageable))
         {
-            other.GetComponent<EnemyAI>()?.TakeDamage(damage);
+            damageable.TakeDamage(damage);
             Destroy(gameObject);
         }
     }
+
 }

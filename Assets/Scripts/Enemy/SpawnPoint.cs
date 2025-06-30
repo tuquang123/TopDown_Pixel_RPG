@@ -6,10 +6,7 @@ public class SpawnPoint : MonoBehaviour
     public GameObject enemyPrefab;
     private GameObject _currentEnemy;
     public float respawnDelay = 10f;
-
-    public GameObject enemyUI;
-    public GameObject canvasHp;
-
+    
     [SerializeField, Range(1, 10)] private int enemyLevel = 1; 
 
     public void Spawn(EnemyLevelDatabase levelDB)
@@ -41,7 +38,7 @@ public class SpawnPoint : MonoBehaviour
 
         if (ai.EnemyHealthUI == null)
         {
-            GameObject ui = Instantiate(enemyUI, canvasHp.transform, false);
+            GameObject ui = Instantiate(RefVFX.Instance.hpSliderUi , RefVFX.Instance.canvasHp.transform, false);
             var uiComp = ui.GetComponent<EnemyHealthUI>();
             uiComp.SetTarget(_currentEnemy);
             ai.EnemyHealthUI = uiComp;

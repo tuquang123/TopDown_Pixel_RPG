@@ -20,7 +20,7 @@ public class TeamSlotUI : MonoBehaviour
 
     public void UpdateSlot(Hero hero)
     {
-        if (hero != null)
+        if (hero != null && hero.data != null)
         {
             nameText.text = hero.data.name;
             icon.sprite = hero.data.icon;
@@ -33,6 +33,7 @@ public class TeamSlotUI : MonoBehaviour
             icon.gameObject.SetActive(false);
             removeButton.gameObject.SetActive(false);
         }
+
     }
     public void ClearSlot()
     {

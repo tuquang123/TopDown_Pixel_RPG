@@ -30,10 +30,10 @@ public class BossAI : EnemyAI
     {
         if (isDead || isTakingDamage) return;
 
-        if (player == null) return;
-        if (Vector2.Distance(transform.position, player.position) > detectionRange) return;
+        if (target == null) return;
+        if (Vector2.Distance(transform.position, target.position) > detectionRange) return;
 
-        RotateEnemy(player.position.x - transform.position.x);
+        RotateEnemy(target.position.x - transform.position.x);
 
         if (Time.time - _lastSpecialAttackTime >= specialAttackCooldown)
         {
@@ -43,7 +43,7 @@ public class BossAI : EnemyAI
     }
 
 
-    protected override void AttackPlayer()
+    protected override void AttackTarget()
     {
        
     }

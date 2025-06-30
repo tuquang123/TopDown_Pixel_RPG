@@ -13,4 +13,5 @@ public class HeroData : ScriptableObject
     public int baseAttack;
     public int baseDefense;
     public int baseSpeed;
+    public int attackSpeed;
 }

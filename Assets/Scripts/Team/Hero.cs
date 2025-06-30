@@ -30,7 +30,8 @@ public class Hero
         int atk = data.baseAttack ;
         int def = data.baseDefense;
         int spd = data.baseSpeed;
-        return new HeroStats(hp, atk, def, spd);
+        int atts = data.attackSpeed;
+        return new HeroStats(hp, atk, def, spd , atts);
     }
 
     public int CalculateDamage(Hero target)

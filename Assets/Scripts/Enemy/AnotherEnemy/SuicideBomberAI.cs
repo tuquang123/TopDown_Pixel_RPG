@@ -23,15 +23,15 @@ public class SuicideBomberAI : EnemyAI
         originalColor = spriteRenderer.color;  // Lưu lại màu gốc của sprite
     }
 
-    protected override void AttackPlayer()
+    protected override void AttackTarget()
     {
-        if (player.TryGetComponent(out PlayerStats playerStats))
+        if (target.TryGetComponent(out PlayerStats playerStats))
         {
             if(playerStats.isDead) return;
         }
-        if (isExploding || player == null) return;
+        if (isExploding || target == null) return;
 
-        cachedTargetPosition = player.position;
+        cachedTargetPosition = target.position;
         isExploding = true;
 
         anim.SetBool(MoveBool, true);
@@ -75,9 +75,9 @@ public class SuicideBomberAI : EnemyAI
             Instantiate(explosionEffect, transform.position, Quaternion.identity);
         }
 
-        if (player != null && Vector2.Distance(player.position, transform.position) <= explosionRange)
+        if (target != null && Vector2.Distance(target.position, transform.position) <= explosionRange)
         {
-            if (player.TryGetComponent(out PlayerStats playerHealth))
+            if (target.TryGetComponent(out PlayerStats playerHealth))
             {
                 playerHealth.TakeDamage(explosionDamage);
             }

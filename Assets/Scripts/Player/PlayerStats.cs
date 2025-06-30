@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
+public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamageable
 {
     [Title("Level & Skill Points")]
     [ReadOnly, ShowInInspector] public int level = 1;
@@ -70,7 +70,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener
     private void OnEnable() => GameEvents.OnUpdateAnimation.RegisterListener(this);
     private void OnDisable() => GameEvents.OnUpdateAnimation.UnregisterListener(this);
     
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage , bool isCrit = false)
     {
         if (isDead) return;
 

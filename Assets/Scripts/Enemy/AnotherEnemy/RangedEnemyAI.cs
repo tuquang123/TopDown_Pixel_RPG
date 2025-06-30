@@ -7,9 +7,9 @@ public class RangedEnemyAI : EnemyAI
     [SerializeField] private Transform firePoint;
     [SerializeField] private float projectileSpeed = 5f;
 
-    protected override void AttackPlayer()
+    protected override void AttackTarget()
     {
-        if (player.TryGetComponent(out PlayerStats playerStats))
+        if (target.TryGetComponent(out PlayerStats playerStats))
         {
             if(playerStats.isDead) return;
         }
@@ -25,7 +25,7 @@ public class RangedEnemyAI : EnemyAI
     }
     protected override void MoveToAttackPosition()
     {
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        float distanceToPlayer = Vector2.Distance(transform.position, target.position);
 
         if (distanceToPlayer > detectionRange)
         {
@@ -34,12 +34,12 @@ public class RangedEnemyAI : EnemyAI
             return;
         }
 
-        RotateEnemy(player.position.x - transform.position.x);
+        RotateEnemy(target.position.x - transform.position.x);
 
         if (distanceToPlayer > attackRange)
         {
             // Trong detection nhưng chưa tới attack range -> di chuyển lại gần
-            Vector2 direction = (player.position - transform.position).normalized;
+            Vector2 direction = (target.position - transform.position).normalized;
             transform.position += (Vector3)(direction * moveSpeed * Time.deltaTime);
             anim.SetBool(MoveBool, true);
         }
@@ -49,7 +49,7 @@ public class RangedEnemyAI : EnemyAI
             anim.SetBool(MoveBool, false);
             if (Time.time - lastAttackTime >= attackCooldown)
             {
-                AttackPlayer();
+                AttackTarget();
             }
         }
     }
@@ -64,7 +64,7 @@ public class RangedEnemyAI : EnemyAI
         if (proj.TryGetComponent(out EnemyProjectile enemyProj))
         {
             enemyProj.speed = projectileSpeed;
-            enemyProj.Init(player.position, attackDamage);
+            enemyProj.Init(target.position, attackDamage);
         }
     }
 }

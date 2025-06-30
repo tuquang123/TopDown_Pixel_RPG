@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class EnemyAI : MonoBehaviour
+public class EnemyAI : MonoBehaviour , IDamageable
 {
     #region Base Info
 
@@ -79,7 +79,7 @@ public class EnemyAI : MonoBehaviour
     #region Runtime Readonly
 
     [FoldoutGroup("Runtime Debug"), ReadOnly]
-    protected Transform player;
+    protected Transform target;
 
     [FoldoutGroup("Runtime Debug"), ReadOnly]
     protected Animator anim;
@@ -117,10 +117,8 @@ public class EnemyAI : MonoBehaviour
 
     protected virtual void Start()
     {
-        player = RefVFX.Instance.playerPrefab.transform;
         anim = GetComponentInChildren<Animator>();
         currentHealth = maxHealth;
-        
         EnemyTracker.Instance.Register(this);
     }
 
@@ -128,26 +126,32 @@ public class EnemyAI : MonoBehaviour
     {
         if (isDead || isTakingDamage || isKnockbacked) return;
 
-        if (player.TryGetComponent(out PlayerStats playerStats) && playerStats.isDead)
+        FindClosestTarget();
+
+        if (target == null)
         {
             anim.SetBool(MoveBool, false);
             return;
         }
 
-        if (player == null) return;
+        if (target.TryGetComponent(out PlayerStats playerStats) && playerStats.isDead)
+        {
+            anim.SetBool(MoveBool, false);
+            return;
+        }
 
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-        if (distanceToPlayer <= detectionRange)
+        float distanceToTarget = Vector2.Distance(transform.position, target.position);
+        if (distanceToTarget <= detectionRange)
         {
             MoveToAttackPosition();
-            RotateEnemy(player.position.x - transform.position.x);
+            RotateEnemy(target.position.x - transform.position.x);
         }
         else
         {
             anim.SetBool(MoveBool, false);
         }
     }
-
+    
     public void ApplyLevelData(EnemyLevelData data)
     {
         if (data == null)
@@ -165,24 +169,43 @@ public class EnemyAI : MonoBehaviour
         enemyLevel = data.level;
     }
 
+    private void FindClosestTarget()
+    {
+        GameObject[] candidates = GameObject.FindGameObjectsWithTag("Player");
+        float closestDistance = Mathf.Infinity;
+        Transform closestTarget = null;
+
+        foreach (var candidate in candidates)
+        {
+            float distance = Vector2.Distance(transform.position, candidate.transform.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestTarget = candidate.transform;
+            }
+        }
+
+        target = closestTarget;
+    }
+
     protected virtual void MoveToAttackPosition()
     {
         Vector2 enemyPos = transform.position;
-        Vector2 playerPos = player.position;
+        Vector2 targetPos = target.position;
 
-        float yDiff = Mathf.Abs(enemyPos.y - playerPos.y);
-        float xDiff = Mathf.Abs(enemyPos.x - playerPos.x);
+        float yDiff = Mathf.Abs(enemyPos.y - targetPos.y);
+        float xDiff = Mathf.Abs(enemyPos.x - targetPos.x);
         float yTolerance = 0.1f;
 
         if (yDiff > yTolerance)
         {
-            Vector2 directionY = new Vector2(0, playerPos.y - enemyPos.y).normalized;
+            Vector2 directionY = new Vector2(0, targetPos.y - enemyPos.y).normalized;
             transform.position += (Vector3)(directionY * moveSpeed * Time.deltaTime);
             anim.SetBool(MoveBool, true);
         }
         else if (xDiff > attackRange * 0.8f)
         {
-            Vector2 directionX = new Vector2(playerPos.x - enemyPos.x, 0).normalized;
+            Vector2 directionX = new Vector2(targetPos.x - enemyPos.x, 0).normalized;
             transform.position += (Vector3)(directionX * moveSpeed * Time.deltaTime);
             anim.SetBool(MoveBool, true);
             RotateEnemy(directionX.x);
@@ -192,7 +215,7 @@ public class EnemyAI : MonoBehaviour
             anim.SetBool(MoveBool, false);
             if (Time.time - lastAttackTime >= attackCooldown)
             {
-                AttackPlayer();
+                AttackTarget();
             }
         }
     }
@@ -202,21 +225,11 @@ public class EnemyAI : MonoBehaviour
         transform.localScale = new Vector3(Mathf.Sign(direction) * -1, 1, 1);
     }
 
-    public void DealDamageToPlayer()
+    protected virtual void AttackTarget()
     {
-        if (player == null) return;
-        if (player.TryGetComponent(out PlayerStats playerStats) && !playerStats.isDead)
-        {
-            playerStats.TakeDamage(attackDamage);
-        }
-    }
+        if (target == null || isTakingDamage) return;
 
-    protected virtual void AttackPlayer()
-    {
-        if (player.TryGetComponent(out PlayerStats playerStats) && playerStats.isDead) return;
-        if (isTakingDamage) return;
-
-        RotateEnemy(player.position.x - transform.position.x);
+        RotateEnemy(target.position.x - transform.position.x);
 
         if (Time.time - lastAttackTime >= attackCooldown)
         {
@@ -226,6 +239,16 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
+    public void DealDamageToTarget()
+    {
+        if (target == null) return;
+
+        if (target.TryGetComponent(out IDamageable damageable))
+        {
+            damageable.TakeDamage(attackDamage);
+        }
+    }
+    
     public virtual void TakeDamage(int damage, bool isCrit = false)
     {
         if (isDead) return;
@@ -295,10 +318,9 @@ public class EnemyAI : MonoBehaviour
         anim.SetTrigger(DieTrigger);
         GetComponent<Collider2D>().enabled = false;
         enabled = false;
-        
-        //Quest
+
         QuestManager.Instance.ReportProgress(ObjectiveType.KillEnemies, enemyName, 1);
-        
+
         Vector3 spawnPos = transform.position + new Vector3(Random.Range(-0.5f, 0.5f), 0f, 0);
         ObjectPooler.Instance.Get("Gold", RefVFX.Instance.goldPrefab, spawnPos, Quaternion.identity);
 
@@ -307,10 +329,10 @@ public class EnemyAI : MonoBehaviour
             Destroy(enemyHealthUI.gameObject);
             enemyHealthUI = null;
         }
-        
+
         enemyHealthUI?.HideUI();
         EnemyTracker.Instance.Unregister(this);
-        
+
         StartCoroutine(DisableAfterDelay(timeDieDelay));
         OnEnemyDefeated?.Invoke(50);
     }
@@ -323,9 +345,9 @@ public class EnemyAI : MonoBehaviour
 
     private IEnumerator ApplyKnockback()
     {
-        if (player == null) yield break;
+        if (target == null) yield break;
 
-        Vector2 knockDir = (transform.position - player.position).normalized;
+        Vector2 knockDir = (transform.position - target.position).normalized;
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
         {

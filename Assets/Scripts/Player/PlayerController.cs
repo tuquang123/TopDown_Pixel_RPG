@@ -174,12 +174,18 @@ public class PlayerController : MonoBehaviour, IGameEventListener
             if (hit.CompareTag("Enemy"))
             {
                 int damage = (int)stats.attack.Value;
+                
                 bool isCrit = Random.Range(0f, 100f) < stats.GetCritChance();
 
                 if (isCrit)
                     damage = Mathf.RoundToInt(damage * 1.5f);
 
-                hit.GetComponent<EnemyAI>()?.TakeDamage(damage, isCrit);
+                if (hit == null) return;
+
+                if (hit.TryGetComponent(out IDamageable damageable))
+                {
+                    damageable.TakeDamage(damage , isCrit);
+                }
 
                 int healedAmount = stats.HealFromLifeSteal(damage);
                 if (healedAmount > 0)
@@ -308,4 +314,5 @@ public class PlayerController : MonoBehaviour, IGameEventListener
 
     private void OnEnable() => GameEvents.OnUpdateAnimation.RegisterListener(this);
     private void OnDisable() => GameEvents.OnUpdateAnimation.UnregisterListener(this);
+    
 }

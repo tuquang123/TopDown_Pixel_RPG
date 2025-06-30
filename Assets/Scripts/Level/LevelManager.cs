@@ -80,12 +80,8 @@ public class LevelManager : Singleton<LevelManager>
 
             foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
             {
-                var spawnEnemy = currentLevelInstance.GetComponentInChildren<SpawnEnemy>();
-                var levelDB = spawnEnemy?.LevelDatabase;
-
-                sp.enemyUI = spawnEnemy?.EnemyUI;
-                sp.canvasHp = spawnEnemy?.CanvasHp;
-
+                var levelDB = RefVFX.Instance.levelDatabase;
+                
                 sp.Spawn(levelDB);
             }
 

@@ -254,10 +254,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthSlider: {fileID: 2165486865244539826}
-  offset: {x: 0, y: 0.8, z: 0}
+  offset: {x: 0, y: 1, z: 0}
   hideDelay: 2
   nameAndLevelText: {fileID: 4357020370063844516}
   hpText: {fileID: 9057562347845765213}
+  enemyHpColor: {r: 1, g: 0, b: 0, a: 1}
+  allyHpColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!1 &5247093752904286115
 GameObject:
   m_ObjectHideFlags: 0

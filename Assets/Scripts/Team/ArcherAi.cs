@@ -1,28 +1,37 @@
 using UnityEngine;
 
-public class ArcherAI : MonoBehaviour
+public class ArcherAI : MonoBehaviour 
 {
     private static readonly int MoveBool = Animator.StringToHash("1_Move");
     private static readonly int ShotTrigger = Animator.StringToHash("7_Shoot");
 
-    [SerializeField] private float moveSpeed = 4f;
     [SerializeField] private float followDistance = 1.5f;
     [SerializeField] private float detectionRange = 5f;
     [SerializeField] private float attackRange = 3f;
-    [SerializeField] private float attackSpeed = 1f;
-    [SerializeField] private int attackDamage = 15;
     [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private Transform shootPoint;
 
     private Transform player;
     private PlayerController playerController;
-    private Transform targetEnemy;
+    private Transform target;
     private Rigidbody2D rb;
     private Animator anim;
+    private AllyStats stats;
+
     private float lastAttackTime;
+    private float lastMoveChangeTime = 0f;
+    private float moveChangeDelay = 0.2f;
+
+    public void Setup(Hero hero)
+    {
+        name = hero.data.name;
+        stats = GetComponent<AllyStats>();
+        stats.Initialize(hero.currentStats, hero.data.name);
+    }
 
     private void Start()
     {
+        stats = GetComponent<AllyStats>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
@@ -31,39 +40,32 @@ public class ArcherAI : MonoBehaviour
 
     private void Update()
     {
-        if (player == null || playerController == null) return;
+        if (player == null || playerController == null || stats.IsDead) return;
 
         if (playerController.IsMoving())
         {
-            FollowPlayer();  // Chạy theo player nếu player đang di chuyển
+            FollowPlayer();
         }
         else
         {
-            // Nếu player không di chuyển, tìm và tấn công kẻ thù
-            FindClosestEnemy();
+            FindClosestTarget();
 
-            if (targetEnemy != null)
+            if (target != null)
             {
-                MoveToAttackPosition();  // Di chuyển tới vị trí tấn công
+                MoveToAttackPosition();
             }
             else
             {
                 rb.linearVelocity = Vector2.zero;
-                anim.SetBool(MoveBool, false);  // Dừng lại nếu không có kẻ thù
+                anim.SetBool(MoveBool, false);
             }
         }
     }
 
-    private float lastMoveChangeTime = 0f;
-    private float moveChangeDelay = 0.2f; // Độ trễ nhỏ
-
     private void FollowPlayer()
     {
-        if (player == null) return;
-
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
         bool isPlayerMoving = playerController.MoveInput.magnitude > 0.1f;
-
         bool isMoving = false;
 
         if (distanceToPlayer > followDistance || isPlayerMoving)
@@ -72,7 +74,7 @@ public class ArcherAI : MonoBehaviour
 
             if (distanceToPlayer > followDistance)
             {
-                rb.linearVelocity = direction * moveSpeed;
+                rb.linearVelocity = direction * stats.MoveSpeed;
                 RotateCharacter(direction.x);
                 isMoving = true;
             }
@@ -86,7 +88,6 @@ public class ArcherAI : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         }
 
-        // Đảm bảo Animator chỉ thay đổi sau một khoảng thời gian nhất định
         if (Time.time - lastMoveChangeTime >= moveChangeDelay)
         {
             if (anim.GetBool(MoveBool) != isMoving)
@@ -99,14 +100,12 @@ public class ArcherAI : MonoBehaviour
 
     private void MoveToAttackPosition()
     {
-        if (targetEnemy == null) return;
+        float distanceToTarget = Vector2.Distance(transform.position, target.position);
 
-        float distanceToEnemy = Vector2.Distance(transform.position, targetEnemy.position);
-
-        if (distanceToEnemy > attackRange * 0.8f)
+        if (distanceToTarget > attackRange * 0.8f)
         {
-            Vector2 direction = (targetEnemy.position - transform.position).normalized;
-            rb.linearVelocity = direction * moveSpeed;
+            Vector2 direction = (target.position - transform.position).normalized;
+            rb.linearVelocity = direction * stats.MoveSpeed;
             RotateCharacter(direction.x);
             anim.SetBool(MoveBool, true);
         }
@@ -114,37 +113,61 @@ public class ArcherAI : MonoBehaviour
         {
             rb.linearVelocity = Vector2.zero;
             anim.SetBool(MoveBool, false);
-            FaceEnemy();
+            FaceTarget();
 
-            if (Time.time - lastAttackTime >= 1f / attackSpeed)
+            if (Time.time - lastAttackTime >= 1f / stats.AttackSpeed)
             {
-                AttackEnemy();
+                AttackTarget();
             }
         }
     }
 
-    private void AttackEnemy()
+    private void AttackTarget()
     {
         lastAttackTime = Time.time;
         anim.SetTrigger(ShotTrigger);
 
-        GameObject arrow = Instantiate(arrowPrefab, shootPoint.position, Quaternion.identity);
-        arrow.GetComponent<Arrow>()?.SetTarget(targetEnemy, attackDamage);
+        if (target.TryGetComponent(out EnemyAI enemy) && !enemy.IsDead)
+        {
+            GameObject arrow = Instantiate(arrowPrefab, shootPoint.position, Quaternion.identity);
+            arrow.GetComponent<Arrow>()?.SetTarget(target, stats.Attack);
+        }
+        else if (target.TryGetComponent(out DestructibleObject destructible))
+        {
+            destructible.Hit();
+        }
     }
 
-    private void FindClosestEnemy()
+    private void FindClosestTarget()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject[] destructibles = GameObject.FindGameObjectsWithTag("Destructible");
+
         float minDistance = detectionRange;
-        targetEnemy = null;
+        target = null;
 
         foreach (GameObject enemy in enemies)
         {
-            float distance = Vector2.Distance(transform.position, enemy.transform.position);
-            if (distance < minDistance)
+            if (enemy.TryGetComponent(out EnemyAI enemyAI) && enemyAI.IsDead) continue;
+
+            float dist = Vector2.Distance(transform.position, enemy.transform.position);
+            if (dist < minDistance)
             {
-                minDistance = distance;
-                targetEnemy = enemy.transform;
+                minDistance = dist;
+                target = enemy.transform;
+            }
+        }
+
+        if (target == null)
+        {
+            foreach (GameObject obj in destructibles)
+            {
+                float dist = Vector2.Distance(transform.position, obj.transform.position);
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    target = obj.transform;
+                }
             }
         }
     }
@@ -154,18 +177,17 @@ public class ArcherAI : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, direction < 0 ? 180 : 0, 0);
     }
 
-    private void FaceEnemy()
+    private void FaceTarget()
     {
-        if (targetEnemy == null) return;
-        RotateCharacter(targetEnemy.position.x - transform.position.x);
+        if (target == null) return;
+        RotateCharacter(target.position.x - transform.position.x);
     }
+
     private void OnDrawGizmos()
     {
-        // Vẽ phạm vi phát hiện
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
 
-        // Vẽ phạm vi tấn công
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }

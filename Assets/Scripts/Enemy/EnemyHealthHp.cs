@@ -11,6 +11,11 @@ public class EnemyHealthUI : MonoBehaviour
     [Header("Text UI")]
     [SerializeField] private TextMeshProUGUI nameAndLevelText;
     [SerializeField] private TextMeshProUGUI hpText; 
+    
+    [SerializeField] private Color enemyHpColor = Color.red;
+    [SerializeField] private Color allyHpColor = Color.green;
+    
+    private bool autoHide = true;
 
     private GameObject targetEnemy;
     private float hideTimer;
@@ -20,29 +25,64 @@ public class EnemyHealthUI : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
-
-    public void SetTarget(GameObject enemy)
+    
+    private void SetSliderColor(Color color)
     {
-        targetEnemy = enemy;
-
-        var ai = enemy.GetComponent<EnemyAI>();
-        maxHealth = ai.MaxHealth;
-        healthSlider.maxValue = maxHealth;
-        healthSlider.value = maxHealth;
-
-        if (nameAndLevelText != null)
+        if (healthSlider.fillRect != null)
         {
-            nameAndLevelText.text = $"{ai.EnemyName} (Lv {ai.EnemyLevel})";
+            var fillImage = healthSlider.fillRect.GetComponent<Image>();
+            if (fillImage != null)
+            {
+                fillImage.color = color;
+            }
         }
-
-        if (hpText != null)
-        {
-            hpText.text = $"{maxHealth}/{maxHealth}";
-        }
-
-        gameObject.SetActive(false); 
     }
 
+    public void SetTarget(GameObject target)
+    {
+        targetEnemy = target;
+
+        if (target.TryGetComponent(out EnemyAI enemy))
+        {
+            maxHealth = enemy.MaxHealth;
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = maxHealth;
+            
+            if (nameAndLevelText != null)
+                nameAndLevelText.text = $"{enemy.EnemyName} (Lv {enemy.EnemyLevel})";
+
+            if (hpText != null)
+                hpText.text = $"{maxHealth}/{maxHealth}";
+            
+            SetSliderColor(enemyHpColor);
+
+            autoHide = true;
+        }
+        else if (target.TryGetComponent(out AllyStats ally))
+        {
+            maxHealth = ally.MaxHP;
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = maxHealth;
+
+            if (nameAndLevelText != null)
+                nameAndLevelText.text = $"{ally.HeroName} (SP)";
+
+            if (hpText != null)
+                hpText.text = $"{maxHealth}/{maxHealth}";
+            
+            SetSliderColor(allyHpColor);
+
+            autoHide = false;
+        }
+
+        else
+        {
+            Debug.LogWarning("SetTarget(): Không tìm thấy EnemyAI hoặc AllyStats trên target.");
+        }
+
+        //gameObject.SetActive(false);
+    }
+    
     public void UpdateHealth(int currentHealth)
     {
         healthSlider.value = currentHealth;
@@ -67,7 +107,7 @@ public class EnemyHealthUI : MonoBehaviour
             transform.position = screenPos;
         }
         
-        if (gameObject.activeSelf)
+        if (autoHide && gameObject.activeSelf)
         {
             hideTimer -= Time.deltaTime;
             if (hideTimer <= 0)

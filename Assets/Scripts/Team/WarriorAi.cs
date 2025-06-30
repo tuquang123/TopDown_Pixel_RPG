@@ -5,25 +5,35 @@ public class WarriorAi : MonoBehaviour
     private static readonly int MoveBool = Animator.StringToHash("1_Move");
     private static readonly int AttackTrigger = Animator.StringToHash("8_Attack");
 
-    [SerializeField] private float moveSpeed = 4f;
     [SerializeField] private float followDistance = 1.5f;
     [SerializeField] private float detectionRange = 5f;
-    [SerializeField] private float attackRange = 1.5f;  // Thay đổi phạm vi tấn công cho cận chiến
-    [SerializeField] private float attackSpeed = 1f;
-    [SerializeField] private int attackDamage = 15;
+    [SerializeField] private float attackRange = 1.5f;
 
     private Transform player;
     private PlayerController playerController;
     private Transform targetEnemy;
+    private Transform targetDestructible;
     private Rigidbody2D rb;
     private Animator anim;
     private float lastAttackTime;
+    private float lastMoveChangeTime = 0f;
+    private float moveChangeDelay = 0.2f;
+
+    private AllyStats stats;
+
+    public void Setup(Hero hero)
+    {
+        name = hero.data.name;
+        stats = GetComponent<AllyStats>();
+        stats.Initialize(hero.currentStats, hero.data.name);
+    }
 
     private void Start()
     {
+        stats = GetComponent<AllyStats>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
-        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        player = RefVFX.Instance.playerPrefab.transform;
         playerController = player?.GetComponent<PlayerController>();
     }
 
@@ -33,29 +43,35 @@ public class WarriorAi : MonoBehaviour
 
         if (playerController.IsMoving())
         {
-            FollowPlayer();  // Chạy theo player nếu player đang di chuyển
+            FollowPlayer();
         }
         else
         {
-            // Nếu player không di chuyển, tìm và tấn công kẻ thù
             FindClosestEnemy();
 
             if (targetEnemy != null)
             {
-                MoveToAttackPosition();  // Di chuyển tới vị trí tấn công
+                MoveToAttackPosition(targetEnemy);
             }
             else
             {
-                rb.linearVelocity = Vector2.zero;
-                anim.SetBool(MoveBool, false);  // Dừng lại nếu không có kẻ thù
+                FindClosestDestructible();
+
+                if (targetDestructible != null)
+                {
+                    MoveToAttackPosition(targetDestructible);
+                }
+                else
+                {
+                    rb.linearVelocity = Vector2.zero;
+                    anim.SetBool(MoveBool, false);
+                }
             }
         }
     }
 
     private void FollowPlayer()
     {
-        if (player == null) return;
-
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
         bool isPlayerMoving = playerController.MoveInput.magnitude > 0.1f;
 
@@ -67,7 +83,7 @@ public class WarriorAi : MonoBehaviour
 
             if (distanceToPlayer > followDistance)
             {
-                rb.linearVelocity = direction * moveSpeed;
+                rb.linearVelocity = direction * stats.MoveSpeed;
                 RotateCharacter(direction.x);
                 isMoving = true;
             }
@@ -91,28 +107,35 @@ public class WarriorAi : MonoBehaviour
         }
     }
 
-    private void MoveToAttackPosition()
+    private void MoveToAttackPosition(Transform target)
     {
-        if (targetEnemy == null) return;
+        Vector2 myPos = transform.position;
+        Vector2 targetPos = target.position;
 
-        float distanceToEnemy = Vector2.Distance(transform.position, targetEnemy.position);
+        float yDiff = Mathf.Abs(myPos.y - targetPos.y);
+        float xDiff = Mathf.Abs(myPos.x - targetPos.x);
+        float yTolerance = 0.1f;
 
-        if (distanceToEnemy > attackRange)
+        if (yDiff > yTolerance)
         {
-            // Di chuyển đến gần kẻ thù
-            Vector2 direction = (targetEnemy.position - transform.position).normalized;
-            rb.linearVelocity = direction * moveSpeed;
-            RotateCharacter(direction.x);
+            Vector2 dirY = new Vector2(0, targetPos.y - myPos.y).normalized;
+            rb.linearVelocity = dirY * stats.MoveSpeed;
+            anim.SetBool(MoveBool, true);
+        }
+        else if (xDiff > attackRange * 0.8f)
+        {
+            Vector2 dirX = new Vector2(targetPos.x - myPos.x, 0).normalized;
+            rb.linearVelocity = dirX * stats.MoveSpeed;
+            RotateCharacter(dirX.x);
             anim.SetBool(MoveBool, true);
         }
         else
         {
-            // Đã đến gần, dừng lại và tấn công
             rb.linearVelocity = Vector2.zero;
             anim.SetBool(MoveBool, false);
-            FaceEnemy();
+            RotateCharacter(targetPos.x - myPos.x);
 
-            if (Time.time - lastAttackTime >= 1f / attackSpeed)
+            if (Time.time - lastAttackTime >= 1f / stats.AttackSpeed)
             {
                 AttackEnemy();
             }
@@ -124,13 +147,18 @@ public class WarriorAi : MonoBehaviour
         lastAttackTime = Time.time;
         anim.SetTrigger(AttackTrigger);
 
-        // Thực hiện đòn tấn công cận chiến
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Enemy"));
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Enemy", "Destructible"));
 
-        foreach (Collider2D enemy in hitEnemies)
+        foreach (var hit in hits)
         {
-            // Gọi hàm tấn công trên enemy (tùy thuộc vào cách bạn xử lý tấn công đối với kẻ thù)
-            enemy.GetComponent<EnemyAI>()?.TakeDamage(attackDamage);
+            if (hit.TryGetComponent(out EnemyAI enemy) && !enemy.IsDead)
+            {
+                enemy.TakeDamage(stats.Attack);
+            }
+            else if (hit.TryGetComponent(out DestructibleObject destructible))
+            {
+                destructible.Hit();
+            }
         }
     }
 
@@ -151,33 +179,38 @@ public class WarriorAi : MonoBehaviour
         }
     }
 
+    private void FindClosestDestructible()
+    {
+        GameObject[] destructibles = GameObject.FindGameObjectsWithTag("Destructible");
+        float minDistance = detectionRange;
+        targetDestructible = null;
+
+        foreach (GameObject obj in destructibles)
+        {
+            float distance = Vector2.Distance(transform.position, obj.transform.position);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                targetDestructible = obj.transform;
+            }
+        }
+    }
+
     private void RotateCharacter(float direction)
     {
         transform.rotation = Quaternion.Euler(0, direction < 0 ? 180 : 0, 0);
     }
 
-    private void FaceEnemy()
-    {
-        if (targetEnemy == null) return;
-        RotateCharacter(targetEnemy.position.x - transform.position.x);
-    }
-
-    // Thêm hàm IsMoving để kiểm tra trạng thái di chuyển của AI
     public bool IsMoving()
     {
         return rb.linearVelocity.magnitude > 0.1f;
     }
 
-    private float lastMoveChangeTime = 0f;
-    private float moveChangeDelay = 0.2f; // Độ trễ nhỏ
-    
     private void OnDrawGizmos()
     {
-        // Vẽ phạm vi phát hiện
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
 
-        // Vẽ phạm vi tấn công
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }

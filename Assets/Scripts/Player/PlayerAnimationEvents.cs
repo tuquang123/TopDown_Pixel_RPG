@@ -20,7 +20,7 @@ public class CommonAnimationEvents : MonoBehaviour
         }
         else if (enemyAI != null)
         {
-            enemyAI.DealDamageToPlayer(); // Gây damage cho player
+            enemyAI.DealDamageToTarget(); // Gây damage cho player
         }
     }
 }
