@@ -14,4 +14,9 @@ public class HeroData : ScriptableObject
     public int baseDefense;
     public int baseSpeed;
     public int attackSpeed;
+    
+    [Header("Skill System")]
+    public AllySkillData passiveSkill;
+    public AllySkillData activeSkill1;
+    public AllySkillData activeSkill2;
 }

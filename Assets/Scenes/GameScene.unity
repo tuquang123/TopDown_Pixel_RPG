@@ -3365,9 +3365,10 @@ GameObject:
   m_Component:
   - component: {fileID: 637887264}
   - component: {fileID: 637887263}
-  - component: {fileID: 637887265}
   - component: {fileID: 637887269}
   - component: {fileID: 637887268}
+  - component: {fileID: 637887265}
+  - component: {fileID: 637887270}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -3417,43 +3418,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleTeam:
-    teamSlots:
-    - data: {fileID: 0}
-      level: 0
-      experience: 0
-      currentStats:
-        maxHP: 0
-        attack: 0
-        defense: 0
-        speed: 0
-        attackSpeed: 0
-    - data: {fileID: 0}
-      level: 0
-      experience: 0
-      currentStats:
-        maxHP: 0
-        attack: 0
-        defense: 0
-        speed: 0
-        attackSpeed: 0
-    - data: {fileID: 0}
-      level: 0
-      experience: 0
-      currentStats:
-        maxHP: 0
-        attack: 0
-        defense: 0
-        speed: 0
-        attackSpeed: 0
-    - data: {fileID: 0}
-      level: 0
-      experience: 0
-      currentStats:
-        maxHP: 0
-        attack: 0
-        defense: 0
-        speed: 0
-        attackSpeed: 0
+    teamSlots: []
   allHeroDatas:
   - {fileID: 11400000, guid: e50625b9387752b48943596aabb513fd, type: 2}
   - {fileID: 11400000, guid: e6b2732d8aaad724a8cb126496eadbf4, type: 2}
@@ -3481,6 +3446,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8dc05b9a658689844b089041790b840b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &637887270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 637887262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8022f2a9ec34ec981b4c40a45b57cbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &642173518 stripped
@@ -30374,8 +30351,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50b95f806ecb06b49aabc17c84a0008d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slot1: {fileID: 642173518}
-  slot2: {fileID: 177717480}
+  allySlots:
+  - heroId: h_virus
+    slotObject: {fileID: 642173518}
+  - heroId: h_jack
+    slotObject: {fileID: 177717480}
   heroManager: {fileID: 637887265}
 --- !u!1 &7389090512631615191
 GameObject:

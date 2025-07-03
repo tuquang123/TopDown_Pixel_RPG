@@ -10,6 +10,7 @@ public class HeroManager : MonoBehaviour
     void Start()
     {
         battleTeam = new BattleTeam();
+        battleTeam.ResetTeam();
 
         // Dùng ScriptableObject để tạo hero runtime
         allHeroes = new Hero[allHeroDatas.Length];

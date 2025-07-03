@@ -5,6 +5,14 @@ using UnityEngine;
 public class BattleTeam
 {
     public Hero[] teamSlots = new Hero[4]; // 4 Slot đội hình
+    
+    public void ResetTeam()
+    {
+        for (int i = 0; i < teamSlots.Length; i++)
+        {
+            teamSlots[i] = null;
+        }
+    }
 
     // Thêm Hero vào Slot chỉ định
     public void AddHeroToSlot(Hero hero, int slotIndex)

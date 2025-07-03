@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 public class HeroUIManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class HeroUIManager : MonoBehaviour
 
     void Start()
     {
+        heroManager.battleTeam.ResetTeam();
+        
         InitHeroListUI();
         InitTeamSlotUI();
         UpdateTeamSlotUI();

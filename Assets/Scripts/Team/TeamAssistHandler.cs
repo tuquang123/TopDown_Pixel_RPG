@@ -1,12 +1,17 @@
 using UnityEngine;
 
+[System.Serializable]
+public class AllySlot
+{
+    public string heroId;
+    public GameObject slotObject;
+}
+
 public class TeamAssistHandler : MonoBehaviour, IGameEventListener<string>
 {
-    public GameObject slot1;
-    public GameObject slot2;
-    
+    [SerializeField] private AllySlot[] allySlots;
     [SerializeField] private HeroManager heroManager;
-    
+
     private void OnEnable()
     {
         GameEvents.OnDeloyTeamAssist.RegisterListener(this);
@@ -25,70 +30,71 @@ public class TeamAssistHandler : MonoBehaviour, IGameEventListener<string>
         string heroId = parts[0];
         string action = parts[1];
 
+        AllySlot slot = GetSlotByHeroId(heroId);
+        if (slot == null) return;
+
         if (action == "add")
         {
-            if (heroId == "h_jack")
-            {
-                DeployArcher();
-            }
-            else if (heroId == "h_virus")
-            {
-                DeployWarious();
-            }
-
-            ResetSlotsToPlayer();
+            DeployAlly(slot, heroId);
         }
         else if (action == "remove")
         {
-            GameObject slot = null;
-
-            if (heroId == "h_jack") slot = slot1;
-            else if (heroId == "h_virus") slot = slot2;
-
-            if (slot != null)
-            {
-                var stats = slot.GetComponent<AllyStats>();
-                if (stats != null && stats.HealthUI != null)
-                {
-                    stats.HealthUI.HideUI(); // Ẩn thanh máu
-                }
-
-                slot.SetActive(false); // Tắt ally khỏi game
-            }
-
-            Debug.Log($"Gỡ đồng đội {heroId} khỏi slot.");
+            RemoveAlly(slot);
         }
-
     }
-    private void DeployArcher()
+
+    private AllySlot GetSlotByHeroId(string heroId)
     {
-        Hero hero = GetHeroById("h_jack");
+        foreach (var slot in allySlots)
+        {
+            if (slot.heroId == heroId)
+                return slot;
+        }
+        return null;
+    }
+
+    private void DeployAlly(AllySlot slot, string heroId)
+    {
+        Hero hero = GetHeroById(heroId);
         if (hero == null)
         {
-            Debug.LogWarning("Không tìm thấy Hero với ID: h_jack");
+            Debug.LogWarning($"Không tìm thấy Hero với ID: {heroId}");
             return;
         }
 
-        slot1.SetActive(true);
+        slot.slotObject.SetActive(true);
+        slot.slotObject.transform.position = GetAllySpawnPosition();
 
-        var ai = slot1.GetComponent<ArcherAI>();
-        if (ai != null)
+        if (slot.slotObject.TryGetComponent(out AllyBaseAI ai))
         {
             ai.Setup(hero);
-            
-            AllyStats allyStats = ai.GetComponent<AllyStats>();
-            if (allyStats != null && allyStats.HealthUI == null)
+            AllyManager.Instance.RegisterAlly(ai);
+        }
+
+        if (slot.slotObject.TryGetComponent(out AllyStats allyStats))
+        {
+            if (allyStats.HealthUI == null)
             {
-                GameObject ui = Instantiate(RefVFX.Instance.hpSliderUi , RefVFX.Instance.canvasHp.transform, false);
+                GameObject ui = Instantiate(RefVFX.Instance.hpSliderUi, RefVFX.Instance.canvasHp.transform, false);
                 var uiComp = ui.GetComponent<EnemyHealthUI>();
-                uiComp.SetTarget(slot1); 
+                uiComp.SetTarget(slot.slotObject);
                 allyStats.HealthUI = uiComp;
             }
         }
 
-        Debug.Log("Đã kích hoạt Archer và gán chỉ số.");
+        Debug.Log($"Triệu hồi đồng đội {heroId} thành công.");
     }
-    
+
+    private void RemoveAlly(AllySlot slot)
+    {
+        if (slot.slotObject.TryGetComponent(out AllyStats allyStats) && allyStats.HealthUI != null)
+        {
+            allyStats.HealthUI.HideUI();
+        }
+
+        slot.slotObject.SetActive(false);
+    }
+
     private Hero GetHeroById(string id)
     {
         foreach (var hero in heroManager.allHeroes)
@@ -99,59 +105,9 @@ public class TeamAssistHandler : MonoBehaviour, IGameEventListener<string>
         return null;
     }
 
-
-    private void DeployWarious()
+    private Vector3 GetAllySpawnPosition()
     {
-        Hero hero = GetHeroById("h_virus");
-        if (hero == null)
-        {
-            Debug.LogWarning("Không tìm thấy Hero với ID: h_virus");
-            return;
-        }
-
-        slot2.SetActive(true);
-
-        WarriorAi ai = slot2.GetComponent<WarriorAi>();
-        if (ai != null)
-        {
-            ai.Setup(hero);
-            
-            AllyStats allyStats = ai.GetComponent<AllyStats>();
-            if (allyStats != null && allyStats.HealthUI == null)
-            {
-                GameObject ui = Instantiate(RefVFX.Instance.hpSliderUi , RefVFX.Instance.canvasHp.transform, false);
-                var uiComp = ui.GetComponent<EnemyHealthUI>();
-                uiComp.SetTarget(slot2); 
-                allyStats.HealthUI = uiComp;
-            }
-        }
-
-        Debug.Log("Đã kích hoạt Warious và gán chỉ số.");
-    }
-
-    public void RemoveHero(string heroId)
-    {
-        if (heroId == "h_jack")
-        {
-            slot1.SetActive(false);
-        }
-        else if (heroId == "h_virus")
-        {
-            slot2.SetActive(false);
-        }
-    
-        Debug.Log($"Đã gỡ hero {heroId} khỏi trận và tắt slot.");
-    }
-
-
-    private void ResetSlotsToPlayer()
-    {
-        Vector3 playerPos = gameObject.transform.position;
-
-        // Đặt lại vị trí slot1 và slot2 gần người chơi
-        slot1.transform.position = playerPos + new Vector3(-1f, 0f, 0f); // lệch trái
-        slot2.transform.position = playerPos + new Vector3(1f, 0f, 0f); // lệch phải
-
-        Debug.Log("Đặt lại đồng đội về gần vị trí người chơi.");
+        Vector3 playerPos = RefVFX.Instance.playerPrefab.transform.position;
+        return playerPos + new Vector3(Random.Range(-1.5f, 1.5f), 0f, 0f);
     }
 }
