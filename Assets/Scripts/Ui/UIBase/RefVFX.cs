@@ -14,4 +14,6 @@ public class RefVFX : Singleton<RefVFX>
     
     
     public EnemyLevelDatabase levelDatabase;
+    public GameObject arrowPrefab;
+    public GameObject spellProjectilePrefab;
 }

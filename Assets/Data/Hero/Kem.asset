@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f99715f451424b2ea99599626384e270, type: 3}
+  m_Name: Kem
+  m_EditorClassIdentifier: 
+  id: h_kem
+  name: Kem
+  role: 0
+  icon: {fileID: 4415742582785795081, guid: 36b1b2a60a181d04590bdd35295ac922, type: 3}
+  baseHP: 100
+  baseAttack: 10
+  baseDefense: 10
+  baseSpeed: 2
+  attackSpeed: 1
+  passiveSkill: {fileID: 0}
+  activeSkill1: {fileID: 0}
+  activeSkill2: {fileID: 0}

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Arrow : MonoBehaviour
+public class Arrow : MonoBehaviour, IPooledObject
 {
     private Transform target;
     private Vector2 startPosition;
@@ -11,50 +11,52 @@ public class Arrow : MonoBehaviour
 
     [SerializeField] private TrailRenderer arrowTrail;
 
+    private bool isFlying = false;
+
     public void SetTarget(Transform enemy, int dmg)
     {
         target = enemy;
         damage = dmg;
         startPosition = transform.position;
 
-        // Xác định điểm giữa cao hơn để tạo vòng cung
         Vector2 midPoint = (startPosition + (Vector2)target.position) / 2;
         controlPoint = midPoint + Vector2.up * 2.5f;
 
         timeElapsed = 0;
+        isFlying = true;
 
-        // Thiết lập kích thước của TrailRenderer
         if (arrowTrail != null)
         {
+            arrowTrail.Clear(); // reset trail
             arrowTrail.startWidth = 0.1f;
             arrowTrail.endWidth = 0.05f;
         }
 
-        Destroy(gameObject, 2f);
+        // Optional fallback: disable after timeout in case of no hit
+        Invoke(nameof(DisableSelf), 2f);
     }
 
     private void Update()
     {
-        // Nếu mục tiêu biến mất, hủy mũi tên ngay
-        if (target == null)
+        if (!isFlying || target == null)
         {
-            Destroy(gameObject);
+            DisableSelf();
             return;
         }
+
         timeElapsed += Time.deltaTime;
         float t = timeElapsed / flightDuration;
-        if (t > 1) t = 1;
+        if (t > 1f) t = 1f;
 
-        // Cập nhật vị trí mũi tên
         Vector2 newPos = GetBezierPoint(t);
+        Vector2 moveDir = newPos - (Vector2)transform.position;
         transform.position = newPos;
 
-        // Xác định hướng di chuyển
-        Vector2 direction = (newPos - (Vector2)transform.position).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-        // Cập nhật góc xoay của mũi tên
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+        if (moveDir.sqrMagnitude > 0.001f)
+        {
+            float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+        }
     }
 
     private Vector2 GetBezierPoint(float t)
@@ -69,8 +71,21 @@ public class Arrow : MonoBehaviour
         if (other.TryGetComponent<IDamageable>(out var damageable))
         {
             damageable.TakeDamage(damage);
-            Destroy(gameObject);
+            DisableSelf();
         }
     }
 
+    private void DisableSelf()
+    {
+        isFlying = false;
+        CancelInvoke(); // cancel any delayed call
+        gameObject.SetActive(false); // pooling: hide instead of destroy
+    }
+
+    public void OnObjectSpawn()
+    {
+        isFlying = false;
+        timeElapsed = 0;
+        transform.rotation = Quaternion.identity;
+    }
 }

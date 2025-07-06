@@ -62,6 +62,7 @@ public class SkillLevelStat
     [LabelText("Cooldown")] public float cooldown;
     [LabelText("Duration")] public float duration;
     [LabelText("Power Value")] public float value;
+    [LabelText("Mode Type")] public StatModType modType = StatModType.Flat;
 
     [LabelText("Prefab (Override)")]
     public GameObject overridePrefab;

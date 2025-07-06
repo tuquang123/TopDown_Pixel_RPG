@@ -6282,11 +6282,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f205bf734512704da66e3c12b73732f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followDistance: 2
+  followDistance: 3
   detectionRange: 4
   attackRange: 4
-  arrowPrefab: {fileID: 3659391273684521209, guid: 74e8d529a7dc5bb4585e2f1db5be58a6,
-    type: 3}
+  attackCooldown: 0.5
   shootPoint: {fileID: 9179383788156031384}
 --- !u!114 &6306053370329008017
 MonoBehaviour:

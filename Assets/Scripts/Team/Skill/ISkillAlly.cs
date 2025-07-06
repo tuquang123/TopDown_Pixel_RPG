@@ -10,10 +10,12 @@ public class AllySkillFactory
     {
         return data.effectType switch
         {
-            //SkillEffectType.Damage => new AllySkillDamage(),
+            SkillEffectType.Buff => new AllySkillBuff(),
             //SkillEffectType.Heal => new AllySkillHeal(),
             //SkillEffectType.Buff => new AllySkillBuff(),
             _ => null
         };
     }
 }
+
+

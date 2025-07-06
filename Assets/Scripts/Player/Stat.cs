@@ -15,14 +15,22 @@ public class Stat
     {
         get
         {
-            var finalValue = baseValue;
+            float finalValue = baseValue;
+            float percentSum = 0f;
+
             foreach (var mod in modifiers)
             {
-                finalValue += mod.value;
+                if (mod.modType == StatModType.Flat)
+                    finalValue += mod.value;
+                else if (mod.modType == StatModType.Percent)
+                    percentSum += mod.value;
             }
+
+            finalValue *= (1 + percentSum / 100f);
             return finalValue;
         }
     }
+
 
     public void AddModifier(StatModifier modifier)
     {
@@ -46,18 +54,27 @@ public enum StatType
     AttackSpeed
 }
 
+public enum StatModType
+{
+    Flat,
+    Percent
+}
+
 [System.Serializable]
 public class StatModifier
 {
     public StatType statType;
     public float value;
+    public StatModType modType;
 
-    public StatModifier(StatType type, float value)
+    public StatModifier(StatType type, float value, StatModType modType = StatModType.Percent)
     {
         this.statType = type;
         this.value = value;
+        this.modType = modType;
     }
 }
+
 public class MultiStatModifier
 {
     public List<StatModifier> modifiers;

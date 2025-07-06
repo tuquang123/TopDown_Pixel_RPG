@@ -14,9 +14,12 @@ public class AllySkillData : ScriptableObject
     public float cooldown;
     public GameObject effectPrefab;
     
-    public SkillEffectType effectType; 
+    public SkillEffectType effectType;
+    public BuffTargetStat buffTargetStat;
 
     public int level;
+    public float duration;
+    public BuffTargetType targetType;
 }
 public enum SkillEffectType
 {
@@ -24,4 +27,18 @@ public enum SkillEffectType
     Heal,
     Buff
 }
+
+public enum BuffTargetStat
+{
+    Attack,
+    Defense,
+    Speed
+}
+
+public enum BuffTargetType
+{
+    Self, Ally, Player ,
+}
+
+
 

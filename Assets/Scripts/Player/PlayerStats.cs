@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamageable
+public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamageable , IBuffableStats
 {
     [Title("Level & Skill Points")]
     [ReadOnly, ShowInInspector] public int level = 1;
@@ -241,5 +241,38 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     {
         SaveSkillLevels();
     }
+    
+    public void ApplyTemporaryBuff(StatModifier modifier, float duration)
+    {
+        StartCoroutine(TemporaryStatModifierRoutine(modifier, duration));
+    }
+
+    private IEnumerator TemporaryStatModifierRoutine(StatModifier modifier, float duration)
+    {
+        ApplyStatModifier(modifier);
+
+        yield return new WaitForSeconds(duration);
+
+        RemoveStatModifier(modifier);
+    }
+    public void ModifyAttack(float amount, float duration)
+    {
+        StatModifier mod = new StatModifier(StatType.Attack, amount);
+        ApplyTemporaryBuff(mod, duration);
+    }
+
+    public void ModifyDefense(float amount, float duration)
+    {
+        StatModifier mod = new StatModifier(StatType.Defense, amount);
+        ApplyTemporaryBuff(mod, duration);
+    }
+
+    public void ModifySpeed(float amount, float duration)
+    {
+        StatModifier mod = new StatModifier(StatType.Speed, amount);
+        ApplyTemporaryBuff(mod, duration);
+    }
+
+
 
 }
