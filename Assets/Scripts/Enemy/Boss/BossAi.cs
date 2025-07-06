@@ -33,7 +33,7 @@ public class BossAI : EnemyAI
         if (target == null) return;
         if (Vector2.Distance(transform.position, target.position) > detectionRange) return;
 
-        Rotate(target.position.x - transform.position.x);
+        RotateEnemy(target.position.x - transform.position.x);
 
         if (Time.time - _lastSpecialAttackTime >= specialAttackCooldown)
         {
