@@ -3,7 +3,7 @@ using UnityEngine;
 public class ArcherAI : AllyBaseAI
 {
     private static readonly int ShotTrigger = Animator.StringToHash("7_Shoot");
-    
+
     [SerializeField] private Transform shootPoint;
 
     protected override void AttackTarget()
@@ -13,25 +13,18 @@ public class ArcherAI : AllyBaseAI
 
         if (target == null) return;
 
-        if (target.TryGetComponent(out EnemyAI enemy) && !enemy.IsDead)
-        {
-            GameObject arrowObj = ObjectPooler.Instance.Get(
-                RefVFX.Instance.arrowPrefab.name,
-                RefVFX.Instance.arrowPrefab,
-                shootPoint.position,
-                Quaternion.identity
-            );
+        GameObject arrowObj = ObjectPooler.Instance.Get(
+            RefVFX.Instance.arrowPrefab.name,
+            RefVFX.Instance.arrowPrefab,
+            shootPoint.position,
+            Quaternion.identity
+        );
 
-            Arrow arrow = arrowObj.GetComponent<Arrow>();
-            if (arrow != null)
-            {
-                arrow.SetTarget(target, stats.Attack);
-            }
+        Arrow arrow = arrowObj.GetComponent<Arrow>();
+        if (arrow == null) return;
 
-        }
-        else if (target.TryGetComponent(out DestructibleObject destructible))
-        {
-            destructible.Hit();
-        }
+        // Damage truyền vào tùy loại target
+        int damage = stats.Attack;
+        arrow.SetTarget(target, damage);
     }
 }

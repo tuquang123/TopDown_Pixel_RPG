@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-public class HeroUIManager : MonoBehaviour
+public class HeroUI : BasePopup
 {
     public HeroItemUI heroItemPrefab;
     public Transform heroListRoot;
@@ -10,17 +10,28 @@ public class HeroUIManager : MonoBehaviour
 
     public HeroManager heroManager;
 
-    void Start()
+    public override void Show()
     {
+        base.Show();
         heroManager.battleTeam.ResetTeam();
-        
         InitHeroListUI();
         InitTeamSlotUI();
         UpdateTeamSlotUI();
     }
 
+    public override void Hide()
+    {
+        base.Hide();
+        // Nếu muốn clear UI hoặc reset về mặc định, làm tại đây
+    }
+
     void InitHeroListUI()
     {
+        foreach (Transform child in heroListRoot)
+        {
+            Destroy(child.gameObject);
+        }
+
         foreach (var hero in heroManager.allHeroes)
         {
             var item = Instantiate(heroItemPrefab, heroListRoot);
@@ -54,16 +65,15 @@ public class HeroUIManager : MonoBehaviour
         }
 
         int emptySlot = heroManager.battleTeam.GetFirstEmptySlot();
-
         if (emptySlot == -1)
         {
             Debug.Log("Đội hình đã đầy!");
             return;
         }
-        
+
         GameEvents.OnDeloyTeamAssist.Raise($"{hero.data.id}|add");
-        Debug.Log("Deloy : " + hero.data.id);
-        
+        Debug.Log("Deploy: " + hero.data.id);
+
         heroManager.battleTeam.AddHeroToSlot(hero, emptySlot);
         UpdateTeamSlotUI();
     }
@@ -79,5 +89,4 @@ public class HeroUIManager : MonoBehaviour
         heroManager.battleTeam.RemoveHeroFromSlot(slotIndex);
         UpdateTeamSlotUI();
     }
-
 }

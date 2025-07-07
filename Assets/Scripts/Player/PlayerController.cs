@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour, IGameEventListener
+public class PlayerController : Singleton<PlayerController>, IGameEventListener
 {
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
@@ -168,38 +168,42 @@ public class PlayerController : MonoBehaviour, IGameEventListener
     {
         AudioManager.Instance.PlaySFX("Attack");
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
-        foreach (Collider2D hit in hits)
+        int totalHealed = 0;
+
+        foreach (var enemy in EnemyTracker.Instance.GetAllEnemies())
         {
-            if (hit.CompareTag("Enemy"))
-            {
-                int damage = (int)stats.attack.Value;
-                
-                bool isCrit = Random.Range(0f, 100f) < stats.GetCritChance();
+            if (enemy == null || enemy.IsDead) continue;
 
-                if (isCrit)
-                    damage = Mathf.RoundToInt(damage * 1.5f);
+            float dist = Vector2.Distance(attackPoint.position, enemy.transform.position);
+            if (dist > attackRadius) continue;
 
-                if (hit == null) return;
+            int damage = (int)stats.attack.Value;
+            bool isCrit = Random.Range(0f, 100f) < stats.GetCritChance();
 
-                if (hit.TryGetComponent(out IDamageable damageable))
-                {
-                    damageable.TakeDamage(damage , isCrit);
-                }
+            if (isCrit)
+                damage = Mathf.RoundToInt(damage * 1.5f);
 
-                int healedAmount = stats.HealFromLifeSteal(damage);
-                if (healedAmount > 0)
-                {
-                    FloatingTextSpawner.Instance.SpawnText(
-                        $"+{healedAmount}",
-                        transform.position + Vector3.up,
-                        new Color(0.3f, 1f, 0.3f)); // Xanh lá non
-                }
-            }
-            else if (hit.CompareTag("Destructible"))
-            {
-                hit.GetComponent<DestructibleObject>()?.Hit();
-            }
+            enemy.TakeDamage(damage, isCrit);
+
+            int healedAmount = stats.HealFromLifeSteal(damage);
+            if (healedAmount > 0)
+                totalHealed += healedAmount;
+        }
+
+        // Gây damage cho các object phá hủy (Destructibles)
+        var destructibles = DestructibleTracker.Instance.GetInRange(attackPoint.position, attackRadius);
+        foreach (var destructible in destructibles)
+        {
+            destructible.Hit();
+        }
+
+        if (totalHealed > 0)
+        {
+            FloatingTextSpawner.Instance.SpawnText(
+                $"+{totalHealed}",
+                transform.position + Vector3.up,
+                new Color(0.3f, 1f, 0.3f) // xanh lá non
+            );
         }
     }
 
@@ -232,12 +236,13 @@ public class PlayerController : MonoBehaviour, IGameEventListener
 
     protected void FindClosestEnemy()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        float minDist = detectionRange;
         targetEnemy = null;
+        float minDist = Mathf.Infinity;
 
-        foreach (GameObject enemy in enemies)
+        foreach (var enemy in EnemyTracker.Instance.GetEnemiesInRange(transform.position, detectionRange))
         {
+            if (enemy.IsDead) continue;
+
             float dist = Vector2.Distance(transform.position, enemy.transform.position);
             if (dist < minDist)
             {
@@ -246,14 +251,14 @@ public class PlayerController : MonoBehaviour, IGameEventListener
             }
         }
     }
-
+    
     protected void FindClosestDestructible()
     {
-        GameObject[] destructibles = GameObject.FindGameObjectsWithTag("Destructible");
+        var list = DestructibleTracker.Instance.GetInRange(transform.position, detectionRange);
         float minDist = detectionRange;
         targetDestructible = null;
 
-        foreach (GameObject obj in destructibles)
+        foreach (var obj in list)
         {
             float dist = Vector2.Distance(transform.position, obj.transform.position);
             if (dist < minDist)
@@ -263,7 +268,7 @@ public class PlayerController : MonoBehaviour, IGameEventListener
             }
         }
     }
-
+    
     public Vector2 GetMoveInput()
     {
         float joyX = UltimateJoystick.GetHorizontalAxis("Move");

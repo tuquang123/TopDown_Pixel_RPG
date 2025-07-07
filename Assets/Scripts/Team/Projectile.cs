@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(SpriteRenderer))]
 public class Projectile : MonoBehaviour, IPooledObject
 {
     private Transform target;
     private int damage;
     private float speed = 5f;
     private float maxLifetime = 3f;
+    private float hitDistance = 0.2f;
 
     public void SetTarget(Transform newTarget, int dmg)
     {
@@ -18,24 +18,35 @@ public class Projectile : MonoBehaviour, IPooledObject
 
     public void OnObjectSpawn()
     {
-        // reset trạng thái nếu cần
+        // Reset nếu cần
     }
 
     private void Update()
     {
-        if (target == null)
+        if (target == null || !target.gameObject.activeInHierarchy)
         {
             Despawn();
             return;
         }
 
+        // Move toward target
         Vector3 dir = (target.position - transform.position).normalized;
         transform.position += dir * speed * Time.deltaTime;
 
-        if (Vector3.Distance(transform.position, target.position) < 0.2f)
+        // Hit check bằng khoảng cách
+        float distance = Vector3.Distance(transform.position, target.position);
+        if (distance < hitDistance)
         {
-            if (target.TryGetComponent<IDamageable>(out var dmgTarget))
-                dmgTarget.TakeDamage(damage);
+            // Gây damage trực tiếp
+            if (target.TryGetComponent<EnemyAI>(out var enemy))
+            {
+                if (!enemy.IsDead)
+                    enemy.TakeDamage(damage);
+            }
+            else if (target.TryGetComponent<DestructibleObject>(out var destructible))
+            {
+                destructible.Hit();
+            }
 
             Despawn();
         }
@@ -44,34 +55,5 @@ public class Projectile : MonoBehaviour, IPooledObject
     private void Despawn()
     {
         gameObject.SetActive(false);
-    }
-    
-    private void Reset()
-    {
-        AutoAddRequiredComponents();
-    }
-
-    private void OnValidate()
-    {
-        AutoAddRequiredComponents();
-    }
-
-    private void AutoAddRequiredComponents()
-    {
-        if (!TryGetComponent(out Collider2D collider))
-        {
-            CircleCollider2D col = gameObject.AddComponent<CircleCollider2D>();
-            col.isTrigger = true;
-            col.radius = 0.15f;
-            Debug.Log($"[{name}] Tự động thêm Collider2D.");
-        }
-
-        if (!TryGetComponent(out Rigidbody2D rb))
-        {
-            rb = gameObject.AddComponent<Rigidbody2D>();
-            rb.gravityScale = 0;
-            rb.isKinematic = true;
-            Debug.Log($"[{name}] Tự động thêm Rigidbody2D.");
-        }
     }
 }

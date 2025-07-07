@@ -12,21 +12,13 @@ public class MageAI : AllyBaseAI
 
         if (target == null) return;
 
-        if (target.TryGetComponent(out EnemyAI enemy) && !enemy.IsDead)
-        {
-            GameObject proj = ObjectPooler.Instance.Get(
-                RefVFX.Instance.spellProjectilePrefab.name,
-                RefVFX.Instance.spellProjectilePrefab,
-                castPoint.position,
-                Quaternion.identity
-            );
+        GameObject proj = ObjectPooler.Instance.Get(
+            RefVFX.Instance.spellProjectilePrefab.name,
+            RefVFX.Instance.spellProjectilePrefab,
+            castPoint.position,
+            Quaternion.identity
+        );
 
-            proj.GetComponent<Projectile>()?.SetTarget(target, stats.Attack);
-
-        }
-        else if (target.TryGetComponent(out DestructibleObject destructible))
-        {
-            destructible.Hit();
-        }
+        proj.GetComponent<Projectile>()?.SetTarget(target, stats.Attack);
     }
 }

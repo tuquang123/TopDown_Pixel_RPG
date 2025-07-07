@@ -14,7 +14,12 @@ public class EnemyTracker : Singleton<EnemyTracker>
     {
         trackedEnemies.Remove(enemy);
     }
-
+    
+    public List<EnemyAI> GetAllEnemies()
+    {
+        return trackedEnemies;
+    }
+    
     public void ClearAllEnemies()
     {
         foreach (var enemy in trackedEnemies)
@@ -28,4 +33,23 @@ public class EnemyTracker : Singleton<EnemyTracker>
 
         trackedEnemies.Clear();
     }
+    
+    public List<EnemyAI> GetEnemiesInRange(UnityEngine.Vector2 position, float range)
+    {
+        List<EnemyAI> result = new List<EnemyAI>();
+
+        foreach (var enemy in trackedEnemies)
+        {
+            if (enemy == null || enemy.IsDead) continue;
+
+            float dist = UnityEngine.Vector2.Distance(position, enemy.transform.position);
+            if (dist <= range)
+            {
+                result.Add(enemy);
+            }
+        }
+
+        return result;
+    }
+
 }

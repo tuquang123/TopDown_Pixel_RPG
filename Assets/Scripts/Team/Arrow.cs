@@ -8,10 +8,11 @@ public class Arrow : MonoBehaviour, IPooledObject
     private float timeElapsed;
     private float flightDuration = 0.5f;
     private int damage;
+    private bool isFlying = false;
 
     [SerializeField] private TrailRenderer arrowTrail;
 
-    private bool isFlying = false;
+    private float hitDistance = 0.2f;
 
     public void SetTarget(Transform enemy, int dmg)
     {
@@ -19,26 +20,25 @@ public class Arrow : MonoBehaviour, IPooledObject
         damage = dmg;
         startPosition = transform.position;
 
-        Vector2 midPoint = (startPosition + (Vector2)target.position) / 2;
+        Vector2 midPoint = (startPosition + (Vector2)target.position) / 2f;
         controlPoint = midPoint + Vector2.up * 2.5f;
 
-        timeElapsed = 0;
+        timeElapsed = 0f;
         isFlying = true;
 
         if (arrowTrail != null)
         {
-            arrowTrail.Clear(); // reset trail
+            arrowTrail.Clear();
             arrowTrail.startWidth = 0.1f;
             arrowTrail.endWidth = 0.05f;
         }
 
-        // Optional fallback: disable after timeout in case of no hit
-        Invoke(nameof(DisableSelf), 2f);
+        Invoke(nameof(DisableSelf), 2f); // timeout fallback
     }
 
     private void Update()
     {
-        if (!isFlying || target == null)
+        if (!isFlying || target == null || !target.gameObject.activeInHierarchy)
         {
             DisableSelf();
             return;
@@ -57,7 +57,23 @@ public class Arrow : MonoBehaviour, IPooledObject
             float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0, 0, angle);
         }
+
+        if (Vector2.Distance(transform.position, target.position) <= hitDistance)
+        {
+            // Gây damage
+            if (target.TryGetComponent<IDamageable>(out var dmgTarget))
+            {
+                dmgTarget.TakeDamage(damage);
+            }
+            else if (target.TryGetComponent<DestructibleObject>(out var destructible))
+            {
+                destructible.Hit();
+            }
+
+            DisableSelf();
+        }
     }
+
 
     private Vector2 GetBezierPoint(float t)
     {
@@ -66,20 +82,11 @@ public class Arrow : MonoBehaviour, IPooledObject
                t * t * (Vector2)target.position;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.TryGetComponent<IDamageable>(out var damageable))
-        {
-            damageable.TakeDamage(damage);
-            DisableSelf();
-        }
-    }
-
     private void DisableSelf()
     {
         isFlying = false;
-        CancelInvoke(); // cancel any delayed call
-        gameObject.SetActive(false); // pooling: hide instead of destroy
+        CancelInvoke();
+        gameObject.SetActive(false);
     }
 
     public void OnObjectSpawn()

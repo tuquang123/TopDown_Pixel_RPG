@@ -27,11 +27,17 @@ public class DestructibleObject : MonoBehaviour
         originalPos = transform.localPosition;
     }
 
+    private void OnDisable()
+    {
+        DestructibleTracker.Instance?.Unregister(this);
+    }
+    
     private void OnEnable()
     {
         currentHits = 0;
         spriteRenderer.color = Color.white;
         transform.localPosition = originalPos;
+        DestructibleTracker.Instance?.Register(this);
     }
 
     public void Hit()

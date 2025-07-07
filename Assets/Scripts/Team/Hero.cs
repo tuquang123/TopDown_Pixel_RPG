@@ -39,4 +39,9 @@ public class Hero
         int rawDamage = currentStats.attack - target.currentStats.defense;
         return Mathf.Max(rawDamage, 1);
     }
+
+    public bool IsDead()
+    {
+        throw new System.NotImplementedException();
+    }
 }

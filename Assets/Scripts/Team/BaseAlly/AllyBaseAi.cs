@@ -33,7 +33,8 @@ public abstract class AllyBaseAI : MonoBehaviour
     protected AllyState currentState = AllyState.Idle;
 
     protected Hero hero;
-    
+    public bool IsDead { get; set; }
+
     public virtual void Setup(Hero hero)
     {
         this.hero = hero;
@@ -256,35 +257,51 @@ public abstract class AllyBaseAI : MonoBehaviour
             target = playerController.GetTargetEnemy();
             return;
         }
-        
-        target = FindNearestTarget("Enemy", "Destructible");
-    }
 
-    protected Transform FindNearestTarget(params string[] tags)
+        // Ưu tiên enemy sống
+        target = FindNearestEnemy();
+
+        if (target == null)
+        {
+            target = FindNearestDestructible();
+        }
+    }
+    protected Transform FindNearestEnemy()
     {
-        float minDistance = detectionRange;
+        float minDist = detectionRange;
         Transform nearest = null;
 
-        foreach (string tag in tags)
+        foreach (var enemy in EnemyTracker.Instance.GetEnemiesInRange(transform.position, detectionRange))
         {
-            GameObject[] objects = GameObject.FindGameObjectsWithTag(tag);
-            foreach (GameObject obj in objects)
+            float dist = Vector2.Distance(transform.position, enemy.transform.position);
+            if (dist < minDist)
             {
-                if (tag == "Enemy" && obj.TryGetComponent(out EnemyAI ai) && ai.IsDead)
-                    continue;
-
-                float dist = Vector2.Distance(transform.position, obj.transform.position);
-                if (dist < minDistance)
-                {
-                    minDistance = dist;
-                    nearest = obj.transform;
-                }
+                minDist = dist;
+                nearest = enemy.transform;
             }
         }
 
         return nearest;
     }
-    
+
+    protected Transform FindNearestDestructible()
+    {
+        float minDist = detectionRange;
+        Transform nearest = null;
+
+        foreach (var obj in DestructibleTracker.Instance.GetInRange(transform.position, detectionRange))
+        {
+            float dist = Vector2.Distance(transform.position, obj.transform.position);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                nearest = obj.transform;
+            }
+        }
+
+        return nearest;
+    }
+
     public AllyStats GetStats()
     {
         return stats;

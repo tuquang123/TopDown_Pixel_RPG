@@ -171,22 +171,36 @@ public class EnemyAI : MonoBehaviour , IDamageable
 
     private void FindClosestTarget()
     {
-        GameObject[] candidates = GameObject.FindGameObjectsWithTag("Player");
-        float closestDistance = Mathf.Infinity;
-        Transform closestTarget = null;
+        Transform bestTarget = null;
+        float minDist = Mathf.Infinity;
 
-        foreach (var candidate in candidates)
+        // Ưu tiên Player nếu trong range
+        if (PlayerController.Instance != null && !PlayerController.Instance.IsPlayerDie())
         {
-            float distance = Vector2.Distance(transform.position, candidate.transform.position);
-            if (distance < closestDistance)
+            float dist = Vector2.Distance(transform.position, PlayerController.Instance.transform.position);
+            if (dist <= detectionRange)
             {
-                closestDistance = distance;
-                closestTarget = candidate.transform;
+                bestTarget = PlayerController.Instance.transform;
+                minDist = dist;
             }
         }
 
-        target = closestTarget;
+        // Tìm Ally gần nhất
+        foreach (var ally in AllyManager.Instance.GetAllies())
+        {
+            if (ally == null || ally.IsDead) continue;
+
+            float dist = Vector2.Distance(transform.position, ally.transform.position);
+            if (dist < minDist && dist <= detectionRange)
+            {
+                bestTarget = ally.transform;
+                minDist = dist;
+            }
+        }
+
+        target = bestTarget;
     }
+
 
     protected virtual void MoveToAttackPosition()
     {
