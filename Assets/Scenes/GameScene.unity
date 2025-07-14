@@ -3463,6 +3463,7 @@ GameObject:
   - component: {fileID: 637887268}
   - component: {fileID: 637887265}
   - component: {fileID: 637887270}
+  - component: {fileID: 637887271}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -3553,6 +3554,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c8022f2a9ec34ec981b4c40a45b57cbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &637887271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 637887262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 414cce690a6442eab7aec9bc41ccf939, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &642173518 stripped
@@ -10325,6 +10338,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1690262339}
   - component: {fileID: 1690262340}
+  - component: {fileID: 1690262341}
   m_Layer: 5
   m_Name: RosterHero
   m_TagString: Untagged
@@ -10374,6 +10388,18 @@ MonoBehaviour:
   - {fileID: 1089092816}
   - {fileID: 1936067999}
   heroManager: {fileID: 637887265}
+--- !u!225 &1690262341
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1690262338}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1691089120
 GameObject:
   m_ObjectHideFlags: 0
@@ -11387,7 +11413,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -11, y: 29.999939}
+  m_AnchoredPosition: {x: -11, y: 30}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1855691830

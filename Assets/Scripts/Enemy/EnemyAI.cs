@@ -327,17 +327,19 @@ public class EnemyAI : MonoBehaviour , IDamageable
     protected virtual void Die()
     {
         if (isDead) return;
-        OnDeath?.Invoke();
         isDead = true;
         anim.SetTrigger(DieTrigger);
         GetComponent<Collider2D>().enabled = false;
         enabled = false;
 
+        OnDeath?.Invoke();
+
+        // Báo cáo quest
         QuestManager.Instance.ReportProgress(ObjectiveType.KillEnemies, enemyName, 1);
 
-        Vector3 spawnPos = transform.position + new Vector3(Random.Range(-0.5f, 0.5f), 0f, 0);
-        ObjectPooler.Instance.Get("Gold", RefVFX.Instance.goldPrefab, spawnPos, Quaternion.identity);
-
+        GoldDropHelper.SpawnGoldBurst(transform.position, Random.Range(3, 6), RefVFX.Instance.goldPrefab);
+        
+        // UI máu
         if (enemyHealthUI != null)
         {
             Destroy(enemyHealthUI.gameObject);

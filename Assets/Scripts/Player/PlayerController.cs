@@ -206,34 +206,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
             );
         }
     }
-
     
-    protected virtual void AttackEnemy()
-    {
-        lastAttackTime = Time.time;
-        anim.SetTrigger(AttackTrigger);
-
-        Collider2D[] hits = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
-        foreach (Collider2D hit in hits)
-        {
-            if (hit.CompareTag("Enemy"))
-            {
-                int damage = (int)stats.attack.Value;
-                bool isCrit = Random.Range(0f, 100f) < stats.GetCritChance();
-
-                if (isCrit)
-                    damage = Mathf.RoundToInt(damage * 1.5f);
-
-                hit.GetComponent<EnemyAI>()?.TakeDamage(damage, isCrit);
-                stats.HealFromLifeSteal(damage);
-            }
-            else if (hit.CompareTag("Destructible"))
-            {
-                hit.GetComponent<DestructibleObject>()?.Hit();
-            }
-        }
-    }
-
     protected void FindClosestEnemy()
     {
         targetEnemy = null;

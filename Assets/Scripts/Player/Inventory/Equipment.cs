@@ -21,21 +21,21 @@ public class Equipment : MonoBehaviour
         List<StatModifier> modifiers = new List<StatModifier>();
 
         if (item.attackPower != 0)
-            modifiers.Add(new StatModifier(StatType.Attack, item.attackPower));
+            modifiers.Add(new StatModifier(StatType.Attack, item.attackPower , StatModType.Flat));
         if (item.defense != 0)
-            modifiers.Add(new StatModifier(StatType.Defense, item.defense));
+            modifiers.Add(new StatModifier(StatType.Defense, item.defense , StatModType.Flat));
         if (item.healthBonus != 0)
-            modifiers.Add(new StatModifier(StatType.MaxHealth, item.healthBonus));
+            modifiers.Add(new StatModifier(StatType.MaxHealth, item.healthBonus , StatModType.Flat));
         if (item.manaBonus != 0)
-            modifiers.Add(new StatModifier(StatType.MaxMana, item.manaBonus));
+            modifiers.Add(new StatModifier(StatType.MaxMana, item.manaBonus , StatModType.Flat));
         if (item.critChance != 0)
-            modifiers.Add(new StatModifier(StatType.CritChance, item.critChance));
+            modifiers.Add(new StatModifier(StatType.CritChance, item.critChance , StatModType.Flat));
         if (item.attackSpeed != 0)
-            modifiers.Add(new StatModifier(StatType.AttackSpeed, item.attackSpeed));
+            modifiers.Add(new StatModifier(StatType.AttackSpeed, item.attackSpeed , StatModType.Flat));
         if (item.lifeSteal != 0)
-            modifiers.Add(new StatModifier(StatType.LifeSteal, item.lifeSteal));
+            modifiers.Add(new StatModifier(StatType.LifeSteal, item.lifeSteal , StatModType.Flat));
         if (item.moveSpeed != 0)
-            modifiers.Add(new StatModifier(StatType.Speed, item.moveSpeed));
+            modifiers.Add(new StatModifier(StatType.Speed, item.moveSpeed , StatModType.Flat));
 
         foreach (var modifier in modifiers)
         {

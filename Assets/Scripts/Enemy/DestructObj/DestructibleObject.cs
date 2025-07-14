@@ -104,12 +104,8 @@ public class DestructibleObject : MonoBehaviour
         }
 
         // Spawn gold
-        int dropCount = Random.Range(minGold, maxGold + 1);
-        for (int i = 0; i < dropCount; i++)
-        {
-            Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), 0, 0);
-            ObjectPooler.Instance.Get("Gold", RefVFX.Instance.goldPrefab, transform.position + offset, Quaternion.identity);
-        }
+        int totalGoldToDrop = Random.Range(minGold, maxGold + 1); // ví dụ từ 3 đến 8
+        GoldDropHelper.SpawnGoldBurst(transform.position, totalGoldToDrop, RefVFX.Instance.goldPrefab);
 
         gameObject.SetActive(false);
     }
