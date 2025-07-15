@@ -7,38 +7,36 @@ public class GoldItem : MonoBehaviour, IPooledObject
 
     [Header("Timings")]
     public float flyDuration = 0.3f;               // thời gian bay ra ban đầu
-    public float autoCollectDelay = 0.5f;          // thời gian đứng yên trước khi bắt đầu xét hút
+    public float autoCollectDelay = 0.5f;          // thời gian đứng yên trước khi xét hút
     public float collectDelayAfterReady = 0.2f;    // delay thêm trước khi hút
 
     [Header("Collect Settings")]
     public float attractRange = 3f;
-    public float pickupDistance = 0.3f;
-    public float tweenDuration = 0.3f;
+    public float pickupDistance = 0.25f;
+    public float attractSpeed = 10f;
 
     private Transform player;
     private Tween flyTween;
-    private Tween collectTween;
 
     private float spawnTime;
     private float readyTime;
-    private bool isCollecting = false;
+
     private bool isReadyToCollect = false;
+    private bool isCollecting = false;
 
     public void OnObjectSpawn()
     {
         if (player == null)
             player = PlayerController.Instance?.transform;
 
-        // Reset trạng thái
-        isCollecting = false;
         isReadyToCollect = false;
+        isCollecting = false;
         spawnTime = Time.time;
 
-        // Kill tween cũ nếu có
+        // Kill tween bay nếu có
         flyTween?.Kill();
-        collectTween?.Kill();
 
-        // Bay ngẫu nhiên khi spawn
+        // Vàng bay nhẹ ra hướng ngẫu nhiên
         Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(0.2f, 0.6f), 0f);
         Vector3 targetPos = transform.position + offset;
 
@@ -48,50 +46,37 @@ public class GoldItem : MonoBehaviour, IPooledObject
 
     private void Update()
     {
-        if (player == null || isCollecting) return;
+        if (player == null) return;
 
         float timeSinceSpawn = Time.time - spawnTime;
 
-        // Đủ delay, kiểm tra có thể hút không
+        // Sau thời gian delay, kiểm tra khoảng cách để chuẩn bị hút
         if (!isReadyToCollect && timeSinceSpawn >= autoCollectDelay)
         {
-            float dist = Vector2.Distance(transform.position, player.position);
-            if (dist <= attractRange)
+            if (Vector3.Distance(transform.position, player.position) <= attractRange)
             {
                 isReadyToCollect = true;
                 readyTime = Time.time;
             }
         }
 
-        // Đủ delay thêm, bắt đầu hút
-        if (isReadyToCollect && Time.time - readyTime >= collectDelayAfterReady)
+        // Sau delay hút → bắt đầu hút
+        if (isReadyToCollect && !isCollecting && Time.time - readyTime >= collectDelayAfterReady)
         {
-            StartCollecting();
-            isReadyToCollect = false;
+            isCollecting = true;
         }
-    }
 
-    private void StartCollecting()
-    {
-        isCollecting = true;
+        // Đang hút → bay về theo vị trí sống của Player
+        if (isCollecting)
+        {
+            Vector3 target = player.position;
+            transform.position = Vector3.MoveTowards(transform.position, target, attractSpeed * Time.deltaTime);
 
-        collectTween = transform.DOMove(player.position, tweenDuration)
-            .SetEase(Ease.InSine)
-            .OnUpdate(() =>
+            if (Vector3.Distance(transform.position, target) <= pickupDistance)
             {
-                if (Vector2.Distance(transform.position, player.position) <= pickupDistance)
-                {
-                    Collect();
-                    collectTween.Kill();
-                }
-            })
-            .OnComplete(() =>
-            {
-                if (gameObject.activeSelf) // tránh gọi đúp nếu đã kill ở OnUpdate
-                {
-                    Collect();
-                }
-            });
+                Collect();
+            }
+        }
     }
 
     private void Collect()
