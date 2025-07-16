@@ -12,8 +12,8 @@ public class CriticalBoost : ISkill
             Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skillData.skillName}");
             return; 
         }
-        float boost = Mathf.CeilToInt(playerStats.defense.Value * currentLevelStat.value / 100);
-        playerStats.attack.AddModifier(new StatModifier(StatType.Defense, (int)boost)); 
+        //float boost = Mathf.CeilToInt(playerStats.critChance.Value * currentLevelStat.value / 100);
+        playerStats.ApplyStatModifier(new StatModifier(StatType.CritChance, (int)currentLevelStat.value));
     }
 
     public bool CanUse(PlayerStats playerStats, SkillData skillData)

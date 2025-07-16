@@ -17,17 +17,35 @@ MonoBehaviour:
   icon: {fileID: -1701842369826841683, guid: ed0836d2b0b084f2a842be7fa476e1e5, type: 3}
   itemType: 4
   tier: 0
-  description: bostrs up speed
-  attackPower: 0
-  defense: 0
-  healthBonus: 0
-  manaBonus: 0
-  critChance: 10
-  attackSpeed: 0
-  lifeSteal: 0
-  moveSpeed: 0.5
+  price: 100
+  description: up speed
+  attack:
+    flat: 0
+    percent: 0
+  defense:
+    flat: 0
+    percent: 0
+  health:
+    flat: 50
+    percent: 0
+  mana:
+    flat: 50
+    percent: 0
+  critChance:
+    flat: 0
+    percent: 0
+  attackSpeed:
+    flat: 0
+    percent: 0
+  lifeSteal:
+    flat: 0
+    percent: 0
+  speed:
+    flat: 5
+    percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: -1701842369826841683, guid: ed0836d2b0b084f2a842be7fa476e1e5,
     type: 3}
   iconRight: {fileID: -6657482867516515422, guid: ed0836d2b0b084f2a842be7fa476e1e5,
     type: 3}
+  baseUpgradeCost: 100

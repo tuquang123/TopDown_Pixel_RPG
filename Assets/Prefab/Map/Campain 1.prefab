@@ -143,11 +143,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 681292d90042d014092cb88da479d97a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelDatabase: {fileID: 11400000, guid: 772ee1512c9cae04c94b3f8f8b705d05, type: 2}
-  enemyUI: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
-  canvasHp: {fileID: 0}
   bossPrefab: {fileID: 7307690110532538079}
-  timeBoss: 60
+  timeBoss: 10
   spawnPoints:
   - {fileID: 7307112013923674598}
   - {fileID: 8881585108012981647}
@@ -279,8 +276,6 @@ MonoBehaviour:
   enemyPrefab: {fileID: 2970206300379713479, guid: a69260f2b7402d149a15e280862de3b1,
     type: 3}
   respawnDelay: 10
-  enemyUI: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
-  canvasHp: {fileID: 0}
   enemyLevel: 3
 --- !u!1 &1299026122040698896
 GameObject:
@@ -21224,8 +21219,6 @@ MonoBehaviour:
   enemyPrefab: {fileID: 2970206300379713479, guid: a69260f2b7402d149a15e280862de3b1,
     type: 3}
   respawnDelay: 10
-  enemyUI: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
-  canvasHp: {fileID: 0}
   enemyLevel: 3
 --- !u!1 &6157179389853576470
 GameObject:
@@ -21814,8 +21807,6 @@ MonoBehaviour:
   enemyPrefab: {fileID: 2970206300379713479, guid: a69260f2b7402d149a15e280862de3b1,
     type: 3}
   respawnDelay: 10
-  enemyUI: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
-  canvasHp: {fileID: 0}
   enemyLevel: 3
 --- !u!1 &6667578042628619700
 GameObject:
@@ -28985,9 +28976,9 @@ Tilemap:
   - m_RefCount: 36
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   - m_RefCount: 0
-    m_Data: {r: 1.35141e-40, g: 1.35141e-40, b: 1.35141e-40, a: 1.35141e-40}
+    m_Data: {r: 5.56514e-40, g: 5.56514e-40, b: 5.56514e-40, a: 5.56514e-40}
   - m_RefCount: 2
-    m_Data: {r: 0.8152864, g: 0.525925, b: 0.57354724, a: 1}
+    m_Data: {r: 0.9847494, g: 0.4098501, b: 0.441575, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -30635,9 +30626,9 @@ Tilemap:
   - m_RefCount: 36
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   - m_RefCount: 0
-    m_Data: {r: 1.35335e-40, g: 1.35335e-40, b: 1.35335e-40, a: 1.35335e-40}
+    m_Data: {r: 5.56708e-40, g: 5.56708e-40, b: 5.56708e-40, a: 5.56708e-40}
   - m_RefCount: 2
-    m_Data: {r: 0.8064304, g: 0.39984533, b: 0.47719637, a: 1}
+    m_Data: {r: 0.97723603, g: 0.41723147, b: 0.4962502, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -35503,8 +35494,6 @@ MonoBehaviour:
   enemyPrefab: {fileID: 2970206300379713479, guid: a69260f2b7402d149a15e280862de3b1,
     type: 3}
   respawnDelay: 10
-  enemyUI: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
-  canvasHp: {fileID: 0}
   enemyLevel: 3
 --- !u!1 &8257225543630466814
 GameObject:

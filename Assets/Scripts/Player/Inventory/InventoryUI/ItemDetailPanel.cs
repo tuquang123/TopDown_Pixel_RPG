@@ -45,7 +45,7 @@ public class ItemDetailPanel : MonoBehaviour
         ItemData itemData = item.itemData;
         nameText.text = itemData.itemName;
         descriptionText.text = itemData.description;
-        
+
         int sellPrice = CalculateSellPrice(currentItem);
         sellPriceText.text = $"Bán ({sellPrice} vàng)";
 
@@ -57,25 +57,31 @@ public class ItemDetailPanel : MonoBehaviour
 
         upgradeButton.onClick.RemoveAllListeners();
         upgradeButton.onClick.AddListener(UpgradeItem);
-        
+
         string stats = "";
-        if (itemData.attackPower != 0)
-            stats += $"Dame: {itemData.attackPower + Mathf.RoundToInt(itemData.attackPower * 0.1f * (item.upgradeLevel - 1))}\n";
-        if (itemData.defense != 0)
-            stats += $"Giáp: {itemData.defense + Mathf.RoundToInt(itemData.defense * 0.1f * (item.upgradeLevel - 1))}\n";
-        if (itemData.healthBonus != 0)
-            stats += $"Máu: {itemData.healthBonus + Mathf.RoundToInt(itemData.healthBonus * 0.1f * (item.upgradeLevel - 1))}\n";
-        if (itemData.manaBonus != 0)
-            stats += $"Mana: {itemData.manaBonus + Mathf.RoundToInt(itemData.manaBonus * 0.1f * (item.upgradeLevel - 1))}\n";
-        if (itemData.critChance != 0)
-            stats += $"Crit: {itemData.critChance + 1f * (item.upgradeLevel - 1)}%\n";
-        if (itemData.moveSpeed != 0)
-            stats += $"Speed: {itemData.moveSpeed + 0.05f * (item.upgradeLevel - 1)}\n";
-        if (itemData.attackSpeed != 0)
-            stats += $"Speed Attack: {(itemData.attackSpeed + 0.05f * (item.upgradeLevel - 1)):F1}\n";
-        if (itemData.lifeSteal != 0)
-            stats += $"Life Steal: {itemData.lifeSteal + 0.5f * (item.upgradeLevel - 1)}%\n";
-        
+
+        void AddStatLine(string label, ItemStatBonus bonus, float upgradePercent = 0.1f, string suffix = "")
+        {
+            if (bonus == null || (!bonus.HasValue)) return;
+
+            float flat = bonus.flat + (bonus.flat * upgradePercent * (item.upgradeLevel - 1));
+            float percent = bonus.percent;
+
+            if (flat != 0)
+                stats += $"{label}: {Mathf.RoundToInt(flat)}{suffix}\n";
+            if (percent != 0)
+                stats += $"{label}: +{percent}%{suffix}\n";
+        }
+
+        AddStatLine("Dame", itemData.attack);
+        AddStatLine("Giáp", itemData.defense);
+        AddStatLine("Máu", itemData.health);
+        AddStatLine("Mana", itemData.mana);
+        AddStatLine("Crit", itemData.critChance, 0.05f);     
+        AddStatLine("Speed", itemData.speed, 0.05f);
+        AddStatLine("Tốc đánh", itemData.attackSpeed, 0.05f);
+        AddStatLine("Hút máu", itemData.lifeSteal, 0.05f);
+
         nameText.text = $"{itemData.itemName} +{item.upgradeLevel}";
         statText.text = stats.TrimEnd();
 
@@ -84,6 +90,7 @@ public class ItemDetailPanel : MonoBehaviour
 
         gameObject.SetActive(true);
     }
+
 
     private void UpgradeItem()
     {

@@ -13,8 +13,8 @@ public class AttackSpeedBoost : ISkill
             return; 
         }
 
-        float boost = Mathf.CeilToInt(playerStats.attackSpeed.Value * currentLevelStat.value / 100);
-        playerStats.attackSpeed.AddModifier(new StatModifier(StatType.AttackSpeed, (int)boost));
+        //float boost = Mathf.CeilToInt(playerStats.attackSpeed.Value * currentLevelStat.value / 100);
+        playerStats.ApplyStatModifier(new StatModifier(StatType.AttackSpeed, (int)currentLevelStat.value));
     }
 
     public bool CanUse(PlayerStats playerStats, SkillData skillData)

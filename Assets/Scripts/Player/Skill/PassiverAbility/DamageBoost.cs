@@ -12,8 +12,8 @@ public class DamageBoost : ISkill
             Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skillData.skillName}");
             return; 
         }
-        int damageIncrease = Mathf.CeilToInt(playerStats.attack.Value * currentLevelStat.value / 100f);
-        playerStats.attack.AddModifier(new StatModifier(StatType.Attack, damageIncrease));
+        //int boost = Mathf.CeilToInt(playerStats.attack.Value * currentLevelStat.value / 100f);
+        playerStats.ApplyStatModifier(new StatModifier(StatType.Attack, (int)currentLevelStat.value));
     }
 
     public bool CanUse(PlayerStats playerStats, SkillData skillData)

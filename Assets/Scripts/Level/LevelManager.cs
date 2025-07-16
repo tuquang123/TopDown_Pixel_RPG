@@ -77,6 +77,7 @@ public class LevelManager : Singleton<LevelManager>
             };
         
             player.transform.position = targetPos;
+            PositionAlliesAroundPlayer(targetPos);
 
             foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
             {
@@ -108,5 +109,16 @@ public class LevelManager : Singleton<LevelManager>
             }
         }
     }
+    private void PositionAlliesAroundPlayer(Vector3 center)
+    {
+        foreach (var ally in AllyManager.Instance.GetAllies())
+        {
+            if (ally == null) continue;
+
+            Vector2 offset = AllyManager.Instance.GetOffsetPosition(ally);
+            ally.transform.position = center + (Vector3)offset;
+        }
+    }
+
 
 }

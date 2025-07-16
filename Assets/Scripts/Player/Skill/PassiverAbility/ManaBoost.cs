@@ -14,8 +14,8 @@ public class ManaBoost : ISkill
             return;
         }
 
-        // Áp dụng modifier với value đúng
-        playerStats.maxMana.AddModifier(new StatModifier(StatType.MaxMana, (int)currentLevelStat.value));
+        var modifier = new StatModifier(StatType.MaxMana, (int)currentLevelStat.value, StatModType.Flat);
+        playerStats.ApplyStatModifier(modifier);
         Debug.Log($"Áp dụng kỹ năng bị động {skillData.skillName}: +{(int)currentLevelStat.value} mana tối đa");
     }
 

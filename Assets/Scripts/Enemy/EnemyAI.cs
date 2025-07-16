@@ -169,7 +169,7 @@ public class EnemyAI : MonoBehaviour , IDamageable
         enemyLevel = data.level;
     }
 
-    private void FindClosestTarget()
+    protected void FindClosestTarget()
     {
         Transform bestTarget = null;
         float minDist = Mathf.Infinity;

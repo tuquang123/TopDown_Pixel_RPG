@@ -12,8 +12,8 @@ public class SpeedBoost : ISkill
             Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skillData.skillName}");
             return; 
         }
-        float boost = Mathf.CeilToInt(playerStats.critChance.Value * currentLevelStat.value / 100);
-        playerStats.critChance.AddModifier(new StatModifier(StatType.CritChance, (int)boost)); 
+        //float boost = Mathf.CeilToInt(playerStats.speed.Value * currentLevelStat.value / 100);
+        playerStats.ApplyStatModifier(new StatModifier(StatType.Speed, (int)currentLevelStat.value));
     }
 
     public bool CanUse(PlayerStats playerStats, SkillData skillData)

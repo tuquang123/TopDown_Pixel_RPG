@@ -30,10 +30,31 @@ public class BossAI : EnemyAI
     {
         if (isDead || isTakingDamage) return;
 
-        if (target == null) return;
-        if (Vector2.Distance(transform.position, target.position) > detectionRange) return;
+        FindClosestTarget();
 
-        RotateEnemy(target.position.x - transform.position.x);
+        if (target == null)
+        {
+            anim.SetBool(MoveBool, false);
+            return;
+        }
+
+        if (target.TryGetComponent(out PlayerStats playerStats) && playerStats.isDead)
+        {
+            anim.SetBool(MoveBool, false);
+            return;
+        }
+
+        float distanceToTarget = Vector2.Distance(transform.position, target.position);
+
+        if (distanceToTarget <= detectionRange)
+        {
+            MoveToAttackPosition();
+            RotateEnemy(target.position.x - transform.position.x);
+        }
+        else
+        {
+            anim.SetBool(MoveBool, false);
+        }
 
         if (Time.time - _lastSpecialAttackTime >= specialAttackCooldown)
         {

@@ -13,6 +13,7 @@ public class Equipment : MonoBehaviour
         if (item == null || item.itemType == ItemType.Consumable)
             return;
 
+        // Gỡ trang bị cũ nếu có
         if (equippedItems.ContainsKey(item.itemType))
         {
             UnequipItem(item.itemType, playerStats);
@@ -20,23 +21,27 @@ public class Equipment : MonoBehaviour
 
         List<StatModifier> modifiers = new List<StatModifier>();
 
-        if (item.attackPower != 0)
-            modifiers.Add(new StatModifier(StatType.Attack, item.attackPower , StatModType.Flat));
-        if (item.defense != 0)
-            modifiers.Add(new StatModifier(StatType.Defense, item.defense , StatModType.Flat));
-        if (item.healthBonus != 0)
-            modifiers.Add(new StatModifier(StatType.MaxHealth, item.healthBonus , StatModType.Flat));
-        if (item.manaBonus != 0)
-            modifiers.Add(new StatModifier(StatType.MaxMana, item.manaBonus , StatModType.Flat));
-        if (item.critChance != 0)
-            modifiers.Add(new StatModifier(StatType.CritChance, item.critChance , StatModType.Flat));
-        if (item.attackSpeed != 0)
-            modifiers.Add(new StatModifier(StatType.AttackSpeed, item.attackSpeed , StatModType.Flat));
-        if (item.lifeSteal != 0)
-            modifiers.Add(new StatModifier(StatType.LifeSteal, item.lifeSteal , StatModType.Flat));
-        if (item.moveSpeed != 0)
-            modifiers.Add(new StatModifier(StatType.Speed, item.moveSpeed , StatModType.Flat));
+        // Helper function nội bộ
+        void AddBonus(ItemStatBonus bonus, StatType type)
+        {
+            if (bonus == null) return;
+            if (bonus.flat != 0)
+                modifiers.Add(new StatModifier(type, bonus.flat, StatModType.Flat));
+            if (bonus.percent != 0)
+                modifiers.Add(new StatModifier(type, bonus.percent, StatModType.Percent));
+        }
 
+        // Add từng stat
+        AddBonus(item.health, StatType.MaxHealth);
+        AddBonus(item.mana, StatType.MaxMana);
+        AddBonus(item.attack, StatType.Attack);
+        AddBonus(item.defense, StatType.Defense);
+        AddBonus(item.speed, StatType.Speed);
+        AddBonus(item.critChance, StatType.CritChance);
+        AddBonus(item.attackSpeed, StatType.AttackSpeed);
+        AddBonus(item.lifeSteal, StatType.LifeSteal);
+
+        // Apply stat modifier vào player
         foreach (var modifier in modifiers)
         {
             playerStats.ApplyStatModifier(modifier);
@@ -44,13 +49,13 @@ public class Equipment : MonoBehaviour
 
         equippedItems[item.itemType] = item;
         statModifiers[item.itemType] = modifiers;
-        ;
 
         playerEquipment?.UpdateEquipment(item);
         playerEquipmentHourse?.UpdateEquipment(item);
 
-        Debug.Log($"Đã trang bị {item.itemName} với {modifiers.Count} chỉ số stat.");
+        Debug.Log($"Đã trang bị {item.itemName} với {modifiers.Count} stat modifiers.");
     }
+
 
     public void UnequipItem(ItemType type, PlayerStats playerStats)
     {
