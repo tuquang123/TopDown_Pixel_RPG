@@ -12,6 +12,7 @@ public class ItemDetailPanel : MonoBehaviour
     public TMP_Text upgradeCostText;
     public Button sellButton;
     public TMP_Text sellPriceText;
+    public Image icon;
 
     private ItemInstance currentItem;
     private InventoryUI inventoryUI;
@@ -44,6 +45,7 @@ public class ItemDetailPanel : MonoBehaviour
 
         ItemData itemData = item.itemData;
         nameText.text = itemData.itemName;
+        icon.sprite = itemData.icon;
         descriptionText.text = itemData.description;
 
         int sellPrice = CalculateSellPrice(currentItem);
@@ -89,6 +91,7 @@ public class ItemDetailPanel : MonoBehaviour
         equipButton.onClick.AddListener(EquipItem);
 
         gameObject.SetActive(true);
+        equipButton.GetComponentInChildren<TMP_Text>().text = "Trang bị";
     }
 
 

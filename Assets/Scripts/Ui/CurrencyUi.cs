@@ -1,10 +1,11 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CurrencyUI : MonoBehaviour
 {
-    [SerializeField] private Text goldText;
-    [SerializeField] private Text gemsText;
+    [SerializeField] private TextMeshProUGUI goldText;
+    [SerializeField] private TextMeshProUGUI gemsText;
 
     void Start()
     {

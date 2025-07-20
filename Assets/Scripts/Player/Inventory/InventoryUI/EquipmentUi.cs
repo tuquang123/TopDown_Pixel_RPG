@@ -4,14 +4,6 @@ using System.Collections.Generic;
 
 public class EquipmentUI : MonoBehaviour
 {
-    [System.Serializable]
-    public class EquipmentSlotUI
-    {
-        public Image icon;
-        public Image background;
-        public Button button;
-    }
-
     public Equipment equipmentManager;
     public InventoryUI inventoryUI;
     public PlayerStats playerStats;
@@ -40,41 +32,59 @@ public class EquipmentUI : MonoBehaviour
         foreach (var kvp in slotMapping)
         {
             ItemType type = kvp.Key;
-            kvp.Value.button.onClick.AddListener(() => UnequipItem(type));
+            EquipmentSlotUI slotUI = kvp.Value;
+
+            slotUI.button.onClick.AddListener(() => UnequipItem(type));
+            slotUI.iconButton.onClick.AddListener(() => ShowEquippedItemDetail(type));
         }
 
         UpdateEquipmentUI();
     }
+    
+    private void ShowEquippedItemDetail(ItemType type)
+    {
+        if (!equipmentManager.equippedItems.TryGetValue(type, out ItemInstance instance)) return;
 
+        inventoryUI.itemDetailPanel.ShowDetails(instance, inventoryUI);
+
+        inventoryUI.itemDetailPanel.equipButton.onClick.RemoveAllListeners();
+        inventoryUI.itemDetailPanel.equipButton.onClick.AddListener(() =>
+        {
+            UnequipItem(type);
+            inventoryUI.itemDetailPanel.Hide();
+        });
+
+        inventoryUI.itemDetailPanel.equipButton.GetComponentInChildren<TMPro.TMP_Text>().text = "Gỡ trang bị";
+    }
+    
     public void EquipItem(ItemInstance itemInstance)
     {
         if (itemInstance == null || itemInstance.itemData == null) return;
 
-        ItemData item = itemInstance.itemData;
+        ItemType type = itemInstance.itemData.itemType;
 
-        if (equipmentManager.equippedItems.ContainsKey(item.itemType))
+        if (equipmentManager.equippedItems.ContainsKey(type))
         {
-            UnequipItem(item.itemType);
+            UnequipItem(type);
         }
 
-        equipmentManager.EquipItemData(item, playerStats);
+        equipmentManager.EquipItem(itemInstance, playerStats);
         inventoryUI.inventory.RemoveItem(itemInstance);
 
         UpdateEquipmentUI();
         inventoryUI.UpdateInventoryUI();
     }
-
+    
     public void UnequipItem(ItemType itemType)
     {
-        if (!equipmentManager.equippedItems.TryGetValue(itemType, out ItemData removedItem)) return;
+        ItemInstance unequipped = equipmentManager.UnequipItem(itemType, playerStats);
+        if (unequipped == null) return;
 
-        equipmentManager.UnequipItem(itemType, playerStats);
-        inventoryUI.inventory.AddItem(new ItemInstance(removedItem)); // Tạo ItemInstance mới
-
+        inventoryUI.inventory.AddItem(unequipped);
         UpdateEquipmentUI();
         inventoryUI.UpdateInventoryUI();
     }
-
+    
     public void UpdateEquipmentUI()
     {
         foreach (var kvp in slotMapping)
@@ -82,11 +92,11 @@ public class EquipmentUI : MonoBehaviour
             ItemType type = kvp.Key;
             EquipmentSlotUI slotUI = kvp.Value;
 
-            if (equipmentManager.equippedItems.TryGetValue(type, out ItemData item))
+            if (equipmentManager.equippedItems.TryGetValue(type, out ItemInstance item))
             {
-                slotUI.icon.sprite = item.icon;
+                slotUI.icon.sprite = item.itemData.icon;
                 slotUI.icon.color = Color.white;
-                slotUI.background.color = ItemUtility.GetColorByTier(item.tier);
+                slotUI.background.color = ItemUtility.GetColorByTier(item.itemData.tier);
                 slotUI.button.gameObject.SetActive(true);
             }
             else

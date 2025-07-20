@@ -13,7 +13,7 @@ public class QuestUI : MonoBehaviour
             return;
         }
 
-        string progress = $"<b>Nhiệm vụ:</b> {quest.questName}\n";
+        string progress = $"<b>Quest :</b> {quest.questName}\n";
 
         // Sử dụng progressTracker để lấy tiến độ
         foreach (var obj in quest.objectives)
