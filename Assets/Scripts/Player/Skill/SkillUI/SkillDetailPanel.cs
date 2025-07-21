@@ -4,8 +4,9 @@ using TMPro;
 
 public class SkillDetailPanel : MonoBehaviour
 {
-    [Header("UI Elements")]
-    [SerializeField] private TextMeshProUGUI nameText;
+    [Header("UI Elements")] [SerializeField]
+    private TextMeshProUGUI nameText;
+
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private Image iconImage;
@@ -13,9 +14,16 @@ public class SkillDetailPanel : MonoBehaviour
     [SerializeField] private Button learnButton;
     [SerializeField] private Button assignButton;
     [SerializeField] private Button closeButton;
+    [SerializeField] private Button closeButtonFull;
+    [SerializeField] private SkillAssignPanel assignPanel;
 
     private SkillData currentSkill;
     private SkillSystem skillSystem;
+
+    private void OnClickAssign()
+    {
+        assignPanel.Show(currentSkill, skillSystem);
+    }
 
     public void Setup(SkillData skillData, SkillSystem system)
     {
@@ -26,11 +34,11 @@ public class SkillDetailPanel : MonoBehaviour
         iconImage.sprite = currentSkill.icon;
 
         int currentLevel = skillSystem.GetSkillLevel(currentSkill.skillID);
-        levelText.text = $"Cấp: {currentLevel}/{currentSkill.maxLevel}";
+        levelText.text = $"Level: {currentLevel}/{currentSkill.maxLevel}";
 
         string fullDescription = "";
 
-        // Mô tả cấp hiện tại
+        // Current level description
         if (currentLevel > 0)
         {
             SkillLevelStat currentStat = currentSkill.GetLevelStat(currentLevel);
@@ -42,11 +50,11 @@ public class SkillDetailPanel : MonoBehaviour
                     .Replace("{cooldown}", currentStat.cooldown.ToString("0.#"))
                     .Replace("{duration}", currentStat.duration.ToString("0.#"));
 
-                fullDescription += $"<b>Hiện tại (Cấp {currentLevel}):</b>\n{desc}\n\n";
+                fullDescription += $"<b>Current (Level {currentLevel}):</b>\n{desc}\n\n";
             }
         }
 
-        // Mô tả cấp tiếp theo
+        // Next level preview
         int nextLevel = currentLevel + 1;
         if (nextLevel <= currentSkill.maxLevel)
         {
@@ -59,13 +67,13 @@ public class SkillDetailPanel : MonoBehaviour
                     .Replace("{cooldown}", nextStat.cooldown.ToString("0.#"))
                     .Replace("{duration}", nextStat.duration.ToString("0.#"));
 
-                fullDescription += $"<b>Cấp tiếp theo (Cấp {nextLevel}):</b>\n{desc}";
+                fullDescription += $"<b>Next (Level {nextLevel}):</b>\n{desc}";
             }
         }
 
         descriptionText.text = fullDescription;
 
-        // Kiểm tra điều kiện gán / học
+        // Learn & assign condition check
         bool isUnlocked = skillSystem.IsSkillUnlocked(currentSkill.skillID);
         bool canLearn = skillSystem.CanUnlockSkill(currentSkill.skillID);
         bool isActive = currentSkill.skillType == SkillType.Active;
@@ -73,17 +81,20 @@ public class SkillDetailPanel : MonoBehaviour
         learnButton.gameObject.SetActive(canLearn);
         assignButton.gameObject.SetActive(isUnlocked && isActive);
 
-        // Gán sự kiện
+        // Hook up events
         learnButton.onClick.RemoveAllListeners();
         assignButton.onClick.RemoveAllListeners();
         closeButton.onClick.RemoveAllListeners();
+        closeButtonFull.onClick.RemoveAllListeners();
 
         learnButton.onClick.AddListener(OnClickLearn);
         assignButton.onClick.AddListener(OnClickAssign);
         closeButton.onClick.AddListener(Hide);
+        closeButtonFull.onClick.AddListener(Hide);
 
         gameObject.SetActive(true);
     }
+
 
     private void OnClickLearn()
     {
@@ -110,20 +121,6 @@ public class SkillDetailPanel : MonoBehaviour
         else
         {
             Debug.Log("Không đủ điểm kỹ năng hoặc không thể nâng cấp.");
-        }
-    }
-
-    private void OnClickAssign()
-    {
-        int availableSlot = skillSystem.GetFirstAvailableSlot();
-        if (availableSlot != -1)
-        {
-            skillSystem.AssignSkillToSlot(availableSlot, currentSkill.skillID);
-            Debug.Log($"Đã gán kỹ năng {currentSkill.skillName} vào ô {availableSlot + 1}");
-        }
-        else
-        {
-            Debug.Log("Không còn ô kỹ năng trống.");
         }
     }
 

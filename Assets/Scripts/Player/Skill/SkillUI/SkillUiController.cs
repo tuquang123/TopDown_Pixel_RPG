@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SkillUIController : BasePopup
 {
@@ -6,12 +7,19 @@ public class SkillUIController : BasePopup
     public Transform skillListContainer;
     public SkillSystem skillSystem;
     public SkillDetailPanel skillDetailPanel;
+    [SerializeField] private ScrollRect scrollRect;
 
     public override void Show()
     {
         base.Show();
         RefreshSkillButtons();
         skillDetailPanel.Hide();
+        ResetScrollPosition();
+    }
+    private void ResetScrollPosition()
+    {
+        Canvas.ForceUpdateCanvases();
+        scrollRect.verticalNormalizedPosition = 1f;
     }
 
     private void RefreshSkillButtons()
