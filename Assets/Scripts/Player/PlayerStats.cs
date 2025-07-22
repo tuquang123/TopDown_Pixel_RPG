@@ -272,69 +272,6 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
         StatModifier mod = new StatModifier(StatType.Speed, amount);
         ApplyTemporaryBuff(mod, duration);
     }
-    public void RemoveItemStats(ItemData itemData, int upgradeLevel)
-    {
-        if (itemData == null) return;
-
-        float upgradePercent = 0.1f * (upgradeLevel - 1);
-
-        void RemoveStat(ItemStatBonus bonus, StatType type)
-        {
-            if (bonus == null) return;
-
-            if (bonus.flat != 0)
-            {
-                float upgradedFlat = bonus.flat + bonus.flat * upgradePercent;
-                RemoveStatModifier(new StatModifier(type, upgradedFlat, StatModType.Flat));
-            }
-
-            if (bonus.percent != 0)
-            {
-                RemoveStatModifier(new StatModifier(type, bonus.percent, StatModType.Percent));
-            }
-        }
-
-        RemoveStat(itemData.health, StatType.MaxHealth);
-        RemoveStat(itemData.mana, StatType.MaxMana);
-        RemoveStat(itemData.attack, StatType.Attack);
-        RemoveStat(itemData.defense, StatType.Defense);
-        RemoveStat(itemData.speed, StatType.Speed);
-        RemoveStat(itemData.critChance, StatType.CritChance);
-        RemoveStat(itemData.attackSpeed, StatType.AttackSpeed);
-        RemoveStat(itemData.lifeSteal, StatType.LifeSteal);
-    }
-    
-    public void ApplyItemStats(ItemData itemData, int upgradeLevel)
-    {
-        if (itemData == null) return;
-
-        float upgradePercent = 0.1f * (upgradeLevel - 1); // Mỗi cấp tăng 10%
-
-        void AddStat(ItemStatBonus bonus, StatType type, float perLevel = 0.1f)
-        {
-            if (bonus == null) return;
-
-            if (bonus.flat != 0)
-            {
-                float upgradedFlat = bonus.flat + bonus.flat * upgradePercent;
-                ApplyStatModifier(new StatModifier(type, upgradedFlat, StatModType.Flat));
-            }
-
-            if (bonus.percent != 0)
-            {
-                ApplyStatModifier(new StatModifier(type, bonus.percent, StatModType.Percent));
-            }
-        }
-
-        AddStat(itemData.health, StatType.MaxHealth);
-        AddStat(itemData.mana, StatType.MaxMana);
-        AddStat(itemData.attack, StatType.Attack);
-        AddStat(itemData.defense, StatType.Defense);
-        AddStat(itemData.speed, StatType.Speed);
-        AddStat(itemData.critChance, StatType.CritChance);
-        AddStat(itemData.attackSpeed, StatType.AttackSpeed);
-        AddStat(itemData.lifeSteal, StatType.LifeSteal);
-    }
 
 
 

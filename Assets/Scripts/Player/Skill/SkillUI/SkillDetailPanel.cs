@@ -126,6 +126,7 @@ public class SkillDetailPanel : MonoBehaviour
 
     public void Hide()
     {
+        assignPanel.Hide();
         gameObject.SetActive(false);
     }
 }

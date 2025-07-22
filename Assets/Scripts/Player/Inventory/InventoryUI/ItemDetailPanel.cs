@@ -42,7 +42,8 @@ public class ItemDetailPanel : MonoBehaviour
     {
         currentItem = item;
         inventoryUI = ui;
-
+        bool isEquipped = inventoryUI.equipmentUi.IsItemEquipped(item);
+        
         ItemData itemData = item.itemData;
         nameText.text = itemData.itemName;
         icon.sprite = itemData.icon;
@@ -56,6 +57,9 @@ public class ItemDetailPanel : MonoBehaviour
 
         int cost = itemData.baseUpgradeCost * currentItem.upgradeLevel;
         upgradeCostText.text = $"Nâng cấp ({cost} vàng)";
+        
+        sellButton.gameObject.SetActive(!isEquipped);
+        upgradeButton.gameObject.SetActive(!isEquipped);
 
         upgradeButton.onClick.RemoveAllListeners();
         upgradeButton.onClick.AddListener(UpgradeItem);
@@ -115,14 +119,14 @@ public class ItemDetailPanel : MonoBehaviour
     {
         if (inventoryUI.equipmentUi != null && currentItem != null)
         {
-            inventoryUI.equipmentUi.EquipItem(currentItem); // Truyền ItemInstance
+            inventoryUI.equipmentUi.EquipItem(currentItem); 
 
             if (inventoryUI.inventory.RemoveItem(currentItem))
             {
                 inventoryUI.UpdateInventoryUI();
             }
 
-            gameObject.SetActive(false); // Ẩn panel sau khi trang bị
+            gameObject.SetActive(false); 
         }
     }
 

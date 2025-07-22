@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,13 +15,18 @@ public class SkillUIController : BasePopup
         base.Show();
         RefreshSkillButtons();
         skillDetailPanel.Hide();
-        ResetScrollPosition();
+        StartCoroutine(ResetScrollPositionDelayed());
     }
-    private void ResetScrollPosition()
+
+    private IEnumerator ResetScrollPositionDelayed()
     {
-        Canvas.ForceUpdateCanvases();
+        yield return null; // Frame 1: chờ layout update
+        yield return null; // Frame 2: đảm bảo layout + content size đã hoàn chỉnh
+
         scrollRect.verticalNormalizedPosition = 1f;
     }
+
+
 
     private void RefreshSkillButtons()
     {

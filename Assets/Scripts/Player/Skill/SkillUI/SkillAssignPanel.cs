@@ -42,19 +42,31 @@ public class SkillAssignPanel : MonoBehaviour
 
     private void AssignToSlot(int index)
     {
-        skillSystem.AssignSkillToSlot(index, skillToAssign.skillID);
+        // Gỡ kỹ năng khỏi các ô khác nếu đã gán trước đó
+        for (int i = 0; i < assignButtons.Length; i++)
+        {
+            if (i == index) continue;
 
-        // Update UI of assigned slot immediately
+            if (skillSystem.GetAssignedSkill(i) == skillToAssign.skillID)
+            {
+                skillSystem.AssignSkillToSlot(i, SkillID.None);
+                assignButtons[i].icon.enabled = false;
+                assignButtons[i].nameText.enabled = false;
+            }
+        }
+
+        // Gán vào ô được chọn
+        skillSystem.AssignSkillToSlot(index, skillToAssign.skillID);
         assignButtons[index].icon.sprite = skillToAssign.icon;
         assignButtons[index].nameText.text = skillToAssign.skillName;
         assignButtons[index].icon.enabled = true;
         assignButtons[index].nameText.enabled = true;
 
-        Debug.Log($"Assigned {skillToAssign.skillName} to slot {index + 1}");
+        Debug.Log($"Đã gán {skillToAssign.skillName} vào ô {index + 1}");
 
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
-
+    
     public void Hide()
     {
         gameObject.SetActive(false);

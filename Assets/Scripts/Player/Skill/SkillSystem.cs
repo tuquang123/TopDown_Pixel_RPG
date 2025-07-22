@@ -64,6 +64,8 @@ public class SkillSystem : MonoBehaviour
         _playerStats = GetComponent<PlayerStats>();
         StartCoroutine(AutoCastRoutine());
     }
+    
+    
 
     private bool isCasting = false;
 
@@ -132,29 +134,39 @@ public class SkillSystem : MonoBehaviour
 
     public void AssignSkillToSlot(int slotIndex, SkillID skillID)
     {
-        if (slotIndex >= 0 && slotIndex < 5 && unlockedSkills.ContainsKey(skillID))
+        if (slotIndex < 0 || slotIndex >= 5)
         {
-            if (assignedSkills.ContainsValue(skillID))
-            {
-                Debug.Log($"Kỹ năng {skillID} đã được gán vào một ô khác.");
-                return;
-            }
+            Debug.Log("Slot không hợp lệ.");
+            return;
+        }
 
-            if (assignedSkills.ContainsKey(slotIndex) && assignedSkills[slotIndex] != SkillID.None)
-            {
-                Debug.Log($"Ô {slotIndex + 1} đã có kỹ năng.");
-                return;
-            }
+        if (!unlockedSkills.ContainsKey(skillID) && skillID != SkillID.None)
+        {
+            Debug.Log("Kỹ năng chưa được mở khóa.");
+            return;
+        }
 
-            assignedSkills[slotIndex] = skillID;
-            OnSkillAssigned?.Invoke(slotIndex, skillID);
+        // Gỡ kỹ năng khỏi slot cũ nếu đã gán ở đâu đó
+        foreach (var kvp in assignedSkills)
+        {
+            if (kvp.Value == skillID)
+            {
+                assignedSkills[kvp.Key] = SkillID.None;
+                OnSkillAssigned?.Invoke(kvp.Key, SkillID.None);
+                break;
+            }
+        }
+
+        // Gán kỹ năng mới
+        assignedSkills[slotIndex] = skillID;
+        OnSkillAssigned?.Invoke(slotIndex, skillID);
+
+        if (skillID != SkillID.None)
             Debug.Log($"Đã gán kỹ năng {skillID} vào ô {slotIndex + 1}");
-        }
         else
-        {
-            Debug.Log("Kỹ năng chưa được mở khóa hoặc slot không hợp lệ.");
-        }
+            Debug.Log($"Đã xoá kỹ năng khỏi ô {slotIndex + 1}");
     }
+
 
     public void DecrementSkillPoint()
     {
@@ -176,11 +188,6 @@ public class SkillSystem : MonoBehaviour
 
         int currentLevel = state?.level ?? 0;
         return _playerStats.skillPoints > 0 && currentLevel < data.maxLevel;
-    }
-
-    public SkillID GetAssignedSkill(int slotIndex)
-    {
-        return assignedSkills.ContainsKey(slotIndex) ? assignedSkills[slotIndex] : SkillID.None;
     }
     
     private SkillLevelStat GetCurrentLevelStat(SkillID skillID)
@@ -271,6 +278,14 @@ public class SkillSystem : MonoBehaviour
     {
         return unlockedSkills.ContainsKey(skillID);
     }
+    
+    public SkillID GetAssignedSkill(int index)
+    {
+        if (index < 0 || index >= assignedSkills.Count)
+            return SkillID.None;
+        return assignedSkills[index];
+    }
+
 
     public SkillState GetSkillState(SkillID skillID)
     {

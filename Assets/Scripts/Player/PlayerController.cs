@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class PlayerController : Singleton<PlayerController>, IGameEventListener
@@ -170,7 +171,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
 
         int totalHealed = 0;
 
-        foreach (var enemy in EnemyTracker.Instance.GetAllEnemies())
+        foreach (var enemy in EnemyTracker.Instance.GetAllEnemies().ToList())
         {
             if (enemy == null || enemy.IsDead) continue;
 

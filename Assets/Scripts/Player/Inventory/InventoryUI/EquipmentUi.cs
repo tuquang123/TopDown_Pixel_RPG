@@ -18,7 +18,6 @@ public class EquipmentUI : MonoBehaviour
 
     private void Start()
     {
-        // Ánh xạ các loại item với slot UI
         slotMapping = new Dictionary<ItemType, EquipmentSlotUI>
         {
             { ItemType.Weapon, weaponSlot },
@@ -27,8 +26,7 @@ public class EquipmentUI : MonoBehaviour
             { ItemType.Boots, bootsSlot },
             { ItemType.Horse, horseSlot }
         };
-
-        // Gán sự kiện nút để gỡ trang bị
+        
         foreach (var kvp in slotMapping)
         {
             ItemType type = kvp.Key;
@@ -40,6 +38,17 @@ public class EquipmentUI : MonoBehaviour
 
         UpdateEquipmentUI();
     }
+    
+    public bool IsItemEquipped(ItemInstance item)
+    {
+        foreach (var equipped in equipmentManager.equippedItems.Values)
+        {
+            if (equipped == item)
+                return true;
+        }
+        return false;
+    }
+
     
     private void ShowEquippedItemDetail(ItemType type)
     {
