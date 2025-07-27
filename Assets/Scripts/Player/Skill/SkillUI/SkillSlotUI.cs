@@ -34,7 +34,17 @@ public class SkillSlotUI : MonoBehaviour
         if (cooldownRoutine != null) StopCoroutine(cooldownRoutine);
         cooldownRoutine = StartCoroutine(CooldownCoroutine(cooldown));
     }
-
+    
+    public void ResetCooldown()
+    {
+        if (cooldownRoutine != null)
+        {
+            StopCoroutine(cooldownRoutine);
+            cooldownRoutine = null;
+        }
+        cooldownOverlay.fillAmount = 0;
+    }
+    
     private IEnumerator CooldownCoroutine(float cooldownTime)
     {
         float timeElapsed = 0f;

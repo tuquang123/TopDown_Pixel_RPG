@@ -28,8 +28,14 @@ public class SkillSlotUIController : MonoBehaviour
     {
         var skillData = skillSystem.GetSkillData(skillID);
         skillSlots[index].SetSkill(skillData);
-    }
 
+        // Nếu không còn kỹ năng nào gán vào slot, thì reset cooldown
+        if (skillID == SkillID.None)
+        {
+            skillSlots[index].ResetCooldown();
+        }
+    }
+    
     private void HandleSkillUsed(SkillID skillID)
     {
         for (int i = 0; i < skillSlots.Length; i++)

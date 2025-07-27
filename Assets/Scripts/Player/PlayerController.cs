@@ -207,6 +207,55 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
             );
         }
     }
+    public void ApplyAttackDamage(bool isSkill, SkillData skill = null)
+    {
+        AudioManager.Instance.PlaySFX("Attack");
+
+        int totalHealed = 0;
+
+        int currentLevel = isSkill && skill != null ? stats.GetSkillLevel(skill.skillID) : 0;
+        SkillLevelStat stat = isSkill && skill != null ? skill.GetLevelStat(currentLevel) : null;
+
+        foreach (var enemy in EnemyTracker.Instance.GetAllEnemies().ToList())
+        {
+            if (enemy == null || enemy.IsDead) continue;
+
+            float dist = Vector2.Distance(attackPoint.position, enemy.transform.position);
+            if (dist > attackRadius) continue;
+
+            int damage = (int)stats.attack.Value;
+            bool isCrit = Random.Range(0f, 100f) < stats.GetCritChance();
+
+            if (isCrit)
+                damage = Mathf.RoundToInt(damage * 1.5f);
+
+            enemy.TakeDamage(damage, isCrit);
+
+            int healedAmount = stats.HealFromLifeSteal(damage);
+            if (healedAmount > 0)
+                totalHealed += healedAmount;
+        }
+
+        // ✅ Chỉ đánh vào destructibles nếu là đòn đánh thường
+        if (!isSkill)
+        {
+            var destructibles = DestructibleTracker.Instance.GetInRange(attackPoint.position, attackRadius);
+            foreach (var destructible in destructibles)
+            {
+                destructible.Hit();
+            }
+        }
+
+        if (totalHealed > 0)
+        {
+            FloatingTextSpawner.Instance.SpawnText(
+                $"+{totalHealed}",
+                transform.position + Vector3.up,
+                new Color(0.3f, 1f, 0.3f)
+            );
+        }
+    }
+
     
     protected void FindClosestEnemy()
     {

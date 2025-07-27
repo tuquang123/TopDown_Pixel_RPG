@@ -25,44 +25,54 @@ public class PlayerSlash : MonoBehaviour, IGameEventListener
 
     public void Slash(SkillData skill)
     {
-        int currentLevel = 1; 
+        int currentLevel = stats.GetSkillLevel(skill.skillID);
         SkillLevelStat currentLevelStat = skill.GetLevelStat(currentLevel);
 
         if (currentLevelStat == null)
         {
             Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skill.skillName}");
+            return;
         }
-        
-        if (currentLevelStat != null && stats.currentMana < currentLevelStat.manaCost) return;
 
-        if (currentLevelStat != null) stats.UseMana(currentLevelStat.manaCost);
+        // Kiểm tra đủ mana
+        if (stats.currentMana < currentLevelStat.manaCost)
+            return;
 
-        anim.SetTrigger("9_Slash"); 
-        
-        stats.isUsingSkill = true;
-        
-        StartCoroutine(PerformSlashAfterDelay(skill));
-    }
-
-    private IEnumerator PerformSlashAfterDelay(SkillData skill)
-    {
-        yield return new WaitForSeconds(0.2f); 
-
+        // Kiểm tra có ít nhất 1 enemy trong vùng chém
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
-        foreach (Collider2D enemy in hitEnemies)
+        bool hasTarget = false;
+        foreach (var enemy in hitEnemies)
         {
             if (enemy.CompareTag("Enemy"))
             {
-                int baseDamage = (int)stats.attack.Value;
-                bool isCrit = Random.Range(0f, 100f) < stats.GetCritChance();
-                int finalDamage = isCrit ? Mathf.RoundToInt(baseDamage * 1.5f) : baseDamage;
-
-                enemy.GetComponent<EnemyAI>()?.TakeDamage(finalDamage, isCrit);
-                stats.HealFromLifeSteal(finalDamage);
+                hasTarget = true;
+                break;
             }
         }
-        
+
+        if (!hasTarget)
+        {
+            Debug.Log("Không có enemy trong phạm vi -> hủy Slash");
+            return;
+        }
+
+        // Trừ mana, bật animation và đánh
+        stats.UseMana(currentLevelStat.manaCost);
+        anim.SetTrigger("9_Slash");
+        stats.isUsingSkill = true;
+
+        StartCoroutine(SlashDelayAndDamage(skill));
+    }
+    private IEnumerator SlashDelayAndDamage(SkillData skill)
+    {
+        yield return new WaitForSeconds(0.2f);
+
+        // Gọi hàm đánh đã gộp, không gây damage lên destructible
+        PlayerController.Instance.ApplyAttackDamage(true, skill);
+
         stats.isUsingSkill = false;
     }
+
+
 }
 
