@@ -12,22 +12,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
   m_Name: Helmet 2
   m_EditorClassIdentifier: 
-  itemID: helmet2
-  itemName: Helmet1
-  icon: {fileID: 21300000, guid: 732442a90ec3747df83c46125de06b60, type: 3}
+  itemID: horned helmet
+  itemName: Horned Helmet
+  icon: {fileID: 21300000, guid: ea5c4fc418c71491eb063b759868a2a1, type: 3}
   itemType: 3
-  price: 10
-  tier: 5
-  description: 'up armor '
-  attackPower: 0
-  defense: 10
-  healthBonus: 60
-  manaBonus: 60
-  critChance: 0
-  attackSpeed: 0
-  lifeSteal: 5
-  moveSpeed: 0
+  tier: 2
+  price: 150
+  description: Forged in ancient battles
+  attack:
+    flat: 0
+    percent: 0
+  defense:
+    flat: 20
+    percent: 0
+  health:
+    flat: 200
+    percent: 0
+  mana:
+    flat: 15
+    percent: 0
+  critChance:
+    flat: 0
+    percent: 0
+  attackSpeed:
+    flat: 0
+    percent: 0
+  lifeSteal:
+    flat: 0
+    percent: 0
+  speed:
+    flat: 0
+    percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
-  baseUpgradeCost: 100
+  baseUpgradeCost: 75

@@ -44,7 +44,7 @@ public class ItemStatBonus
 
 public enum ItemType
 {
-    Weapon, Armor, Consumable, Helmet, Boots, Horse
+    Weapon, Clother, Consumable, Helmet, Boots, Horse ,SpecialArmor, Cloak, Hair
 }
 
 public enum ItemTier

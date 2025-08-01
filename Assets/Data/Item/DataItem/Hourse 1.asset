@@ -12,24 +12,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
   m_Name: Hourse 1
   m_EditorClassIdentifier: 
-  itemID: hourse1
-  itemName: Hourse1
-  icon: {fileID: -6650768509668895999, guid: 0d7d0bf8307514eaf81aa72f558d3fb4, type: 3}
+  itemID: hourse
+  itemName: Hourse
+  icon: {fileID: -7786538801905712091, guid: fea53425b09f2aa4b8888109780b0de5, type: 3}
   itemType: 5
-  price: 10
-  tier: 5
+  tier: 1
+  price: 275
   description: 'super horse
 
 '
-  attackPower: 0
-  defense: 0
-  healthBonus: 100
-  manaBonus: 0
-  critChance: 0
-  attackSpeed: 0.2
-  lifeSteal: 10
-  moveSpeed: 0
+  attack:
+    flat: 0
+    percent: 0
+  defense:
+    flat: 0
+    percent: 0
+  health:
+    flat: 200
+    percent: 0
+  mana:
+    flat: 50
+    percent: 0
+  critChance:
+    flat: 0
+    percent: 0
+  attackSpeed:
+    flat: 0
+    percent: 0
+  lifeSteal:
+    flat: 0
+    percent: 0
+  speed:
+    flat: 3
+    percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
-  baseUpgradeCost: 100
+  baseUpgradeCost: 175

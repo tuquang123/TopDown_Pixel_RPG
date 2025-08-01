@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
+  m_Name: Helmet 3
+  m_EditorClassIdentifier: 
+  itemID: knight's helmet
+  itemName: Knight's Helmet
+  icon: {fileID: 21300000, guid: 2904f6c2d794c458e898120e51a66cd9, type: 3}
+  itemType: 3
+  tier: 4
+  price: 500
+  description: A sturdy stell helmet worn by noble knights
+  attack:
+    flat: 0
+    percent: 0
+  defense:
+    flat: 30
+    percent: 0
+  health:
+    flat: 300
+    percent: 5
+  mana:
+    flat: 20
+    percent: 0
+  critChance:
+    flat: 0
+    percent: 0
+  attackSpeed:
+    flat: 0
+    percent: 0
+  lifeSteal:
+    flat: 0
+    percent: 0
+  speed:
+    flat: 0
+    percent: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
+  iconLeft: {fileID: 0}
+  iconRight: {fileID: 0}
+  baseUpgradeCost: 75

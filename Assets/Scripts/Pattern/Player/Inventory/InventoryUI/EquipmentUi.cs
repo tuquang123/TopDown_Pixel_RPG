@@ -13,6 +13,11 @@ public class EquipmentUI : MonoBehaviour
     public EquipmentSlotUI helmetSlot;
     public EquipmentSlotUI bootsSlot;
     public EquipmentSlotUI horseSlot;
+    
+    public EquipmentSlotUI cloakSlot;
+    public EquipmentSlotUI specialArmorSlot;
+    public EquipmentSlotUI hairSlot;
+
 
     private Dictionary<ItemType, EquipmentSlotUI> slotMapping;
 
@@ -21,23 +26,28 @@ public class EquipmentUI : MonoBehaviour
         slotMapping = new Dictionary<ItemType, EquipmentSlotUI>
         {
             { ItemType.Weapon, weaponSlot },
-            { ItemType.Armor, armorSlot },
+            { ItemType.Clother, armorSlot },
             { ItemType.Helmet, helmetSlot },
             { ItemType.Boots, bootsSlot },
-            { ItemType.Horse, horseSlot }
+            { ItemType.Horse, horseSlot },
+            { ItemType.Cloak, cloakSlot },
+            { ItemType.SpecialArmor, specialArmorSlot },
+            { ItemType.Hair, hairSlot }
         };
-        
+
         foreach (var kvp in slotMapping)
         {
             ItemType type = kvp.Key;
             EquipmentSlotUI slotUI = kvp.Value;
 
-            slotUI.button.onClick.AddListener(() => UnequipItem(type));
-            slotUI.iconButton.onClick.AddListener(() => ShowEquippedItemDetail(type));
+            ItemType capturedType = type; // avoid closure issue
+            slotUI.button.onClick.AddListener(() => UnequipItem(capturedType));
+            slotUI.iconButton.onClick.AddListener(() => ShowEquippedItemDetail(capturedType));
         }
 
         UpdateEquipmentUI();
     }
+
     
     public bool IsItemEquipped(ItemInstance item)
     {

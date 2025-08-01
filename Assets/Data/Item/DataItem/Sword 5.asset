@@ -12,21 +12,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
   m_Name: Sword 5
   m_EditorClassIdentifier: 
-  itemID: sword6
-  itemName: Sword6
-  icon: {fileID: 21300000, guid: 9080b50cd97e7aa4cbe40cf1eec3b317, type: 3}
+  itemID: dagger
+  itemName: Dagger
+  icon: {fileID: 21300000, guid: 69a11d8cb1f7e46718b2f15d0878ae0e, type: 3}
   itemType: 0
-  price: 20
-  tier: 2
+  tier: 4
+  price: 750
   description: buff super dame
-  attackPower: 100
-  defense: 0
-  healthBonus: 0
-  manaBonus: 0
-  critChance: 100
-  attackSpeed: 1
-  lifeSteal: 100
-  moveSpeed: 0
+  attack:
+    flat: 300
+    percent: 10
+  defense:
+    flat: 0
+    percent: 0
+  health:
+    flat: 0
+    percent: 0
+  mana:
+    flat: 0
+    percent: 0
+  critChance:
+    flat: 7
+    percent: 0
+  attackSpeed:
+    flat: 2
+    percent: 0
+  lifeSteal:
+    flat: 20
+    percent: 0
+  speed:
+    flat: 1
+    percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}

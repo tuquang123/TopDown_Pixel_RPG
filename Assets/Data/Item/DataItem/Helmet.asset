@@ -17,15 +17,33 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: a79f145e10eea4e999334e278812b365, type: 3}
   itemType: 3
   tier: 0
+  price: 75
   description: 'up armor '
-  attackPower: 0
-  defense: 10
-  healthBonus: 60
-  manaBonus: 60
-  critChance: 0
-  attackSpeed: 0
-  lifeSteal: 5
-  moveSpeed: 0
+  attack:
+    flat: 0
+    percent: 0
+  defense:
+    flat: 10
+    percent: 0
+  health:
+    flat: 100
+    percent: 0
+  mana:
+    flat: 5
+    percent: 0
+  critChance:
+    flat: 0
+    percent: 0
+  attackSpeed:
+    flat: 0
+    percent: 0
+  lifeSteal:
+    flat: 0
+    percent: 0
+  speed:
+    flat: 0
+    percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
+  baseUpgradeCost: 50

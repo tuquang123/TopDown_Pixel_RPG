@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
+  m_Name: Boosts 3
+  m_EditorClassIdentifier: 
+  itemID: dragon boosts
+  itemName: Dragon Boosts
+  icon: {fileID: 6436355157659965594, guid: 4f4d6264408da453a8511876ebec8ae3, type: 3}
+  itemType: 4
+  tier: 5
+  price: 950
+  description: Forged from the scales of a mighty dragon
+  attack:
+    flat: 0
+    percent: 0
+  defense:
+    flat: 70
+    percent: 0
+  health:
+    flat: 250
+    percent: 0
+  mana:
+    flat: 50
+    percent: 0
+  critChance:
+    flat: 0
+    percent: 0
+  attackSpeed:
+    flat: 0
+    percent: 0
+  lifeSteal:
+    flat: 0
+    percent: 0
+  speed:
+    flat: 2
+    percent: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
+  iconLeft: {fileID: 918163296319358687, guid: deb413cebdc864517b43b7beaa19d2a5, type: 3}
+  iconRight: {fileID: -5314646427713862164, guid: deb413cebdc864517b43b7beaa19d2a5,
+    type: 3}
+  baseUpgradeCost: 100

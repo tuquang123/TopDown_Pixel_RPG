@@ -12,22 +12,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
   m_Name: Armor
   m_EditorClassIdentifier: 
-  itemID: armor
-  itemName: Armor
+  itemID: cloth armor
+  itemName: Cloth Armor
   icon: {fileID: -5138849381010601345, guid: da6895bd4082d441cbe5911031d0f43b, type: 3}
   itemType: 1
   tier: 0
-  description: armor
-  attackPower: 0
-  defense: 10
-  healthBonus: 50
-  manaBonus: 50
-  critChance: 0
-  attackSpeed: 0
-  lifeSteal: 0
-  moveSpeed: 0
+  price: 75
+  description: Lightweight and flexible
+  attack:
+    flat: 0
+    percent: 0
+  defense:
+    flat: 10
+    percent: 0
+  health:
+    flat: 100
+    percent: 0
+  mana:
+    flat: 20
+    percent: 0
+  critChance:
+    flat: 0
+    percent: 0
+  attackSpeed:
+    flat: 0
+    percent: 0
+  lifeSteal:
+    flat: 0
+    percent: 0
+  speed:
+    flat: 1
+    percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: -9059333892809613461, guid: da6895bd4082d441cbe5911031d0f43b,
     type: 3}
   iconRight: {fileID: 5974945691945990517, guid: da6895bd4082d441cbe5911031d0f43b,
     type: 3}
+  baseUpgradeCost: 50

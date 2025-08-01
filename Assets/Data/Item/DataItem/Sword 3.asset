@@ -12,20 +12,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
   m_Name: Sword 3
   m_EditorClassIdentifier: 
-  itemID: sword4
-  itemName: Sword3
-  icon: {fileID: 21300000, guid: 8d2e32343359643008ec8b92017bbf89, type: 3}
+  itemID: pig-sticking
+  itemName: Pig-Sticking
+  icon: {fileID: 21300000, guid: e4c07de1d80de4718b58db6470c48501, type: 3}
   itemType: 0
   tier: 4
+  price: 550
   description: buff super dame
-  attackPower: 100
-  defense: 0
-  healthBonus: 0
-  manaBonus: 0
-  critChance: 100
-  attackSpeed: 1
-  lifeSteal: 100
-  moveSpeed: 0
+  attack:
+    flat: 600
+    percent: 0
+  defense:
+    flat: 0
+    percent: 0
+  health:
+    flat: 0
+    percent: 0
+  mana:
+    flat: 20
+    percent: 0
+  critChance:
+    flat: 4
+    percent: 0
+  attackSpeed:
+    flat: 1
+    percent: 0
+  lifeSteal:
+    flat: 15
+    percent: 0
+  speed:
+    flat: 0
+    percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
+  baseUpgradeCost: 150

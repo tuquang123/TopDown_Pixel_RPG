@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
+  m_Name: Boosts 1
+  m_EditorClassIdentifier: 
+  itemID: iron boosts
+  itemName: Iron Boosts
+  icon: {fileID: -7210306655108607268, guid: 50595133ffa7f47f984a134594aedcab, type: 3}
+  itemType: 4
+  tier: 3
+  price: 275
+  description: A symbol of brute strength and resilience
+  attack:
+    flat: 0
+    percent: 0
+  defense:
+    flat: 15
+    percent: 0
+  health:
+    flat: 150
+    percent: 0
+  mana:
+    flat: 50
+    percent: 0
+  critChance:
+    flat: 0
+    percent: 0
+  attackSpeed:
+    flat: 0
+    percent: 0
+  lifeSteal:
+    flat: 0
+    percent: 0
+  speed:
+    flat: 1
+    percent: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
+  iconLeft: {fileID: -8979658097689788454, guid: 8e2ee760cea01a640bf6b790a349b6be,
+    type: 3}
+  iconRight: {fileID: 7136363362834297291, guid: 8e2ee760cea01a640bf6b790a349b6be,
+    type: 3}
+  baseUpgradeCost: 75
