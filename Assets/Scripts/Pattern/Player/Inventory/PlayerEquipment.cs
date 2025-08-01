@@ -53,11 +53,23 @@ public class PlayerEquipment : MonoBehaviour
             bootsLeftRenderer.color = newItem.color;
             bootsRightRenderer.color = newItem.color;
             break;
+        
         case ItemType.Horse:
             hourse?.SetActive(true);
             player?.SetActive(false);
+
+            if (hourse != null)
+            {
+                var horseRenderer = hourse.GetComponent<HorseRenderer>();
+                if (horseRenderer != null && newItem.horseData != null)
+                {
+                    horseRenderer.ApplyHorseData(newItem.horseData);
+                }
+            }
+
             GameEvents.OnUpdateAnimation.Raise();
             break;
+
         
         case ItemType.Cloak:
             cloakRenderer.sprite = newItem.icon;

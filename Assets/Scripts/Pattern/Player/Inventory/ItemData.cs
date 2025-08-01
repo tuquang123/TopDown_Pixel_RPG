@@ -134,6 +134,11 @@ public class ItemData : ScriptableObject
     [BoxGroup("Visuals")]
     [PreviewField(60)]
     public Sprite iconRight;
+    
+    private bool IsHorse => itemType == ItemType.Horse;
+    [BoxGroup("Mount")]
+    [ShowIf("@itemType == ItemType.Horse")]
+    public HorseData horseData;
 
     [BoxGroup("Upgrade")]
     [LabelWidth(130)]

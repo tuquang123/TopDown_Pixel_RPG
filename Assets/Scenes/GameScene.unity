@@ -21507,9 +21507,9 @@ GameObject:
   - component: {fileID: 7241537142396659948}
   - component: {fileID: 564411220360788419}
   - component: {fileID: 2467078943654436627}
-  - component: {fileID: 7325997695250661373}
   - component: {fileID: 7371938663957454604}
   - component: {fileID: 7371938663957454605}
+  - component: {fileID: 7325997695250661373}
   m_Layer: 24
   m_Name: --PlayerMain--
   m_TagString: Player
@@ -29569,6 +29569,7 @@ GameObject:
   - component: {fileID: 2636446687835093077}
   - component: {fileID: 2199022415595021951}
   - component: {fileID: 6136590261503761347}
+  - component: {fileID: 6136590261503761348}
   m_Layer: 5
   m_Name: Horse
   m_TagString: Untagged
@@ -29602,6 +29603,28 @@ MonoBehaviour:
   armorRightRenderer: {fileID: 2262043063221635383}
   hourse: {fileID: 6136590261503761346}
   player: {fileID: 232202853163343770}
+--- !u!114 &6136590261503761348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6136590261503761346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bddecff09ca4d3f98626c572a00c1e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ACC: {fileID: 353157367927692366}
+  BodyBack: {fileID: 1050798560441457534}
+  BodyFront: {fileID: 4683522805856694238}
+  FootBackBottom: {fileID: 9080247198634450418}
+  FootBackTop: {fileID: 1245835680874703336}
+  FootFrontBottom: {fileID: 9080247198634450418}
+  FootFrontTop: {fileID: 8549122364268947310}
+  Head: {fileID: 6970451618482736518}
+  Neck: {fileID: 6152160952797424487}
+  Tail: {fileID: 1956244303765960671}
 --- !u!212 &6152160952797424487
 SpriteRenderer:
   m_ObjectHideFlags: 0
