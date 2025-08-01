@@ -21627,7 +21627,7 @@ GameObject:
   - component: {fileID: 5580212783080571644}
   - component: {fileID: 9080247198634450418}
   m_Layer: 0
-  m_Name: FrontFootBottom
+  m_Name: FrontFootBottomback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27256,7 +27256,7 @@ GameObject:
   - component: {fileID: 2774952215768076800}
   - component: {fileID: 3687876137840313463}
   m_Layer: 0
-  m_Name: FrontFootBottom
+  m_Name: FrontFootBottomback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27426,7 +27426,7 @@ GameObject:
   - component: {fileID: 281919451826600779}
   - component: {fileID: 1245835680874703336}
   m_Layer: 0
-  m_Name: FrontFootTop
+  m_Name: FrontFootTopback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29615,16 +29615,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bddecff09ca4d3f98626c572a00c1e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ACC: {fileID: 353157367927692366}
-  BodyBack: {fileID: 1050798560441457534}
-  BodyFront: {fileID: 4683522805856694238}
-  FootBackBottom: {fileID: 9080247198634450418}
-  FootBackTop: {fileID: 1245835680874703336}
-  FootFrontBottom: {fileID: 9080247198634450418}
-  FootFrontTop: {fileID: 8549122364268947310}
-  Head: {fileID: 6970451618482736518}
-  Neck: {fileID: 6152160952797424487}
-  Tail: {fileID: 1956244303765960671}
+  ACC:
+    name: ACC
+    renderer: {fileID: 353157367927692366}
+  BodyBack:
+    name: BodyBack
+    renderer: {fileID: 1050798560441457534}
+  BodyFront:
+    name: BodyFront
+    renderer: {fileID: 4683522805856694238}
+  Head:
+    name: Head
+    renderer: {fileID: 6970451618482736518}
+  Neck:
+    name: Neck
+    renderer: {fileID: 6152160952797424487}
+  Tail:
+    name: Tail
+    renderer: {fileID: 1956244303765960671}
+  FootBackBottom:
+    name: FootBackBottom
+    renderer: {fileID: 3687876137840313463}
+  FootBackTop:
+    name: FootBackTop
+    renderer: {fileID: 4737729143863721054}
+  FootFrontBottom:
+    name: FootFrontBottom
+    renderer: {fileID: 4201770778490198755}
+  FootFrontTop:
+    name: FootFrontTop
+    renderer: {fileID: 5206902617816105532}
+  FootBackBottom2:
+    name: FootBackBottom2
+    renderer: {fileID: 9080247198634450418}
+  FootBackTop2:
+    name: FootBackTop2
+    renderer: {fileID: 1245835680874703336}
+  FootFrontBottom2:
+    name: FootFrontBottom2
+    renderer: {fileID: 3681845010893756674}
+  FootFrontTop2:
+    name: FootFrontTop2
+    renderer: {fileID: 8549122364268947310}
 --- !u!212 &6152160952797424487
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -34137,7 +34169,7 @@ GameObject:
   - component: {fileID: 1261029472987215900}
   - component: {fileID: 4737729143863721054}
   m_Layer: 0
-  m_Name: FrontFootTop
+  m_Name: FrontFootTopback
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
