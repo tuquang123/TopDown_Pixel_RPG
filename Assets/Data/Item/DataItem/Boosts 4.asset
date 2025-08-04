@@ -20,32 +20,42 @@ MonoBehaviour:
   price: 300
   description: Grants enhanced power through demonic leather
   attack:
-    flat: 0
+    flat: 3
     percent: 0
   defense:
-    flat: 30
+    flat: 0
     percent: 0
   health:
-    flat: 200
+    flat: 1
     percent: 0
   mana:
-    flat: 50
+    flat: 2
     percent: 0
   critChance:
     flat: 0
-    percent: 0
+    percent: 0.8
   attackSpeed:
     flat: 0
-    percent: 0
+    percent: 1.4
   lifeSteal:
     flat: 0
     percent: 0
   speed:
-    flat: 1
+    flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 5498782995666421484, guid: d7a1a0aeecfbf49a2af4eb4ac19f90e3,
     type: 3}
   iconRight: {fileID: -2432274809877799677, guid: d7a1a0aeecfbf49a2af4eb4ac19f90e3,
     type: 3}
+  horseData: {fileID: 0}
   baseUpgradeCost: 75
+  tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
+  lockAttack: 0
+  lockDefense: 0
+  lockHealth: 0
+  lockMana: 0
+  lockCrit: 0
+  lockAttackSpeed: 0
+  lockLifeSteal: 0
+  lockSpeed: 0

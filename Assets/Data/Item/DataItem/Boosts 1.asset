@@ -20,32 +20,42 @@ MonoBehaviour:
   price: 275
   description: A symbol of brute strength and resilience
   attack:
-    flat: 0
+    flat: 2
     percent: 0
   defense:
-    flat: 15
+    flat: 1
     percent: 0
   health:
-    flat: 150
+    flat: 2
     percent: 0
   mana:
-    flat: 50
+    flat: 0
     percent: 0
   critChance:
     flat: 0
-    percent: 0
+    percent: 0.3
   attackSpeed:
     flat: 0
-    percent: 0
+    percent: 0.6
   lifeSteal:
     flat: 0
     percent: 0
   speed:
-    flat: 1
+    flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: -8979658097689788454, guid: 8e2ee760cea01a640bf6b790a349b6be,
     type: 3}
   iconRight: {fileID: 7136363362834297291, guid: 8e2ee760cea01a640bf6b790a349b6be,
     type: 3}
+  horseData: {fileID: 0}
   baseUpgradeCost: 75
+  tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
+  lockAttack: 0
+  lockDefense: 0
+  lockHealth: 0
+  lockMana: 0
+  lockCrit: 0
+  lockAttackSpeed: 0
+  lockLifeSteal: 0
+  lockSpeed: 0

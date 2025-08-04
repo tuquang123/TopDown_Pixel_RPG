@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
   m_Name: Sword 9
   m_EditorClassIdentifier: 
-  itemID: dark sword
+  itemID: dark sword 2
   itemName: Dark Sword
   icon: {fileID: 21300000, guid: 9794293e4605a44d0826e3814ddc8431, type: 3}
   itemType: 0
@@ -20,25 +20,25 @@ MonoBehaviour:
   price: 1100
   description: The Sword of Darkness was forget in the shadows
   attack:
-    flat: 650
-    percent: 0
+    flat: 107
+    percent: 75.2
   defense:
-    flat: 0
-    percent: 0
-  health:
-    flat: 0
-    percent: 0
-  mana:
-    flat: 0
-    percent: 0
-  critChance:
-    flat: 15
-    percent: 0
-  attackSpeed:
     flat: 1
     percent: 0
+  health:
+    flat: 5
+    percent: 0
+  mana:
+    flat: 2
+    percent: 0
+  critChance:
+    flat: 0
+    percent: 0.4
+  attackSpeed:
+    flat: 0
+    percent: 1.3
   lifeSteal:
-    flat: 175
+    flat: 0
     percent: 0
   speed:
     flat: 0
@@ -46,4 +46,14 @@ MonoBehaviour:
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
+  horseData: {fileID: 0}
   baseUpgradeCost: 250
+  tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
+  lockAttack: 0
+  lockDefense: 0
+  lockHealth: 0
+  lockMana: 0
+  lockCrit: 0
+  lockAttackSpeed: 0
+  lockLifeSteal: 0
+  lockSpeed: 0

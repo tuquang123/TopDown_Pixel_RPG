@@ -20,32 +20,42 @@ MonoBehaviour:
   price: 150
   description: up speed
   attack:
-    flat: 0
+    flat: 2
     percent: 0
   defense:
-    flat: 15
+    flat: 0
     percent: 0
   health:
-    flat: 100
+    flat: 8
     percent: 0
   mana:
-    flat: 50
+    flat: 4
     percent: 0
   critChance:
     flat: 0
     percent: 0
   attackSpeed:
     flat: 0
-    percent: 0
+    percent: 0.7
   lifeSteal:
     flat: 0
     percent: 0
   speed:
-    flat: 1
+    flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: -2016631381429734677, guid: 6dc30e5993cb04a47a6845283a352d2e,
     type: 3}
   iconRight: {fileID: 2525852049797594121, guid: 6dc30e5993cb04a47a6845283a352d2e,
     type: 3}
+  horseData: {fileID: 0}
   baseUpgradeCost: 75
+  tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
+  lockAttack: 0
+  lockDefense: 0
+  lockHealth: 0
+  lockMana: 0
+  lockCrit: 0
+  lockAttackSpeed: 0
+  lockLifeSteal: 0
+  lockSpeed: 0

@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 364586772b3e4d58b2763f1747847353, type: 3}
+  m_Name: ItemTierConfig
+  m_EditorClassIdentifier: 
+  common:
+    atkFlatRange: {x: 1, y: 3}
+    atkPercentRange: {x: 0, y: 0}
+    defFlatRange: {x: 0, y: 1}
+    defPercentRange: {x: 0, y: 0}
+    healthFlatRange: {x: 0, y: 10}
+    healthPercentRange: {x: 0, y: 0}
+    manaFlatRange: {x: 0, y: 5}
+    manaPercentRange: {x: 0, y: 0}
+    critFlatRange: {x: 0, y: 0}
+    critPercentRange: {x: 0, y: 1}
+    attackSpeedFlatRange: {x: 0, y: 0}
+    attackSpeedPercentRange: {x: 0, y: 2}
+    lifeStealFlatRange: {x: 0, y: 0}
+    lifeStealPercentRange: {x: 0, y: 0}
+    speedFlatRange: {x: 0, y: 0.01}
+    speedPercentRange: {x: 0, y: 0}
+  uncommon:
+    atkFlatRange: {x: 1, y: 3}
+    atkPercentRange: {x: 0, y: 0}
+    defFlatRange: {x: 0, y: 1}
+    defPercentRange: {x: 0, y: 0}
+    healthFlatRange: {x: 0, y: 10}
+    healthPercentRange: {x: 0, y: 0}
+    manaFlatRange: {x: 0, y: 5}
+    manaPercentRange: {x: 0, y: 0}
+    critFlatRange: {x: 0, y: 0}
+    critPercentRange: {x: 0, y: 1}
+    attackSpeedFlatRange: {x: 0, y: 0}
+    attackSpeedPercentRange: {x: 0, y: 2}
+    lifeStealFlatRange: {x: 0, y: 0}
+    lifeStealPercentRange: {x: 0, y: 0}
+    speedFlatRange: {x: 0, y: 0.01}
+    speedPercentRange: {x: 0, y: 0}
+  rare:
+    atkFlatRange: {x: 1, y: 3}
+    atkPercentRange: {x: 0, y: 0}
+    defFlatRange: {x: 0, y: 1}
+    defPercentRange: {x: 0, y: 0}
+    healthFlatRange: {x: 0, y: 10}
+    healthPercentRange: {x: 0, y: 0}
+    manaFlatRange: {x: 0, y: 5}
+    manaPercentRange: {x: 0, y: 0}
+    critFlatRange: {x: 0, y: 0}
+    critPercentRange: {x: 0, y: 1}
+    attackSpeedFlatRange: {x: 0, y: 0}
+    attackSpeedPercentRange: {x: 0, y: 2}
+    lifeStealFlatRange: {x: 0, y: 0}
+    lifeStealPercentRange: {x: 0, y: 0}
+    speedFlatRange: {x: 0, y: 0.01}
+    speedPercentRange: {x: 0, y: 0}
+  epic:
+    atkFlatRange: {x: 1, y: 3}
+    atkPercentRange: {x: 0, y: 0}
+    defFlatRange: {x: 0, y: 1}
+    defPercentRange: {x: 0, y: 0}
+    healthFlatRange: {x: 0, y: 10}
+    healthPercentRange: {x: 0, y: 0}
+    manaFlatRange: {x: 0, y: 5}
+    manaPercentRange: {x: 0, y: 0}
+    critFlatRange: {x: 0, y: 0}
+    critPercentRange: {x: 0, y: 1}
+    attackSpeedFlatRange: {x: 0, y: 0}
+    attackSpeedPercentRange: {x: 0, y: 2}
+    lifeStealFlatRange: {x: 0, y: 0}
+    lifeStealPercentRange: {x: 0, y: 0}
+    speedFlatRange: {x: 0, y: 0.01}
+    speedPercentRange: {x: 0, y: 0}
+  legendary:
+    atkFlatRange: {x: 1, y: 3}
+    atkPercentRange: {x: 0, y: 0}
+    defFlatRange: {x: 0, y: 1}
+    defPercentRange: {x: 0, y: 0}
+    healthFlatRange: {x: 0, y: 10}
+    healthPercentRange: {x: 0, y: 0}
+    manaFlatRange: {x: 0, y: 5}
+    manaPercentRange: {x: 0, y: 0}
+    critFlatRange: {x: 0, y: 0}
+    critPercentRange: {x: 0, y: 1}
+    attackSpeedFlatRange: {x: 0, y: 0}
+    attackSpeedPercentRange: {x: 0, y: 2}
+    lifeStealFlatRange: {x: 0, y: 0}
+    lifeStealPercentRange: {x: 0, y: 0}
+    speedFlatRange: {x: 0, y: 0.01}
+    speedPercentRange: {x: 0, y: 0}
+  mythic:
+    atkFlatRange: {x: 100, y: 500}
+    atkPercentRange: {x: 10, y: 100}
+    defFlatRange: {x: 0, y: 1}
+    defPercentRange: {x: 0, y: 0}
+    healthFlatRange: {x: 0, y: 10}
+    healthPercentRange: {x: 0, y: 0}
+    manaFlatRange: {x: 0, y: 5}
+    manaPercentRange: {x: 0, y: 0}
+    critFlatRange: {x: 0, y: 0}
+    critPercentRange: {x: 0, y: 1}
+    attackSpeedFlatRange: {x: 0, y: 0}
+    attackSpeedPercentRange: {x: 0, y: 2}
+    lifeStealFlatRange: {x: 0, y: 0}
+    lifeStealPercentRange: {x: 0, y: 0}
+    speedFlatRange: {x: 0, y: 0.01}
+    speedPercentRange: {x: 0, y: 0}
