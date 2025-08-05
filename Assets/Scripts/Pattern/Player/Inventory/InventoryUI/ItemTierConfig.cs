@@ -4,6 +4,10 @@ using System;
 [Serializable]
 public class StatRange
 {
+    [Header("Price & Upgrade Cost")]
+    public Vector2Int priceRange = new Vector2Int(100, 1000);
+    public Vector2Int upgradeCostRange = new Vector2Int(50, 500);
+    
     // Attack
     public Vector2 atkFlatRange = new Vector2(1, 3);
     public Vector2 atkPercentRange = new Vector2(0, 0); // nếu không cần % thì để 0

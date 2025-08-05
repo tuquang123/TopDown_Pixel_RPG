@@ -45,6 +45,14 @@ public class ItemDatabase : ScriptableObject
     public float epicWeight = 7f;
     public float legendaryWeight = 3f;
     public float mythicWeight = 1f;
+    
+    [BoxGroup("Batch Randomizer")]
+    [LabelText("Random Price")]
+    public bool randomizePrice = true;
+
+    [BoxGroup("Batch Randomizer")]
+    [LabelText("Random Upgrade Cost")]
+    public bool randomizeUpgradeCost = true;
 
     private Dictionary<string, ItemData> itemDictionary = new Dictionary<string, ItemData>();
 

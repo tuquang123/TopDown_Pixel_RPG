@@ -115,6 +115,7 @@ public class EquipmentUI : MonoBehaviour
             {
                 slotUI.icon.sprite = item.itemData.icon;
                 slotUI.icon.color = Color.white;
+                slotUI.iconDefault.gameObject.SetActive(false);
                 slotUI.background.color = ItemUtility.GetColorByTier(item.itemData.tier);
                 slotUI.button.gameObject.SetActive(true);
             }
@@ -122,7 +123,8 @@ public class EquipmentUI : MonoBehaviour
             {
                 slotUI.icon.sprite = null;
                 slotUI.icon.color = new Color(1, 1, 1, 0); // Làm trong suốt
-                slotUI.background.color = new Color(1, 1, 1, 0); // Làm mờ nền
+                slotUI.iconDefault.gameObject.SetActive(true);
+                slotUI.background.color = new Color32(39, 39, 39, 255); // Màu #272727 full opacity
                 slotUI.button.gameObject.SetActive(false);
             }
         }
