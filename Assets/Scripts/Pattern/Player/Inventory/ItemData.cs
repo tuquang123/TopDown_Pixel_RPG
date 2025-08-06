@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 #region Support Types
 
@@ -14,7 +16,9 @@ public class ItemStatBonus
 
     [HorizontalGroup("Bonus", width: 0.5f)] [LabelText("%")] [LabelWidth(25)] [GUIColor(0.95f, 1f, 0.95f)]
     public float percent;
-
+    
+    public static readonly ItemStatBonus Zero = new ItemStatBonus(0f, 0f);
+    
     public ItemStatBonus(float flat = 0, float percent = 0)
     {
         this.flat = flat;
@@ -143,7 +147,6 @@ public class ItemData : ScriptableObject
     [BoxGroup("Upgrade")] [LabelWidth(130)]
     public int baseUpgradeCost = 100;
 
-
     // RANDOMIZER
     [BoxGroup("Randomizer")] public ItemTierConfig tierConfig;
 
@@ -157,94 +160,121 @@ public class ItemData : ScriptableObject
     [BoxGroup("Randomizer")] public bool lockAttackSpeed;
     [BoxGroup("Randomizer")] public bool lockLifeSteal;
     [BoxGroup("Randomizer")] public bool lockSpeed;
-    
+
+    public ItemDatabase itemDataBase;
+
     [BoxGroup("Randomizer")]
     [InfoBox("Nhấn để random lại cả flat và % theo tier. Bật lock để giữ stat cụ thể khi reroll.")]
     [Button("Randomize Stats")]
     public void RandomizeStats()
+{
+    if (tierConfig == null)
     {
-        if (tierConfig == null)
-        {
-            Debug.LogWarning($"[{itemName}] Missing TierConfig. Cannot randomize.");
-            return;
-        }
+        Debug.LogWarning($"[{itemName}] Missing TierConfig. Cannot randomize.");
+        return;
+    }
 
-        var range = tierConfig.GetRange(tier);
+    var db = itemDataBase;
+    var rule = db?.statRules.FirstOrDefault(r => r.itemType == itemType);
 
-        // helper để làm tròn: flat thành int, percent giữ 1 chữ số
-        float RoundPercent(float v) => Mathf.Round(v * 10f) / 10f;
-        float RoundFlat(float v) => Mathf.Round(v); // nếu muốn int hẳn, dùng Mathf.RoundToInt và cast về float
-        
-        price = UnityEngine.Random.Range(range.priceRange.x, range.priceRange.y + 1);
-        baseUpgradeCost = UnityEngine.Random.Range(range.upgradeCostRange.x, range.upgradeCostRange.y + 1);
+    if (rule == null)
+    {
+        Debug.LogWarning($"No stat rule for {itemType}, skipping...");
+        return;
+    }
 
-        // ATK
-        if (!lockAttack)
-        {
-            float atkFlat = UnityEngine.Random.Range(range.atkFlatRange.x, range.atkFlatRange.y);
-            float atkPct = UnityEngine.Random.Range(range.atkPercentRange.x, range.atkPercentRange.y);
-            attack = new ItemStatBonus(flat: RoundFlat(atkFlat), percent: RoundPercent(atkPct));
-        }
+    var range = tierConfig.GetRange(tier);
 
-        // DEF
-        if (!lockDefense)
-        {
-            float defFlat = UnityEngine.Random.Range(range.defFlatRange.x, range.defFlatRange.y);
-            float defPct = UnityEngine.Random.Range(range.defPercentRange.x, range.defPercentRange.y);
-            defense = new ItemStatBonus(flat: RoundFlat(defFlat), percent: RoundPercent(defPct));
-        }
+    float RoundPercent(float v) => Mathf.Round(v * 10f) / 10f;
+    float RoundFlat(float v) => Mathf.Round(v);
 
-        // HP
-        if (!lockHealth)
-        {
-            float hpFlat = UnityEngine.Random.Range(range.healthFlatRange.x, range.healthFlatRange.y);
-            float hpPct = UnityEngine.Random.Range(range.healthPercentRange.x, range.healthPercentRange.y);
-            health = new ItemStatBonus(flat: RoundFlat(hpFlat), percent: RoundPercent(hpPct));
-        }
+    price = UnityEngine.Random.Range(range.priceRange.x, range.priceRange.y + 1);
+    baseUpgradeCost = UnityEngine.Random.Range(range.upgradeCostRange.x, range.upgradeCostRange.y + 1);
 
-        // Mana
-        if (!lockMana)
-        {
-            float manaFlat = UnityEngine.Random.Range(range.manaFlatRange.x, range.manaFlatRange.y);
-            float manaPct = UnityEngine.Random.Range(range.manaPercentRange.x, range.manaPercentRange.y);
-            mana = new ItemStatBonus(flat: RoundFlat(manaFlat), percent: RoundPercent(manaPct));
-        }
+    // ATK
+    if (!lockAttack && rule.allowAttack)
+    {
+        attack = new ItemStatBonus(
+            RoundFlat(UnityEngine.Random.Range(range.atkFlatRange.x, range.atkFlatRange.y)),
+            RoundPercent(UnityEngine.Random.Range(range.atkPercentRange.x, range.atkPercentRange.y))
+        );
+    }
+    else attack = ItemStatBonus.Zero;
 
-        // Crit
-        if (!lockCrit)
-        {
-            float critFlat = UnityEngine.Random.Range(range.critFlatRange.x, range.critFlatRange.y);
-            float critPct = UnityEngine.Random.Range(range.critPercentRange.x, range.critPercentRange.y);
-            critChance = new ItemStatBonus(flat: RoundFlat(critFlat), percent: RoundPercent(critPct));
-        }
+    // DEF
+    if (!lockDefense && rule.allowDefense)
+    {
+        defense = new ItemStatBonus(
+            RoundFlat(UnityEngine.Random.Range(range.defFlatRange.x, range.defFlatRange.y)),
+            RoundPercent(UnityEngine.Random.Range(range.defPercentRange.x, range.defPercentRange.y))
+        );
+    }
+    else defense = ItemStatBonus.Zero;
 
-        // Attack Speed
-        if (!lockAttackSpeed)
-        {
-            float asFlat = UnityEngine.Random.Range(range.attackSpeedFlatRange.x, range.attackSpeedFlatRange.y);
-            float asPct = UnityEngine.Random.Range(range.attackSpeedPercentRange.x, range.attackSpeedPercentRange.y);
-            attackSpeed = new ItemStatBonus(flat: RoundFlat(asFlat), percent: RoundPercent(asPct));
-        }
+    // HP
+    if (!lockHealth && rule.allowHealth)
+    {
+        health = new ItemStatBonus(
+            RoundFlat(UnityEngine.Random.Range(range.healthFlatRange.x, range.healthFlatRange.y)),
+            RoundPercent(UnityEngine.Random.Range(range.healthPercentRange.x, range.healthPercentRange.y))
+        );
+    }
+    else health = ItemStatBonus.Zero;
 
-        // Life Steal
-        if (!lockLifeSteal)
-        {
-            float lsFlat = UnityEngine.Random.Range(range.lifeStealFlatRange.x, range.lifeStealFlatRange.y);
-            float lsPct = UnityEngine.Random.Range(range.lifeStealPercentRange.x, range.lifeStealPercentRange.y);
-            lifeSteal = new ItemStatBonus(flat: RoundFlat(lsFlat), percent: RoundPercent(lsPct));
-        }
+    // Mana
+    if (!lockMana && rule.allowMana)
+    {
+        mana = new ItemStatBonus(
+            RoundFlat(UnityEngine.Random.Range(range.manaFlatRange.x, range.manaFlatRange.y)),
+            RoundPercent(UnityEngine.Random.Range(range.manaPercentRange.x, range.manaPercentRange.y))
+        );
+    }
+    else mana = ItemStatBonus.Zero;
 
-        // Move Speed
-        if (!lockSpeed)
-        {
-            float spdFlat = UnityEngine.Random.Range(range.speedFlatRange.x, range.speedFlatRange.y);
-            float spdPct = UnityEngine.Random.Range(range.speedPercentRange.x, range.speedPercentRange.y);
-            speed = new ItemStatBonus(flat: RoundFlat(spdFlat), percent: RoundPercent(spdPct));
-        }
+    // Crit
+    if (!lockCrit && rule.allowCrit)
+    {
+        critChance = new ItemStatBonus(
+            RoundFlat(UnityEngine.Random.Range(range.critFlatRange.x, range.critFlatRange.y)),
+            RoundPercent(UnityEngine.Random.Range(range.critPercentRange.x, range.critPercentRange.y))
+        );
+    }
+    else critChance = ItemStatBonus.Zero;
 
+    // Attack Speed
+    if (!lockAttackSpeed && rule.allowAttackSpeed)
+    {
+        attackSpeed = new ItemStatBonus(
+            RoundFlat(UnityEngine.Random.Range(range.attackSpeedFlatRange.x, range.attackSpeedFlatRange.y)),
+            RoundPercent(UnityEngine.Random.Range(range.attackSpeedPercentRange.x, range.attackSpeedPercentRange.y))
+        );
+    }
+    else attackSpeed = ItemStatBonus.Zero;
+
+    // Life Steal
+    if (!lockLifeSteal && rule.allowLifeSteal)
+    {
+        lifeSteal = new ItemStatBonus(
+            RoundFlat(UnityEngine.Random.Range(range.lifeStealFlatRange.x, range.lifeStealFlatRange.y)),
+            RoundPercent(UnityEngine.Random.Range(range.lifeStealPercentRange.x, range.lifeStealPercentRange.y))
+        );
+    }
+    else lifeSteal = ItemStatBonus.Zero;
+
+    // Move Speed
+    if (!lockSpeed && rule.allowSpeed)
+    {
+        speed = new ItemStatBonus(
+            RoundFlat(UnityEngine.Random.Range(range.speedFlatRange.x, range.speedFlatRange.y)),
+            RoundPercent(UnityEngine.Random.Range(range.speedPercentRange.x, range.speedPercentRange.y))
+        );
+    }
+    else speed = ItemStatBonus.Zero;
 
 #if UNITY_EDITOR
-        UnityEditor.EditorUtility.SetDirty(this);
+    UnityEditor.EditorUtility.SetDirty(this);
 #endif
-    }
+}
+
+
 }

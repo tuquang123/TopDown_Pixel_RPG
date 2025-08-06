@@ -71,6 +71,18 @@ MonoBehaviour:
   epicWeight: 7
   legendaryWeight: 3
   mythicWeight: 1
+  randomizePrice: 1
+  randomizeUpgradeCost: 1
+  statRules:
+  - itemType: 0
+    allowAttack: 1
+    allowDefense: 0
+    allowHealth: 0
+    allowMana: 0
+    allowCrit: 1
+    allowAttackSpeed: 1
+    allowLifeSteal: 1
+    allowSpeed: 0
   filterType: 0
   filterTier: 0
   overrideLocks: 0

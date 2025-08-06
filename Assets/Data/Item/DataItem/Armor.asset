@@ -17,28 +17,28 @@ MonoBehaviour:
   icon: {fileID: -5138849381010601345, guid: da6895bd4082d441cbe5911031d0f43b, type: 3}
   itemType: 1
   tier: 0
-  price: 75
+  price: 180
   description: Lightweight and flexible
   attack:
-    flat: 1
+    flat: 20
     percent: 0
   defense:
-    flat: 1
+    flat: 4
     percent: 0
   health:
-    flat: 9
+    flat: 574
     percent: 0
   mana:
-    flat: 2
+    flat: 250
     percent: 0
   critChance:
-    flat: 0
-    percent: 0.1
+    flat: 8
+    percent: 0
   attackSpeed:
-    flat: 0
-    percent: 1.6
+    flat: 1
+    percent: 0
   lifeSteal:
-    flat: 0
+    flat: 6
     percent: 0
   speed:
     flat: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
   iconRight: {fileID: 5974945691945990517, guid: da6895bd4082d441cbe5911031d0f43b,
     type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 50
+  baseUpgradeCost: 211
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0
@@ -59,3 +59,4 @@ MonoBehaviour:
   lockAttackSpeed: 0
   lockLifeSteal: 0
   lockSpeed: 0
+  itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}

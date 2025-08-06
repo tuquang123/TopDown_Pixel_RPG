@@ -17,28 +17,28 @@ MonoBehaviour:
   icon: {fileID: 2937410462147611819, guid: 3e7f1bcf5e1004551853fead34d7fb5b, type: 3}
   itemType: 1
   tier: 2
-  price: 175
+  price: 355
   description: Forged from the remains of fallen beasts
   attack:
-    flat: 2
+    flat: 141
     percent: 0
   defense:
-    flat: 1
+    flat: 21
     percent: 0
   health:
-    flat: 8
+    flat: 1032
     percent: 0
   mana:
-    flat: 2
+    flat: 88
     percent: 0
   critChance:
-    flat: 0
-    percent: 0.5
+    flat: 27
+    percent: 0
   attackSpeed:
-    flat: 0
-    percent: 1.6
+    flat: 2
+    percent: 0
   lifeSteal:
-    flat: 0
+    flat: 10
     percent: 0
   speed:
     flat: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
   iconRight: {fileID: -4607344544876785824, guid: 4f75ae73445284b5393c219fadb2dc65,
     type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 50
+  baseUpgradeCost: 301
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0
@@ -59,3 +59,4 @@ MonoBehaviour:
   lockAttackSpeed: 0
   lockLifeSteal: 0
   lockSpeed: 0
+  itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}

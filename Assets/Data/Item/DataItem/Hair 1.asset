@@ -17,37 +17,37 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 0f4813b52b3b74ca6a74d7027ead4b9d, type: 3}
   itemType: 8
   tier: 3
-  price: 650
+  price: 625
   description: A sturdy stell helmet worn by noble knights
   attack:
-    flat: 3
+    flat: 175
     percent: 0
   defense:
-    flat: 0
+    flat: 23
     percent: 0
   health:
-    flat: 3
+    flat: 1953
     percent: 0
   mana:
-    flat: 1
+    flat: 502
     percent: 0
   critChance:
-    flat: 0
-    percent: 0.2
+    flat: 39
+    percent: 0
   attackSpeed:
-    flat: 0
-    percent: 1.3
+    flat: 1
+    percent: 0
   lifeSteal:
-    flat: 0
+    flat: 18
     percent: 0
   speed:
-    flat: 0
+    flat: 1
     percent: 0
   color: {r: 1, g: 0, b: 0, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 75
+  baseUpgradeCost: 106
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0
@@ -57,3 +57,4 @@ MonoBehaviour:
   lockAttackSpeed: 0
   lockLifeSteal: 0
   lockSpeed: 0
+  itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}

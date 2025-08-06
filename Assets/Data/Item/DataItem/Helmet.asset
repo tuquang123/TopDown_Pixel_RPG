@@ -17,37 +17,37 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: a79f145e10eea4e999334e278812b365, type: 3}
   itemType: 3
   tier: 0
-  price: 75
+  price: 389
   description: 'up armor '
   attack:
-    flat: 1
+    flat: 62
     percent: 0
   defense:
-    flat: 1
+    flat: 15
     percent: 0
   health:
-    flat: 3
+    flat: 519
     percent: 0
   mana:
-    flat: 2
+    flat: 196
     percent: 0
   critChance:
-    flat: 0
-    percent: 0.9
+    flat: 1
+    percent: 0
   attackSpeed:
-    flat: 0
-    percent: 0.8
+    flat: 2
+    percent: 0
   lifeSteal:
-    flat: 0
+    flat: 2
     percent: 0
   speed:
-    flat: 0
+    flat: 1
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 50
+  baseUpgradeCost: 145
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0
@@ -57,3 +57,4 @@ MonoBehaviour:
   lockAttackSpeed: 0
   lockLifeSteal: 0
   lockSpeed: 0
+  itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}

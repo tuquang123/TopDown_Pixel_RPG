@@ -17,28 +17,28 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: ea5c4fc418c71491eb063b759868a2a1, type: 3}
   itemType: 3
   tier: 2
-  price: 150
+  price: 236
   description: Forged in ancient battles
   attack:
-    flat: 3
+    flat: 26
     percent: 0
   defense:
-    flat: 1
+    flat: 26
     percent: 0
   health:
-    flat: 8
+    flat: 1398
     percent: 0
   mana:
-    flat: 2
+    flat: 382
     percent: 0
   critChance:
-    flat: 0
-    percent: 0.2
+    flat: 12
+    percent: 0
   attackSpeed:
-    flat: 0
-    percent: 0.1
+    flat: 3
+    percent: 0
   lifeSteal:
-    flat: 0
+    flat: 9
     percent: 0
   speed:
     flat: 0
@@ -47,7 +47,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 75
+  baseUpgradeCost: 174
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0
@@ -57,3 +57,4 @@ MonoBehaviour:
   lockAttackSpeed: 0
   lockLifeSteal: 0
   lockSpeed: 0
+  itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}

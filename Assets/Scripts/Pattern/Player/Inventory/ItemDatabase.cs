@@ -29,6 +29,22 @@ public enum FilterItemTier
     Mythic
 }
 
+[System.Serializable]
+public class StatAllowByItemType
+{
+    public ItemType itemType;
+
+    public bool allowAttack = true;
+    public bool allowDefense = true;
+    public bool allowHealth = true;
+    public bool allowMana = true;
+    public bool allowCrit = true;
+    public bool allowAttackSpeed = true;
+    public bool allowLifeSteal = true;
+    public bool allowSpeed = true;
+}
+
+
 [CreateAssetMenu(fileName = "ItemDatabase", menuName = "Inventory/Item Database")]
 public class ItemDatabase : ScriptableObject
 {
@@ -55,10 +71,18 @@ public class ItemDatabase : ScriptableObject
     public bool randomizeUpgradeCost = true;
 
     private Dictionary<string, ItemData> itemDictionary = new Dictionary<string, ItemData>();
+    
+    [TableList]
+    [BoxGroup("Stat Rules Per ItemType")]
+    public List<StatAllowByItemType> statRules = new();
+
+    private Dictionary<ItemType, StatAllowByItemType> _statRuleLookup;
+    
 
     private void OnEnable()
     {
         UpdateDatabase();
+        _statRuleLookup = statRules.ToDictionary(r => r.itemType, r => r);
     }
 
     [Button("Update Database (validate IDs)")]
@@ -227,6 +251,7 @@ public class ItemDatabase : ScriptableObject
             }
 
             item.RandomizeStats();
+            item.itemDataBase = this;
 
             if (overrideLocks)
             {

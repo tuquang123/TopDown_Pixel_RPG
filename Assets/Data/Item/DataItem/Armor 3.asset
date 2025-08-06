@@ -17,31 +17,31 @@ MonoBehaviour:
   icon: {fileID: -6702876299118751804, guid: 1416614edddf54e2bb98c61ab32dc586, type: 3}
   itemType: 1
   tier: 5
-  price: 1050
+  price: 655
   description: Forged from the scales of a mighty dragon
   attack:
-    flat: 171
-    percent: 55.8
+    flat: 130
+    percent: 0
   defense:
-    flat: 0
+    flat: 47
     percent: 0
   health:
-    flat: 7
+    flat: 675
     percent: 0
   mana:
-    flat: 5
+    flat: 794
     percent: 0
   critChance:
-    flat: 0
-    percent: 1
+    flat: 6
+    percent: 0
   attackSpeed:
-    flat: 0
-    percent: 0.9
+    flat: 2
+    percent: 0
   lifeSteal:
-    flat: 0
+    flat: 10
     percent: 0
   speed:
-    flat: 0
+    flat: 1
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 8982820368506593384, guid: 7837b3161c8b7477e9711cb259036797,
@@ -49,7 +49,7 @@ MonoBehaviour:
   iconRight: {fileID: 6580047532355526111, guid: 7837b3161c8b7477e9711cb259036797,
     type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 100
+  baseUpgradeCost: 900
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0
@@ -59,3 +59,4 @@ MonoBehaviour:
   lockAttackSpeed: 0
   lockLifeSteal: 0
   lockSpeed: 0
+  itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}

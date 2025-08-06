@@ -17,39 +17,39 @@ MonoBehaviour:
   icon: {fileID: -7786538801905712091, guid: 30f45f9a124dd104caedd36e5a3f8a75, type: 3}
   itemType: 5
   tier: 1
-  price: 275
+  price: 495
   description: 'super horse
 
 '
   attack:
-    flat: 2
+    flat: 18
     percent: 0
   defense:
-    flat: 0
+    flat: 22
     percent: 0
   health:
-    flat: 0
+    flat: 164
     percent: 0
   mana:
-    flat: 4
+    flat: 200
     percent: 0
   critChance:
-    flat: 0
-    percent: 0.1
+    flat: 2
+    percent: 0
   attackSpeed:
-    flat: 0
-    percent: 1.5
+    flat: 1
+    percent: 0
   lifeSteal:
-    flat: 0
+    flat: 1
     percent: 0
   speed:
-    flat: 0
+    flat: 1
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 11400000, guid: aaa8f088b24b1c34488d9d6b5d04642d, type: 2}
-  baseUpgradeCost: 175
+  baseUpgradeCost: 231
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0
@@ -59,3 +59,4 @@ MonoBehaviour:
   lockAttackSpeed: 0
   lockLifeSteal: 0
   lockSpeed: 0
+  itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}

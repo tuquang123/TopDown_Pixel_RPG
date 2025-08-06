@@ -17,31 +17,31 @@ MonoBehaviour:
   icon: {fileID: -7210306655108607268, guid: 50595133ffa7f47f984a134594aedcab, type: 3}
   itemType: 4
   tier: 3
-  price: 275
+  price: 937
   description: A symbol of brute strength and resilience
   attack:
-    flat: 2
+    flat: 191
     percent: 0
   defense:
-    flat: 0
+    flat: 17
     percent: 0
   health:
-    flat: 6
+    flat: 594
     percent: 0
   mana:
-    flat: 5
+    flat: 203
     percent: 0
   critChance:
-    flat: 0
-    percent: 0.4
+    flat: 10
+    percent: 0
   attackSpeed:
     flat: 0
-    percent: 1.3
+    percent: 0
   lifeSteal:
-    flat: 0
+    flat: 12
     percent: 0
   speed:
-    flat: 0
+    flat: 1
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: -8979658097689788454, guid: 8e2ee760cea01a640bf6b790a349b6be,
@@ -49,7 +49,7 @@ MonoBehaviour:
   iconRight: {fileID: 7136363362834297291, guid: 8e2ee760cea01a640bf6b790a349b6be,
     type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 75
+  baseUpgradeCost: 530
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0
@@ -59,3 +59,4 @@ MonoBehaviour:
   lockAttackSpeed: 0
   lockLifeSteal: 0
   lockSpeed: 0
+  itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}

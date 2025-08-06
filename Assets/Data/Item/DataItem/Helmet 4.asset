@@ -17,37 +17,37 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 9bad6bc83651a47fd87cadff0d08bdc8, type: 3}
   itemType: 3
   tier: 3
-  price: 350
+  price: 327
   description: Said to channel the fury of ancient beasts
   attack:
-    flat: 2
+    flat: 48
     percent: 0
   defense:
-    flat: 0
+    flat: 34
     percent: 0
   health:
-    flat: 9
+    flat: 810
     percent: 0
   mana:
-    flat: 0
+    flat: 138
     percent: 0
   critChance:
-    flat: 0
-    percent: 0.9
+    flat: 2
+    percent: 0
   attackSpeed:
-    flat: 0
-    percent: 0.7
+    flat: 2
+    percent: 0
   lifeSteal:
-    flat: 0
+    flat: 18
     percent: 0
   speed:
-    flat: 0
+    flat: 2
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 100
+  baseUpgradeCost: 492
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0
@@ -57,3 +57,4 @@ MonoBehaviour:
   lockAttackSpeed: 0
   lockLifeSteal: 0
   lockSpeed: 0
+  itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
