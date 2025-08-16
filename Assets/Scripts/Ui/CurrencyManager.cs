@@ -56,6 +56,7 @@ public class CurrencyManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("Gold", Gold);
         PlayerPrefs.SetInt("Gems", Gems);
+        PlayerPrefs.Save();
     }
 
     private void LoadCurrency()

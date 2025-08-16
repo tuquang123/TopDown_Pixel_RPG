@@ -1,0 +1,23 @@
+﻿using UnityEngine;
+
+public class DefenseBoost : ISkill
+{
+    public void ExecuteSkill(PlayerStats playerStats, SkillData skillData)
+    {
+        int currentLevel = playerStats.GetSkillLevel(skillData.skillID); 
+        SkillLevelStat currentLevelStat = skillData.GetLevelStat(currentLevel);
+
+        if (currentLevelStat == null)
+        {
+            Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skillData.skillName}");
+            return; 
+        }
+        //float boost = Mathf.CeilToInt(playerStats.defense.Value * currentLevelStat.value / 100);
+        playerStats.ApplyStatModifier(new StatModifier(StatType.Defense, (int)currentLevelStat.value));
+    }
+
+    public bool CanUse(PlayerStats playerStats, SkillData skillData)
+    {
+        return true; 
+    }
+}

@@ -8,7 +8,7 @@ public class PlayerHpAndManaUi : MonoBehaviour
 
     private PlayerStats playerStats;
 
-    private void Start()
+    private void Awake()
     {
         playerStats = PlayerStats.Instance;
 
