@@ -10,7 +10,7 @@ public class BossAI : EnemyAI
     
     protected override void Start()
     {
-        bossHealthUI = RefVFX.Instance.bossHealthUI;
+        bossHealthUI = CommonReferent.Instance.bossHealthUI;
         
         if (bossHealthUI == null)
         {

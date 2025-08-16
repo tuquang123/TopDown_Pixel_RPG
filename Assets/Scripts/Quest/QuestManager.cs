@@ -161,7 +161,7 @@ public class QuestManager : Singleton<QuestManager>
         // ITEMS từ ID
         foreach (var itemID in quest.reward.itemIDs)
         {
-            ItemData itemData = RefVFX.Instance.itemDatabase.GetItemByID(itemID);
+            ItemData itemData = CommonReferent.Instance.itemDatabase.GetItemByID(itemID);
             if (itemData == null)
             {
                 Debug.LogWarning($"Item ID không tồn tại: {itemID}");

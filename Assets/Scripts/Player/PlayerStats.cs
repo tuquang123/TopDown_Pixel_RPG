@@ -56,7 +56,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     
     private void Awake()
     {
-        SaveManager.Load(this);
+        base.Awake(); 
         if (baseStatsSO != null)
         {
             ResetFromSO(baseStatsSO);
@@ -76,55 +76,13 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     private void OnApplicationQuit()
     {
         SaveSkillLevels();
-        SaveManager.Save(this);
     }
 
     private void OnDestroy()
     {
         SaveSkillLevels();
     }
-
-    // --- Save / Load ---
-    public PlayerStatsData ToData()
-    {
-        return new PlayerStatsData
-        {
-            level = level,
-            skillPoints = skillPoints,
-            currentHealth = currentHealth,
-            currentMana = currentMana,
-            maxHealth = maxHealth.Value,
-            maxMana = maxMana.Value,
-            attack = attack.Value,
-            defense = defense.Value,
-            speed = speed.Value,
-            critChance = critChance.Value,
-            lifeSteal = lifeSteal.Value,
-            attackSpeed = attackSpeed.Value
-        };
-    }
-
-    public void FromData(PlayerStatsData data)
-    {
-        level = data.level;
-        skillPoints = data.skillPoints;
-        currentHealth = data.currentHealth;
-        currentMana = data.currentMana;
-
-        maxHealth.baseValue = data.maxHealth;
-        maxMana.baseValue = data.maxMana;
-        attack.baseValue = data.attack;
-        defense.baseValue = data.defense;
-        speed.baseValue = data.speed;
-        critChance.baseValue = data.critChance;
-        lifeSteal.baseValue = data.lifeSteal;
-        attackSpeed.baseValue = data.attackSpeed;
-
-        OnStatsChanged?.Invoke();
-        OnHealthChanged?.Invoke();
-        OnManaChanged?.Invoke();
-    }
-
+    
     private void ResetFromSO(PlayerStatsSO so)
     {
         level = so.level;

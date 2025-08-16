@@ -299,8 +299,8 @@ public class EnemyAI : MonoBehaviour , IDamageable
         Vector3 vfxSpawnPos = basePosition + flippedOffset;
 
         GameObject vfx = ObjectPooler.Instance.Get(
-            RefVFX.Instance.bloodVfxPrefab.name,
-            RefVFX.Instance.bloodVfxPrefab,
+            CommonReferent.Instance.bloodVfxPrefab.name,
+            CommonReferent.Instance.bloodVfxPrefab,
             vfxSpawnPos,
             Quaternion.identity
         );
@@ -337,7 +337,7 @@ public class EnemyAI : MonoBehaviour , IDamageable
         // Báo cáo quest
         QuestManager.Instance.ReportProgress(ObjectiveType.KillEnemies, enemyName, 1);
 
-        GoldDropHelper.SpawnGoldBurst(transform.position, Random.Range(3, 6), RefVFX.Instance.goldPrefab);
+        GoldDropHelper.SpawnGoldBurst(transform.position, Random.Range(3, 6), CommonReferent.Instance.goldPrefab);
         
         // UI máu
         if (enemyHealthUI != null)

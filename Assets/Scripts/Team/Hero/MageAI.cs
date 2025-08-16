@@ -13,8 +13,8 @@ public class MageAI : AllyBaseAI
         if (target == null) return;
 
         GameObject proj = ObjectPooler.Instance.Get(
-            RefVFX.Instance.spellProjectilePrefab.name,
-            RefVFX.Instance.spellProjectilePrefab,
+            CommonReferent.Instance.spellProjectilePrefab.name,
+            CommonReferent.Instance.spellProjectilePrefab,
             castPoint.position,
             Quaternion.identity
         );

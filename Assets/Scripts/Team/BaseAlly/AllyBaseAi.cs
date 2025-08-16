@@ -55,7 +55,7 @@ public abstract class AllyBaseAI : MonoBehaviour
         stats = GetComponent<AllyStats>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
-        player = RefVFX.Instance.playerPrefab.transform;
+        player = CommonReferent.Instance.playerPrefab.transform;
         playerController = player?.GetComponent<PlayerController>();
     }
 

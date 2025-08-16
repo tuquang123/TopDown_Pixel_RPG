@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RefVFX : Singleton<RefVFX>
+public class CommonReferent : Singleton<CommonReferent>
 {
     public GameObject goldPrefab;
     public GameObject playerPrefab;
@@ -10,8 +10,12 @@ public class RefVFX : Singleton<RefVFX>
     public BossHealthUI bossHealthUI;
     public GameObject  canvasHp;
     public GameObject  hpSliderUi;
-    public ItemDatabase itemDatabase;
     
+    public ItemDatabase itemDatabase;
+    public Inventory inventory;
+    public PlayerStats playerStats;
+    public Equipment equipment;
+    public SkillSystem skill;
     
     public EnemyLevelDatabase levelDatabase;
     public GameObject arrowPrefab;

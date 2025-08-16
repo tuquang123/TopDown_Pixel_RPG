@@ -47,6 +47,20 @@ public class SkillFactory
     }
 }
 
+[System.Serializable]
+public class SkillSaveData
+{
+    public List<SkillStateData> unlockedSkills = new();
+    public Dictionary<int, SkillID> assignedSkills = new();
+}
+
+[System.Serializable]
+public class SkillStateData
+{
+    public SkillID skillID;
+    public int level;
+}
+
 public class SkillSystem : MonoBehaviour
 {
     public List<SkillData> skillList = new();
@@ -65,8 +79,6 @@ public class SkillSystem : MonoBehaviour
         StartCoroutine(AutoCastRoutine());
     }
     
-    
-
     private bool isCasting = false;
 
     private IEnumerator AutoCastRoutine()
@@ -104,6 +116,54 @@ public class SkillSystem : MonoBehaviour
 
         isCasting = false;
     }
+    
+    public SkillSaveData ToData()
+    {
+        SkillSaveData data = new SkillSaveData();
+
+        // Lưu kỹ năng đã mở
+        foreach (var kvp in unlockedSkills)
+        {
+            data.unlockedSkills.Add(new SkillStateData
+            {
+                skillID = kvp.Key,
+                level = kvp.Value.level
+            });
+        }
+
+        // Lưu slot
+        foreach (var kvp in assignedSkills)
+        {
+            data.assignedSkills[kvp.Key] = kvp.Value;
+        }
+
+        return data;
+    }
+
+    public void FromData(SkillSaveData data)
+    {
+        unlockedSkills.Clear();
+        assignedSkills.Clear();
+
+        // Load kỹ năng đã mở
+        foreach (var state in data.unlockedSkills)
+        {
+            SkillData skillData = GetSkillData(state.skillID);
+            if (skillData != null)
+            {
+                unlockedSkills[state.skillID] = new SkillState(state.skillID, skillData);
+                _playerStats.SetSkillLevel(state.skillID, state.level);
+            }
+        }
+
+        // Load slot
+        foreach (var kvp in data.assignedSkills)
+        {
+            assignedSkills[kvp.Key] = kvp.Value;
+            OnSkillAssigned?.Invoke(kvp.Key, kvp.Value);
+        }
+    }
+
     public bool UnlockSkill(SkillID skillID)
     {
         SkillData data = GetSkillData(skillID);

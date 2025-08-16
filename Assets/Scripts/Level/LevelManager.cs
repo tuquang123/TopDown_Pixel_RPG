@@ -81,7 +81,7 @@ public class LevelManager : Singleton<LevelManager>
 
             foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
             {
-                var levelDB = RefVFX.Instance.levelDatabase;
+                var levelDB = CommonReferent.Instance.levelDatabase;
                 
                 sp.Spawn(levelDB);
             }

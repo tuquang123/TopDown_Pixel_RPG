@@ -38,7 +38,7 @@ public class SpawnPoint : MonoBehaviour
 
         if (ai.EnemyHealthUI == null)
         {
-            GameObject ui = Instantiate(RefVFX.Instance.hpSliderUi , RefVFX.Instance.canvasHp.transform, false);
+            GameObject ui = Instantiate(CommonReferent.Instance.hpSliderUi , CommonReferent.Instance.canvasHp.transform, false);
             var uiComp = ui.GetComponent<EnemyHealthUI>();
             uiComp.SetTarget(_currentEnemy);
             ai.EnemyHealthUI = uiComp;

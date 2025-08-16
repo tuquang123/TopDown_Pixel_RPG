@@ -1776,6 +1776,9 @@ MonoBehaviour:
   hpSliderUi: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf,
     type: 3}
   itemDatabase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  inventory: {fileID: 466212491355338655}
+  playerStats: {fileID: 7325997695250661373}
+  equipment: {fileID: 5684044760479616692}
   levelDatabase: {fileID: 11400000, guid: 772ee1512c9cae04c94b3f8f8b705d05, type: 2}
   arrowPrefab: {fileID: 3659391273684521209, guid: 74e8d529a7dc5bb4585e2f1db5be58a6,
     type: 3}
@@ -4058,8 +4061,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9409400232c145b0bc885fbac121d93e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemDatabase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
-  inventory: {fileID: 466212491355338655}
+  allAllItem: 0
 --- !u!4 &637887264
 Transform:
   m_ObjectHideFlags: 0
@@ -7495,11 +7497,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1080
+      value: 448
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 1057.9199
+      value: 430.56
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalScale.x
@@ -7547,7 +7549,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 378.20642
+      value: 153.9252
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -7563,19 +7565,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 394.516
+      value: 160.563
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 394.516
+      value: 160.563
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 342.742
+      value: 143.7185
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 164.6388
+      value: 67.005905
       objectReference: {fileID: 0}
     - target: {fileID: 22508766, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_Alpha
@@ -7876,6 +7878,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hpText: {fileID: 2061440633}
   manaText: {fileID: 6944873353401528514}
+  playerStats: {fileID: 7325997695250661373}
 --- !u!1 &1187889118
 GameObject:
   m_ObjectHideFlags: 0
@@ -8193,7 +8196,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1003106417}
   m_HandleRect: {fileID: 1003106416}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -11778,7 +11781,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36.75
+  m_fontSize: 34.5
   m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -14840,7 +14843,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1841728212}
   m_Direction: 2
   m_Value: -0.0000015905854
-  m_Size: 0.83760047
+  m_Size: 0.8348752
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

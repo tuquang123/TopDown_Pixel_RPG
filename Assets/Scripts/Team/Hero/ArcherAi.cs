@@ -14,8 +14,8 @@ public class ArcherAI : AllyBaseAI
         if (target == null) return;
 
         GameObject arrowObj = ObjectPooler.Instance.Get(
-            RefVFX.Instance.arrowPrefab.name,
-            RefVFX.Instance.arrowPrefab,
+            CommonReferent.Instance.arrowPrefab.name,
+            CommonReferent.Instance.arrowPrefab,
             shootPoint.position,
             Quaternion.identity
         );

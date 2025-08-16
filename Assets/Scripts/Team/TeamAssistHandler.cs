@@ -75,7 +75,7 @@ public class TeamAssistHandler : MonoBehaviour, IGameEventListener<string>
         {
             if (allyStats.HealthUI == null)
             {
-                GameObject ui = Instantiate(RefVFX.Instance.hpSliderUi, RefVFX.Instance.canvasHp.transform, false);
+                GameObject ui = Instantiate(CommonReferent.Instance.hpSliderUi, CommonReferent.Instance.canvasHp.transform, false);
                 var uiComp = ui.GetComponent<EnemyHealthUI>();
                 uiComp.SetTarget(slot.slotObject);
                 allyStats.HealthUI = uiComp;
@@ -107,7 +107,7 @@ public class TeamAssistHandler : MonoBehaviour, IGameEventListener<string>
 
     private Vector3 GetAllySpawnPosition()
     {
-        Vector3 playerPos = RefVFX.Instance.playerPrefab.transform.position;
+        Vector3 playerPos = CommonReferent.Instance.playerPrefab.transform.position;
         return playerPos + new Vector3(Random.Range(-1.5f, 1.5f), 0f, 0f);
     }
 }

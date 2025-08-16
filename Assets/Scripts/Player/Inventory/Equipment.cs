@@ -9,6 +9,67 @@ public class Equipment : MonoBehaviour
     [SerializeField] private PlayerEquipment playerEquipment;
     [SerializeField] private PlayerEquipment playerEquipmentHourse;
 
+    
+    public List<EquipmentData> ToData()
+    {
+        var data = new List<EquipmentData>();
+
+        foreach (var kvp in equippedItems)
+        {
+            EquipmentData eData = new EquipmentData();
+            eData.slotType = kvp.Key;
+
+            if (kvp.Value != null)
+                eData.equippedItem = kvp.Value.ToData();
+
+            data.Add(eData);
+        }
+
+        return data;
+    }
+    
+    public void FromData(List<EquipmentData> data, ItemDatabase db, PlayerStats stats)
+    {
+        equippedItems.Clear();
+
+        foreach (var eData in data)
+        {
+            ItemInstance instance = null;
+
+            if (eData.equippedItem != null)
+            {
+                ItemData refData = db.GetItemByID(eData.equippedItem.itemID);
+                if (refData != null)
+                {
+                    instance = new ItemInstance(refData, eData.equippedItem.upgradeLevel);
+                }
+            }
+
+            equippedItems[eData.slotType] = instance;
+            
+            if (instance != null)
+            {
+                playerEquipment?.UpdateEquipment(instance.itemData);
+                playerEquipmentHourse?.UpdateEquipment(instance.itemData);
+                ApplyItemStats(instance, stats);
+            }
+        }
+    }
+
+    public void ReapplyEquipmentStats(PlayerStats stats)
+    {
+        foreach (var kvp in equippedItems)
+        {
+            var item = kvp.Value;
+            if (item != null)
+            {
+                ApplyItemStats(item, stats); 
+            }
+        }
+    }
+
+
+
     public void EquipItem(ItemInstance instance, PlayerStats stats)
     {
         if (equippedItems.ContainsKey(instance.itemData.itemType))

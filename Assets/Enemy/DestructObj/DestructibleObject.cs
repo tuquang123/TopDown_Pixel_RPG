@@ -89,23 +89,23 @@ public class DestructibleObject : MonoBehaviour
 
     private void SpawnHitVFX()
     {
-        if (RefVFX.Instance != null)
+        if (CommonReferent.Instance != null)
         {
-            ObjectPooler.Instance.Get("HitVFX", RefVFX.Instance.hitVFXPrefab, transform.position, Quaternion.identity);
+            ObjectPooler.Instance.Get("HitVFX", CommonReferent.Instance.hitVFXPrefab, transform.position, Quaternion.identity);
         }
     }
 
     private void HandleDestruction()
     {
         // Spawn break VFX
-        if (RefVFX.Instance.destructionVFXPrefab != null)
+        if (CommonReferent.Instance.destructionVFXPrefab != null)
         {
-            ObjectPooler.Instance.Get("BreakVFX", RefVFX.Instance.destructionVFXPrefab, transform.position, Quaternion.identity);
+            ObjectPooler.Instance.Get("BreakVFX", CommonReferent.Instance.destructionVFXPrefab, transform.position, Quaternion.identity);
         }
 
         // Spawn gold
         int totalGoldToDrop = Random.Range(minGold, maxGold + 1); // ví dụ từ 3 đến 8
-        GoldDropHelper.SpawnGoldBurst(transform.position, totalGoldToDrop, RefVFX.Instance.goldPrefab);
+        GoldDropHelper.SpawnGoldBurst(transform.position, totalGoldToDrop, CommonReferent.Instance.goldPrefab);
 
         gameObject.SetActive(false);
     }
