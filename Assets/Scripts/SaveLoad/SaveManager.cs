@@ -46,8 +46,23 @@ public static class SaveManager
         skill.FromData(data.skill);
         
         equipment.ReapplyEquipmentStats(playerStats);
+        
+        skill.ReapplyPassiveSkills(playerStats);
 
         Debug.Log("[SaveManager] Save file loaded.");
+    }
+    
+    public static void Clear()
+    {
+        if (File.Exists(SavePath))
+        {
+            File.Delete(SavePath);
+            Debug.Log("[SaveManager] Save file deleted.");
+        }
+        else
+        {
+            Debug.Log("[SaveManager] No save file to delete.");
+        }
     }
 
 

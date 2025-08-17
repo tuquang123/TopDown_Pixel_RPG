@@ -57,10 +57,10 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     private void Awake()
     {
         base.Awake(); 
-        if (baseStatsSO != null)
+        /*if (baseStatsSO != null)
         {
             ResetFromSO(baseStatsSO);
-        }
+        }*/
     }
     private void Start()
     {

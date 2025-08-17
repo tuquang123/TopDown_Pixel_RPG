@@ -7,11 +7,11 @@ public class SkillState
     public SkillData skillData;
     public int level;
 
-    public SkillState(SkillID skillID, SkillData skillData)
+    public SkillState(SkillID skillID, SkillData skillData, int level = 1)
     {
         this.skillID = skillID;
         this.skillData = skillData;
-        this.level = 1; 
+        this.level = level; 
     }
 
     public float GetCooldown()

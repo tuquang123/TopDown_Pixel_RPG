@@ -1779,6 +1779,7 @@ MonoBehaviour:
   inventory: {fileID: 466212491355338655}
   playerStats: {fileID: 7325997695250661373}
   equipment: {fileID: 5684044760479616692}
+  skill: {fileID: 564411220360788419}
   levelDatabase: {fileID: 11400000, guid: 772ee1512c9cae04c94b3f8f8b705d05, type: 2}
   arrowPrefab: {fileID: 3659391273684521209, guid: 74e8d529a7dc5bb4585e2f1db5be58a6,
     type: 3}
@@ -4902,7 +4903,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &753606848
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6825,7 +6826,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1005350864
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16981,6 +16982,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 44b5a5f347a9adf439ba2baa4c674d46, type: 2}
   - {fileID: 11400000, guid: 6d966789c8247d045aaafe8ca9109750, type: 2}
   - {fileID: 11400000, guid: 28dc6e10e8ec3f34b8243b947a707264, type: 2}
+  _playerStats: {fileID: 7325997695250661373}
   autoCastEnabled: 1
 --- !u!4 &697213937475928094
 Transform:
@@ -29703,7 +29705,7 @@ MonoBehaviour:
     growthFactor: 1.5
     skillPoints: 0
   playerStats: {fileID: 7325997695250661373}
-  skillPoints: 5
+  skillPoints: 2
 --- !u!114 &5684044760479616692
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,21 +9,39 @@ public class SkillSlotUIController : MonoBehaviour
     {
         skillSystem.OnSkillAssigned += UpdateSkillSlot;
         skillSystem.OnSkillUsed += HandleSkillUsed;
+        skillSystem.OnSkillLevelChanged += UpdateSkillLevel;
 
         for (int i = 0; i < skillSlots.Length; i++)
         {
             int index = i;
             skillSlots[i].button.onClick.AddListener(() => OnSkillClicked(index));
             UpdateSkillSlot(index, skillSystem.GetAssignedSkill(index));
+            
+            var skillID = skillSystem.GetAssignedSkill(index);
+            int level = skillSystem.GetSkillLevel(skillID);
+            UpdateSkillLevel(skillID, level);
         }
+        
     }
 
     private void OnDisable()
     {
         skillSystem.OnSkillAssigned -= UpdateSkillSlot;
         skillSystem.OnSkillUsed -= HandleSkillUsed;
+        skillSystem.OnSkillLevelChanged -= UpdateSkillLevel;
     }
-
+    
+    private void UpdateSkillLevel(SkillID skillID, int level)
+    {
+        for (int i = 0; i < skillSlots.Length; i++)
+        {
+            if (skillSystem.GetAssignedSkill(i) == skillID)
+            {
+                //skillSlots[i].SetLevel(level);
+            }
+        }
+    }
+    
     private void UpdateSkillSlot(int index, SkillID skillID)
     {
         var skillData = skillSystem.GetSkillData(skillID);

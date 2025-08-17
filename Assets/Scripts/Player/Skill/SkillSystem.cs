@@ -51,7 +51,7 @@ public class SkillFactory
 public class SkillSaveData
 {
     public List<SkillStateData> unlockedSkills = new();
-    public Dictionary<int, SkillID> assignedSkills = new();
+    public List<AssignedSkillData> assignedSkills = new();
 }
 
 [System.Serializable]
@@ -61,13 +61,22 @@ public class SkillStateData
     public int level;
 }
 
+[System.Serializable]
+public class AssignedSkillData
+{
+    public int slotIndex;
+    public SkillID skillID;
+}
+
 public class SkillSystem : MonoBehaviour
 {
     public List<SkillData> skillList = new();
-    private PlayerStats _playerStats;
+    public PlayerStats _playerStats;
     private Dictionary<SkillID, float> skillCooldownTimes = new();
     private Dictionary<int, SkillID> assignedSkills = new();
     public event Action<int, SkillID> OnSkillAssigned;
+    public event Action<SkillID, int> OnSkillLevelChanged;
+
     public bool autoCastEnabled = true;
     public PlayerStats PlayerStats => _playerStats ; 
     
@@ -75,7 +84,7 @@ public class SkillSystem : MonoBehaviour
 
     private void Start()
     {
-        _playerStats = GetComponent<PlayerStats>();
+        //_playerStats = GetComponent<PlayerStats>();
         StartCoroutine(AutoCastRoutine());
     }
     
@@ -121,7 +130,7 @@ public class SkillSystem : MonoBehaviour
     {
         SkillSaveData data = new SkillSaveData();
 
-        // Lưu kỹ năng đã mở
+        // Save unlocked skills
         foreach (var kvp in unlockedSkills)
         {
             data.unlockedSkills.Add(new SkillStateData
@@ -131,36 +140,67 @@ public class SkillSystem : MonoBehaviour
             });
         }
 
-        // Lưu slot
+        // Save assigned skills
         foreach (var kvp in assignedSkills)
         {
-            data.assignedSkills[kvp.Key] = kvp.Value;
+            data.assignedSkills.Add(new AssignedSkillData
+            {
+                slotIndex = kvp.Key,
+                skillID = kvp.Value
+            });
         }
 
         return data;
     }
-
+    
     public void FromData(SkillSaveData data)
     {
         unlockedSkills.Clear();
         assignedSkills.Clear();
-
-        // Load kỹ năng đã mở
+        
         foreach (var state in data.unlockedSkills)
         {
             SkillData skillData = GetSkillData(state.skillID);
             if (skillData != null)
             {
-                unlockedSkills[state.skillID] = new SkillState(state.skillID, skillData);
+                unlockedSkills[state.skillID] = new SkillState(state.skillID, skillData, state.level);
                 _playerStats.SetSkillLevel(state.skillID, state.level);
             }
         }
 
-        // Load slot
-        foreach (var kvp in data.assignedSkills)
+        // Load assigned skills
+        foreach (var assigned in data.assignedSkills)
         {
-            assignedSkills[kvp.Key] = kvp.Value;
-            OnSkillAssigned?.Invoke(kvp.Key, kvp.Value);
+            assignedSkills[assigned.slotIndex] = assigned.skillID;
+            OnSkillAssigned?.Invoke(assigned.slotIndex, assigned.skillID); 
+        }
+        
+        foreach (var kvp in unlockedSkills)
+        {
+            int level = kvp.Value.level;
+            OnSkillLevelChanged?.Invoke(kvp.Key, level);
+            
+            Debug.Log("level skill " + level);
+        }
+    }
+    
+    public void ReapplyPassiveSkills(PlayerStats playerStats)
+    {
+        foreach (var kvp in unlockedSkills)
+        {
+            SkillID skillID = kvp.Key;
+            SkillState state = kvp.Value;
+
+            SkillData data = GetSkillData(skillID);
+            if (data == null) continue;
+            
+            if (data.skillType == SkillType.Passive)
+            {
+                ISkill skillInstance = SkillFactory.CreateSkill(skillID);
+                skillInstance.ExecuteSkill(playerStats, data);
+
+                Debug.Log($"[SkillSystem] Re-applied passive skill {skillID} (Level {state.level})");
+            }
         }
     }
 
@@ -168,7 +208,7 @@ public class SkillSystem : MonoBehaviour
     {
         SkillData data = GetSkillData(skillID);
         if (data == null) return false;
-
+        
         if (!unlockedSkills.ContainsKey(skillID))
         {
             unlockedSkills[skillID] = new SkillState(skillID, data);
@@ -181,6 +221,7 @@ public class SkillSystem : MonoBehaviour
         {
             state.level++;
             _playerStats.SetSkillLevel(skillID, state.level); 
+            OnSkillLevelChanged?.Invoke(skillID, state.level);
             return true;
         }
 
@@ -233,6 +274,10 @@ public class SkillSystem : MonoBehaviour
         if (_playerStats.skillPoints > 0)
         {
             _playerStats.skillPoints--;
+            
+            SaveManager.Save(CommonReferent.Instance.playerStats, CommonReferent.Instance.inventory, 
+                CommonReferent.Instance.equipment , CommonReferent.Instance.skill);
+            
             Debug.Log($"Điểm kỹ năng còn lại: {_playerStats.skillPoints}");
         }
         else

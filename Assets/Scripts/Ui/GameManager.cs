@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Sirenix.OdinInspector;
+using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,6 +22,12 @@ public class GameManager : MonoBehaviour
     {
         SaveManager.Load(CommonReferent.Instance.playerStats, CommonReferent.Instance.inventory,
             CommonReferent.Instance.equipment, CommonReferent.Instance.itemDatabase , CommonReferent.Instance.skill);
+    }
+    
+    [Button("Clear Save Data")]
+    private void ClearSave()
+    {
+        SaveManager.Clear();
     }
 
     public bool allAllItem;
