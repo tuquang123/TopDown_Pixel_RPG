@@ -21,6 +21,81 @@ public class QuestManager : Singleton<QuestManager>
         }
     }
     
+    public QuestSaveData ToData()
+    {
+        QuestSaveData data = new QuestSaveData();
+
+        foreach (var quest in activeQuests)
+        {
+            ActiveQuestData aq = new ActiveQuestData
+            {
+                questID = quest.questID,
+                objectives = new List<ObjectiveProgressData>()
+            };
+
+            foreach (var obj in quest.objectives)
+            {
+                int progress = GetObjectiveProgress(quest.questID, obj.objectiveName);
+                aq.objectives.Add(new ObjectiveProgressData
+                {
+                    objectiveName = obj.objectiveName,
+                    currentAmount = progress
+                });
+            }
+
+            data.activeQuests.Add(aq);
+        }
+
+        foreach (var quest in completedQuests)
+        {
+            data.completedQuestIDs.Add(quest.questID);
+        }
+
+        return data;
+    }
+
+    public void FromData(QuestSaveData data, QuestDatabase questDatabase)
+    {
+        activeQuests.Clear();
+        completedQuests.Clear();
+        progressTracker.Clear();
+
+        if (data == null) return;
+
+        // Active quests
+        foreach (var aq in data.activeQuests)
+        {
+            Quest quest = questDatabase.GetQuestByID(aq.questID);
+            if (quest == null) continue;
+
+            activeQuests.Add(quest);
+
+            // Khởi tạo progress
+            if (!progressTracker.ContainsKey(quest.questID))
+                progressTracker[quest.questID] = new Dictionary<string, int>();
+
+            foreach (var obj in aq.objectives)
+            {
+                progressTracker[quest.questID][obj.objectiveName] = obj.currentAmount;
+            }
+        }
+
+        // Completed quests
+        foreach (var id in data.completedQuestIDs)
+        {
+            Quest quest = questDatabase.GetQuestByID(id);
+            if (quest != null)
+                completedQuests.Add(quest);
+        }
+
+        // Cập nhật UI
+        foreach (var quest in activeQuests)
+        {
+            questUI?.UpdateQuestProgress(quest);
+        }
+    }
+
+    
     public void StartQuest(Quest quest)
     {
         if (!activeQuests.Contains(quest))

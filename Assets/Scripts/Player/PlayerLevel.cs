@@ -1,4 +1,12 @@
 using UnityEngine;
+[System.Serializable]
+public class LevelData
+{
+    public int level;
+    public float exp;
+    public int skillPoints;
+}
+
 
 public class PlayerLevel : MonoBehaviour
 {

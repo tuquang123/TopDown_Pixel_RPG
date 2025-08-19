@@ -275,9 +275,6 @@ public class SkillSystem : MonoBehaviour
         {
             _playerStats.skillPoints--;
             
-            SaveManager.Save(CommonReferent.Instance.playerStats, CommonReferent.Instance.inventory, 
-                CommonReferent.Instance.equipment , CommonReferent.Instance.skill);
-            
             Debug.Log($"Điểm kỹ năng còn lại: {_playerStats.skillPoints}");
         }
         else

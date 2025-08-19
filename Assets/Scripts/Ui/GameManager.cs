@@ -1,43 +1,59 @@
 ﻿using Sirenix.OdinInspector;
 using UnityEngine;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
-    private void Awake()
+    public bool allAllItem;
+
+    private IEnumerator Start()
     {
+        // Chờ 1 frame để tất cả Singleton (QuestManager, CommonReferent...) Awake xong
+        yield return null;  
         LoadGame();
+
+        if (allAllItem) AddAllItemsToInventory();
+
+        // Cheat test
+        TriggerKillGoblinQuest();
+    }
+
+    private void OnApplicationPause(bool pause)
+    {
+        if (pause) SaveGame(); // Auto save khi minimize hoặc thoát app
     }
 
     private void OnApplicationQuit()
     {
-        SaveGame();
+        SaveGame(); // Editor / PC build vẫn gọi
     }
 
     public void SaveGame()
     {
-        SaveManager.Save(CommonReferent.Instance.playerStats, CommonReferent.Instance.inventory, 
-            CommonReferent.Instance.equipment , CommonReferent.Instance.skill);
+        SaveManager.Save(CommonReferent.Instance.playerStats, 
+            CommonReferent.Instance.inventory,
+            CommonReferent.Instance.equipment, 
+            CommonReferent.Instance.skill, 
+            CommonReferent.Instance.playerLevel);
     }
+
     public void LoadGame()
     {
-        SaveManager.Load(CommonReferent.Instance.playerStats, CommonReferent.Instance.inventory,
-            CommonReferent.Instance.equipment, CommonReferent.Instance.itemDatabase , CommonReferent.Instance.skill);
+        SaveManager.Load(CommonReferent.Instance.playerStats,
+            CommonReferent.Instance.inventory,
+            CommonReferent.Instance.equipment,
+            CommonReferent.Instance.itemDatabase,
+            CommonReferent.Instance.skill,
+            CommonReferent.Instance.playerLevel);
     }
-    
+
     [Button("Clear Save Data")]
     private void ClearSave()
     {
         SaveManager.Clear();
     }
 
-    public bool allAllItem;
-    private void Start()
-    {
-        if(allAllItem) AddAllItemsToInventory();
-        TriggerKillGoblinQuest();
-    }
-    
-    //Cheat
+    // Cheat
     public void TriggerKillGoblinQuest()
     {
         var quest = QuestManager.Instance.questDatabase.GetQuestByID("NV1");
@@ -47,14 +63,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //Cheat
+    // Cheat
     private void AddAllItemsToInventory()
     {
         foreach (var item in CommonReferent.Instance.itemDatabase.allItems)
         {
             if (item != null)
             {
-                // Tạo ItemInstance từ ItemData
                 ItemInstance itemInstance = new ItemInstance(item);
                 CommonReferent.Instance.inventory.AddItem(itemInstance);
             }
