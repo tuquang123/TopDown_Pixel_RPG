@@ -1,41 +1,53 @@
+// ================= PlayerLevel.cs =================
 using UnityEngine;
-[System.Serializable]
-public class LevelData
-{
-    public int level;
-    public float exp;
-    public int skillPoints;
-}
-
 
 public class PlayerLevel : MonoBehaviour
 {
     public LevelSystem levelSystem = new LevelSystem();
-    public PlayerStats playerStats; // Tham chiếu đến hệ thống chỉ số
-    public int skillPoints = 0; // Điểm kỹ năng nhận được khi lên cấp
+    public PlayerStats playerStats; // tham chiếu stats
+    public int skillPoints = 0;     // điểm kỹ năng sync với levelSystem
+
+    private void Awake()
+    {
+        if (levelSystem == null)
+            levelSystem = new LevelSystem();
+    }
 
     private void Start()
     {
         playerStats = GetComponent<PlayerStats>();
+
+        // đăng ký sự kiện
         levelSystem.OnLevelUp += HandleLevelUp;
-        EnemyAI.OnEnemyDefeated += GainExp; // Đăng ký sự kiện khi kẻ địch bị tiêu diệt
+        EnemyAI.OnEnemyDefeated += GainExp;
     }
 
     private void OnDestroy()
     {
         levelSystem.OnLevelUp -= HandleLevelUp;
-        EnemyAI.OnEnemyDefeated -= GainExp; // Hủy đăng ký sự kiện để tránh lỗi
+        EnemyAI.OnEnemyDefeated -= GainExp;
     }
+
     private void HandleLevelUp(int newLevel)
     {
-        skillPoints++; // Cộng điểm kỹ năng khi lên cấp
-        playerStats.skillPoints ++; 
-        Debug.Log($"Lên cấp {newLevel}! Bạn nhận được 1 điểm kỹ năng. Tổng điểm: {skillPoints}");
+        skillPoints = levelSystem.skillPoints;
+        playerStats.skillPoints = skillPoints;
+        Debug.Log($"[PlayerLevel] Lên cấp {newLevel}! Tổng điểm kỹ năng: {skillPoints}");
     }
 
     private void GainExp(float amount)
     {
         levelSystem.AddExp(amount);
-        Debug.Log($"Nhận {amount} EXP! Tổng EXP: {levelSystem.exp}/{levelSystem.ExpRequired}");
+        skillPoints = levelSystem.skillPoints;
+        playerStats.skillPoints = skillPoints;
+        Debug.Log($"[PlayerLevel] Nhận {amount} EXP! Tổng EXP: {levelSystem.exp}/{levelSystem.ExpRequired}");
+    }
+
+    // Hàm hỗ trợ load
+    public void LoadLevel(int lvl, float exp, int sp)
+    {
+        levelSystem.SetLevel(lvl, exp, sp);
+        skillPoints = sp;
+        playerStats.skillPoints = sp;
     }
 }

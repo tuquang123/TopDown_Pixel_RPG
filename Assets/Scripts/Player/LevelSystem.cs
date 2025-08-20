@@ -1,3 +1,4 @@
+// ================= LevelSystem.cs =================
 using UnityEngine;
 using System;
 
@@ -19,10 +20,19 @@ public class LevelSystem
     {
         exp += amount;
         OnExpChanged?.Invoke(exp, ExpRequired);
+
         while (exp >= ExpRequired)
         {
             LevelUp();
         }
+    }
+
+    public void SetLevel(int newLevel, float newExp, int newSkillPoints)
+    {
+        level = newLevel;
+        exp = newExp;
+        skillPoints = newSkillPoints;
+        OnExpChanged?.Invoke(exp, ExpRequired);
     }
 
     private void LevelUp()
@@ -31,5 +41,6 @@ public class LevelSystem
         level++;
         skillPoints++;
         OnLevelUp?.Invoke(level);
+        OnExpChanged?.Invoke(exp, ExpRequired);
     }
 }

@@ -12,6 +12,13 @@ public class SaveData
     public LevelData levelData; 
     public QuestSaveData questData;
 }
+[System.Serializable] 
+public class LevelData
+{
+    public int level;
+    public float exp;
+    public int skillPoints;
+}
 
 [System.Serializable]
 public class QuestSaveData
@@ -77,21 +84,21 @@ public static class SaveManager
         equipment.FromData(data.equipment, db, playerStats);
         skill.FromData(data.skill);
         
-        
-        
         equipment.ReapplyEquipmentStats(playerStats);
         skill.ReapplyPassiveSkills(playerStats);
 
         if (data.levelData != null)
         {
-            playerLevel.levelSystem.level = data.levelData.level;
-            playerLevel.levelSystem.exp = data.levelData.exp;
-            playerLevel.skillPoints = data.levelData.skillPoints;
-            playerStats.skillPoints = data.levelData.skillPoints; // sync với stats
+            playerLevel.LoadLevel(
+                data.levelData.level,
+                data.levelData.exp,
+                data.levelData.skillPoints
+            );
+
+            Debug.Log($"[SaveManager] Loaded Level {data.levelData.level}, EXP {data.levelData.exp}, SP {data.levelData.skillPoints}");
         }
         
         QuestManager.Instance.FromData(data.questData, QuestManager.Instance.questDatabase);
-
 
         Debug.Log("[SaveManager] Save file loaded.");
     }
@@ -107,5 +114,11 @@ public static class SaveManager
             Debug.Log("[SaveManager] No save file to delete.");
         }
     }
+
+    public static bool HasSave()
+    {
+        return File.Exists(SavePath);
+    }
+
 }
 

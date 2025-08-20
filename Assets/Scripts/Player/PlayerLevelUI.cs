@@ -29,7 +29,14 @@ public class PlayerLevelUI : MonoBehaviour
             system.OnExpChanged -= UpdateExpText;
         }
     }
-
+    public void RefreshUI()
+    {
+        if (playerLevel == null) return;
+        var system = playerLevel.levelSystem;
+        UpdateLevelText(system.level);
+        UpdateExpText(system.exp, system.ExpRequired);
+    }
+    
     private void UpdateLevelText(int level)
     {
         levelText.text = $"Lv {level}";

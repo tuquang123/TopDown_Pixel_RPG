@@ -17,6 +17,7 @@ public class CommonReferent : Singleton<CommonReferent>
     public Equipment equipment;
     public SkillSystem skill;
     public PlayerLevel playerLevel;
+    public PlayerLevelUI playerLevelUI;
     
     public EnemyLevelDatabase levelDatabase;
     public GameObject arrowPrefab;

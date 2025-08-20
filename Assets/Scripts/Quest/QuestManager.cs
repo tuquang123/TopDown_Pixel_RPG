@@ -13,13 +13,18 @@ public class QuestManager : Singleton<QuestManager>
 
     void Start()
     {
-        // Bắt đầu 1 nhiệm vụ ví dụ khi game start
-        var quest = questDatabase.GetQuestByID("nv1");
-        if (quest != null)
+        // Nếu đã có save thì Quest sẽ được load từ SaveManager.Load()
+        if (!SaveManager.HasSave())
         {
-            StartQuest(quest);
+            // New game: bắt đầu nhiệm vụ đầu tiên
+            var quest = questDatabase.GetQuestByID("nv1");
+            if (quest != null)
+            {
+                StartQuest(quest);
+            }
         }
     }
+
     
     public QuestSaveData ToData()
     {
@@ -94,17 +99,29 @@ public class QuestManager : Singleton<QuestManager>
             questUI?.UpdateQuestProgress(quest);
         }
     }
-
-    
     public void StartQuest(Quest quest)
     {
-        if (!activeQuests.Contains(quest))
+        if (quest == null) return;
+
+        // Nếu đã hoàn thành thì không cho start lại
+        if (completedQuests.Contains(quest))
         {
-            activeQuests.Add(quest);
-            Debug.Log($"Started Quest: {quest.questName}");
-            questUI?.UpdateQuestProgress(quest);
-            InitializeProgress(quest);
+            Debug.Log($"Quest {quest.questName} đã hoàn thành, không thể bắt đầu lại.");
+            return;
         }
+
+        // Nếu đang active rồi thì cũng không thêm lại
+        if (activeQuests.Contains(quest))
+        {
+            Debug.Log($"Quest {quest.questName} đã trong danh sách active.");
+            return;
+        }
+
+        activeQuests.Add(quest);
+        InitializeProgress(quest);
+        questUI?.UpdateQuestProgress(quest);
+
+        Debug.Log($"Started Quest: {quest.questName}");
     }
 
     // Khởi tạo tiến độ cho mỗi mục tiêu trong nhiệm vụ

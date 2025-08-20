@@ -14,11 +14,9 @@ public class QuestUI : MonoBehaviour
         }
 
         string progress = $"<b>Quest :</b> {quest.questName}\n";
-
-        // Sử dụng progressTracker để lấy tiến độ
+        
         foreach (var obj in quest.objectives)
         {
-            // Kiểm tra xem tiến độ của mục tiêu này đã được lưu trong progressTracker chưa
             int currentAmount = QuestManager.Instance.GetObjectiveProgress(quest.questID, obj.objectiveName);
             progress += $"- {obj.objectiveName}: {currentAmount}/{obj.requiredAmount}\n";
         }

@@ -45,6 +45,9 @@ public class GameManager : MonoBehaviour
             CommonReferent.Instance.itemDatabase,
             CommonReferent.Instance.skill,
             CommonReferent.Instance.playerLevel);
+        
+        CommonReferent.Instance.playerLevelUI.RefreshUI(); 
+
     }
 
     [Button("Clear Save Data")]
