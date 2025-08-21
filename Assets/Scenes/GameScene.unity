@@ -7609,11 +7609,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 448
+      value: 1080
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 430.56
+      value: 1057.9199
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalScale.x
@@ -7661,7 +7661,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 153.9252
+      value: 378.20642
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -7677,19 +7677,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 160.563
+      value: 394.516
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 160.563
+      value: 394.516
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 143.7185
+      value: 342.742
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 67.005905
+      value: 164.6388
       objectReference: {fileID: 0}
     - target: {fileID: 22508766, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_Alpha
@@ -8308,7 +8308,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1003106417}
   m_HandleRect: {fileID: 1003106416}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -11893,7 +11893,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 34.5
+  m_fontSize: 36.75
   m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -14955,7 +14955,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1841728212}
   m_Direction: 2
   m_Value: -0.0000015905854
-  m_Size: 0.8348752
+  m_Size: 0.83760047
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -29816,7 +29816,7 @@ MonoBehaviour:
     growthFactor: 1.5
     skillPoints: 0
   playerStats: {fileID: 7325997695250661373}
-  skillPoints: 2
+  skillPoints: 0
 --- !u!114 &5684044760479616692
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32408,15 +32408,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level: 1
-  skillPoints: 2
+  skillPoints: 0
   maxHealth:
-    baseValue: 500
+    baseValue: 100
   maxMana:
-    baseValue: 500
+    baseValue: 100
   attack:
     baseValue: 10
   defense:
-    baseValue: 12
+    baseValue: 0
   speed:
     baseValue: 2.5
   critChance:
