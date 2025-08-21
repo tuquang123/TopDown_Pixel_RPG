@@ -51,22 +51,25 @@ public class Equipment : MonoBehaviour
             {
                 playerEquipment?.UpdateEquipment(instance.itemData);
                 playerEquipmentHourse?.UpdateEquipment(instance.itemData);
-                ApplyItemStats(instance, stats);
+                //ApplyItemStats(instance, stats);
             }
         }
     }
 
-    public void ReapplyEquipmentStats(PlayerStats stats)
+   public void ReapplyEquipmentStats(PlayerStats stats)
+{
+    // Reset stat về base trước khi apply
+    stats.ResetToBaseStats();
+
+    foreach (var kvp in equippedItems)
     {
-        foreach (var kvp in equippedItems)
+        var item = kvp.Value;
+        if (item != null)
         {
-            var item = kvp.Value;
-            if (item != null)
-            {
-                ApplyItemStats(item, stats); 
-            }
+            ApplyItemStats(item, stats); 
         }
     }
+}
 
 
 
