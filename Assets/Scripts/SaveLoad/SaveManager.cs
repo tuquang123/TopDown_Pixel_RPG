@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -12,6 +11,7 @@ public class SaveData
     public LevelData levelData; 
     public QuestSaveData questData;
 }
+
 [System.Serializable] 
 public class LevelData
 {
@@ -44,9 +44,9 @@ public class ObjectiveProgressData
 
 public static class SaveManager
 {
-    private static string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
+    private const string SaveKey = "GameSave";
 
-    public static void Save(PlayerStats playerStats, Inventory inventory, Equipment equipment ,
+    public static void Save(PlayerStats playerStats, Inventory inventory, Equipment equipment,
         SkillSystem skill, PlayerLevel playerLevel)
     {
         SaveData data = new SaveData
@@ -64,22 +64,24 @@ public static class SaveManager
         };
 
         string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(SavePath, json);
-        Debug.Log($"[SaveManager] Saved to {SavePath}");
+        PlayerPrefs.SetString(SaveKey, json);
+        PlayerPrefs.Save();
+
+        Debug.Log("[SaveManager] Saved to PlayerPrefs");
     }
 
     public static void Load(PlayerStats playerStats, Inventory inventory, Equipment equipment, ItemDatabase db,
         SkillSystem skill, PlayerLevel playerLevel)
     {
-        if (!File.Exists(SavePath))
+        if (!PlayerPrefs.HasKey(SaveKey))
         {
-            Debug.LogWarning("[SaveManager] No save file found!");
+            Debug.LogWarning("[SaveManager] No save data found in PlayerPrefs!");
             return;
         }
 
-        string json = File.ReadAllText(SavePath);
+        string json = PlayerPrefs.GetString(SaveKey);
         SaveData data = JsonUtility.FromJson<SaveData>(json);
-        
+
         inventory.FromData(data.inventory, db);
         equipment.FromData(data.equipment, db, playerStats);
         skill.FromData(data.skill);
@@ -97,28 +99,27 @@ public static class SaveManager
 
             Debug.Log($"[SaveManager] Loaded Level {data.levelData.level}, EXP {data.levelData.exp}, SP {data.levelData.skillPoints}");
         }
-        
+
         QuestManager.Instance.FromData(data.questData, QuestManager.Instance.questDatabase);
 
-        Debug.Log("[SaveManager] Save file loaded.");
+        Debug.Log("[SaveManager] Save file loaded from PlayerPrefs.");
     }
+
     public static void Clear()
     {
-        if (File.Exists(SavePath))
+        if (PlayerPrefs.HasKey(SaveKey))
         {
-            File.Delete(SavePath);
-            Debug.Log("[SaveManager] Save file deleted.");
+            PlayerPrefs.DeleteKey(SaveKey);
+            Debug.Log("[SaveManager] Save data deleted from PlayerPrefs.");
         }
         else
         {
-            Debug.Log("[SaveManager] No save file to delete.");
+            Debug.Log("[SaveManager] No save data to delete.");
         }
     }
 
     public static bool HasSave()
     {
-        return File.Exists(SavePath);
+        return PlayerPrefs.HasKey(SaveKey);
     }
-
 }
-
