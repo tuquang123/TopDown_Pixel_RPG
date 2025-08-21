@@ -89,7 +89,7 @@ public class ItemTierConfig : ScriptableObject
             critFlatRange = new Vector2(0, 20) * multiplier,
             critPercentRange = Vector2.zero,
 
-            attackSpeedFlatRange = new Vector2(0, 2) * multiplier,
+            attackSpeedFlatRange = new Vector2(0, 0) * multiplier,
             attackSpeedPercentRange = Vector2.zero,
 
             lifeStealFlatRange = new Vector2(0, 10) * multiplier,
