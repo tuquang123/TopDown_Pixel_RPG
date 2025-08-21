@@ -274,6 +274,8 @@ public class SkillSystem : MonoBehaviour
         if (_playerStats.skillPoints > 0)
         {
             _playerStats.skillPoints--;
+            CommonReferent.Instance.playerLevel.skillPoints = _playerStats.skillPoints;
+            CommonReferent.Instance.playerLevel.levelSystem.skillPoints = _playerStats.skillPoints;
             
             Debug.Log($"Điểm kỹ năng còn lại: {_playerStats.skillPoints}");
         }

@@ -14,8 +14,8 @@ public class HealthBoost : ISkill
             return;
         }
         
-        var modifier = new StatModifier(StatType.MaxHealth, (int)currentLevelStat.value, StatModType.Flat);
-        playerStats.ApplyStatModifier(modifier);
+        var mod = new StatModifier(StatType.MaxHealth, (int)currentLevelStat.value);
+        playerStats.ApplyOrReplaceModifier(skillData.skillID, mod);
         
         Debug.Log($"Áp dụng kỹ năng bị động {skillData.skillName}: +{(int)currentLevelStat.value} hp tối đa");
     }

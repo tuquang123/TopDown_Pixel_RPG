@@ -19,7 +19,7 @@ public class LevelSystem
     public void AddExp(float amount)
     {
         exp += amount;
-        OnExpChanged?.Invoke(exp, ExpRequired);
+        //OnExpChanged?.Invoke(exp, ExpRequired);
 
         while (exp >= ExpRequired)
         {
@@ -32,8 +32,13 @@ public class LevelSystem
         level = newLevel;
         exp = newExp;
         skillPoints = newSkillPoints;
-        OnExpChanged?.Invoke(exp, ExpRequired);
+        
+        if (exp >= ExpRequired)
+            exp = ExpRequired - 1;
+
+        //OnExpChanged?.Invoke(exp, ExpRequired);
     }
+
 
     private void LevelUp()
     {
@@ -41,6 +46,17 @@ public class LevelSystem
         level++;
         skillPoints++;
         OnLevelUp?.Invoke(level);
+        //OnExpChanged?.Invoke(exp, ExpRequired);
+    }
+    
+    public void SetLevelDirectly(int newLevel, float newExp, int newSkillPoints)
+    {
+        level = newLevel;
+        exp = newExp;
+        skillPoints = newSkillPoints;
+
+        // Không gọi OnLevelUp hay LevelUp
         OnExpChanged?.Invoke(exp, ExpRequired);
     }
+
 }

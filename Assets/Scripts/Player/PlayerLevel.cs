@@ -16,11 +16,14 @@ public class PlayerLevel : MonoBehaviour
     private void Start()
     {
         playerStats = GetComponent<PlayerStats>();
-
-        // đăng ký sự kiện
+        
+        levelSystem.OnLevelUp -= HandleLevelUp;
+        EnemyAI.OnEnemyDefeated -= GainExp;
+        
         levelSystem.OnLevelUp += HandleLevelUp;
         EnemyAI.OnEnemyDefeated += GainExp;
     }
+
 
     private void OnDestroy()
     {
@@ -46,8 +49,10 @@ public class PlayerLevel : MonoBehaviour
     // Hàm hỗ trợ load
     public void LoadLevel(int lvl, float exp, int sp)
     {
-        levelSystem.SetLevel(lvl, exp, sp);
+        levelSystem.SetLevelDirectly(lvl, exp, sp);
         skillPoints = sp;
         playerStats.skillPoints = sp;
     }
+
+    
 }

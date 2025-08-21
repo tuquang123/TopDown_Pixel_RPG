@@ -1,4 +1,6 @@
-﻿using System;
+﻿// ================= PlayerStats.cs =================
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -109,6 +111,23 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
 
     private void OnEnable() => GameEvents.OnUpdateAnimation.RegisterListener(this);
     private void OnDisable() => GameEvents.OnUpdateAnimation.UnregisterListener(this);
+    
+    // Trong PlayerStats:
+    private Dictionary<SkillID, StatModifier> activeSkillModifiers = new();
+
+    public void ApplyOrReplaceModifier(SkillID skillID, StatModifier newModifier)
+    {
+        // Nếu đã có modifier cũ => remove trước
+        if (activeSkillModifiers.TryGetValue(skillID, out var oldModifier))
+        {
+            RemoveStatModifier(oldModifier);
+        }
+
+        // Add cái mới
+        ApplyStatModifier(newModifier);
+        activeSkillModifiers[skillID] = newModifier;
+    }
+
     
     public void TakeDamage(int damage , bool isCrit = false)
     {

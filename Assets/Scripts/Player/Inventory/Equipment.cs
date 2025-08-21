@@ -58,8 +58,7 @@ public class Equipment : MonoBehaviour
 
    public void ReapplyEquipmentStats(PlayerStats stats)
 {
-    // Reset stat về base trước khi apply
-    stats.ResetToBaseStats();
+    //stats.ResetToBaseStats();
 
     foreach (var kvp in equippedItems)
     {

@@ -12,8 +12,8 @@ public class DefenseBoost : ISkill
             Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skillData.skillName}");
             return; 
         }
-        //float boost = Mathf.CeilToInt(playerStats.defense.Value * currentLevelStat.value / 100);
-        playerStats.ApplyStatModifier(new StatModifier(StatType.Defense, (int)currentLevelStat.value));
+        var mod = new StatModifier(StatType.Defense, (int)currentLevelStat.value);
+        playerStats.ApplyOrReplaceModifier(skillData.skillID, mod);
     }
 
     public bool CanUse(PlayerStats playerStats, SkillData skillData)
