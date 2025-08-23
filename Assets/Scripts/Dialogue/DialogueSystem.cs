@@ -88,8 +88,23 @@ public class DialogueSystem : Singleton<DialogueSystem>
         isTyping = false;
     }
 
+    private System.Action onComplete;
+
+    public void StartDialogueByID(string id, System.Action onComplete = null)
+    {
+        var dialogue = dialogueDatabase.GetDialogueByID(id);
+        if (dialogue != null)
+        {
+            this.onComplete = onComplete;
+            StartDialogue(dialogue);
+        }
+    }
+
     private void EndDialogue()
     {
         dialoguePanel.SetActive(false);
+        onComplete?.Invoke();
+        onComplete = null;
     }
+
 }

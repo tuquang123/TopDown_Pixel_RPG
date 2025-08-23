@@ -5,7 +5,7 @@ using System.Collections;
 public class GameManager : MonoBehaviour
 {
     public bool allAllItem;
-
+    
     private IEnumerator Start()
     {
         // Chờ 1 frame để tất cả Singleton (QuestManager, CommonReferent...) Awake xong
@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
         if (allAllItem) AddAllItemsToInventory();
 
         // Cheat test
-        TriggerKillGoblinQuest();
+       // TriggerKillGoblinQuest();
     }
 
     private void OnApplicationPause(bool pause)

@@ -19,7 +19,7 @@ public class LevelSystem
     public void AddExp(float amount)
     {
         exp += amount;
-        //OnExpChanged?.Invoke(exp, ExpRequired);
+        OnExpChanged?.Invoke(exp, ExpRequired);
 
         while (exp >= ExpRequired)
         {
@@ -36,7 +36,7 @@ public class LevelSystem
         if (exp >= ExpRequired)
             exp = ExpRequired - 1;
 
-        //OnExpChanged?.Invoke(exp, ExpRequired);
+        OnExpChanged?.Invoke(exp, ExpRequired);
     }
 
 

@@ -22,4 +22,5 @@ public class CommonReferent : Singleton<CommonReferent>
     public EnemyLevelDatabase levelDatabase;
     public GameObject arrowPrefab;
     public GameObject spellProjectilePrefab;
+    public GameObject dialogBtn;
 }
