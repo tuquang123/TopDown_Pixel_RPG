@@ -335,7 +335,7 @@ public class EnemyAI : MonoBehaviour , IDamageable
         OnDeath?.Invoke();
 
         // Báo cáo quest
-        QuestManager.Instance.ReportProgress(ObjectiveType.KillEnemies, enemyName, 1);
+        QuestManager.Instance.ReportProgress("NV1", enemyName, 1);
 
         GoldDropHelper.SpawnGoldBurst(transform.position, Random.Range(3, 6), CommonReferent.Instance.goldPrefab);
         

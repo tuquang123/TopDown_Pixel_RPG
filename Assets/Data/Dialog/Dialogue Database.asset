@@ -13,5 +13,30 @@ MonoBehaviour:
   m_Name: Dialogue Database
   m_EditorClassIdentifier: 
   entries:
-  - id: npc_0
-    dialogue: {fileID: 11400000, guid: fbd71ed5820a78446847090f342b2813, type: 2}
+  - npcName: npc_0
+    questId: NV0
+    notAcceptedDialogue: {fileID: 11400000, guid: fbd71ed5820a78446847090f342b2813,
+      type: 2}
+    inProgressDialogue: {fileID: 11400000, guid: 705de5b7740765e43acf09cfdccb9c21,
+      type: 2}
+    completedDialogue: {fileID: 11400000, guid: 5a3faacc903bf3148a54c802c4717425,
+      type: 2}
+    rewardedDialogue: {fileID: 11400000, guid: 9c60ee2b7e8b6984f8cd65f58942f48a, type: 2}
+  - npcName: npc_0
+    questId: NV1
+    notAcceptedDialogue: {fileID: 11400000, guid: 283325ba1ac249b478e32fa7311b22e4,
+      type: 2}
+    inProgressDialogue: {fileID: 11400000, guid: 705de5b7740765e43acf09cfdccb9c21,
+      type: 2}
+    completedDialogue: {fileID: 11400000, guid: 5a3faacc903bf3148a54c802c4717425,
+      type: 2}
+    rewardedDialogue: {fileID: 11400000, guid: 9c60ee2b7e8b6984f8cd65f58942f48a, type: 2}
+  - npcName: npc_0
+    questId: NV2
+    notAcceptedDialogue: {fileID: 11400000, guid: d7c87c40075d9ce418b3129a54bfd1b2,
+      type: 2}
+    inProgressDialogue: {fileID: 11400000, guid: 705de5b7740765e43acf09cfdccb9c21,
+      type: 2}
+    completedDialogue: {fileID: 11400000, guid: 5a3faacc903bf3148a54c802c4717425,
+      type: 2}
+    rewardedDialogue: {fileID: 11400000, guid: 9c60ee2b7e8b6984f8cd65f58942f48a, type: 2}

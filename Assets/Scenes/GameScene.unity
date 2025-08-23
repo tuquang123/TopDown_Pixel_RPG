@@ -647,7 +647,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 71306075}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 248af5ebd0faa5d4eaee301a18872320, type: 3}
   m_Name: 
@@ -14915,10 +14915,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9be717200d2247288207cc57cbe26402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeQuests: []
-  completedQuests: []
   questDatabase: {fileID: 11400000, guid: 264f0ed58e6149f4da323d9d377dbdd5, type: 2}
   questUI: {fileID: 152888935}
+  activeQuests: []
+  completedQuests: []
+  readyToTurnInQuests: []
 --- !u!4 &2063649799
 Transform:
   m_ObjectHideFlags: 0
@@ -32612,7 +32613,7 @@ MonoBehaviour:
   maxMana:
     baseValue: 100
   attack:
-    baseValue: 10
+    baseValue: 20
   defense:
     baseValue: 0
   speed:

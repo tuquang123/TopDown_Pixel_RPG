@@ -3,6 +3,7 @@
 [CreateAssetMenu(fileName = "New Dialogue", menuName = "Dialogue/Create New Dialogue")]
 public class Dialogue : ScriptableObject {
     public DialogueLine[] lines;
+    public string id;
 }
 
 [System.Serializable]

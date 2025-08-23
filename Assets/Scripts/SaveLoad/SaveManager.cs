@@ -42,7 +42,6 @@ public class ObjectiveProgressData
     public int currentAmount;
 }
 
-
 public static class SaveManager
 {
     private const string SaveKey = "GameSave";

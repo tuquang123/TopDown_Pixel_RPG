@@ -18,23 +18,36 @@ public class DialogueSystem : Singleton<DialogueSystem>
 
     private Queue<DialogueLine> lines;
     private bool isTyping = false;
-    
+    private string currentFullSentence = "";
+    private System.Action onComplete;
+
     private void Start()
     {
-        dialoguePanel.SetActive(false); 
-        nextButton.onClick.AddListener(DisplayNextLine);
+        dialoguePanel.SetActive(false);
+        nextButton.onClick.AddListener(OnNextClicked);
         skipButton.onClick.AddListener(EndDialogue);
     }
 
-    public void StartDialogueByID(string id)
+    // ===== API chính gọi từ NPC =====
+    public void StartDialogueForQuest(string npcId, string questId, QuestState state, System.Action onComplete = null)
     {
-        var dialogue = dialogueDatabase.GetDialogueByID(id);
-        if (dialogue != null)
+        // Lấy dialogue trực tiếp từ database theo NPC + quest + state
+        Dialogue dialogue = dialogueDatabase.GetDialogue(npcId, questId, state);
+
+        if (dialogue == null)
         {
-            StartDialogue(dialogue);
+            Debug.LogWarning($"Dialogue not found for NPC:{npcId}, Quest:{questId}, State:{state}");
+            return;
         }
+
+        // Gán callback và bắt đầu dialogue
+        this.onComplete = onComplete;
+        StartDialogue(dialogue);
     }
 
+
+    
+    // ===== Nội bộ xử lý thoại =====
     private void StartDialogue(Dialogue dialogue)
     {
         dialoguePanel.SetActive(true);
@@ -56,11 +69,9 @@ public class DialogueSystem : Singleton<DialogueSystem>
         }
     }
 
-    private string currentFullSentence = "";
-
     private void DisplayNextLine()
     {
-        if (lines.Count == 0)
+        if (lines == null || lines.Count == 0)
         {
             EndDialogue();
             return;
@@ -88,23 +99,19 @@ public class DialogueSystem : Singleton<DialogueSystem>
         isTyping = false;
     }
 
-    private System.Action onComplete;
-
-    public void StartDialogueByID(string id, System.Action onComplete = null)
-    {
-        var dialogue = dialogueDatabase.GetDialogueByID(id);
-        if (dialogue != null)
-        {
-            this.onComplete = onComplete;
-            StartDialogue(dialogue);
-        }
-    }
-
     private void EndDialogue()
     {
         dialoguePanel.SetActive(false);
         onComplete?.Invoke();
         onComplete = null;
     }
+}
 
+// ===== Thêm enum trạng thái quest =====
+public enum QuestState
+{
+    NotAccepted,  // chưa nhận
+    InProgress,   // đang làm
+    Completed,    // xong nhiệm vụ
+    Rewarded      // đã nhận thưởng
 }

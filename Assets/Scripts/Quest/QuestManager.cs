@@ -1,241 +1,91 @@
-﻿using System.Collections.Generic;
+﻿// ================= QuestManager.cs =================
+using System.Collections.Generic;
 using UnityEngine;
 
 public class QuestManager : Singleton<QuestManager>
 {
-    public List<Quest> activeQuests = new List<Quest>(); // Các nhiệm vụ đang hoạt động
-    public List<Quest> completedQuests = new List<Quest>(); // Các nhiệm vụ đã hoàn thành
-    
     public QuestDatabase questDatabase;
-    public QuestUI questUI; // Drag từ Inspector
+    public QuestUI questUI;
 
-    private Dictionary<string, Dictionary<string, int>> progressTracker = new Dictionary<string, Dictionary<string, int>>(); // Theo dõi tiến độ theo QuestID và ObjectiveName
+    public List<QuestProgress> activeQuests = new List<QuestProgress>();
+    public List<QuestProgress> completedQuests = new List<QuestProgress>();
+    public List<QuestProgress> readyToTurnInQuests = new List<QuestProgress>();
 
-    void Start()
-    {
-        // Nếu đã có save thì Quest sẽ được load từ SaveManager.Load()
-        if (!SaveManager.HasSave())
-        {
-            // New game: bắt đầu nhiệm vụ đầu tiên
-            var quest = questDatabase.GetQuestByID("nv1");
-            if (quest != null)
-            {
-                StartQuest(quest);
-            }
-        }
-    }
-
-    
-    public QuestSaveData ToData()
-    {
-        QuestSaveData data = new QuestSaveData();
-
-        foreach (var quest in activeQuests)
-        {
-            ActiveQuestData aq = new ActiveQuestData
-            {
-                questID = quest.questID,
-                objectives = new List<ObjectiveProgressData>()
-            };
-
-            foreach (var obj in quest.objectives)
-            {
-                int progress = GetObjectiveProgress(quest.questID, obj.objectiveName);
-                aq.objectives.Add(new ObjectiveProgressData
-                {
-                    objectiveName = obj.objectiveName,
-                    currentAmount = progress
-                });
-            }
-
-            data.activeQuests.Add(aq);
-        }
-
-        foreach (var quest in completedQuests)
-        {
-            data.completedQuestIDs.Add(quest.questID);
-        }
-
-        return data;
-    }
-
-   public void FromData(QuestSaveData data, QuestDatabase questDatabase)
-{
-    activeQuests.Clear();
-    completedQuests.Clear();
-    progressTracker.Clear();
-
-    if (data == null) 
-    {
-        questUI?.Clear();
-        return;
-    }
-
-    // Active quests
-    foreach (var aq in data.activeQuests)
-    {
-        Quest quest = questDatabase.GetQuestByID(aq.questID);
-        if (quest == null) continue;
-
-        activeQuests.Add(quest);
-
-        if (!progressTracker.ContainsKey(quest.questID))
-            progressTracker[quest.questID] = new Dictionary<string, int>();
-
-        foreach (var obj in aq.objectives)
-        {
-            progressTracker[quest.questID][obj.objectiveName] = obj.currentAmount;
-        }
-    }
-
-    // Completed quests
-    foreach (var id in data.completedQuestIDs)
-    {
-        Quest quest = questDatabase.GetQuestByID(id);
-        if (quest != null)
-            completedQuests.Add(quest);
-    }
-
-    // ✅ Update UI
-    if (activeQuests.Count > 0)
-    {
-        foreach (var quest in activeQuests)
-        {
-            questUI?.UpdateQuestProgress(quest);
-        }
-    }
-    else
-    {
-        questUI?.Clear(); // ← clear UI nếu không có nhiệm vụ nào active
-    }
-}
-
+    // Start một quest
     public void StartQuest(Quest quest)
     {
         if (quest == null) return;
 
-        // Nếu đã hoàn thành thì không cho start lại
-        if (completedQuests.Contains(quest))
-        {
-            Debug.Log($"Quest {quest.questName} đã hoàn thành, không thể bắt đầu lại.");
+        if (completedQuests.Exists(qp => qp.quest.questID == quest.questID))
             return;
-        }
 
-        // Nếu đang active rồi thì cũng không thêm lại
-        if (activeQuests.Contains(quest))
-        {
-            Debug.Log($"Quest {quest.questName} đã trong danh sách active.");
+        if (activeQuests.Exists(qp => qp.quest.questID == quest.questID))
             return;
-        }
 
-        activeQuests.Add(quest);
-        InitializeProgress(quest);
-        questUI?.UpdateQuestProgress(quest);
+        QuestProgress qpNew = new QuestProgress(quest);
+        qpNew.state = QuestState.InProgress;
+        activeQuests.Add(qpNew);
 
+        questUI?.UpdateQuestProgress(qpNew);
         Debug.Log($"Started Quest: {quest.questName}");
     }
-
-    // Khởi tạo tiến độ cho mỗi mục tiêu trong nhiệm vụ
-    private void InitializeProgress(Quest quest)
-    {
-        if (!progressTracker.ContainsKey(quest.questID))
-        {
-            progressTracker[quest.questID] = new Dictionary<string, int>();
-        }
-
-        foreach (var objective in quest.objectives)
-        {
-            progressTracker[quest.questID][objective.objectiveName] = 0; // Mặc định tiến độ là 0
-        }
-    }
-
-    // Trong ReportProgress()
-    public void ReportProgress(ObjectiveType type, string objectiveName, int amount = 1)
-    {
-        for (int i = activeQuests.Count - 1; i >= 0; i--)
-        {
-            var quest = activeQuests[i];
-            foreach (var obj in quest.objectives)
-            {
-                if (obj.type == type && obj.objectiveName == objectiveName)
-                {
-                    progressTracker[quest.questID][objectiveName] += amount;
-
-                    bool wasCompleted = IsQuestCompleted(quest); // <- Check trước
-
-                    CheckQuestCompletion(quest); // <- Gọi hàm hoàn thành
-
-                    // Chỉ cập nhật UI nếu chưa hoàn thành (tránh bị ghi đè sau khi Clear)
-                    if (!wasCompleted)
-                        questUI?.UpdateQuestProgress(quest);
-                }
-            }
-        }
-    }
-
     
-    private bool IsQuestCompleted(Quest quest)
+    public QuestProgress CreateQuestProgress(Quest questSO)
     {
-        foreach (var obj in quest.objectives)
-        {
-            if (!progressTracker.ContainsKey(quest.questID) ||
-                !progressTracker[quest.questID].ContainsKey(obj.objectiveName) ||
-                progressTracker[quest.questID][obj.objectiveName] < obj.requiredAmount)
-            {
-                return false;
-            }
-        }
-        return true;
+        var existing = GetQuestProgressByID(questSO.questID);
+        if (existing != null) return existing;
+
+        var progress = new QuestProgress(questSO);
+        activeQuests.Add(progress); 
+        return progress;
     }
     
-    public int GetObjectiveProgress(string questID, string objectiveName)
+    // Report tiến độ
+    public void ReportProgress(string questID, string objectiveName, int amount = 1)
     {
-        if (progressTracker.ContainsKey(questID) && progressTracker[questID].ContainsKey(objectiveName))
+        var qp = activeQuests.Find(q => q.quest.questID == questID);
+        if (qp == null) return;
+
+        if (!qp.progress.ContainsKey(objectiveName))
+            qp.progress[objectiveName] = 0;
+
+        qp.progress[objectiveName] += amount;
+
+        if (qp.IsCompleted())
         {
-            return progressTracker[questID][objectiveName];
-        }
-        return 0; // Trả về 0 nếu không tìm thấy tiến độ
-    }
-
-
-    // Kiểm tra tiến độ của nhiệm vụ và đánh dấu hoàn thành nếu tất cả các mục tiêu đã hoàn thành
-    private void CheckQuestCompletion(Quest quest)
-    {
-        bool allObjectivesCompleted = true;
-
-        foreach (var obj in quest.objectives)
-        {
-            int currentAmount = progressTracker[quest.questID].ContainsKey(obj.objectiveName) 
-                ? progressTracker[quest.questID][obj.objectiveName] 
-                : 0;
-
-            if (currentAmount < obj.requiredAmount)
+            if (!readyToTurnInQuests.Contains(qp))
             {
-                allObjectivesCompleted = false;
-                break;
+                readyToTurnInQuests.Add(qp);
+                qp.state = QuestState.Completed;
+                Debug.Log($"Quest {qp.quest.questName} completed!");
             }
         }
 
-        if (allObjectivesCompleted)
-        {
-            CompleteQuest(quest);
-        }
+        questUI?.UpdateQuestProgress(qp, qp.state == QuestState.Completed);
     }
 
-    private void CompleteQuest(Quest quest)
+    // Turn in quest
+    public void TurnInQuest(QuestProgress qp)
     {
-        activeQuests.Remove(quest);
-        completedQuests.Add(quest);
-        Debug.Log($"Quest Completed: {quest.questName}");
+        if (!readyToTurnInQuests.Contains(qp)) return;
 
-        AwardQuestReward(quest); // ← Thưởng xong rồi toast
+        readyToTurnInQuests.Remove(qp);
+        activeQuests.Remove(qp);
+        completedQuests.Add(qp);
 
-        // Clear UI
+        qp.state = QuestState.Rewarded;
+
+        AwardQuestReward(qp);
+
         questUI?.Clear();
+        Debug.Log($"Quest Turned In: {qp.quest.questName}");
     }
 
-    private void AwardQuestReward(Quest quest)
+    private void AwardQuestReward(QuestProgress qp)
     {
+        if (qp == null || qp.quest == null) return;
+
+        Quest quest = qp.quest;
         int exp = quest.reward.experienceReward;
         int gold = quest.reward.goldReward;
 
@@ -252,16 +102,12 @@ public class QuestManager : Singleton<QuestManager>
         // GOLD
         CurrencyManager.Instance.AddGold(gold);
 
-        // Bắt đầu ghi nội dung Toast
+        // ITEMS
         string toastMsg = $"Hoàn thành nhiệm vụ: <b>{quest.questName}</b>\n";
 
-        if (exp > 0)
-            toastMsg += $"<color=yellow>+{exp} EXP</color>\n";
+        if (exp > 0) toastMsg += $"<color=yellow>+{exp} EXP</color>\n";
+        if (gold > 0) toastMsg += $"<color=#FFD700>+{gold} Vàng</color>\n";
 
-        if (gold > 0)
-            toastMsg += $"<color=#FFD700>+{gold} Vàng</color>\n";
-
-        // ITEMS từ ID
         foreach (var itemID in quest.reward.itemIDs)
         {
             ItemData itemData = CommonReferent.Instance.itemDatabase.GetItemByID(itemID);
@@ -278,10 +124,110 @@ public class QuestManager : Singleton<QuestManager>
             Debug.Log($"Đã nhận item từ nhiệm vụ: {itemData.itemName}");
         }
 
-        // ✅ Show toast sau khi cộng hết
+        // Hiện toast
         GameEvents.OnShowToast.Raise(toastMsg);
+
+        // Cập nhật trạng thái runtime
+        qp.state = QuestState.Rewarded;
     }
 
 
+    public QuestProgress GetQuestProgressByID(string questID)
+    {
+        return activeQuests.Find(qp => qp.quest.questID == questID)
+               ?? completedQuests.Find(qp => qp.quest.questID == questID);
+    }
+    
+    public QuestSaveData ToData()
+    {
+        QuestSaveData data = new QuestSaveData();
+
+        foreach (var qp in activeQuests)
+        {
+            ActiveQuestData aq = new ActiveQuestData
+            {
+                questID = qp.quest.questID,
+                objectives = new List<ObjectiveProgressData>()
+            };
+
+            foreach (var obj in qp.quest.objectives)
+            {
+                int progress = qp.progress.ContainsKey(obj.objectiveName) ? qp.progress[obj.objectiveName] : 0;
+                aq.objectives.Add(new ObjectiveProgressData
+                {
+                    objectiveName = obj.objectiveName,
+                    currentAmount = progress
+                });
+            }
+
+            data.activeQuests.Add(aq);
+        }
+
+        foreach (var qp in completedQuests)
+        {
+            data.completedQuestIDs.Add(qp.quest.questID);
+        }
+
+        return data;
+    }
+
+    public void FromData(QuestSaveData data, QuestDatabase questDatabase)
+    {
+        activeQuests.Clear();
+        completedQuests.Clear();
+        readyToTurnInQuests.Clear();
+
+        if (data == null)
+        {
+            questUI?.Clear();
+            return;
+        }
+
+        // Load active quests
+        foreach (var aq in data.activeQuests)
+        {
+            Quest quest = questDatabase.GetQuestByID(aq.questID);
+            if (quest == null) continue;
+
+            QuestProgress qp = new QuestProgress(quest);
+            qp.state = QuestState.InProgress;
+
+            foreach (var obj in aq.objectives)
+            {
+                qp.progress[obj.objectiveName] = obj.currentAmount;
+            }
+
+            activeQuests.Add(qp);
+
+            if (qp.IsCompleted())
+            {
+                qp.state = QuestState.Completed;
+                readyToTurnInQuests.Add(qp);
+            }
+        }
+
+        // Load completed quests
+        foreach (var id in data.completedQuestIDs)
+        {
+            Quest quest = questDatabase.GetQuestByID(id);
+            if (quest != null)
+            {
+                QuestProgress qp = new QuestProgress(quest);
+                qp.state = QuestState.Rewarded;
+                completedQuests.Add(qp);
+            }
+        }
+
+        // Update UI
+        if (activeQuests.Count > 0)
+        {
+            foreach (var qp in activeQuests)
+                questUI?.UpdateQuestProgress(qp, qp.state == QuestState.Completed);
+        }
+        else
+        {
+            questUI?.Clear();
+        }
+    }
 
 }

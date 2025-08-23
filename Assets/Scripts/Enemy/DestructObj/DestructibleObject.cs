@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Threading;
 
 public class DestructibleObject : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class DestructibleObject : MonoBehaviour
 
     private Vector3 originalPos;
     private Coroutine flashCoroutine;
+    private string nameOBJ = "barrier";
 
     private void Awake()
     {
@@ -106,6 +108,9 @@ public class DestructibleObject : MonoBehaviour
         // Spawn gold
         int totalGoldToDrop = Random.Range(minGold, maxGold + 1); // ví dụ từ 3 đến 8
         GoldDropHelper.SpawnGoldBurst(transform.position, totalGoldToDrop, CommonReferent.Instance.goldPrefab);
+        
+        // Báo cáo quest
+        QuestManager.Instance.ReportProgress("NV2", nameOBJ, 1);
 
         gameObject.SetActive(false);
     }
