@@ -973,9 +973,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7068037478674553062}
   - component: {fileID: 7271049882858436393}
-  - component: {fileID: -3304825893353541739}
   - component: {fileID: 921848658498885017}
   - component: {fileID: -1901836984727716803}
+  - component: {fileID: 1172956553624679229}
   m_Layer: 23
   m_Name: Enemy_2
   m_TagString: Enemy
@@ -3933,28 +3933,6 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 4c70df3312bb83346a1bf065b30d3467, type: 2}
   - {fileID: 7400000, guid: 1ef525d53ae254f7d82ef364ced85490, type: 2}
   - {fileID: 7400000, guid: fabe4f140fdb9cb448bc941c7c93e8b6, type: 2}
---- !u!114 &-3304825893353541739
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2438799242571582111}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 0.7
-  attackRange: 1
-  detectionRange: 1.5
-  attackCooldown: 3.5
-  maxHealth: 100
-  attackDamage: 15
-  damagedStunTime: 0.2
-  bloodVFXOffset: {x: 0.2, y: 0, z: 0}
-  knockForce: 1.5
-  knockDuration: 0.2
 --- !u!50 &921848658498885017
 Rigidbody2D:
   serializedVersion: 5
@@ -4028,6 +4006,36 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.5865278, y: 0.7445369}
   m_EdgeRadius: 0
+--- !u!114 &1172956553624679229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2438799242571582111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 938983fd65654cd7bf4edf70cf8b9a9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyName: Skeleton
+  enemyLevel: 1
+  maxHealth: 100
+  attackDamage: 10
+  attackRange: 3
+  detectionRange: 5
+  attackCooldown: 1
+  skipHurtAnimation: 0
+  moveSpeed: 1.5
+  knockForce: 1.5
+  knockDuration: 0.2
+  damagedStunTime: 0.3
+  bloodVFXOffset: {x: 0, y: 0.5, z: 0}
+  timeDieDelay: 0.65
+  projectilePrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9,
+    type: 3}
+  firePoint: {fileID: 4481364031007190528}
+  projectileSpeed: 3
 --- !u!1 &2506785053518761721
 GameObject:
   m_ObjectHideFlags: 0

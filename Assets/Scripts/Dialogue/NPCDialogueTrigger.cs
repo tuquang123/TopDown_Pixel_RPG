@@ -8,7 +8,7 @@ public class NPCDialogueTrigger : MonoBehaviour
     [SerializeField] string dialogueID;
     [SerializeField] List<string> questIDs;   // quests chain from this NPC
     
-    private Vector3 offset = new Vector3(0, .85f, 0); // button position offset
+    private Vector3 offset = new Vector3(0, .9f, 0); // button position offset
     private Button interactButton;
     private Camera mainCam;
     private GameObject targetNPC;
@@ -31,6 +31,10 @@ public class NPCDialogueTrigger : MonoBehaviour
         // set this NPC as target and update current quest
         SetTarget(gameObject, dialogueID);
         UpdateCurrentQuest();
+        
+        //start fist quest
+        QuestManager.Instance.StartQuest(currentQuest.quest);
+        currentQuest.state = QuestState.InProgress;
     }
 
     /// <summary>
@@ -108,7 +112,7 @@ public class NPCDialogueTrigger : MonoBehaviour
             }
         });
 
-        HideUI();
+        //HideUI();
     }
 
 

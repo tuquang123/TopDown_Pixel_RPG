@@ -1,3 +1,4 @@
+// ================= EnemyAI.cs =================
 using System;
 using System.Collections;
 using Sirenix.OdinInspector;
@@ -163,8 +164,8 @@ public class EnemyAI : MonoBehaviour , IDamageable
         maxHealth = data.maxHealth;
         attackDamage = data.attackDamage;
         moveSpeed = data.moveSpeed;
-        attackRange = data.attackRange;
-        detectionRange = data.detectionRange;
+        //attackRange = data.attackRange;
+        //detectionRange = data.detectionRange;
         attackCooldown = data.attackCooldown;
         enemyLevel = data.level;
     }

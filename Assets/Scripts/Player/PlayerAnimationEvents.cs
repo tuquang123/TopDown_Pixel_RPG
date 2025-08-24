@@ -11,16 +11,20 @@ public class CommonAnimationEvents : MonoBehaviour
         enemyAI = GetComponentInParent<EnemyAI>();
     }
 
-    // Gọi từ animation event
+    // Gọi từ animation event: melee hit
     public void OnAttackHit()
     {
         if (playerController != null)
         {
-            playerController.ApplyAttackDamage(); // Gây damage cho enemy
+            playerController.ApplyAttackDamage();
+        }
+        else if (enemyAI is EnemyRangedAI rangedAI)
+        {
+            rangedAI.FireProjectile();
         }
         else if (enemyAI != null)
         {
-            enemyAI.DealDamageToTarget(); // Gây damage cho player
+            enemyAI.DealDamageToTarget();
         }
     }
 }

@@ -102,11 +102,16 @@ public class QuestManager : Singleton<QuestManager>
         // GOLD
         CurrencyManager.Instance.AddGold(gold);
 
-        // ITEMS
-        string toastMsg = $"Hoàn thành nhiệm vụ: <b>{quest.questName}</b>\n";
+        // REWARD POPUP
+        if (exp > 0)
+        {
+            RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconExp, "EXP", exp);
+        }
 
-        if (exp > 0) toastMsg += $"<color=yellow>+{exp} EXP</color>\n";
-        if (gold > 0) toastMsg += $"<color=#FFD700>+{gold} Vàng</color>\n";
+        if (gold > 0)
+        {
+            RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconGold, "Vàng", gold);
+        }
 
         foreach (var itemID in quest.reward.itemIDs)
         {
@@ -120,16 +125,16 @@ public class QuestManager : Singleton<QuestManager>
             ItemInstance itemInstance = new ItemInstance(itemData);
             Inventory.Instance.AddItem(itemInstance);
 
-            toastMsg += $"<color=#00FFFF>+ {itemData.itemName}</color>\n";
+            // show popup cho từng item
+            RewardPopupManager.Instance.ShowReward(itemData.icon, itemData.itemName, 1);
+
             Debug.Log($"Đã nhận item từ nhiệm vụ: {itemData.itemName}");
         }
-
-        // Hiện toast
-        GameEvents.OnShowToast.Raise(toastMsg);
 
         // Cập nhật trạng thái runtime
         qp.state = QuestState.Rewarded;
     }
+
 
 
     public QuestProgress GetQuestProgressByID(string questID)

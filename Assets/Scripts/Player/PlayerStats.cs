@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Pattern;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
@@ -146,6 +147,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
         GetComponentInChildren<Animator>().SetTrigger(HurtAnm);
         StartCoroutine(HurtEffect());
 
+        CameraFollow.Instance.Shake(0.25f, 1f);
         OnHealthChanged?.Invoke();
 
         FloatingTextSpawner.Instance.SpawnText(

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Pattern
@@ -19,9 +20,35 @@ namespace Pattern
         private float defaultOrthographicSize;
         private Coroutine zoomCoroutine;
 
+
+        [Button("Test Camera Shake")]
+        private void TestShake()
+        {
+            if (CameraFollow.Instance != null)
+            {
+                CameraFollow.Instance.Shake(0.2f, 1f);
+                Debug.Log("Camera Shake triggered via Odin!");
+            }
+        }
+
+        [Button("Test Zoom Out")]
+        private void TestZoomOut()
+        {
+            Zoom(defaultOrthographicSize * 1.2f, 0.5f);
+            Debug.Log("Zoom Out triggered");
+        }
+
+        [Button("Test Shake + Zoom Combo")]
+        private void TestShakeZoomCombo()
+        {
+            Shake(0.25f, 0.3f);
+            Zoom(defaultOrthographicSize * 0.9f, 0.5f);
+            Debug.Log("Shake + Zoom combo triggered");
+        }
+
         protected override void Awake()
         {
-            base.Awake(); 
+            base.Awake();
 
             Application.targetFrameRate = 60;
             QualitySettings.vSyncCount = 0;
@@ -90,7 +117,7 @@ namespace Pattern
             cam.orthographicSize = targetSize;
 
             yield return new WaitForSeconds(0.5f);
-            
+
             time = 0f;
             while (time < duration)
             {

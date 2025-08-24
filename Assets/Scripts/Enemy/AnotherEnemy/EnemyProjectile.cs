@@ -2,27 +2,25 @@
 
 public class EnemyProjectile : MonoBehaviour
 {
-    private Vector3 direction;
     private int damage;
-    public float speed = 5f;
+    private GameObject owner;
 
-    public void Init(Vector3 targetPosition, int damage)
+    [SerializeField] private float lifetime = 3f;
+
+    public void Init(int dmg, GameObject ownerObj)
     {
-        this.damage = damage;
-        direction = (targetPosition - transform.position).normalized;
-        Destroy(gameObject, 5f); // tự hủy sau 5s
+        damage = dmg;
+        owner = ownerObj;
+        Destroy(gameObject, lifetime);
     }
 
-    void Update()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        transform.position += direction * speed * Time.deltaTime;
-    }
+        if (other.gameObject == owner) return;
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player") && other.TryGetComponent(out PlayerStats health))
+        if (other.TryGetComponent(out IDamageable damageable))
         {
-            health.TakeDamage(damage);
+            damageable.TakeDamage(damage);
             Destroy(gameObject);
         }
     }
