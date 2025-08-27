@@ -35,6 +35,7 @@ public class NPCDialogueTrigger : MonoBehaviour
         //start fist quest
         QuestManager.Instance.StartQuest(currentQuest.quest);
         currentQuest.state = QuestState.InProgress;
+        Debug.Log("startQuest" + currentQuest.quest.questName);
     }
 
     /// <summary>
