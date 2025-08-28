@@ -43,7 +43,7 @@ public class ItemDetailPanel : MonoBehaviour
         currentItem = item;
         inventoryUI = ui;
         bool isEquipped = inventoryUI.equipmentUi.IsItemEquipped(item);
-        
+
         ItemData itemData = item.itemData;
         nameText.text = itemData.itemName;
         icon.sprite = itemData.icon;
@@ -57,15 +57,15 @@ public class ItemDetailPanel : MonoBehaviour
 
         int cost = itemData.baseUpgradeCost * currentItem.upgradeLevel;
         upgradeCostText.text = $"Nâng cấp ({cost} vàng)";
-        
+
         sellButton.gameObject.SetActive(!isEquipped);
         upgradeButton.gameObject.SetActive(!isEquipped);
 
         upgradeButton.onClick.RemoveAllListeners();
         upgradeButton.onClick.AddListener(UpgradeItem);
 
+        // Stats hiển thị (chỉ cho trang bị, consumable thì ko cần)
         string stats = "";
-
         void AddStatLine(string label, ItemStatBonus bonus, float upgradePercent = 0.1f, string suffix = "")
         {
             if (bonus == null || (!bonus.HasValue)) return;
@@ -79,25 +79,60 @@ public class ItemDetailPanel : MonoBehaviour
                 stats += $"{label}: +{percent}%{suffix}\n";
         }
 
-        AddStatLine("Dame", itemData.attack);
-        AddStatLine("Giáp", itemData.defense);
-        AddStatLine("Máu", itemData.health);
-        AddStatLine("Mana", itemData.mana);
-        AddStatLine("Crit", itemData.critChance, 0.05f);     
-        AddStatLine("Speed", itemData.speed, 0.05f);
-        AddStatLine("Tốc đánh", itemData.attackSpeed, 0.05f);
-        AddStatLine("Hút máu", itemData.lifeSteal, 0.05f);
+        // Nếu là trang bị
+        if (itemData.itemType != ItemType.Consumable)
+        {
+            AddStatLine("Dame", itemData.attack);
+            AddStatLine("Giáp", itemData.defense);
+            AddStatLine("Máu", itemData.health);
+            AddStatLine("Mana", itemData.mana);
+            AddStatLine("Crit", itemData.critChance, 0.05f);     
+            AddStatLine("Speed", itemData.speed, 0.05f);
+            AddStatLine("Tốc đánh", itemData.attackSpeed, 0.05f);
+            AddStatLine("Hút máu", itemData.lifeSteal, 0.05f);
+        }
 
         nameText.text = $"{itemData.itemName} +{item.upgradeLevel}";
         statText.text = stats.TrimEnd();
 
         equipButton.onClick.RemoveAllListeners();
-        equipButton.onClick.AddListener(EquipItem);
+
+        // Nếu là consumable thì đổi nút -> "Dùng"
+        if (itemData.itemType == ItemType.Consumable)
+        {
+            equipButton.GetComponentInChildren<TMP_Text>().text = "Dùng";
+            equipButton.onClick.AddListener(ConsumeItem);
+
+            // Consumable thì không upgrade được
+            upgradeButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            equipButton.GetComponentInChildren<TMP_Text>().text = "Trang bị";
+            equipButton.onClick.AddListener(EquipItem);
+        }
 
         gameObject.SetActive(true);
-        equipButton.GetComponentInChildren<TMP_Text>().text = "Trang bị";
     }
 
+    private void ConsumeItem()
+    {
+        if (currentItem == null) return;
+
+        var playerStats = PlayerStats.Instance;
+        if (playerStats != null)
+        {
+            playerStats.Consume(currentItem.itemData);
+        }
+
+        if (inventoryUI.inventory.RemoveItem(currentItem))
+        {
+            inventoryUI.UpdateInventoryUI();
+        }
+
+        Debug.Log($"Đã dùng {currentItem.itemData.itemName}");
+        gameObject.SetActive(false);
+    }
 
     private void UpgradeItem()
     {

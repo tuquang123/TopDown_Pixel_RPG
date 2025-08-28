@@ -8,8 +8,9 @@ public class Equipment : MonoBehaviour
 
     [SerializeField] private PlayerEquipment playerEquipment;
     [SerializeField] private PlayerEquipment playerEquipmentHourse;
+    public InventoryUI inventoryUI;
 
-    
+
     public List<EquipmentData> ToData()
     {
         var data = new List<EquipmentData>();
@@ -27,7 +28,7 @@ public class Equipment : MonoBehaviour
 
         return data;
     }
-    
+
     public void FromData(List<EquipmentData> data, ItemDatabase db, PlayerStats stats)
     {
         equippedItems.Clear();
@@ -46,7 +47,7 @@ public class Equipment : MonoBehaviour
             }
 
             equippedItems[eData.slotType] = instance;
-            
+
             if (instance != null)
             {
                 playerEquipment?.UpdateEquipment(instance.itemData);
@@ -56,24 +57,36 @@ public class Equipment : MonoBehaviour
         }
     }
 
-   public void ReapplyEquipmentStats(PlayerStats stats)
-{
-    //stats.ResetToBaseStats();
-
-    foreach (var kvp in equippedItems)
+    public void ReapplyEquipmentStats(PlayerStats stats)
     {
-        var item = kvp.Value;
-        if (item != null)
+        //stats.ResetToBaseStats();
+
+        foreach (var kvp in equippedItems)
         {
-            ApplyItemStats(item, stats); 
+            var item = kvp.Value;
+            if (item != null)
+            {
+                ApplyItemStats(item, stats);
+            }
         }
     }
-}
-
 
 
     public void EquipItem(ItemInstance instance, PlayerStats stats)
     {
+        if (instance == null || instance.itemData == null) return;
+
+        ItemType type = instance.itemData.itemType;
+        if (type == ItemType.Consumable)
+        {
+            stats.Consume(instance.itemData);
+
+            // Trừ khỏi inventory
+            inventoryUI.inventory.RemoveItem(instance);
+            inventoryUI.UpdateInventoryUI();
+            return;
+        }
+        
         if (equippedItems.ContainsKey(instance.itemData.itemType))
         {
             UnequipItem(instance.itemData.itemType, stats);
@@ -99,7 +112,7 @@ public class Equipment : MonoBehaviour
 
         return instance;
     }
-    
+
     private void ApplyItemStats(ItemInstance instance, PlayerStats stats)
     {
         if (instance.itemData == null) return;
@@ -138,7 +151,7 @@ public class Equipment : MonoBehaviour
 
         itemModifiers[instance] = appliedMods;
     }
-    
+
     private void RemoveItemStats(ItemInstance instance, PlayerStats stats)
     {
         if (instance == null) return;

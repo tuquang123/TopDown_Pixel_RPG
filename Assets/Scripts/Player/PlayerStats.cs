@@ -325,6 +325,65 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
         StatModifier mod = new StatModifier(StatType.Speed, amount);
         ApplyTemporaryBuff(mod, duration);
     }
+    public void Consume(ItemData consumable)
+    {
+        int totalHealed = 0;
+        int totalManaRestored = 0;
+
+        if (consumable.restoresHealth)
+        {
+            int amount = consumable.percentageBased
+                ? Mathf.RoundToInt(maxHealth.Value * (consumable.healthRestoreAmount / 100f))
+                : consumable.healthRestoreAmount;
+
+            int before = currentHealth;
+            Heal(amount);
+            int after = currentHealth;
+            totalHealed = after - before;
+        }
+
+        if (consumable.restoresMana)
+        {
+            int amount = consumable.percentageBased
+                ? Mathf.RoundToInt(maxMana.Value * (consumable.manaRestoreAmount / 100f))
+                : consumable.manaRestoreAmount;
+
+            int beforeMana = currentMana;
+            currentMana = Mathf.Clamp(currentMana + amount, 0, (int)maxMana.Value);
+            int afterMana = currentMana;
+            totalManaRestored = afterMana - beforeMana;
+            OnManaChanged?.Invoke();
+        }
+
+        // Spawn floating text cho Heal
+        if (totalHealed > 0)
+        {
+            FloatingTextSpawner.Instance.SpawnText(
+                $"+{totalHealed}",
+                transform.position + Vector3.up,
+                new Color(0.3f, 1f, 0.3f) // xanh lá non
+            );
+        }
+
+        // Spawn floating text cho Mana
+        if (totalManaRestored > 0)
+        {
+            FloatingTextSpawner.Instance.SpawnText(
+                $"+{totalManaRestored} MP",
+                transform.position + Vector3.up * 1.2f,
+                new Color(0.3f, 0.6f, 1f) // xanh dương nhạt
+            );
+        }
+    }
+    public void RestoreMana(int amount)
+    {
+        currentMana = Mathf.Clamp(currentMana + amount, 0, (int)maxMana.Value);
+        Debug.Log($"Hồi {amount} MP, Mana hiện tại: {currentMana}");
+        OnManaChanged?.Invoke();
+    }
+
+
+ 
     
 
     

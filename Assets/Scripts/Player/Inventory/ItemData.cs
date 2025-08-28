@@ -146,6 +146,15 @@ public class ItemData : ScriptableObject
 
     [BoxGroup("Upgrade")] [LabelWidth(130)]
     public int baseUpgradeCost = 100;
+    
+    [Header("Consumable Settings")]
+    public bool restoresHealth;
+    public int healthRestoreAmount;
+    
+    public bool restoresMana;
+    public int manaRestoreAmount;
+    
+    public bool percentageBased; 
 
     // RANDOMIZER
     [BoxGroup("Randomizer")] public ItemTierConfig tierConfig;
