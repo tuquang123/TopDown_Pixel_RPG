@@ -42,78 +42,94 @@ public class ItemDetailPanel : MonoBehaviour
     {
         currentItem = item;
         inventoryUI = ui;
+        ItemData itemData = item.itemData;
+
         bool isEquipped = inventoryUI.equipmentUi.IsItemEquipped(item);
 
-        ItemData itemData = item.itemData;
-        nameText.text = itemData.itemName;
+        // ==== General UI ====
+        nameText.text = $"{itemData.itemName} +{item.upgradeLevel}";
         icon.sprite = itemData.icon;
         descriptionText.text = itemData.description;
 
+        // ==== Sell Button ====
         int sellPrice = CalculateSellPrice(currentItem);
         sellPriceText.text = $"Bán ({sellPrice} vàng)";
-
         sellButton.onClick.RemoveAllListeners();
         sellButton.onClick.AddListener(SellItem);
-
-        int cost = itemData.baseUpgradeCost * currentItem.upgradeLevel;
-        upgradeCostText.text = $"Nâng cấp ({cost} vàng)";
-
         sellButton.gameObject.SetActive(!isEquipped);
-        upgradeButton.gameObject.SetActive(!isEquipped);
 
+        // ==== Upgrade Button ====
+        int upgradeCost = itemData.baseUpgradeCost * currentItem.upgradeLevel;
+        upgradeCostText.text = $"Nâng cấp ({upgradeCost} vàng)";
         upgradeButton.onClick.RemoveAllListeners();
         upgradeButton.onClick.AddListener(UpgradeItem);
+        upgradeButton.gameObject.SetActive(!isEquipped);
 
-        // Stats hiển thị (chỉ cho trang bị, consumable thì ko cần)
-        string stats = "";
-        void AddStatLine(string label, ItemStatBonus bonus, float upgradePercent = 0.1f, string suffix = "")
+        // ==== Equip/Use Button ====
+        equipButton.onClick.RemoveAllListeners();
+
+        // ==== Stats display ====
+        string statsText = "";
+
+        if (itemData.itemType == ItemType.Consumable)
         {
-            if (bonus == null || (!bonus.HasValue)) return;
+            // ---- Consumable ----
+            equipButton.GetComponentInChildren<TMP_Text>().text = "Dùng";
+            equipButton.onClick.AddListener(ConsumeItem);
 
-            float flat = bonus.flat + (bonus.flat * upgradePercent * (item.upgradeLevel - 1));
-            float percent = bonus.percent;
+            upgradeButton.gameObject.SetActive(false); // Consumable không nâng cấp được
 
-            if (flat != 0)
-                stats += $"{label}: {Mathf.RoundToInt(flat)}{suffix}\n";
-            if (percent != 0)
-                stats += $"{label}: +{percent}%{suffix}\n";
+            if (itemData.restoresHealth)
+            {
+                string hpValue = itemData.percentageBased
+                    ? $"{itemData.healthRestoreAmount}%"
+                    : $"{itemData.healthRestoreAmount}";
+                statsText += $"Hồi máu: {hpValue}\n";
+            }
+
+            if (itemData.restoresMana)
+            {
+                string mpValue = itemData.percentageBased
+                    ? $"{itemData.manaRestoreAmount}%"
+                    : $"{itemData.manaRestoreAmount}";
+                statsText += $"Hồi mana: {mpValue}\n";
+            }
         }
-
-        // Nếu là trang bị
-        if (itemData.itemType != ItemType.Consumable)
+        else
         {
+            // ---- Equipment ----
+            equipButton.GetComponentInChildren<TMP_Text>().text = "Trang bị";
+            equipButton.onClick.AddListener(EquipItem);
+
+            void AddStatLine(string label, ItemStatBonus bonus, float upgradePercent = 0.1f, string suffix = "")
+            {
+                if (bonus == null || !bonus.HasValue) return;
+
+                float flat = bonus.flat + (bonus.flat * upgradePercent * (item.upgradeLevel - 1));
+                float percent = bonus.percent;
+
+                if (flat != 0)
+                    statsText += $"{label}: {Mathf.RoundToInt(flat)}{suffix}\n";
+                if (percent != 0)
+                    statsText += $"{label}: +{percent}%{suffix}\n";
+            }
+
             AddStatLine("Dame", itemData.attack);
             AddStatLine("Giáp", itemData.defense);
             AddStatLine("Máu", itemData.health);
             AddStatLine("Mana", itemData.mana);
-            AddStatLine("Crit", itemData.critChance, 0.05f);     
+            AddStatLine("Crit", itemData.critChance, 0.05f);
             AddStatLine("Speed", itemData.speed, 0.05f);
             AddStatLine("Tốc đánh", itemData.attackSpeed, 0.05f);
             AddStatLine("Hút máu", itemData.lifeSteal, 0.05f);
         }
 
-        nameText.text = $"{itemData.itemName} +{item.upgradeLevel}";
-        statText.text = stats.TrimEnd();
-
-        equipButton.onClick.RemoveAllListeners();
-
-        // Nếu là consumable thì đổi nút -> "Dùng"
-        if (itemData.itemType == ItemType.Consumable)
-        {
-            equipButton.GetComponentInChildren<TMP_Text>().text = "Dùng";
-            equipButton.onClick.AddListener(ConsumeItem);
-
-            // Consumable thì không upgrade được
-            upgradeButton.gameObject.SetActive(false);
-        }
-        else
-        {
-            equipButton.GetComponentInChildren<TMP_Text>().text = "Trang bị";
-            equipButton.onClick.AddListener(EquipItem);
-        }
+        // Gán stats cuối cùng
+        statText.text = statsText.TrimEnd();
 
         gameObject.SetActive(true);
     }
+
 
     private void ConsumeItem()
     {
@@ -154,14 +170,14 @@ public class ItemDetailPanel : MonoBehaviour
     {
         if (inventoryUI.equipmentUi != null && currentItem != null)
         {
-            inventoryUI.equipmentUi.EquipItem(currentItem); 
+            inventoryUI.equipmentUi.EquipItem(currentItem);
 
             if (inventoryUI.inventory.RemoveItem(currentItem))
             {
                 inventoryUI.UpdateInventoryUI();
             }
 
-            gameObject.SetActive(false); 
+            gameObject.SetActive(false);
         }
     }
 
