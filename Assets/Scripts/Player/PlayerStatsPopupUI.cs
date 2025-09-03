@@ -23,6 +23,6 @@ public class PlayerStatsPopupUI : BasePopup
             $"<color=#FFD700>Speed:</color> {stats.speed.Value}\n" +
             $"<color=#FFD700>Crit:</color> {stats.critChance.Value}%\n" +
             $"<color=#FFD700>LifeSteal:</color> {stats.lifeSteal.Value}%\n" +
-            $"<color=#FFD700>Attack Speed:</color> {stats.attackSpeed.Value:F2}";
+            $"<color=#FFD700>AttSpeed:</color> {stats.attackSpeed.Value:F1}";
     }
 }

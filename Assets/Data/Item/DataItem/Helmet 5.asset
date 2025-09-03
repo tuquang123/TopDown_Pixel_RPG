@@ -17,37 +17,42 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 732442a90ec3747df83c46125de06b60, type: 3}
   itemType: 3
   tier: 5
-  price: 999
+  price: 601
   description: Symbolizing the authority and majesty of the royal bloodline
   attack:
-    flat: 32
+    flat: 141
     percent: 0
   defense:
-    flat: 21
+    flat: 7
     percent: 0
   health:
-    flat: 2667
+    flat: 1045
     percent: 0
   mana:
-    flat: 745
+    flat: 175
     percent: 0
   critChance:
-    flat: 50
-    percent: 0
-  attackSpeed:
     flat: 6
     percent: 0
+  attackSpeed:
+    flat: 0
+    percent: 0
   lifeSteal:
-    flat: 8
+    flat: 29
     percent: 0
   speed:
-    flat: 2
+    flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 437
+  baseUpgradeCost: 484
+  restoresHealth: 0
+  healthRestoreAmount: 0
+  restoresMana: 0
+  manaRestoreAmount: 0
+  percentageBased: 0
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0

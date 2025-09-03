@@ -16,6 +16,8 @@ public class SkillDetailPanel : MonoBehaviour
     [SerializeField] private Button closeButton;
     [SerializeField] private Button closeButtonFull;
     [SerializeField] private SkillAssignPanel assignPanel;
+    
+    [SerializeField] private TextMeshProUGUI skillPointText;
 
     private SkillData currentSkill;
     private SkillSystem skillSystem;
@@ -29,6 +31,8 @@ public class SkillDetailPanel : MonoBehaviour
     {
         currentSkill = skillData;
         skillSystem = system;
+        
+        skillPointText.text = "Skill Point : " + PlayerStats.Instance.skillPoints;
 
         nameText.text = currentSkill.skillName;
         iconImage.sprite = currentSkill.icon;

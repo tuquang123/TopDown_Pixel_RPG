@@ -28776,9 +28776,9 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 6
+      m_TileSpriteIndex: 5
       m_TileMatrixIndex: 0
-      m_TileColorIndex: 2
+      m_TileColorIndex: 1
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741827
@@ -28836,9 +28836,9 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 6
+      m_TileSpriteIndex: 5
       m_TileMatrixIndex: 0
-      m_TileColorIndex: 2
+      m_TileColorIndex: 1
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741827
@@ -28949,9 +28949,9 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 4
     m_Data: {fileID: 21300034, guid: ed7554aeefd5da44a9fe1ee9b93afe77, type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
   - m_RefCount: 2
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
     m_Data: {fileID: 0}
   m_TileMatrixArray:
   - m_RefCount: 38
@@ -28975,10 +28975,10 @@ Tilemap:
   m_TileColorArray:
   - m_RefCount: 36
     m_Data: {r: 1, g: 1, b: 1, a: 1}
-  - m_RefCount: 0
-    m_Data: {r: 8.5958e-41, g: 8.5958e-41, b: 8.5958e-41, a: 8.5958e-41}
   - m_RefCount: 2
-    m_Data: {r: 0.8442348, g: 0.5224603, b: 0.55969995, a: 1}
+    m_Data: {r: 0.72345495, g: 0.36508596, b: 0.40179142, a: 1}
+  - m_RefCount: 0
+    m_Data: {r: 1.74734e-40, g: 1.74734e-40, b: 1.74734e-40, a: 1.74734e-40}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -29963,7 +29963,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7995820299790159208
 Transform:
   m_ObjectHideFlags: 0
@@ -29973,7 +29973,7 @@ Transform:
   m_GameObject: {fileID: 7307690110532538079}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.6, y: 4.4, z: -0.017392695}
+  m_LocalPosition: {x: 3.6, y: 4.9, z: -0.017392695}
   m_LocalScale: {x: -1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -30068,7 +30068,7 @@ MonoBehaviour:
   enemyName: Boss
   enemyLevel: 1
   maxHealth: 1000
-  attackDamage: 100
+  attackDamage: 20
   attackRange: 1.5
   detectionRange: 20
   attackCooldown: 1
@@ -30426,9 +30426,9 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 6
+      m_TileSpriteIndex: 5
       m_TileMatrixIndex: 0
-      m_TileColorIndex: 2
+      m_TileColorIndex: 1
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741827
@@ -30486,9 +30486,9 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 6
+      m_TileSpriteIndex: 5
       m_TileMatrixIndex: 0
-      m_TileColorIndex: 2
+      m_TileColorIndex: 1
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741827
@@ -30599,9 +30599,9 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 4
     m_Data: {fileID: 21300034, guid: ed7554aeefd5da44a9fe1ee9b93afe77, type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
   - m_RefCount: 2
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
     m_Data: {fileID: 0}
   m_TileMatrixArray:
   - m_RefCount: 38
@@ -30625,10 +30625,10 @@ Tilemap:
   m_TileColorArray:
   - m_RefCount: 36
     m_Data: {r: 1, g: 1, b: 1, a: 1}
-  - m_RefCount: 0
-    m_Data: {r: 8.0533e-41, g: 8.0533e-41, b: 8.0533e-41, a: 8.0533e-41}
   - m_RefCount: 2
-    m_Data: {r: 0.8377491, g: 0.4253126, b: 0.5471478, a: 1}
+    m_Data: {r: 0.7310325, g: 0.48017302, b: 0.5247225, a: 1}
+  - m_RefCount: 0
+    m_Data: {r: 1.74927e-40, g: 1.74927e-40, b: 1.74927e-40, a: 1.74927e-40}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}

@@ -12,7 +12,9 @@ public class ItemDetailPanel : MonoBehaviour
     public TMP_Text upgradeCostText;
     public Button sellButton;
     public TMP_Text sellPriceText;
+    public TMP_Text tierText;
     public Image icon;
+    public Image tier;
 
     private ItemInstance currentItem;
     private InventoryUI inventoryUI;
@@ -47,8 +49,14 @@ public class ItemDetailPanel : MonoBehaviour
         bool isEquipped = inventoryUI.equipmentUi.IsItemEquipped(item);
 
         // ==== General UI ====
-        nameText.text = $"{itemData.itemName} +{item.upgradeLevel}";
+        if (item.upgradeLevel >= 1)
+            nameText.text = $"{itemData.itemName} +{item.upgradeLevel}";
+        else
+            nameText.text = itemData.itemName;
+
         icon.sprite = itemData.icon;
+        tier.color =  ItemUtility.GetColorByTier(item.itemData.tier);
+        tierText.text = $"{item.itemData.tier}";
         descriptionText.text = itemData.description;
 
         // ==== Sell Button ====
@@ -59,7 +67,7 @@ public class ItemDetailPanel : MonoBehaviour
         sellButton.gameObject.SetActive(!isEquipped);
 
         // ==== Upgrade Button ====
-        int upgradeCost = itemData.baseUpgradeCost * currentItem.upgradeLevel;
+        int upgradeCost = currentItem.itemData.baseUpgradeCost * (currentItem.upgradeLevel + 1);
         upgradeCostText.text = $"Nâng cấp ({upgradeCost} vàng)";
         upgradeButton.onClick.RemoveAllListeners();
         upgradeButton.onClick.AddListener(UpgradeItem);
@@ -152,13 +160,13 @@ public class ItemDetailPanel : MonoBehaviour
 
     private void UpgradeItem()
     {
-        int upgradeCost = currentItem.itemData.baseUpgradeCost * currentItem.upgradeLevel;
+        int upgradeCost = currentItem.itemData.baseUpgradeCost * currentItem.upgradeLevel + 1;
 
         if (CurrencyManager.Instance.SpendGold(upgradeCost))
         {
             currentItem.upgradeLevel++;
             Debug.Log($"Nâng cấp thành công! Cấp độ mới: {currentItem.upgradeLevel}");
-            ShowDetails(currentItem, inventoryUI); // Làm mới UI
+            ShowDetails(currentItem, inventoryUI); 
         }
         else
         {

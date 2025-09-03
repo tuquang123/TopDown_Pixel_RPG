@@ -12,7 +12,8 @@ public class GameManager : MonoBehaviour
         yield return null;  
         LoadGame();
 
-        if (allAllItem) AddAllItemsToInventory();
+        //if (allAllItem) AddAllItemsToInventory();
+        if (allAllItem) StartCheatIfNeeded();
 
         // Cheat test
        // TriggerKillGoblinQuest();
@@ -78,4 +79,21 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    private void StartCheatIfNeeded()
+    {
+        if (allAllItem)
+        {
+            // Chỉ cheat nếu inventory rỗng
+            if (CommonReferent.Instance.inventory.IsEmpty())
+            {
+                AddAllItemsToInventory();
+                Debug.Log("Cheat: Added all items to inventory (only once).");
+            }
+            else
+            {
+                Debug.Log("Inventory already has items, skip cheat.");
+            }
+        }
+    }
+
 }

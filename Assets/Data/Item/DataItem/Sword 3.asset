@@ -17,10 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: e4c07de1d80de4718b58db6470c48501, type: 3}
   itemType: 0
   tier: 4
-  price: 296
+  price: 389
   description: buff super dame
   attack:
-    flat: 64
+    flat: 67
     percent: 0
   defense:
     flat: 0
@@ -32,13 +32,13 @@ MonoBehaviour:
     flat: 0
     percent: 0
   critChance:
-    flat: 0
+    flat: 39
     percent: 0
   attackSpeed:
-    flat: 1
+    flat: 0
     percent: 0
   lifeSteal:
-    flat: 10
+    flat: 5
     percent: 0
   speed:
     flat: 0
@@ -47,7 +47,12 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 445
+  baseUpgradeCost: 486
+  restoresHealth: 0
+  healthRestoreAmount: 0
+  restoresMana: 0
+  manaRestoreAmount: 0
+  percentageBased: 0
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0

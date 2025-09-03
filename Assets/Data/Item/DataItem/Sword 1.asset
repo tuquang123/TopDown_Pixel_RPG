@@ -17,10 +17,10 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: df96032537d4c482e9b20c674c73dc45, type: 3}
   itemType: 0
   tier: 0
-  price: 433
+  price: 296
   description: sword
   attack:
-    flat: 85
+    flat: 48
     percent: 0
   defense:
     flat: 0
@@ -32,13 +32,13 @@ MonoBehaviour:
     flat: 0
     percent: 0
   critChance:
-    flat: 18
+    flat: 7
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 0
+    flat: 7
     percent: 0
   speed:
     flat: 0
@@ -47,7 +47,12 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 259
+  baseUpgradeCost: 117
+  restoresHealth: 0
+  healthRestoreAmount: 0
+  restoresMana: 0
+  manaRestoreAmount: 0
+  percentageBased: 0
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0

@@ -17,31 +17,31 @@ MonoBehaviour:
   icon: {fileID: 2792606791867966216, guid: 69edace412443554185db672d1906d5f, type: 3}
   itemType: 1
   tier: 3
-  price: 718
+  price: 420
   description: 
   attack:
-    flat: 82
+    flat: 142
     percent: 0
   defense:
-    flat: 24
+    flat: 26
     percent: 0
   health:
-    flat: 1009
+    flat: 1021
     percent: 0
   mana:
-    flat: 317
+    flat: 371
     percent: 0
   critChance:
-    flat: 10
+    flat: 18
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 12
+    flat: 6
     percent: 0
   speed:
-    flat: 2
+    flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: -9059333892809613461, guid: da6895bd4082d441cbe5911031d0f43b,
@@ -49,7 +49,12 @@ MonoBehaviour:
   iconRight: {fileID: 5974945691945990517, guid: da6895bd4082d441cbe5911031d0f43b,
     type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 427
+  baseUpgradeCost: 184
+  restoresHealth: 0
+  healthRestoreAmount: 0
+  restoresMana: 0
+  manaRestoreAmount: 0
+  percentageBased: 0
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0

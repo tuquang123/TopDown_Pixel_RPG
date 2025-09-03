@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class BossAI : EnemyAI
@@ -84,5 +85,14 @@ public class BossAI : EnemyAI
         base.Die();
         bossHealthUI?.Hide();
     }
+    
+    private void OnDisable()
+    {
+        bossHealthUI?.Hide();
+    }
 
+    private void OnDestroy()
+    {
+        bossHealthUI?.Hide();
+    }
 }

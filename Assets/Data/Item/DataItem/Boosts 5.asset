@@ -17,31 +17,31 @@ MonoBehaviour:
   icon: {fileID: 4139686232721902399, guid: 2367f636a80334d659849604908ab07b, type: 3}
   itemType: 4
   tier: 3
-  price: 970
+  price: 704
   description: up speed
   attack:
-    flat: 26
+    flat: 56
     percent: 0
   defense:
-    flat: 5
+    flat: 30
     percent: 0
   health:
-    flat: 814
+    flat: 1061
     percent: 0
   mana:
-    flat: 149
+    flat: 549
     percent: 0
   critChance:
-    flat: 23
+    flat: 27
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 14
+    flat: 20
     percent: 0
   speed:
-    flat: 2
+    flat: 1
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: -1701842369826841683, guid: ed0836d2b0b084f2a842be7fa476e1e5,
@@ -49,7 +49,12 @@ MonoBehaviour:
   iconRight: {fileID: -6657482867516515422, guid: ed0836d2b0b084f2a842be7fa476e1e5,
     type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 572
+  baseUpgradeCost: 495
+  restoresHealth: 0
+  healthRestoreAmount: 0
+  restoresMana: 0
+  manaRestoreAmount: 0
+  percentageBased: 0
   tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
   lockAttack: 0
   lockDefense: 0

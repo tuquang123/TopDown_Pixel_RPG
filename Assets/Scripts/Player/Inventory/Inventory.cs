@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -29,6 +30,8 @@ public class Inventory : Singleton<Inventory>
             if (refData != null)
                 items.Add(new ItemInstance(refData, itemData.upgradeLevel, itemData.instanceID));
         }
+        
+        OnInventoryChanged?.Invoke();
     }
     
     public List<ItemInstanceData> ToData()
@@ -40,28 +43,62 @@ public class Inventory : Singleton<Inventory>
         }
         return data;
     }
-
-    // Thêm item vào túi đồ
-    public void AddItem(ItemInstance item)
-    {
-        if (item == null || item.itemData == null) return;
-        items.Add(item);
-        Debug.Log($"Đã thêm {item.itemData.itemName} vào túi đồ.");
-    }
-
+    
     public bool HasItem(ItemInstance item)
     {
         return items.Contains(item);
     }
 
     // Xóa item khỏi túi đồ
+    public event Action OnInventoryChanged;
+
+    public void AddItem(ItemInstance item)
+    {
+        if (item == null || item.itemData == null) return;
+        items.Add(item);
+        OnInventoryChanged?.Invoke();
+    }
+
     public bool RemoveItem(ItemInstance item)
     {
-        if (items.Contains(item))
+        if (items.Remove(item))
         {
-            items.Remove(item);
+            OnInventoryChanged?.Invoke();
             return true;
         }
         return false;
     }
+    public bool IsEmpty()
+    {
+        return items == null || items.Count == 0;
+    }
+    
+    public ItemInstance FindFirstConsumable(bool requireHealth, bool requireMana)
+    {
+        foreach (var item in items)
+        {
+            if (item.itemData.itemType == ItemType.Consumable)
+            {
+                if (requireHealth && item.itemData.restoresHealth) return item;
+                if (requireMana && item.itemData.restoresMana) return item;
+            }
+        }
+        return null;
+    }
+    // Inventory.cs
+    public int GetItemCount(ItemData targetItemData)
+    {
+        int count = 0;
+        foreach (var item in items) 
+        {
+            if (item.itemData == targetItemData)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
+
+
 }
