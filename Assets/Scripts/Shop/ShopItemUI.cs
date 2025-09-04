@@ -48,13 +48,31 @@ public class ShopItemUI : MonoBehaviour
         if (itemData == null || shopUI == null || shopUI.playerInventory == null) return;
 
         bool isPurchased = false;
+
+        // ✅ Check trong inventory
         foreach (var item in shopUI.playerInventory.items)
         {
             if (item.itemData != null && item.itemData.itemID == itemData.itemID)
             {
                 isPurchased = true;
-                Debug.Log($"Vật phẩm {itemData.itemName} (ID: {itemData.itemID}) đã có trong Inventory.");
                 break;
+            }
+        }
+
+        // ✅ Check trong equipment
+        if (!isPurchased)
+        {
+            var equipment = shopUI.playerInventory.GetComponent<Equipment>();
+            if (equipment != null)
+            {
+                foreach (var kvp in equipment.equippedItems)
+                {
+                    if (kvp.Value != null && kvp.Value.itemData.itemID == itemData.itemID)
+                    {
+                        isPurchased = true;
+                        break;
+                    }
+                }
             }
         }
 
@@ -69,6 +87,8 @@ public class ShopItemUI : MonoBehaviour
             priceText.text = $"{itemData.price}";
         }
     }
+
+
 
     private void OnDestroy()
     {

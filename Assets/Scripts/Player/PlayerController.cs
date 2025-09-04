@@ -27,7 +27,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
     public bool IsDashing => GetComponent<PlayerDash>()?.IsDashing == true;
     public bool IsAttacking => anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
 
-
+    
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();

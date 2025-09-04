@@ -21,26 +21,33 @@ public class DashSkill : ISkill
     public bool CanUse(PlayerStats playerStats, SkillData skill)
     {
         var dashComponent = playerStats.GetComponent<PlayerDash>();
-    
+        var controller = playerStats.GetComponent<PlayerController>();
+
         int currentLevel = playerStats.GetSkillLevel(skill.skillID);
         SkillLevelStat currentLevelStat = skill.GetLevelStat(currentLevel);
-    
+
         if (currentLevelStat == null)
         {
             Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skill.skillName}");
             return false;
         }
 
-        // Tự kiểm tra mana ở đây
+        // Tự kiểm tra mana
         if (playerStats.currentMana < currentLevelStat.manaCost)
             return false;
 
-        // Kiểm tra điều kiện dash
         if (dashComponent == null) return false;
         if (dashComponent.IsDashing) return false;
-        if (dashComponent.GetComponent<PlayerController>().GetTargetEnemy() == null) return false;
-        
+
+        // ✅ Cho phép dash nếu có target enemy HOẶC có input joystick
+        bool hasTarget = controller.GetTargetEnemy() != null;
+        bool hasInput = controller.MoveInput.sqrMagnitude > 0.01f;
+
+        if (!hasTarget && !hasInput) 
+            return false;
+
         return true;
     }
+
 
 }

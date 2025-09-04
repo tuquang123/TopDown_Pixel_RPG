@@ -9,7 +9,7 @@ public class PlayerDash : MonoBehaviour
     
     private bool isDashing = false;
     private Rigidbody2D rb;
-    private PlayerController playerMovement; // class đọc input joystick
+    private PlayerController playerMovement; 
     public bool IsDashing => isDashing;
 
     private void Awake()
@@ -18,16 +18,30 @@ public class PlayerDash : MonoBehaviour
         playerMovement = GetComponent<PlayerController>();
     }
 
-    public void PerformDash(SkillData skill , PlayerStats playerStats)
+    public void PerformDash(SkillData skill, PlayerStats playerStats)
     {
         if (isDashing) return;
-        
-        Transform target = playerMovement.GetTargetEnemy();
-        if (target == null) return;
 
-        Vector2 directionToTarget = (target.position - transform.position).normalized;
-        StartCoroutine(DashCoroutine(skill, directionToTarget, playerStats));
+        Transform target = playerMovement.GetTargetEnemy();
+        Vector2 direction;
+
+        if (target != null)
+        {
+            direction = (target.position - transform.position).normalized;
+        }
+        else
+        {
+            Vector2 inputDir = playerMovement.MoveInput;
+            if (inputDir.sqrMagnitude < 0.01f) 
+                return;
+
+            direction = inputDir.normalized;
+        }
+
+        StartCoroutine(DashCoroutine(skill, direction, playerStats));
     }
+
+
 
     private IEnumerator DashCoroutine(SkillData skill, Vector2 direction , PlayerStats playerStats)
     {
@@ -39,15 +53,13 @@ public class PlayerDash : MonoBehaviour
             playerMovement.RotateCharacter(direction.x);
         }
         
-        // ✅ Spawn dash VFX (ví dụ: khói hoặc hiệu ứng chớp nhoáng)
         var prefab = skill.GetPrefabAtLevel(playerStats.GetSkillLevel(skill.skillID));
         var vfx = Instantiate(prefab, transform.position, Quaternion.identity, transform);
         
         AudioManager.Instance.PlaySFX("Dash");
-
-        // ✅ Slow motion nhẹ
+        
         float originalTimeScale = Time.timeScale;
-        Time.timeScale = timeScale; // giảm thời gian 30% cho cảm giác slow motion
+        Time.timeScale = timeScale; 
 
         while (Time.time < startTime + dashDuration)
         {
@@ -57,11 +69,9 @@ public class PlayerDash : MonoBehaviour
 
         rb.linearVelocity = Vector2.zero;
         isDashing = false;
-
-        // ✅ Khôi phục thời gian
+        
         Time.timeScale = originalTimeScale;
-
-        // ✅ Hủy VFX
+        
         if (vfx != null) Destroy(vfx);
     }
 }

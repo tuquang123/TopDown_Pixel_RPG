@@ -88,6 +88,8 @@ public static class SaveManager
         
         equipment.ReapplyEquipmentStats(playerStats);
         skill.ReapplyPassiveSkills(playerStats);
+        
+        playerStats.Revive();
 
         if (data.levelData != null)
         {

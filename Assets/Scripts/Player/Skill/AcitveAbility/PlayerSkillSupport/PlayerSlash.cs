@@ -33,12 +33,10 @@ public class PlayerSlash : MonoBehaviour, IGameEventListener
             Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skill.skillName}");
             return;
         }
-
-        // Kiểm tra đủ mana
+        
         if (stats.currentMana < currentLevelStat.manaCost)
             return;
 
-        // Kiểm tra có ít nhất 1 enemy trong vùng chém
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
         bool hasTarget = false;
         foreach (var enemy in hitEnemies)
@@ -49,25 +47,27 @@ public class PlayerSlash : MonoBehaviour, IGameEventListener
                 break;
             }
         }
-
-        if (!hasTarget)
-        {
-            Debug.Log("Không có enemy trong phạm vi -> hủy Slash");
-            return;
-        }
-
-        // Trừ mana, bật animation và đánh
+        
         stats.UseMana(currentLevelStat.manaCost);
         anim.SetTrigger("9_Slash");
         stats.isUsingSkill = true;
-
-        StartCoroutine(SlashDelayAndDamage(skill));
+        
+        if (hasTarget)
+            StartCoroutine(SlashDelayAndDamage(skill));
+        else
+            StartCoroutine(SlashOnlyAnim());
     }
+
+    private IEnumerator SlashOnlyAnim()
+    {
+        yield return new WaitForSeconds(0.3f); 
+        stats.isUsingSkill = false;
+    }
+
     private IEnumerator SlashDelayAndDamage(SkillData skill)
     {
         yield return new WaitForSeconds(0.2f);
-
-        // Gọi hàm đánh đã gộp, không gây damage lên destructible
+        
         PlayerController.Instance.ApplyAttackDamage(true, skill);
 
         stats.isUsingSkill = false;
