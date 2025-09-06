@@ -116,11 +116,19 @@ public class ItemDetailPanel : MonoBehaviour
                 float flat = bonus.flat + (bonus.flat * upgradePercent * (item.upgradeLevel - 1));
                 float percent = bonus.percent;
 
+                bool showDecimal = (label == "Tốc đánh" || label == "Tốc phép"); // chỉ 2 stat này giữ 1 số lẻ
+
                 if (flat != 0)
-                    statsText += $"{label}: {Mathf.RoundToInt(flat)}{suffix}\n";
+                    statsText += showDecimal
+                        ? $"{label}: {flat:F1}{suffix}\n"
+                        : $"{label}: {Mathf.RoundToInt(flat)}{suffix}\n";
+
                 if (percent != 0)
-                    statsText += $"{label}: +{percent}%{suffix}\n";
+                    statsText += showDecimal
+                        ? $"{label}: +{percent:F1}%{suffix}\n"
+                        : $"{label}: +{percent}%{suffix}\n";
             }
+
 
             AddStatLine("Dame", itemData.attack);
             AddStatLine("Giáp", itemData.defense);

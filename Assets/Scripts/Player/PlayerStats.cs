@@ -37,6 +37,9 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
 
     [BoxGroup("Stats")]
     public Stat attackSpeed = new(1f);
+    
+    public float GetAttackSpeed() => Mathf.Min(attackSpeed.Value, 2.5f);
+
 
     [Title("Current Values (Runtime Only)")]
     [ReadOnly, ShowInInspector] private int currentHealth;

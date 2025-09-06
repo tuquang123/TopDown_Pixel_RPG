@@ -82,8 +82,29 @@ public class BossAI : EnemyAI
 
     protected override void Die()
     {
-        base.Die();
+        if (isDead) return;
+        isDead = true;
+
+        anim.SetTrigger(DieTrigger);
+        GetComponent<Collider2D>().enabled = false;
+        enabled = false;
+        
         bossHealthUI?.Hide();
+        
+        QuestManager.Instance.ReportProgress("BossKilled", EnemyName, 1);
+        GoldDropHelper.SpawnGoldBurst(
+            transform.position,
+            UnityEngine.Random.Range(10, 20), 
+            CommonReferent.Instance.goldPrefab
+        );
+        
+        StartCoroutine(DisableBossAfterDelay(2f));
+    }
+
+    private IEnumerator DisableBossAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        gameObject.SetActive(false);
     }
     
     private void OnDisable()

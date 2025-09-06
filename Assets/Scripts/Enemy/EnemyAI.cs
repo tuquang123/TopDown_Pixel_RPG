@@ -385,7 +385,7 @@ public class EnemyAI : MonoBehaviour , IDamageable
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
-    private static readonly int DieTrigger = Animator.StringToHash("4_Death");
+    protected static readonly int DieTrigger = Animator.StringToHash("4_Death");
 
 #if UNITY_EDITOR
     [Button("Auto Setup Rigidbody, Collider, Layer & UnitRoot")]

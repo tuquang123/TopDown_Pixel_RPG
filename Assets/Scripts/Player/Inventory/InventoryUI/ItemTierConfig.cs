@@ -32,7 +32,7 @@ public class StatRange
     public Vector2 critPercentRange = new Vector2(0, 1); // 0%–1%
 
     public Vector2 attackSpeedFlatRange = new Vector2(0, 0);
-    public Vector2 attackSpeedPercentRange = new Vector2(0, 2); // 0%–2%
+    public Vector2 attackSpeedPercentRange = new Vector2(0, 0); // 0%–2%
 
     public Vector2 lifeStealFlatRange = new Vector2(0, 0);
     public Vector2 lifeStealPercentRange = new Vector2(0, 0); // 0%–x%
@@ -89,7 +89,7 @@ public class ItemTierConfig : ScriptableObject
             critFlatRange = new Vector2(0, 20) * multiplier,
             critPercentRange = Vector2.zero,
 
-            attackSpeedFlatRange = new Vector2(0, 0) * multiplier,
+            attackSpeedFlatRange = new Vector2(0, .5f) * multiplier,
             attackSpeedPercentRange = Vector2.zero,
 
             lifeStealFlatRange = new Vector2(0, 10) * multiplier,

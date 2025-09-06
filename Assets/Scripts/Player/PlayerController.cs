@@ -139,7 +139,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
                 RotateCharacter(targetPos.x - playerPos.x);
             onFacing?.Invoke();
             
-            if (Time.time - lastAttackTime >= 1f / stats.attackSpeed.Value)
+            if (Time.time - lastAttackTime >= 1f / stats.GetAttackSpeed())
             {
                 if (stats.isUsingSkill) return;
                 if (targetEnemy != null)

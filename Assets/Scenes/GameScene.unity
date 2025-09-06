@@ -8287,7 +8287,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 409
+      value: 431
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
@@ -8363,7 +8363,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 125.8295
+      value: 136.8295
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -10554,7 +10554,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -26.20996}
+  m_AnchoredPosition: {x: 0, y: -26.209839}
   m_SizeDelta: {x: 0, y: 238.8003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1442887841
@@ -12697,7 +12697,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -2.8635254, y: 5.727051}
+  m_AnchoredPosition: {x: -2.8634949, y: 5.727051}
   m_SizeDelta: {x: -51.5424, y: -11.454}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1653671223
@@ -12766,7 +12766,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 38.65
+  m_fontSize: 36.6
   m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -15035,7 +15035,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -34.587402}
+  m_AnchoredPosition: {x: 0, y: -34.58728}
   m_SizeDelta: {x: 0, y: 266.8157}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1948363749
@@ -16287,8 +16287,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1841728213}
   m_HandleRect: {fileID: 1841728212}
   m_Direction: 2
-  m_Value: -0.0000026509772
-  m_Size: 0.84459704
+  m_Value: -0.0000010603898
+  m_Size: 0.83739555
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -33783,11 +33783,11 @@ MonoBehaviour:
   maxMana:
     baseValue: 100
   attack:
-    baseValue: 20
+    baseValue: 5
   defense:
     baseValue: 0
   speed:
-    baseValue: 2.5
+    baseValue: 2
   critChance:
     baseValue: 0
   lifeSteal:

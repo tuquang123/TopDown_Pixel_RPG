@@ -196,6 +196,8 @@ public class ItemData : ScriptableObject
 
     float RoundPercent(float v) => Mathf.Round(v * 10f) / 10f;
     float RoundFlat(float v) => Mathf.Round(v);
+    
+    float RoundFlatFloat(float v) => Mathf.Round(v * 10f) / 10f;
 
     price = UnityEngine.Random.Range(range.priceRange.x, range.priceRange.y + 1);
     baseUpgradeCost = UnityEngine.Random.Range(range.upgradeCostRange.x, range.upgradeCostRange.y + 1);
@@ -254,7 +256,7 @@ public class ItemData : ScriptableObject
     if (!lockAttackSpeed && rule.allowAttackSpeed)
     {
         attackSpeed = new ItemStatBonus(
-            RoundFlat(UnityEngine.Random.Range(range.attackSpeedFlatRange.x, range.attackSpeedFlatRange.y)),
+            RoundFlatFloat(UnityEngine.Random.Range(range.attackSpeedFlatRange.x, range.attackSpeedFlatRange.y)),
             RoundPercent(UnityEngine.Random.Range(range.attackSpeedPercentRange.x, range.attackSpeedPercentRange.y))
         );
     }
@@ -274,7 +276,7 @@ public class ItemData : ScriptableObject
     if (!lockSpeed && rule.allowSpeed)
     {
         speed = new ItemStatBonus(
-            RoundFlat(UnityEngine.Random.Range(range.speedFlatRange.x, range.speedFlatRange.y)),
+            RoundFlatFloat(UnityEngine.Random.Range(range.speedFlatRange.x, range.speedFlatRange.y)),
             RoundPercent(UnityEngine.Random.Range(range.speedPercentRange.x, range.speedPercentRange.y))
         );
     }
