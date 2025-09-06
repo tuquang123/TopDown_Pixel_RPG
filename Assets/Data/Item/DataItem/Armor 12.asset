@@ -10,46 +10,46 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
-  m_Name: Hourse 3
+  m_Name: Armor 12
   m_EditorClassIdentifier: 
-  itemID: hourse
-  itemName: Hourse
-  icon: {fileID: -7786538801905712091, guid: 30f45f9a124dd104caedd36e5a3f8a75, type: 3}
-  itemType: 5
-  tier: 1
-  price: 441
-  description: 'super horse
-
-'
+  itemID: armor1
+  itemName: Armor1
+  icon: {fileID: -2733704329670916693, guid: 0aba1c3d9e6814991b93ff6a9540656b, type: 3}
+  itemType: 1
+  tier: 0
+  price: 442
+  description: Lightweight and flexible
   attack:
-    flat: 102
+    flat: 23
     percent: 0
   defense:
-    flat: 22
+    flat: 11
     percent: 0
   health:
-    flat: 968
+    flat: 241
     percent: 0
   mana:
-    flat: 188
+    flat: 291
     percent: 0
   critChance:
-    flat: 16
+    flat: 3
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 10
+    flat: 8
     percent: 0
   speed:
-    flat: 1
+    flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 0}
-  iconRight: {fileID: 0}
-  horseData: {fileID: 11400000, guid: aaa8f088b24b1c34488d9d6b5d04642d, type: 2}
-  baseUpgradeCost: 172
+  iconLeft: {fileID: -3283878981979326925, guid: 0aba1c3d9e6814991b93ff6a9540656b,
+    type: 3}
+  iconRight: {fileID: -1496476315439836622, guid: 0aba1c3d9e6814991b93ff6a9540656b,
+    type: 3}
+  horseData: {fileID: 0}
+  baseUpgradeCost: 288
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

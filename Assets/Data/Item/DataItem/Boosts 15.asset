@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
+  m_Name: Boosts 15
+  m_EditorClassIdentifier: 
+  itemID: boosts8
+  itemName: Boosts8
+  icon: {fileID: -4207956258031686970, guid: 37e94653dd0034cee98125a6d5d6a2bf, type: 3}
+  itemType: 4
+  tier: 3
+  price: 388
+  description: up speed
+  attack:
+    flat: 141
+    percent: 0
+  defense:
+    flat: 39
+    percent: 0
+  health:
+    flat: 1459
+    percent: 0
+  mana:
+    flat: 208
+    percent: 0
+  critChance:
+    flat: 13
+    percent: 0
+  attackSpeed:
+    flat: 0
+    percent: 0
+  lifeSteal:
+    flat: 13
+    percent: 0
+  speed:
+    flat: 2
+    percent: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
+  iconLeft: {fileID: -4207956258031686970, guid: 37e94653dd0034cee98125a6d5d6a2bf,
+    type: 3}
+  iconRight: {fileID: -8972433390842509929, guid: 37e94653dd0034cee98125a6d5d6a2bf,
+    type: 3}
+  horseData: {fileID: 0}
+  baseUpgradeCost: 232
+  restoresHealth: 0
+  healthRestoreAmount: 0
+  restoresMana: 0
+  manaRestoreAmount: 0
+  percentageBased: 0
+  tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
+  lockAttack: 0
+  lockDefense: 0
+  lockHealth: 0
+  lockMana: 0
+  lockCrit: 0
+  lockAttackSpeed: 0
+  lockLifeSteal: 0
+  lockSpeed: 0
+  itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}

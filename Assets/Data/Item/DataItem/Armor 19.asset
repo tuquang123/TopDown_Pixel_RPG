@@ -10,46 +10,46 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
-  m_Name: Boosts
+  m_Name: Armor 19
   m_EditorClassIdentifier: 
-  itemID: boosts
-  itemName: Boosts
-  icon: {fileID: -1701842369826841683, guid: ed0836d2b0b084f2a842be7fa476e1e5, type: 3}
-  itemType: 4
-  tier: 0
-  price: 254
-  description: up speed
+  itemID: armor8
+  itemName: Armor8
+  icon: {fileID: -4637655676411158975, guid: 5ed80003cb7f545ab87b7c0b79ad2eed, type: 3}
+  itemType: 1
+  tier: 2
+  price: 576
+  description: Lightweight and flexible
   attack:
-    flat: 54
+    flat: 83
     percent: 0
   defense:
-    flat: 9
+    flat: 30
     percent: 0
   health:
-    flat: 194
+    flat: 934
     percent: 0
   mana:
-    flat: 251
+    flat: 387
     percent: 0
   critChance:
-    flat: 11
+    flat: 0
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 1
+    flat: 11
     percent: 0
   speed:
     flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: -1701842369826841683, guid: ed0836d2b0b084f2a842be7fa476e1e5,
+  iconLeft: {fileID: 4038240812463133292, guid: 5ed80003cb7f545ab87b7c0b79ad2eed,
     type: 3}
-  iconRight: {fileID: -6657482867516515422, guid: ed0836d2b0b084f2a842be7fa476e1e5,
+  iconRight: {fileID: 7972047035149555109, guid: 5ed80003cb7f545ab87b7c0b79ad2eed,
     type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 185
+  baseUpgradeCost: 390
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

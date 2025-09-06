@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
+  m_Name: SuperArmor 7
+  m_EditorClassIdentifier: 
+  itemID: armorsuper7
+  itemName: Knight's Helmet7
+  icon: {fileID: 8876508137973978904, guid: e0f672d1760234cecaebc26bc4c22b6e, type: 3}
+  itemType: 6
+  tier: 2
+  price: 1120
+  description: A sturdy stell helmet worn by noble knights
+  attack:
+    flat: 95
+    percent: 0
+  defense:
+    flat: 29
+    percent: 0
+  health:
+    flat: 2043
+    percent: 0
+  mana:
+    flat: 630
+    percent: 0
+  critChance:
+    flat: 12
+    percent: 0
+  attackSpeed:
+    flat: 0
+    percent: 0
+  lifeSteal:
+    flat: 18
+    percent: 0
+  speed:
+    flat: 0
+    percent: 0
+  color: {r: 1, g: 1, b: 1, a: 1}
+  iconLeft: {fileID: -2384050728755203925, guid: e0f672d1760234cecaebc26bc4c22b6e,
+    type: 3}
+  iconRight: {fileID: 1280680924109167244, guid: e0f672d1760234cecaebc26bc4c22b6e,
+    type: 3}
+  horseData: {fileID: 0}
+  baseUpgradeCost: 267
+  restoresHealth: 0
+  healthRestoreAmount: 0
+  restoresMana: 0
+  manaRestoreAmount: 0
+  percentageBased: 0
+  tierConfig: {fileID: 11400000, guid: b1bbbb16fe739db49bb5105223c6c386, type: 2}
+  lockAttack: 0
+  lockDefense: 0
+  lockHealth: 0
+  lockMana: 0
+  lockCrit: 0
+  lockAttackSpeed: 0
+  lockLifeSteal: 0
+  lockSpeed: 0
+  itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}

@@ -12,33 +12,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
   m_Name: SuperArmor
   m_EditorClassIdentifier: 
-  itemID: armorsuper
+  itemID: armorsupers
   itemName: Knight's Helmet
   icon: {fileID: 3193519689285016258, guid: cdf6ea08334f54b81b8e1bfb81a896c7, type: 3}
   itemType: 6
-  tier: 3
-  price: 591
+  tier: 4
+  price: 1120
   description: A sturdy stell helmet worn by noble knights
   attack:
-    flat: 180
+    flat: 95
     percent: 0
   defense:
-    flat: 28
+    flat: 29
     percent: 0
   health:
-    flat: 595
+    flat: 2043
     percent: 0
   mana:
-    flat: 430
+    flat: 630
     percent: 0
   critChance:
-    flat: 23
+    flat: 12
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 10
+    flat: 18
     percent: 0
   speed:
     flat: 0
@@ -49,7 +49,7 @@ MonoBehaviour:
   iconRight: {fileID: 7551784250672351729, guid: cdf6ea08334f54b81b8e1bfb81a896c7,
     type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 273
+  baseUpgradeCost: 267
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

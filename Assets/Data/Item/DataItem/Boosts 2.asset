@@ -12,44 +12,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
   m_Name: Boosts 2
   m_EditorClassIdentifier: 
-  itemID: bone boosts
-  itemName: Bone Boosts
-  icon: {fileID: -7657487650210245680, guid: bb53a852f02d94491bd324185eaa77ea, type: 3}
+  itemID: 'Pboosts '
+  itemName: Boosts
+  icon: {fileID: -1701842369826841683, guid: ed0836d2b0b084f2a842be7fa476e1e5, type: 3}
   itemType: 4
-  tier: 2
-  price: 319
+  tier: 0
+  price: 254
   description: up speed
   attack:
-    flat: 79
+    flat: 54
     percent: 0
   defense:
-    flat: 12
+    flat: 9
     percent: 0
   health:
-    flat: 325
+    flat: 194
     percent: 0
   mana:
-    flat: 387
+    flat: 251
     percent: 0
   critChance:
-    flat: 9
+    flat: 11
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 5
-    percent: 0
-  speed:
     flat: 1
     percent: 0
+  speed:
+    flat: 0
+    percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: -2016631381429734677, guid: 6dc30e5993cb04a47a6845283a352d2e,
+  iconLeft: {fileID: -1701842369826841683, guid: ed0836d2b0b084f2a842be7fa476e1e5,
     type: 3}
-  iconRight: {fileID: 2525852049797594121, guid: 6dc30e5993cb04a47a6845283a352d2e,
+  iconRight: {fileID: -6657482867516515422, guid: ed0836d2b0b084f2a842be7fa476e1e5,
     type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 166
+  baseUpgradeCost: 185
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
