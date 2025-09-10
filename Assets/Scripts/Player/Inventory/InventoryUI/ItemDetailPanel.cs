@@ -13,7 +13,7 @@ public class ItemDetailPanel : MonoBehaviour
     public Button sellButton;
     public TMP_Text sellPriceText;
     public TMP_Text tierText;
-    public Image icon;
+    public ItemIconHandler icon;
     public Image tier;
 
     private ItemInstance currentItem;
@@ -54,7 +54,7 @@ public class ItemDetailPanel : MonoBehaviour
         else
             nameText.text = itemData.itemName;
 
-        icon.sprite = itemData.icon;
+        icon.SetupIcons(item);
         tier.color =  ItemUtility.GetColorByTier(item.itemData.tier);
         tierText.text = $"{item.itemData.tier}";
         descriptionText.text = itemData.description;

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class EquipmentSlotUI : MonoBehaviour
 {
-    public Image icon;
+    public ItemIconHandler icon;
     public Image iconDefault;
     public Image background;
     public Button button;      

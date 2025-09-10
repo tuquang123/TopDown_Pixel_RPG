@@ -1,10 +1,14 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ItemUI : MonoBehaviour
 {
-    public Image itemIcon;
     public Image backgroundImage;
+    
+    public TMP_Text name;
+
+    public ItemIconHandler icon;
 
     private ItemInstance itemData;
     private InventoryUI inventoryUI;
@@ -14,11 +18,18 @@ public class ItemUI : MonoBehaviour
         itemData = data;
         inventoryUI = ui;
 
-        itemIcon.sprite = data.itemData.icon;
+        icon.SetupIcons(data);
+        
+        name.text = data.itemData.itemName;
+
+        // Background màu theo tier
         backgroundImage.color = ItemUtility.GetColorByTier(data.itemData.tier);
 
+        // Click để show detail
+        GetComponent<Button>().onClick.RemoveAllListeners();
         GetComponent<Button>().onClick.AddListener(OnItemClicked);
     }
+
 
     private void OnItemClicked()
     {
