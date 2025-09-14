@@ -4,39 +4,36 @@ using UnityEngine.UI;
 
 public class ShopItemUI : MonoBehaviour
 {
-    public Image icon;
+    public ItemIconHandler icon;
     public Image backgroundImage; 
     public TMP_Text nameText;
     public TMP_Text priceText;
     public TMP_Text tierText;
     public Button buyButton;
-
-    private ItemData itemData;
+    
     private ShopUI shopUI;
+    private ItemInstance itemInstance;
 
-    public void Setup(ItemData data, ShopUI ui)
+    public void Setup(ItemInstance instance, ShopUI ui)
     {
-        itemData = data;
+        itemInstance = instance;
         shopUI = ui;
 
-        if (itemData == null)
-        {
-            Debug.LogError("ItemData is null in ShopItemUI.Setup.");
-            return;
-        }
+        var data = instance.itemData; 
+        icon.SetupIcons(instance);
 
-        icon.sprite = data.icon;
-        nameText.text = data.itemName; 
+        nameText.text = data.itemName;
         tierText.text = data.tier.ToString();
         priceText.text = $"{data.price}";
-        backgroundImage.color = ItemUtility.GetColorByTier(data.tier); 
+        backgroundImage.color = ItemUtility.GetColorByTier(data.tier);
 
         buyButton.onClick.RemoveAllListeners();
-        buyButton.onClick.AddListener(() => shopUI.BuyItem(itemData));
-
+        buyButton.onClick.AddListener(() => shopUI.BuyItem(itemInstance));
+        
         UpdateButtonState(CurrencyManager.Instance.Gold);
         CurrencyManager.Instance.OnGoldChanged += UpdateButtonState;
     }
+    
 
     public void RefreshState()
     {
@@ -45,14 +42,17 @@ public class ShopItemUI : MonoBehaviour
 
     private void UpdateButtonState(int gold)
     {
-        if (itemData == null || shopUI == null || shopUI.playerInventory == null) return;
+        if (itemInstance == null || itemInstance.itemData == null || shopUI == null || shopUI.playerInventory == null) 
+            return;
 
+        var data = itemInstance.itemData;
         bool isPurchased = false;
 
         // ✅ Check trong inventory
-        foreach (var item in shopUI.playerInventory.items)
+        foreach (var invItem in shopUI.playerInventory.items)
         {
-            if (item.itemData != null && item.itemData.itemID == itemData.itemID)
+            if (invItem == null || invItem.itemData == null) continue; // bỏ slot trống
+            if (invItem.itemData.itemID == data.itemID)
             {
                 isPurchased = true;
                 break;
@@ -67,7 +67,8 @@ public class ShopItemUI : MonoBehaviour
             {
                 foreach (var kvp in equipment.equippedItems)
                 {
-                    if (kvp.Value != null && kvp.Value.itemData.itemID == itemData.itemID)
+                    if (kvp.Value == null || kvp.Value.itemData == null) continue;
+                    if (kvp.Value.itemData.itemID == data.itemID)
                     {
                         isPurchased = true;
                         break;
@@ -76,20 +77,21 @@ public class ShopItemUI : MonoBehaviour
             }
         }
 
+        // ✅ Cập nhật UI nút
         if (isPurchased)
         {
             buyButton.interactable = false;
             priceText.text = "Đã mua";
+            Debug.Log($"[ShopItemUI] {data.itemName} đã tồn tại trong inventory/equipment.");
         }
         else
         {
-            buyButton.interactable = gold >= itemData.price;
-            priceText.text = $"{itemData.price}";
+            buyButton.interactable = gold >= data.price;
+            priceText.text = $"{data.price}";
+            Debug.Log($"[ShopItemUI] {data.itemName} chưa mua. Gold: {gold}/{data.price} → interactable={buyButton.interactable}");
         }
     }
-
-
-
+    
     private void OnDestroy()
     {
         if (CurrencyManager.Instance != null)

@@ -17,14 +17,5 @@ public class ShopManager : MonoBehaviour
         {
             Debug.LogError("CurrencyManager.Instance is null in ShopManager.");
         }
-
-        if (shopUI != null)
-        {
-            shopUI.SetupShop(shopItems);
-        }
-        else
-        {
-            Debug.LogError("ShopUI is null in ShopManager.");
-        }
     }
 }

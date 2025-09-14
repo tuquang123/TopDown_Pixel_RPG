@@ -4,12 +4,14 @@ using UnityEngine.UI;
 public class ItemIconHandler : MonoBehaviour
 {
     [Header("Icons")]
-    public Image itemIcon;
+    public Image itemIcon;          
     public Image itemIconBody;
     public Image itemIconLeft;
     public Image itemIconRight;
     public Image itemIconLegLeft;
     public Image itemIconLegRight;
+    public Image itemIconHair;       
+    public Image itemIconWeapon;     
 
     public void SetupIcons(ItemInstance data)
     {
@@ -29,6 +31,14 @@ public class ItemIconHandler : MonoBehaviour
                 SetIcon(itemIconLegRight, data.itemData.iconRight);
                 break;
 
+            case ItemType.Hair: 
+                SetIcon(itemIconHair, data.itemData.icon);
+                break;
+
+            case ItemType.Weapon: 
+                SetIcon(itemIconWeapon, data.itemData.icon);
+                break;
+
             default:
                 SetIcon(itemIcon, data.itemData.icon);
                 break;
@@ -43,6 +53,8 @@ public class ItemIconHandler : MonoBehaviour
         itemIconRight.gameObject.SetActive(false);
         itemIconLegLeft.gameObject.SetActive(false);
         itemIconLegRight.gameObject.SetActive(false);
+        itemIconHair.gameObject.SetActive(false);     
+        itemIconWeapon.gameObject.SetActive(false);   
     }
 
     private void SetIcon(Image img, Sprite sprite)

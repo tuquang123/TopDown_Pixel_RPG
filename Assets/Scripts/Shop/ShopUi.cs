@@ -34,36 +34,43 @@ public class ShopUI : BasePopup
             if (item == null) continue;
             var uiObj = Instantiate(itemUIPrefab, contentParent);
             var shopItemUI = uiObj.GetComponent<ShopItemUI>();
-            shopItemUI.Setup(item, this);
+            
+            var tempInstance = new ItemInstance(item);  
+            shopItemUI.Setup(tempInstance, this);
+
             shopItemUIs.Add(shopItemUI);
         }
+
     }
 
-    public void BuyItem(ItemData item)
+    public void BuyItem(ItemInstance instance)
     {
-        if (item == null)
+        if (instance == null || instance.itemData == null)
         {
-            Debug.LogError("ItemData is null in BuyItem.");
+            Debug.LogError("ItemInstance hoặc ItemData null trong BuyItem.");
             return;
         }
 
-        ItemInstance itemInstance = new ItemInstance(item);
-
+        var data = instance.itemData;
+        
         foreach (var invItem in playerInventory.items)
         {
-            if (invItem.itemData.itemID == item.itemID)
+            if (invItem.itemData.itemID == data.itemID)
             {
-                Debug.Log($"{item.itemName} đã mua rồi.");
+                Debug.Log($"{data.itemName} đã mua rồi.");
                 return;
             }
         }
 
-        if (CurrencyManager.Instance.SpendGold(item.price))
+        if (CurrencyManager.Instance.SpendGold(data.price))
         {
-            playerInventory.AddItem(itemInstance);
+            var newInstance = new ItemInstance(data);
+
+            playerInventory.AddItem(newInstance);
             inventoryUI.UpdateInventoryUI();
             RefreshShopUI();
-            Debug.Log($"Đã mua {item.itemName} với giá {item.price} vàng.");
+
+            Debug.Log($"Đã mua {data.itemName} với giá {data.price} vàng.");
             GameEvents.OnShowToast.Raise("Succes purchase Item!");
         }
         else
@@ -72,6 +79,7 @@ public class ShopUI : BasePopup
             GameEvents.OnShowToast.Raise("Gold not enough!");
         }
     }
+
 
     private void RefreshShopUI()
     {
