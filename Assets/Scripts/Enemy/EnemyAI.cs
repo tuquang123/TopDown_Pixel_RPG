@@ -1,4 +1,5 @@
 // ================= EnemyAI.cs =================
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,13 +10,11 @@ using Random = UnityEngine.Random;
 [System.Serializable]
 public class EnemyDropItem
 {
-    public ItemData item;        // Item có thể rơi
-    [Range(0f, 1f)] public float dropChance = 0.2f;  // 20% rơi
-    public int minAmount = 1;
-    public int maxAmount = 1;
+    public ItemData item; // Item có thể rơi
+    [Range(0f, 1f)] public float dropChance = 0.2f; // 20% rơi
 }
 
-public class EnemyAI : MonoBehaviour , IDamageable
+public class EnemyAI : MonoBehaviour, IDamageable
 {
     #region Base Info
 
@@ -125,7 +124,7 @@ public class EnemyAI : MonoBehaviour , IDamageable
         get => enemyHealthUI;
         set => enemyHealthUI = value;
     }
-    
+
     [BoxGroup("Drops"), LabelText("Gold Min-Max")]
     public Vector2Int goldRange = new Vector2Int(1, 5);
 
@@ -169,7 +168,7 @@ public class EnemyAI : MonoBehaviour , IDamageable
             anim.SetBool(MoveBool, false);
         }
     }
-    
+
     public void ApplyLevelData(EnemyLevelData data)
     {
         if (data == null)
@@ -280,7 +279,7 @@ public class EnemyAI : MonoBehaviour , IDamageable
             damageable.TakeDamage(attackDamage);
         }
     }
-    
+
     public virtual void TakeDamage(int damage, bool isCrit = false)
     {
         if (isDead) return;
@@ -363,34 +362,46 @@ public class EnemyAI : MonoBehaviour , IDamageable
         }
 
         // --- DROP ITEM ---
+// B1: Tính tổng tỉ lệ
+        float totalChance = 0f;
+        foreach (var drop in dropItems)
+            totalChance += drop.dropChance;
+
+// B2: Random trong [0..totalChance)
+        float roll = Random.value * totalChance;
+        float cumulative = 0f;
+
+        EnemyDropItem chosenDrop = null;
+
         foreach (var drop in dropItems)
         {
-            float roll = Random.value; // 0..1
-            if (roll <= drop.dropChance && drop.item != null)
+            cumulative += drop.dropChance;
+            if (roll <= cumulative)
             {
-                int amount = Random.Range(drop.minAmount, drop.maxAmount + 1);
-                for (int i = 0; i < amount; i++)
-                { 
-                    // ITEM DROP với tỉ lệ
-                    float dropChance = 0.3f; // 30%
-                    if (Random.value < dropChance)
-                    {
-                        string randomItemID = "Sword1"; // hoặc chọn ngẫu nhiên từ bảng loot
-                        GameObject prefab = CommonReferent.Instance.itemDropPrefab;
-                        GameObject dropitem = ObjectPooler.Instance.Get(prefab.name, prefab, transform.position, Quaternion.identity);
-
-                        ItemDrop itemDrop = dropitem.GetComponent<ItemDrop>();
-                        itemDrop.itemID = randomItemID;
-                        itemDrop.quantity = 1;
-                    }
-                
-                    // Nếu muốn add trực tiếp vào túi đồ thay vì spawn
-                    Inventory.Instance.AddItem(new ItemInstance(drop.item));
-                    RewardPopupManager.Instance.ShowReward(drop.item.icon, drop.item.itemName, 1);
-
-                    Debug.Log($"{enemyName} dropped {drop.item.itemName}");
-                }
+                chosenDrop = drop;
+                break;
             }
+        }
+
+// B3: Spawn nếu có item hợp lệ
+        if (chosenDrop != null && chosenDrop.item != null)
+        {
+            int amount = 1; // hoặc random trong khoảng min/max tùy bạn
+
+            GameObject prefab = CommonReferent.Instance.itemDropPrefab;
+            GameObject dropObj = ObjectPooler.Instance.Get(
+                prefab.name,
+                prefab,
+                transform.position,
+                Quaternion.identity
+            );
+
+            ItemDrop itemDrop = dropObj.GetComponent<ItemDrop>();
+            itemDrop.Setup(chosenDrop.item, amount);
+
+            //RewardPopupManager.Instance.ShowReward(chosenDrop.item.icon, chosenDrop.item.itemName, amount);
+
+            Debug.Log($"{enemyName} dropped {chosenDrop.item.itemName} x{amount}");
         }
 
         // UI máu
@@ -515,6 +526,7 @@ public class EnemyAI : MonoBehaviour , IDamageable
 
         return false;
     }
+
     private void OnDrawGizmosSelected()
     {
         // Vẽ detection range (vòng xanh)

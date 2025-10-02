@@ -101,9 +101,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 442309a694aea9846aebcdcff29a77cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  value: 1
+  value: 15
   flyDuration: 0.3
   autoCollectDelay: 0.5
+  collectDelayAfterReady: 0.2
   attractRange: 3
   pickupDistance: 0.3
-  tweenDuration: 0.5
+  attractSpeed: 10

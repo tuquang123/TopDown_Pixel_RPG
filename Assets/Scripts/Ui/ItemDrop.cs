@@ -1,20 +1,19 @@
 ﻿using UnityEngine;
 using DG.Tweening;
+using TMPro;
+using UnityEngine.UI;
 
 public class ItemDrop : MonoBehaviour, IPooledObject
 {
-    public string itemID;              // ID item trong database
-    public int quantity = 1;           // số lượng nhặt được
-
     [Header("Timings")]
-    public float flyDuration = 0.3f;               // bay tung nhẹ ban đầu
-    public float autoCollectDelay = 0.5f;          // delay trước khi hút
-    public float collectDelayAfterReady = 0.2f;    // delay thêm trước khi hút
+    public float flyDuration = 0.3f;               
+    public float autoCollectDelay = 0.5f;          
+    public float collectDelayAfterReady = 0.2f;   
 
     [Header("Collect Settings")]
-    public float attractRange = 3f;                // khoảng cách xét hút
-    public float pickupDistance = 0.25f;           // khoảng cách chạm player
-    public float attractSpeed = 10f;               // tốc độ hút
+    public float attractRange = 3f;               
+    public float pickupDistance = 0.25f;          
+    public float attractSpeed = 10f;               
 
     private Transform player;
     private Tween flyTween;
@@ -25,6 +24,20 @@ public class ItemDrop : MonoBehaviour, IPooledObject
     private bool isReadyToCollect = false;
     private bool isCollecting = false;
 
+    [Header("UI References")]
+    [SerializeField] private SpriteRenderer iconImage;
+
+    [HideInInspector] public string itemID;
+    [HideInInspector] public int quantity;
+
+    public void Setup(ItemData data, int amount)
+    {
+        itemID = data.itemID;
+        quantity = amount;
+
+        // Update UI
+        if (iconImage != null) iconImage.sprite = data.icon;
+    }
     public void OnObjectSpawn()
     {
         if (player == null)

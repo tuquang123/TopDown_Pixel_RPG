@@ -4032,12 +4032,10 @@ MonoBehaviour:
   damagedStunTime: 0.3
   bloodVFXOffset: {x: 0, y: 0.5, z: 0}
   timeDieDelay: 0.65
-  goldRange: {x: 1, y: 5}
+  goldRange: {x: 1, y: 100}
   dropItems:
   - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
     dropChance: 0.8
-    minAmount: 1
-    maxAmount: 100
   projectilePrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9,
     type: 3}
   firePoint: {fileID: 4481364031007190528}

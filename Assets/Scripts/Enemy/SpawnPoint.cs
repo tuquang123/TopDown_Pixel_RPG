@@ -26,7 +26,7 @@ public class SpawnPoint : MonoBehaviour
         }
         
         _currentEnemy = ObjectPooler.Instance.Get(
-            enemyPrefab.name, enemyPrefab, transform.position, Quaternion.identity, initSize: 10, expandable: true
+            enemyPrefab.name, enemyPrefab, transform.position, Quaternion.identity, initSize: 30, expandable: true
         );
 
         if (_currentEnemy == null) return;
