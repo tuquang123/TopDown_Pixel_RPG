@@ -171,6 +171,7 @@ public class ItemData : ScriptableObject
     [BoxGroup("Randomizer")] public bool lockSpeed;
 
     public ItemDatabase itemDataBase;
+    public GameObject prefab;
 
     [BoxGroup("Randomizer")]
     [InfoBox("Nhấn để random lại cả flat và % theo tier. Bật lock để giữ stat cụ thể khi reroll.")]

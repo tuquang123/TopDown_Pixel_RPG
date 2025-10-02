@@ -26,4 +26,5 @@ public class CommonReferent : Singleton<CommonReferent>
     public GameObject dialogShopBtn;
     public Sprite iconGold;
     public Sprite iconExp;
+    public GameObject itemDropPrefab;
 }

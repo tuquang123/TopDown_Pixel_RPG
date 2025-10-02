@@ -2191,6 +2191,8 @@ MonoBehaviour:
   dialogShopBtn: {fileID: 1145523316}
   iconGold: {fileID: 21300000, guid: 0a38e31b2944c634dbc2d3f32d55188c, type: 3}
   iconExp: {fileID: 21300000, guid: 3b5776aaeee2fae49a2c36d2b86b1144, type: 3}
+  itemDropPrefab: {fileID: 4356269681339680784, guid: 811219cbca279fe45a80c1b1a0a96c63,
+    type: 3}
 --- !u!4 &247927438
 Transform:
   m_ObjectHideFlags: 0
@@ -9230,11 +9232,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 429
+      value: 422
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 421.91998
+      value: 417.59998
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalScale.x
@@ -9282,7 +9284,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 150.83643
+      value: 149.29199
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -9298,19 +9300,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 157.341
+      value: 155.73
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 157.341
+      value: 155.73
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 135.8295
+      value: 133.13501
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 65.661285
+      value: 64.98901
       objectReference: {fileID: 0}
     - target: {fileID: 22508766, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_Alpha
@@ -10253,7 +10255,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1003106417}
   m_HandleRect: {fileID: 1003106416}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -12968,7 +12970,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 165543743}
   m_HandleRect: {fileID: 165543742}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -13910,7 +13912,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 37.4
+  m_fontSize: 37.9
   m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -17433,7 +17435,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1841728212}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.83833843
+  m_Size: 0.83897054
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

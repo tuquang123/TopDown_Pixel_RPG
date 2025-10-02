@@ -1,9 +1,19 @@
 // ================= EnemyAI.cs =================
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using Random = UnityEngine.Random;
+
+[System.Serializable]
+public class EnemyDropItem
+{
+    public ItemData item;        // Item có thể rơi
+    [Range(0f, 1f)] public float dropChance = 0.2f;  // 20% rơi
+    public int minAmount = 1;
+    public int maxAmount = 1;
+}
 
 public class EnemyAI : MonoBehaviour , IDamageable
 {
@@ -115,6 +125,13 @@ public class EnemyAI : MonoBehaviour , IDamageable
         get => enemyHealthUI;
         set => enemyHealthUI = value;
     }
+    
+    [BoxGroup("Drops"), LabelText("Gold Min-Max")]
+    public Vector2Int goldRange = new Vector2Int(1, 5);
+
+    [BoxGroup("Drops"), LabelText("Item Drops")]
+    public List<EnemyDropItem> dropItems = new List<EnemyDropItem>();
+
 
     protected virtual void Start()
     {
@@ -335,11 +352,47 @@ public class EnemyAI : MonoBehaviour , IDamageable
 
         OnDeath?.Invoke();
 
-        // Báo cáo quest
+        // Quest report
         QuestManager.Instance.ReportProgress("NV1", enemyName, 1);
 
-        GoldDropHelper.SpawnGoldBurst(transform.position, Random.Range(3, 6), CommonReferent.Instance.goldPrefab);
-        
+        // --- DROP GOLD ---
+        int goldAmount = Random.Range(goldRange.x, goldRange.y + 1);
+        if (goldAmount > 0)
+        {
+            GoldDropHelper.SpawnGoldBurst(transform.position, goldAmount, CommonReferent.Instance.goldPrefab);
+        }
+
+        // --- DROP ITEM ---
+        foreach (var drop in dropItems)
+        {
+            float roll = Random.value; // 0..1
+            if (roll <= drop.dropChance && drop.item != null)
+            {
+                int amount = Random.Range(drop.minAmount, drop.maxAmount + 1);
+                for (int i = 0; i < amount; i++)
+                { 
+                    // ITEM DROP với tỉ lệ
+                    float dropChance = 0.3f; // 30%
+                    if (Random.value < dropChance)
+                    {
+                        string randomItemID = "Sword1"; // hoặc chọn ngẫu nhiên từ bảng loot
+                        GameObject prefab = CommonReferent.Instance.itemDropPrefab;
+                        GameObject dropitem = ObjectPooler.Instance.Get(prefab.name, prefab, transform.position, Quaternion.identity);
+
+                        ItemDrop itemDrop = dropitem.GetComponent<ItemDrop>();
+                        itemDrop.itemID = randomItemID;
+                        itemDrop.quantity = 1;
+                    }
+                
+                    // Nếu muốn add trực tiếp vào túi đồ thay vì spawn
+                    Inventory.Instance.AddItem(new ItemInstance(drop.item));
+                    RewardPopupManager.Instance.ShowReward(drop.item.icon, drop.item.itemName, 1);
+
+                    Debug.Log($"{enemyName} dropped {drop.item.itemName}");
+                }
+            }
+        }
+
         // UI máu
         if (enemyHealthUI != null)
         {
@@ -353,6 +406,7 @@ public class EnemyAI : MonoBehaviour , IDamageable
         StartCoroutine(DisableAfterDelay(timeDieDelay));
         OnEnemyDefeated?.Invoke(50);
     }
+
 
     private IEnumerator DisableAfterDelay(float delay)
     {
