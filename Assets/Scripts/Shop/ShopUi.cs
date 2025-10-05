@@ -8,11 +8,14 @@ public class ShopUI : BasePopup
     public Inventory playerInventory;
     public InventoryUI inventoryUI;
     private List<ShopItemUI> shopItemUIs = new();
+    public ShopDetailPopup detailPopup; 
 
     public override void Show()
     {
         base.Show();
         RefreshShopUI(); 
+        if (detailPopup != null)
+            detailPopup.Setup(this);
     }
 
     public void SetupShop(List<ItemData> items)

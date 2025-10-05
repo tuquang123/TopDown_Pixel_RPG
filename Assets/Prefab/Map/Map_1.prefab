@@ -145,11 +145,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bossPrefab: {fileID: 7307690110532538079}
   timeBoss: 10
-  spawnPoints:
-  - {fileID: 7307112013923674598}
-  - {fileID: 8881585108012981647}
-  - {fileID: 8650217232632983322}
-  - {fileID: 4574524570701473129}
 --- !u!1 &1192031408371726221
 GameObject:
   m_ObjectHideFlags: 0
@@ -245,7 +240,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2714226273528533050
 Transform:
   m_ObjectHideFlags: 0
@@ -21188,7 +21183,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3951073704684016648
 Transform:
   m_ObjectHideFlags: 0
@@ -21776,7 +21771,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &302335878806263501
 Transform:
   m_ObjectHideFlags: 0
@@ -28776,9 +28771,9 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 5
+      m_TileSpriteIndex: 6
       m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
+      m_TileColorIndex: 2
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741827
@@ -28836,9 +28831,9 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 5
+      m_TileSpriteIndex: 6
       m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
+      m_TileColorIndex: 2
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741827
@@ -28949,9 +28944,9 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 4
     m_Data: {fileID: 21300034, guid: ed7554aeefd5da44a9fe1ee9b93afe77, type: 3}
-  - m_RefCount: 2
-    m_Data: {fileID: 0}
   - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 2
     m_Data: {fileID: 0}
   m_TileMatrixArray:
   - m_RefCount: 38
@@ -28975,10 +28970,10 @@ Tilemap:
   m_TileColorArray:
   - m_RefCount: 36
     m_Data: {r: 1, g: 1, b: 1, a: 1}
-  - m_RefCount: 2
-    m_Data: {r: 0.72345495, g: 0.36508596, b: 0.40179142, a: 1}
   - m_RefCount: 0
-    m_Data: {r: 1.74734e-40, g: 1.74734e-40, b: 1.74734e-40, a: 1.74734e-40}
+    m_Data: {r: 2.52606e-40, g: 2.52606e-40, b: 2.52606e-40, a: 2.52606e-40}
+  - m_RefCount: 2
+    m_Data: {r: 0.73930675, g: 0.40567496, b: 0.4597466, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -30068,10 +30063,10 @@ MonoBehaviour:
   enemyName: Boss
   enemyLevel: 1
   maxHealth: 1000
-  attackDamage: 20
+  attackDamage: 1
   attackRange: 1.5
   detectionRange: 20
-  attackCooldown: 1
+  attackCooldown: 3
   skipHurtAnimation: 1
   moveSpeed: 2
   knockForce: 3
@@ -30079,8 +30074,19 @@ MonoBehaviour:
   damagedStunTime: 0
   bloodVFXOffset: {x: 0, y: 0.7, z: 0}
   timeDieDelay: 60
+  goldRange: {x: 1, y: 5}
+  dropItems: []
   specialAttackCooldown: 5
   bossHealthUI: {fileID: 0}
+  minionPrefab: {fileID: 2970206300379713479, guid: a69260f2b7402d149a15e280862de3b1,
+    type: 3}
+  bulletPrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9,
+    type: 3}
+  dashSpeed: 10
+  dashDuration: 0.3
+  minionCooldown: 10
+  dashCooldown: 8
+  shootCooldown: 6
 --- !u!1 &7414422825097775132
 GameObject:
   m_ObjectHideFlags: 0
@@ -30426,9 +30432,9 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 5
+      m_TileSpriteIndex: 6
       m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
+      m_TileColorIndex: 2
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741827
@@ -30486,9 +30492,9 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 5
+      m_TileSpriteIndex: 6
       m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
+      m_TileColorIndex: 2
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
       m_AllTileFlags: 1073741827
@@ -30599,9 +30605,9 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 4
     m_Data: {fileID: 21300034, guid: ed7554aeefd5da44a9fe1ee9b93afe77, type: 3}
-  - m_RefCount: 2
-    m_Data: {fileID: 0}
   - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 2
     m_Data: {fileID: 0}
   m_TileMatrixArray:
   - m_RefCount: 38
@@ -30625,10 +30631,10 @@ Tilemap:
   m_TileColorArray:
   - m_RefCount: 36
     m_Data: {r: 1, g: 1, b: 1, a: 1}
-  - m_RefCount: 2
-    m_Data: {r: 0.7310325, g: 0.48017302, b: 0.5247225, a: 1}
   - m_RefCount: 0
-    m_Data: {r: 1.74927e-40, g: 1.74927e-40, b: 1.74927e-40, a: 1.74927e-40}
+    m_Data: {r: 2.528e-40, g: 2.528e-40, b: 2.528e-40, a: 2.528e-40}
+  - m_RefCount: 2
+    m_Data: {r: 0.929701, g: 0.4647749, b: 0.50575745, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -35463,7 +35469,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2257206456690428037
 Transform:
   m_ObjectHideFlags: 0

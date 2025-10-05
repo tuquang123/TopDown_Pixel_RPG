@@ -13,7 +13,7 @@ public class ShopItemUI : MonoBehaviour
     
     private ShopUI shopUI;
     private ItemInstance itemInstance;
-
+    
     public void Setup(ItemInstance instance, ShopUI ui)
     {
         itemInstance = instance;
@@ -28,8 +28,12 @@ public class ShopItemUI : MonoBehaviour
         backgroundImage.color = ItemUtility.GetColorByTier(data.tier);
 
         buyButton.onClick.RemoveAllListeners();
-        buyButton.onClick.AddListener(() => shopUI.BuyItem(itemInstance));
-        
+        buyButton.onClick.AddListener(() => 
+        {
+            if (shopUI.detailPopup != null)
+                shopUI.detailPopup.ShowDetail(itemInstance);
+        });
+
         UpdateButtonState(CurrencyManager.Instance.Gold);
         CurrencyManager.Instance.OnGoldChanged += UpdateButtonState;
     }

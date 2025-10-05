@@ -3917,9 +3917,9 @@ MonoBehaviour:
   enemyName: Goblin
   enemyLevel: 1
   maxHealth: 100
-  attackDamage: 15
+  attackDamage: 1
   attackRange: 1
-  detectionRange: 1.5
+  detectionRange: 5
   attackCooldown: 3.5
   skipHurtAnimation: 0
   moveSpeed: 0.7
@@ -3928,10 +3928,8 @@ MonoBehaviour:
   damagedStunTime: 0.2
   bloodVFXOffset: {x: 0.2, y: 0, z: 0}
   timeDieDelay: 0.65
-  goldRange: {x: 1, y: 100}
-  dropItems:
-  - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
-    dropChance: 0.8
+  goldRange: {x: 1, y: 5}
+  dropItems: []
 --- !u!50 &-6464519558615421790
 Rigidbody2D:
   serializedVersion: 5

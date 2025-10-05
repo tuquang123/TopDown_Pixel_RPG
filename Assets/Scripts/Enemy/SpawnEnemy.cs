@@ -11,9 +11,8 @@ public class SpawnEnemy : MonoBehaviour
     [Title("Spawn Points Settings")] [Tooltip("Các điểm spawn cố định")] [ReadOnly] [ShowInInspector]
     private Camera mainCamera;
     
-    [SerializeField] private SpawnPoint[] spawnPoints;
+    //[SerializeField] private SpawnPoint[] spawnPoints;
     
-
     private void Start()
     {
         if (bossPrefab == null) return;

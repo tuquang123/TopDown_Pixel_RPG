@@ -118,7 +118,10 @@ public class EnemyAI : MonoBehaviour, IDamageable
     public int EnemyLevel => enemyLevel;
 
     protected EnemyHealthUI enemyHealthUI;
-
+    
+    [Header("Enemy Type")]
+    public bool isBoss = false;
+    
     public EnemyHealthUI EnemyHealthUI
     {
         get => enemyHealthUI;
@@ -273,6 +276,9 @@ public class EnemyAI : MonoBehaviour, IDamageable
     public void DealDamageToTarget()
     {
         if (target == null) return;
+        
+        float distance = Vector2.Distance(transform.position, target.position);
+        if (distance > attackRange) return;
 
         if (target.TryGetComponent(out IDamageable damageable))
         {
@@ -414,11 +420,16 @@ public class EnemyAI : MonoBehaviour, IDamageable
         enemyHealthUI?.HideUI();
         EnemyTracker.Instance.Unregister(this);
 
+        if (isBoss)
+        {
+            OnEnemyDefeated?.Invoke(100); // hoặc phần thưởng khác
+            return; // Dừng ở đây, không respawn lại
+        }
+        
         StartCoroutine(DisableAfterDelay(timeDieDelay));
-        OnEnemyDefeated?.Invoke(50);
+       
     }
-
-
+    
     private IEnumerator DisableAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
