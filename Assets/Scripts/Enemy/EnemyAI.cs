@@ -422,8 +422,8 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
         if (isBoss)
         {
-            OnEnemyDefeated?.Invoke(100); // hoặc phần thưởng khác
-            return; // Dừng ở đây, không respawn lại
+            OnEnemyDefeated?.Invoke(100); 
+            return;
         }
         
         StartCoroutine(DisableAfterDelay(timeDieDelay));

@@ -7,31 +7,21 @@ public class SpawnEnemy : MonoBehaviour
     private GameObject bossPrefab;
 
     public int timeBoss = 15;
-
-    [Title("Spawn Points Settings")] [Tooltip("Các điểm spawn cố định")] [ReadOnly] [ShowInInspector]
-    private Camera mainCamera;
-    
-    //[SerializeField] private SpawnPoint[] spawnPoints;
-    
     private void Start()
     {
         if (bossPrefab == null) return;
+        bossPrefab.SetActive(false);
         Invoke(nameof(SpawnBoss), timeBoss);
     }
 
     private void SpawnBoss()
     {
-        if (bossPrefab == null) return;
-        
-        GameObject boss = Instantiate(bossPrefab, transform.position, Quaternion.identity);
-
-        if (boss.GetComponent<BossAI>() != null)
+        bossPrefab.SetActive(true);
+        if (bossPrefab.GetComponent<BossAI>() != null)
         {
-            boss.GetComponent<BossAI>().ResetEnemy();
+            bossPrefab.GetComponent<BossAI>().ResetEnemy();
         }
 
-        boss.SetActive(true);
-
-        Debug.Log("Boss spawned!");
+        bossPrefab.SetActive(true);
     }
 }
