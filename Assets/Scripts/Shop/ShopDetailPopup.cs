@@ -5,7 +5,7 @@ using TMPro;
 public class ShopDetailPopup : MonoBehaviour
 {
     [Header("References")]
-    public Image icon;
+    public ItemIconHandler icon;
     public TMP_Text nameText;
     public TMP_Text tierText;
     public TMP_Text descriptionText;
@@ -31,7 +31,7 @@ public class ShopDetailPopup : MonoBehaviour
 
         gameObject.SetActive(true);
 
-        icon.sprite = data.icon;
+        icon.SetupIcons(instance);
         nameText.text = data.itemName;
         tierText.text = $"Cấp độ: {data.tier}";
         descriptionText.text = data.description;
