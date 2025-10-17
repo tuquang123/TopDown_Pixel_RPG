@@ -39,7 +39,7 @@ public class PlayerLevelUI : MonoBehaviour
     
     private void UpdateLevelText(int level)
     {
-        levelText.text = $"Lv {level}";
+        levelText.text = $"{level}";
     }
 
     private void UpdateExpText(float current, float required)
