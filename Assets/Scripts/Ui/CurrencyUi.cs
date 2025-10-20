@@ -16,6 +16,6 @@ public class CurrencyUI : MonoBehaviour
         UpdateGems(CurrencyManager.Instance.Gems);
     }
 
-    void UpdateGold(int gold) => goldText.text = $"Gold: {gold}";
-    void UpdateGems(int gems) => gemsText.text = $"Gems: {gems}";
+    void UpdateGold(int gold) => goldText.text = $"{gold}";
+    void UpdateGems(int gems) => gemsText.text = $"{gems}";
 }

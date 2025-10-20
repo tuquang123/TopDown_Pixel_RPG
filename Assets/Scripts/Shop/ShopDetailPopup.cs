@@ -33,7 +33,7 @@ public class ShopDetailPopup : MonoBehaviour
 
         icon.SetupIcons(instance);
         nameText.text = data.itemName;
-        tierText.text = $"Cấp độ: {data.tier}";
+        tierText.text = $"{data.tier}";
         descriptionText.text = data.description;
         priceText.text = $"{data.price} vàng";
 
