@@ -2670,6 +2670,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goldPrefab: {fileID: 4356269681339680784, guid: 93d37029af8bbaf4aadb1753790fbef8,
     type: 3}
+  gemPrefab: {fileID: 4356269681339680784, guid: c47a4e2b6d485474aab6824a79f61287,
+    type: 3}
   playerPrefab: {fileID: 2213885562905277096}
   bloodVfxPrefab: {fileID: 6484301405218222007, guid: 83907561ca565a94c905d1a42da3e8f8,
     type: 3}
@@ -16563,7 +16565,7 @@ PrefabInstance:
     - target: {fileID: 6356104272256323639, guid: 33edd735da8044644b18f0934bea3537,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 573.43567
+      value: 554.1406
       objectReference: {fileID: 0}
     - target: {fileID: 6356104272256323639, guid: 33edd735da8044644b18f0934bea3537,
         type: 3}
@@ -16589,6 +16591,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ShopItem
+      objectReference: {fileID: 0}
+    - target: {fileID: 7676315925239063064, guid: 33edd735da8044644b18f0934bea3537,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -42552,8 +42559,8 @@ SceneRoots:
   - {fileID: 247927438}
   - {fileID: 1560121428}
   - {fileID: 1691089122}
-  - {fileID: 2063649799}
   - {fileID: 637887264}
   - {fileID: 71306079}
   - {fileID: 1573593336005385581}
   - {fileID: 4959604473867620367}
+  - {fileID: 2063649799}

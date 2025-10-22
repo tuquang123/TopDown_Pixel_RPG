@@ -16,37 +16,42 @@ MonoBehaviour:
   skillName: Slash
   skillType: 1
   requiredLevel: 1
-  icon: {fileID: 21300000, guid: 9794293e4605a44d0826e3814ddc8431, type: 3}
+  icon: {fileID: -10287429255950412, guid: 71ef3e254e1352847ab3bc013bf7492e, type: 3}
   levelStats:
   - level: 1
     manaCost: 5
     cooldown: 20
     duration: 20
     value: 10
+    modType: 0
     overridePrefab: {fileID: 0}
   - level: 2
     manaCost: 5
     cooldown: 15
     duration: 15
     value: 20
+    modType: 0
     overridePrefab: {fileID: 0}
   - level: 3
     manaCost: 5
     cooldown: 10
     duration: 10
     value: 30
+    modType: 0
     overridePrefab: {fileID: 0}
   - level: 4
     manaCost: 4
     cooldown: 8
     duration: 8
     value: 50
+    modType: 0
     overridePrefab: {fileID: 0}
   - level: 5
     manaCost: 3
     cooldown: 5
     duration: 5
     value: 60
+    modType: 0
     overridePrefab: {fileID: 0}
   prefab: {fileID: 0}
   descriptionTemplate: "Slash {value}% s\xE1t th\u01B0\u01A1ng. Mana: {mana}, H\u1ED3i

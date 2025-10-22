@@ -3,6 +3,7 @@ using UnityEngine;
 public class CommonReferent : Singleton<CommonReferent>
 {
     public GameObject goldPrefab;
+    public GameObject gemPrefab;
     public GameObject playerPrefab;
     public GameObject bloodVfxPrefab;
     public GameObject destructionVFXPrefab;
