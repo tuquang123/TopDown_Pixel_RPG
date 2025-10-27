@@ -34,6 +34,9 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
         anim = GetComponentInChildren<Animator>();
         stats = GetComponent<PlayerStats>();
     }
+    private float lastStepSoundTime;
+    private float stepCooldown = 0.4f;
+
 
     protected virtual void Update()
     {
@@ -43,6 +46,21 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
         bool isMoving = IsMoving();
         anim.SetBool(MoveBool, isMoving);
 
+        // --- Phát âm thanh đi/chạy ---
+        if (isMoving && !IsDashing)
+        {
+            if (Time.time - lastStepSoundTime >= stepCooldown)
+            {
+                if (moveInput.magnitude > 0.9f)
+                    PlayRunSFX();
+                else
+                    PlayWalkSFX();
+
+                lastStepSoundTime = Time.time;
+            }
+        }
+
+        // --- Di chuyển và xử lý mục tiêu ---
         if (isMoving)
         {
             MovePlayer();
@@ -54,7 +72,9 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
             FindClosestEnemy();
 
             if (targetEnemy != null)
+            {
                 MoveToTarget(targetEnemy, FaceEnemy);
+            }
             else
             {
                 FindClosestDestructible();
@@ -69,6 +89,14 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
             }
         }
     }
+    
+
+    public void PlayRunSFX()
+    {
+        if (!stats.isDead && !IsDashing)
+            AudioManager.Instance.PlaySFX("Run");
+    }
+
 
     protected virtual void FixedUpdate()
     {

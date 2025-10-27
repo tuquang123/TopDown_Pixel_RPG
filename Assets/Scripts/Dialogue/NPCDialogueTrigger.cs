@@ -1,24 +1,28 @@
-﻿// ================= NPCDialogueTrigger.cs =================
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class NPCDialogueTrigger : MonoBehaviour
 {
+    [Header("Dialogue & Quest")]
     [SerializeField] string dialogueID;
-    [SerializeField] List<string> questIDs;   // quests chain from this NPC
-    
-    private Vector3 offset = new Vector3(0, .9f, 0); // button position offset
+    [SerializeField] List<string> questIDs;
+    [SerializeField] string nameObj = "NPC_0";
+
+    [Header("Interaction Settings")]
+    [SerializeField] float interactRange = 2.5f; // phạm vi nói chuyện
+    [SerializeField] Vector3 offset = new Vector3(0, 0.9f, 0);
+
     private Button interactButton;
     private Camera mainCam;
     private GameObject targetNPC;
-    
-    private QuestProgress currentQuest; // current quest in chain
-    private string nameOBj = "NPC_0";   // objective name for this NPC
+    private Transform player;
+
+    private QuestProgress currentQuest;
+    private bool isPlayerInRange;
 
     private void Awake()
     {
-        // reference to interact button in UI
         interactButton = CommonReferent.Instance.dialogBtn.GetComponent<Button>();
         if (interactButton != null)
             interactButton.gameObject.SetActive(false);
@@ -28,38 +32,65 @@ public class NPCDialogueTrigger : MonoBehaviour
 
     private void Start()
     {
-        // set this NPC as target and update current quest
+        player = CommonReferent.Instance.playerPrefab.transform;
+
         SetTarget(gameObject, dialogueID);
         UpdateCurrentQuest();
-        
-        //start fist quest
-        QuestManager.Instance.StartQuest(currentQuest.quest);
-        currentQuest.state = QuestState.InProgress;
-        Debug.Log("startQuest" + currentQuest.quest.questName);
+
+        // start first quest (nếu cần)
+        if (currentQuest != null)
+        {
+            QuestManager.Instance.StartQuest(currentQuest.quest);
+            currentQuest.state = QuestState.InProgress;
+            Debug.Log("startQuest " + currentQuest.quest.questName);
+        }
     }
 
-    /// <summary>
-    /// Find first quest in chain that is not rewarded yet
-    /// If not created, create new QuestProgress
-    /// </summary>
+    private void Update()
+    {
+        if (player == null) return;
+
+        float distance = Vector2.Distance(transform.position, player.position);
+        bool inRange = distance <= interactRange;
+
+        if (inRange && !isPlayerInRange)
+        {
+            // Player vừa vào phạm vi
+            ShowUI();
+            isPlayerInRange = true;
+        }
+        else if (!inRange && isPlayerInRange)
+        {
+            // Player vừa rời phạm vi
+            HideUI();
+            isPlayerInRange = false;
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (targetNPC == null || interactButton == null || !interactButton.gameObject.activeSelf)
+            return;
+
+        Vector3 worldPos = targetNPC.transform.position + offset;
+        Vector3 screenPos = mainCam.WorldToScreenPoint(worldPos);
+        interactButton.transform.position = screenPos;
+    }
+
     private void UpdateCurrentQuest()
     {
         if (questIDs == null || questIDs.Count == 0) return;
 
-        for (int i = 0; i < questIDs.Count; i++)
+        foreach (var id in questIDs)
         {
-            var qp = QuestManager.Instance.GetQuestProgressByID(questIDs[i]);
-
-            if (qp == null) // create progress if not exist
+            var qp = QuestManager.Instance.GetQuestProgressByID(id);
+            if (qp == null)
             {
-                var questSO = QuestManager.Instance.questDatabase.GetQuestByID(questIDs[i]);
+                var questSO = QuestManager.Instance.questDatabase.GetQuestByID(id);
                 if (questSO != null)
-                {
                     qp = QuestManager.Instance.CreateQuestProgress(questSO);
-                }
             }
 
-            // stop at first quest not rewarded yet
             if (qp.state != QuestState.Rewarded)
             {
                 currentQuest = qp;
@@ -67,20 +98,16 @@ public class NPCDialogueTrigger : MonoBehaviour
             }
         }
 
-        currentQuest = null; // no quest left
+        currentQuest = null;
     }
 
-    /// <summary>
-    /// Start dialogue + quest flow with NPC
-    /// </summary>
     private void StartDialogue()
     {
-        // check progress objective (talk to NPC)
         if (currentQuest != null && currentQuest.state == QuestState.InProgress)
         {
             foreach (var obj in currentQuest.quest.objectives)
             {
-                if (obj.objectiveName == nameOBj)
+                if (obj.objectiveName == nameObj)
                 {
                     QuestManager.Instance.ReportProgress(currentQuest.quest.questID, obj.objectiveName);
                     break;
@@ -90,36 +117,26 @@ public class NPCDialogueTrigger : MonoBehaviour
 
         if (currentQuest == null)
         {
-            // Không còn quest nào → thoại mặc định “thanks”
             DialogueSystem.Instance.StartDialogueForQuest(dialogueID, "NV0", QuestState.Rewarded);
             return;
         }
 
-        // start dialogue với quest hiện tại
         DialogueSystem.Instance.StartDialogueForQuest(dialogueID, currentQuest.quest.questID, currentQuest.state, () =>
         {
             if (currentQuest.state == QuestState.NotAccepted)
             {
-                // accept quest
                 QuestManager.Instance.StartQuest(currentQuest.quest);
                 currentQuest.state = QuestState.InProgress;
                 QuestManager.Instance.questUI?.UpdateQuestProgress(currentQuest);
             }
             else if (currentQuest.state == QuestState.Completed)
             {
-                // turn in quest và mở quest kế tiếp
                 QuestManager.Instance.TurnInQuest(currentQuest);
                 UpdateCurrentQuest();
             }
         });
-
-        //HideUI();
     }
 
-
-    /// <summary>
-    /// Link this NPC with dialogue button
-    /// </summary>
     public void SetTarget(GameObject npc, string dialogueID)
     {
         targetNPC = npc;
@@ -132,29 +149,6 @@ public class NPCDialogueTrigger : MonoBehaviour
         }
     }
 
-    private void LateUpdate()
-    {
-        // move button above NPC in screen space
-        if (targetNPC == null || interactButton == null || !interactButton.gameObject.activeSelf)
-            return;
-
-        Vector3 worldPos = targetNPC.transform.position + offset;
-        Vector3 screenPos = mainCam.WorldToScreenPoint(worldPos);
-        interactButton.transform.position = screenPos;
-    }
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-            ShowUI();
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-            HideUI();
-    }
-
-    public void ShowUI() => interactButton?.gameObject.SetActive(true);
-    public void HideUI() => interactButton?.gameObject.SetActive(false);
+    private void ShowUI() => interactButton?.gameObject.SetActive(true);
+    private void HideUI() => interactButton?.gameObject.SetActive(false);
 }

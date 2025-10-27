@@ -409,6 +409,19 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
             Debug.Log($"{enemyName} dropped {chosenDrop.item.itemName} x{amount}");
         }
+        
+        // EXP
+        if (PlayerStats.Instance != null)
+        {
+            var value = 15;
+            var playerLevel = PlayerStats.Instance.GetComponent<PlayerLevel>();
+            if (playerLevel != null)
+            {
+                playerLevel.levelSystem.AddExp(value);
+            }
+            FloatingTextSpawner.Instance.SpawnText("+ EXP :" + value, transform.position, Color.magenta);
+        }
+        
 
         // UI máu
         if (enemyHealthUI != null)

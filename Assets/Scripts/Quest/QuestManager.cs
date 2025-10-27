@@ -96,6 +96,7 @@ public class QuestManager : Singleton<QuestManager>
             if (playerLevel != null)
             {
                 playerLevel.levelSystem.AddExp(exp);
+                FloatingTextSpawner.Instance.SpawnText("+ EXP :" + exp, transform.position, Color.magenta);
             }
         }
 

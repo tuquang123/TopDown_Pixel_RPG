@@ -86,14 +86,16 @@ public class CurrencyItem : MonoBehaviour, IPooledObject
         {
             case CurrencyType.Gold:
                 CurrencyManager.Instance.AddGold(value);
-                FloatingTextSpawner.Instance.SpawnText("+" + value, transform.position, Color.yellow);
+                FloatingTextSpawner.Instance.SpawnText("+ Gold :" + value, transform.position, Color.yellow);
                 break;
 
             case CurrencyType.Gem:
                 CurrencyManager.Instance.AddGems(value);
-                FloatingTextSpawner.Instance.SpawnText("+" + value, transform.position, Color.magenta);
+                FloatingTextSpawner.Instance.SpawnText("+ Gem :" + value, transform.position, Color.magenta);
                 break;
         }
+
+        AudioManager.Instance.PlaySFX("PickUp");
 
         gameObject.SetActive(false);
     }
