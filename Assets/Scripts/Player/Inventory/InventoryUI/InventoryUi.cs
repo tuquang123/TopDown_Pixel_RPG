@@ -39,4 +39,15 @@ public class InventoryUI : BasePopup
 
         itemDetailPanel.Hide();
     }
+    private ItemUI currentSelectedItem;
+     
+     public void SelectItem(ItemUI newItem)
+     {
+         if (currentSelectedItem != null)
+             currentSelectedItem.SetSelected(false); // tắt chọn cũ
+     
+         currentSelectedItem = newItem;
+         currentSelectedItem.SetSelected(true); // bật chọn mới
+     }
 }
+

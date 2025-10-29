@@ -46,6 +46,21 @@ public class EquipmentUI : MonoBehaviour
         }
 
         UpdateEquipmentUI();
+        foreach (var kvp in slotMapping)
+        {
+            ItemType type = kvp.Key;
+            EquipmentSlotUI slotUI = kvp.Value;
+
+            ItemType capturedType = type;
+
+            slotUI.button.onClick.AddListener(() => UnequipItem(capturedType));
+            slotUI.iconButton.onClick.AddListener(() =>
+            {
+                SelectSlot(slotUI); // làm sáng slot được bấm
+                ShowEquippedItemDetail(capturedType);
+            });
+        }
+
     }
 
     
@@ -130,4 +145,15 @@ public class EquipmentUI : MonoBehaviour
             }
         }
     }
+    private EquipmentSlotUI currentSelectedSlot;
+
+    public void SelectSlot(EquipmentSlotUI newSlot)
+    {
+        if (currentSelectedSlot != null)
+            currentSelectedSlot.SetSelected(false); // tắt sáng slot cũ
+
+        currentSelectedSlot = newSlot;
+        currentSelectedSlot.SetSelected(true); // bật sáng slot mới
+    }
+
 }
