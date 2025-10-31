@@ -106,22 +106,41 @@ public class QuickUseUI : MonoBehaviour
         var manaPotion = inventory.FindFirstConsumable(false, true);
 
         // Update số lượng
-        healthPotionCountText.text = healthPotion != null 
-            ? $"x{inventory.GetItemCount(healthPotion.itemData)}" 
-            : "0";
-        manaPotionCountText.text = manaPotion != null 
-            ? $"x{inventory.GetItemCount(manaPotion.itemData)}" 
-            : "0";
+        int healthCount = healthPotion != null ? inventory.GetItemCount(healthPotion.itemData) : 0;
+        int manaCount = manaPotion != null ? inventory.GetItemCount(manaPotion.itemData) : 0;
 
-        // Update icon
-        if (healthPotion != null)
-            healthPotionIcon.sprite = healthPotion.itemData.icon;
-        if (manaPotion != null)
-            manaPotionIcon.sprite = manaPotion.itemData.icon;
+        // Health potion
+        if (healthCount > 0)
+        {
+            healthPotionIcon.gameObject.SetActive(true);
+            healthPotionButton.gameObject.SetActive(true);
+            healthPotionCountText.text = $"x{healthCount}";
+            healthPotionButton.interactable = !isHealthOnCooldown;
+            if (healthPotion != null)
+                healthPotionIcon.sprite = healthPotion.itemData.icon;
+        }
+        else
+        {
+            healthPotionIcon.gameObject.SetActive(false);
+            healthPotionButton.gameObject.SetActive(false);
+        }
 
-        // Nếu có bình + không cooldown thì enable
-        healthPotionButton.interactable = healthPotion != null && !isHealthOnCooldown;
-        manaPotionButton.interactable = manaPotion != null && !isManaOnCooldown;
+        // Mana potion
+        if (manaCount > 0)
+        {
+            manaPotionIcon.gameObject.SetActive(true);
+            manaPotionButton.gameObject.SetActive(true);
+            manaPotionCountText.text = $"x{manaCount}";
+            manaPotionButton.interactable = !isManaOnCooldown;
+            if (manaPotion != null)
+                manaPotionIcon.sprite = manaPotion.itemData.icon;
+        }
+        else
+        {
+            manaPotionIcon.gameObject.SetActive(false);
+            manaPotionButton.gameObject.SetActive(false);
+        }
     }
+
 
 }
