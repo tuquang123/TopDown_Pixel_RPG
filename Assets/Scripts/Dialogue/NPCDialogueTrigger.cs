@@ -23,16 +23,15 @@ public class NPCDialogueTrigger : MonoBehaviour
 
     private void Awake()
     {
-        interactButton = CommonReferent.Instance.dialogBtn.GetComponent<Button>();
-        if (interactButton != null)
-            interactButton.gameObject.SetActive(false);
-
         mainCam = Camera.main;
     }
 
     private void Start()
     {
         player = CommonReferent.Instance.playerPrefab.transform;
+        interactButton = CommonReferent.Instance.dialogBtn.GetComponent<Button>();
+        if (interactButton != null)
+            interactButton.gameObject.SetActive(false);
 
         SetTarget(gameObject, dialogueID);
         UpdateCurrentQuest();
@@ -42,6 +41,7 @@ public class NPCDialogueTrigger : MonoBehaviour
         {
             QuestManager.Instance.StartQuest(currentQuest.quest);
             currentQuest.state = QuestState.InProgress;
+            QuestManager.Instance.questUI.UpdateQuestProgress(currentQuest);
             Debug.Log("startQuest " + currentQuest.quest.questName);
         }
     }

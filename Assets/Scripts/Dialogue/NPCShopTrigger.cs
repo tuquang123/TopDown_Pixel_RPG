@@ -19,15 +19,15 @@ public class NPCShopTrigger : MonoBehaviour
 
     private void Awake()
     {
-        interactButton = CommonReferent.Instance.dialogShopBtn.GetComponent<Button>();
-        if (interactButton != null)
-            interactButton.gameObject.SetActive(false);
 
         mainCam = Camera.main;
     }
 
     private void Start()
     {
+        interactButton = CommonReferent.Instance.dialogBtn.GetComponent<Button>();
+        if (interactButton != null)
+            interactButton.gameObject.SetActive(false);
         player = CommonReferent.Instance.playerPrefab.transform;
         SetTarget(gameObject);
     }
