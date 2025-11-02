@@ -38,6 +38,8 @@ public class BasePopup : MonoBehaviour
 
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
+        
+        UIManager.Instance?.UpdateBlurState();
     }
 
     public virtual void Hide()
@@ -53,6 +55,8 @@ public class BasePopup : MonoBehaviour
                 canvasGroup.interactable = false;
                 canvasGroup.blocksRaycasts = false;
                 gameObject.SetActive(false);
+                
+                UIManager.Instance?.UpdateBlurState();
             });
     }
 }

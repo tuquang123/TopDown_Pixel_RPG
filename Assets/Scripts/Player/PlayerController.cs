@@ -93,8 +93,8 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
 
     public void PlayRunSFX()
     {
-        if (!stats.isDead && !IsDashing)
-            AudioManager.Instance.PlaySFX("Run");
+        /*if (!stats.isDead && !IsDashing)
+            AudioManager.Instance.PlaySFX("Run");*/
     }
 
 

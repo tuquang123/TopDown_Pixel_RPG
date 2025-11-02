@@ -1,17 +1,13 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
-
-public enum PopupType
-{
-    Inventory,
-    PlayerStats,
-}
 
 public class UIManager : Singleton<UIManager>
 {
     private Dictionary<Type, BasePopup> popupTypeDict = new();
-
+    [SerializeField] private GameObject blurBG;
+    
     protected override void Awake()
     {
         base.Awake();
@@ -22,7 +18,29 @@ public class UIManager : Singleton<UIManager>
             popupTypeDict[popup.GetType()] = popup;
         }
     }
-    
+    public void UpdateBlurState()
+    {
+        if (blurBG == null) return;
+
+        bool anyActive = false;
+        foreach (var popup in popupTypeDict.Values)
+        {
+            if (popup.gameObject.activeSelf)
+            {
+                anyActive = true;
+                break;
+            }
+        }
+
+        blurBG.SetActive(anyActive);
+        
+         if (blurBG.TryGetComponent(out CanvasGroup cg))
+         {
+             cg.DOFade(anyActive ? 1f : 0f, 0.25f);
+         }
+    }
+
+
     public void ShowPopup<T>() where T : BasePopup
     {
         if (popupTypeDict.TryGetValue(typeof(T), out var popup))
