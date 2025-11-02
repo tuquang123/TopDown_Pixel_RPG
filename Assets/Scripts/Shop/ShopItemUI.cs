@@ -88,9 +88,9 @@ public class ShopItemUI : MonoBehaviour
             priceText.text = "Đã mua";
             Debug.Log($"[ShopItemUI] {data.itemName} đã tồn tại trong inventory/equipment.");
         }
-        else
+        else 
         {
-            buyButton.interactable = gold >= data.price;
+            buyButton.interactable = true;
             priceText.text = $"{data.price}";
             Debug.Log($"[ShopItemUI] {data.itemName} chưa mua. Gold: {gold}/{data.price} → interactable={buyButton.interactable}");
         }
