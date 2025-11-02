@@ -1426,7 +1426,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1.5
-  range: 1.5
+  minOffset: -1.5
+  maxOffset: 1.5
 --- !u!114 &3451371681513951431 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4215967228966653468, guid: 2df57d9ce62d59a4587286ed50e1edf4, type: 3}
