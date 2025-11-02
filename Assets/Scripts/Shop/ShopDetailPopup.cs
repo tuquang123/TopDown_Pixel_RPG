@@ -40,17 +40,54 @@ public class ShopDetailPopup : MonoBehaviour
         buyButton.onClick.RemoveAllListeners();
         cancelButton.onClick.RemoveAllListeners();
 
+        // ⚙️ Gọi cập nhật trạng thái nút khi mở popup
+        UpdateBuyButtonState();
+
         buyButton.onClick.AddListener(() =>
         {
-            shopUI.BuyItem(currentItem);
-            gameObject.SetActive(false);
+            // Nếu đủ tiền mới cho mua
+            if (CurrencyManager.Instance.Gold >= data.price)
+            {
+                shopUI.BuyItem(currentItem);
+                gameObject.SetActive(false);
+            }
+            else
+            {
+                GameEvents.OnShowToast.Raise("Gold not enough!");
+            }
         });
 
         cancelButton.onClick.AddListener(() => gameObject.SetActive(false));
+
+        // 🔄 Lắng nghe thay đổi vàng realtime
+        CurrencyManager.Instance.OnGoldChanged += OnGoldChanged;
+    }
+
+    private void UpdateBuyButtonState()
+    {
+        var enoughGold = CurrencyManager.Instance.Gold >= currentItem.itemData.price;
+        buyButton.interactable = enoughGold;
+
+        var colors = buyButton.colors;
+        colors.normalColor = enoughGold ? Color.white : new Color(1, 1, 1, 0.5f);
+        buyButton.colors = colors;
+    }
+
+    private void OnGoldChanged(int gold)
+    {
+        if (gameObject.activeSelf)
+            UpdateBuyButtonState();
     }
 
     public void Hide()
     {
         gameObject.SetActive(false);
+        CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (CurrencyManager.Instance != null)
+            CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
     }
 }
