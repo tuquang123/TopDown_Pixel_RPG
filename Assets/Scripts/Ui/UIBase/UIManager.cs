@@ -36,7 +36,7 @@ public class UIManager : Singleton<UIManager>
         
          if (blurBG.TryGetComponent(out CanvasGroup cg))
          {
-             cg.DOFade(anyActive ? 1f : 0f, 0.25f);
+             cg.DOFade(anyActive ? .5f : 0f, 0.15f);
          }
     }
 

@@ -19,7 +19,7 @@ MonoBehaviour:
     objectives:
     - objectiveName: Goblin
       type: 0
-      requiredAmount: 10
+      requiredAmount: 1
     reward:
       experienceReward: 100
       goldReward: 50
@@ -30,7 +30,7 @@ MonoBehaviour:
     objectives:
     - objectiveName: barrier
       type: 0
-      requiredAmount: 10
+      requiredAmount: 1
     reward:
       experienceReward: 100
       goldReward: 100
@@ -45,5 +45,17 @@ MonoBehaviour:
       requiredAmount: 1
     reward:
       experienceReward: 50
-      goldReward: 20000
+      goldReward: 1000
       itemIDs: []
+  - questID: NV3
+    questName: gold 1000
+    description: earn 1000 gold
+    objectives:
+    - objectiveName: Gold
+      type: 1
+      requiredAmount: 5
+    reward:
+      experienceReward: 100
+      goldReward: 300
+      itemIDs:
+      - hair1

@@ -73,7 +73,7 @@ public class LevelManager : Singleton<LevelManager>
             {
                 TravelDirection.Forward => levelData.entryFromPreviousLevel,
                 TravelDirection.Backward => levelData.entryFromNextLevel,
-                _ => Vector3.zero
+                _ => new Vector3(-9,0,0)
             };
         
             player.transform.position = targetPos;

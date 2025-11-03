@@ -26,8 +26,10 @@ public class CurrencyManager : MonoBehaviour
     {
         Gold += amount;
         OnGoldChanged?.Invoke(Gold);
+        QuestManager.Instance.ReportProgress("NV4","Gold", amount);
         SaveCurrency();
         Debug.Log($"Đã thêm {amount} vàng. Tổng vàng: {Gold}");
+        
     }
 
     public void AddGems(int amount)

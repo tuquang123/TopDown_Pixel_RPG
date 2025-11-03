@@ -13,26 +13,22 @@ public class DialogueDatabase : ScriptableObject
 
     public Dialogue GetDialogue(string npcName, string questId, QuestState state)
     {
-        if (lookup == null)
+        lookup = new Dictionary<string, DialogueEntry>();
+        foreach (var entry in entries)
         {
-            lookup = new Dictionary<string, DialogueEntry>();
-            foreach (var entry in entries)
-            {
-                string key = GetKey(entry.npcName, entry.questId);
-                if (!lookup.ContainsKey(key))
-                    lookup.Add(key, entry);
-            }
+            string key = GetKey(entry.npcName, entry.questId);
+            if (!lookup.ContainsKey(key))
+                lookup.Add(key, entry);
         }
 
         string keyLookup = GetKey(npcName, questId);
         if (lookup.TryGetValue(keyLookup, out var entryValue))
-        {
             return entryValue.GetDialogue(state);
-        }
 
         Debug.LogWarning($"Dialogue not found for NPC:{npcName}, Quest:{questId}, State:{state}");
         return null;
     }
+
 }
 
 

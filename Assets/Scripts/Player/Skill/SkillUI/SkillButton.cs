@@ -6,6 +6,7 @@ public class SkillButton : MonoBehaviour
 {
     [SerializeField] private Button button;
     [SerializeField] private TextMeshProUGUI label;
+    [SerializeField] private TextMeshProUGUI levelText; // 👈 thêm dòng này
     [SerializeField] private Image iconImage;
 
     private SkillData skillData;
@@ -20,6 +21,11 @@ public class SkillButton : MonoBehaviour
 
         label.text = data.skillName;
         iconImage.sprite = data.icon;
+
+        // 👇 Hiển thị cấp độ (ví dụ: 1/10)
+        int currentLevel = system.GetSkillLevel(data.skillID); // hoặc data.currentLevel nếu có sẵn
+        int maxLevel = data.maxLevel; // hoặc giá trị cố định nếu chưa có trong data
+        levelText.text = $"{currentLevel}/{maxLevel}";
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(OnClick);
