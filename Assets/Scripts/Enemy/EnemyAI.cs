@@ -403,7 +403,10 @@ public class EnemyAI : MonoBehaviour, IDamageable
             );
 
             ItemDrop itemDrop = dropObj.GetComponent<ItemDrop>();
-            itemDrop.Setup(chosenDrop.item, amount);
+            ItemInstance droppedItem = new ItemInstance(chosenDrop.item, 0); // tạo cấp 0
+            itemDrop.Setup(droppedItem, amount);
+
+            //itemDrop.Setup(chosenDrop.item, amount);
 
             //RewardPopupManager.Instance.ShowReward(chosenDrop.item.icon, chosenDrop.item.itemName, amount);
 
