@@ -1,18 +1,16 @@
 ﻿using UnityEngine;
 using DG.Tweening;
-using TMPro;
-using UnityEngine.UI;
 
 public class ItemDrop : MonoBehaviour, IPooledObject
 {
     [Header("Timings")]
     public float flyDuration = 0.3f;               
     public float autoCollectDelay = 0.5f;          
-    public float collectDelayAfterReady = 0.2f;   
+    public float collectDelayAfterReady = 0.2f;    
 
     [Header("Collect Settings")]
-    public float attractRange = 3f;               
-    public float pickupDistance = 0.25f;          
+    public float attractRange = 3f;                
+    public float pickupDistance = 0.25f;           
     public float attractSpeed = 10f;               
 
     private Transform player;
@@ -27,17 +25,26 @@ public class ItemDrop : MonoBehaviour, IPooledObject
     [Header("UI References")]
     [SerializeField] private SpriteRenderer iconImage;
 
-    [HideInInspector] public string itemID;
-    [HideInInspector] public int quantity;
+    // Data của vật phẩm rơi ra
+    private ItemInstance itemInstance;
+    private int quantity = 1;
 
-    public void Setup(ItemData data, int amount)
+    // ======================================================
+    // ================== SETUP & SPAWN =====================
+    // ======================================================
+
+    /// <summary>
+    /// Gọi khi enemy chết để spawn item
+    /// </summary>
+    public void Setup(ItemInstance instance, int amount)
     {
-        itemID = data.itemID;
+        itemInstance = instance;
         quantity = amount;
 
-        // Update UI
-        if (iconImage != null) iconImage.sprite = data.icon;
+        if (iconImage != null && instance.itemData != null)
+            iconImage.sprite = instance.itemData.icon;
     }
+
     public void OnObjectSpawn()
     {
         if (player == null)
@@ -47,16 +54,19 @@ public class ItemDrop : MonoBehaviour, IPooledObject
         isCollecting = false;
         spawnTime = Time.time;
 
-        // kill tween cũ
         flyTween?.Kill();
 
-        // Bay tung ngẫu nhiên khi spawn
+        // Bay nhẹ khi spawn
         Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(0.2f, 0.6f), 0f);
         Vector3 targetPos = transform.position + offset;
 
         flyTween = transform.DOMove(targetPos, flyDuration)
             .SetEase(Ease.OutQuad);
     }
+
+    // ======================================================
+    // =================== UPDATE ===========================
+    // ======================================================
 
     private void Update()
     {
@@ -74,13 +84,13 @@ public class ItemDrop : MonoBehaviour, IPooledObject
             }
         }
 
-        // delay trước khi hút
+        // Delay thêm trước khi hút
         if (isReadyToCollect && !isCollecting && Time.time - readyTime >= collectDelayAfterReady)
         {
             isCollecting = true;
         }
 
-        // đang hút
+        // Hút về player
         if (isCollecting)
         {
             Vector3 target = player.position;
@@ -93,25 +103,28 @@ public class ItemDrop : MonoBehaviour, IPooledObject
         }
     }
 
+    // ======================================================
+    // ==================== COLLECT =========================
+    // ======================================================
+
     private void Collect()
     {
-        // Lấy data từ DB
-        ItemData itemData = CommonReferent.Instance.itemDatabase.GetItemByID(itemID);
-        if (itemData != null)
+        if (itemInstance == null || itemInstance.itemData == null)
         {
-            ItemInstance itemInstance = new ItemInstance(itemData, quantity);
-            Inventory.Instance.AddItem(itemInstance);
-
-            // popup
-            RewardPopupManager.Instance.ShowReward(itemData.icon, itemData.itemName, quantity);
-            FloatingTextSpawner.Instance.SpawnText("+" + itemData.itemName, transform.position, Color.cyan);
-
-            Debug.Log($"Player picked up: {itemData.itemName} x{quantity}");
+            Debug.LogWarning("ItemDrop: itemInstance null hoặc không hợp lệ!");
+            gameObject.SetActive(false);
+            return;
         }
-        else
-        {
-            Debug.LogWarning($"ItemDrop: ItemID {itemID} không tồn tại trong database!");
-        }
+
+        // Tạo bản sao (để mỗi lần nhặt là 1 instance riêng biệt)
+        ItemInstance collected = new ItemInstance(itemInstance.itemData, itemInstance.upgradeLevel);
+        Inventory.Instance.AddItem(collected);
+
+        // Hiệu ứng & log
+        RewardPopupManager.Instance.ShowReward(itemInstance.itemData.icon, itemInstance.itemData.itemName, quantity);
+        FloatingTextSpawner.Instance.SpawnText("+" + itemInstance.itemData.itemName, transform.position, Color.cyan);
+
+        Debug.Log($"Player picked up: {itemInstance.itemData.itemName} x{quantity} (Lv+{itemInstance.upgradeLevel})");
 
         gameObject.SetActive(false);
     }
