@@ -137,6 +137,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
     protected virtual void MoveToTarget(Transform target, System.Action onFacing = null)
     {
         if (target == null) return;
+        if (stats.isDead) return; 
 
         Vector2 playerPos = transform.position;
         Vector2 targetPos = target.position;
@@ -195,6 +196,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
     // Gọi trong Animation Event, KHÔNG gọi trong Update
     public void ApplyAttackDamage()
     {
+        if (stats.isDead) return; 
         AudioManager.Instance.PlaySFX("Attack");
 
         int totalHealed = 0;
