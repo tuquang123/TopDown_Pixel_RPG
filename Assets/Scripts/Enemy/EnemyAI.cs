@@ -116,6 +116,9 @@ public class EnemyAI : MonoBehaviour, IDamageable
     public int MaxHealth => maxHealth;
     public string EnemyName => enemyName;
     public int EnemyLevel => enemyLevel;
+    [Header("Attack Type")]
+    public bool isHoldingSpear = false; // nếu true → attack mới sẽ là AttackStab
+
 
     protected EnemyHealthUI enemyHealthUI;
     
@@ -181,6 +184,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
             anim.SetBool(MoveBool, false);
         }
     }
+    
 
     public void ApplyLevelData(EnemyLevelData data)
     {
@@ -278,10 +282,21 @@ public class EnemyAI : MonoBehaviour, IDamageable
         if (Time.time - lastAttackTime >= attackCooldown)
         {
             anim.SetBool(MoveBool, false);
-            anim.SetTrigger(AttackTrigger);
+
+            // Kiểm tra cầm thương
+            if (isHoldingSpear)
+            {
+                anim.SetTrigger("8_Attack"); // đây là attack mới
+            }
+            else
+            {
+                anim.SetTrigger(AttackTrigger); // attack mặc định
+            }
+
             lastAttackTime = Time.time;
         }
     }
+
 
     public void DealDamageToTarget()
     {
