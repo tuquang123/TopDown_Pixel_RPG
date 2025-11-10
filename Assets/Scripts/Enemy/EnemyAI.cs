@@ -203,6 +203,48 @@ public class EnemyAI : MonoBehaviour, IDamageable
         enemyLevel = data.level;
     }
 
+    private bool isOptimizedActive = true;
+
+    // Hàm gọi từ EnemyTracker để enable/disable update logic
+    public void SetActiveForOptimization(bool active)
+    {
+        isOptimizedActive = active;
+        anim.enabled = active; // tắt animator nếu offscreen
+        // có thể tắt collider nếu muốn
+        GetComponent<Collider2D>().enabled = active && !IsDead;
+    }
+
+    // Thay vì Update(), gọi từ EnemyTracker.UpdateEnemiesBatch()
+    public void OptimizedUpdate()
+    {
+        if (!isOptimizedActive || IsDead) return;
+
+        // --- Logic di chuyển, tấn công ---
+        FindClosestTarget();
+
+        if (target == null)
+        {
+            anim.SetBool(MoveBool, false);
+            return;
+        }
+
+        if (target.TryGetComponent(out PlayerStats playerStats) && playerStats.isDead)
+        {
+            anim.SetBool(MoveBool, false);
+            return;
+        }
+
+        float distanceToTarget = Vector2.Distance(transform.position, target.position);
+        if (distanceToTarget <= detectionRange)
+        {
+            MoveToAttackPosition();
+            RotateEnemy(target.position.x - transform.position.x);
+        }
+        else
+        {
+            anim.SetBool(MoveBool, false);
+        }
+    }
     protected void FindClosestTarget()
     {
         Transform bestTarget = null;

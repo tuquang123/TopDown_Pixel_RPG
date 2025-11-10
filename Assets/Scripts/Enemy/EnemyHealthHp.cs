@@ -85,35 +85,51 @@ public class EnemyHealthUI : MonoBehaviour
     
     public void UpdateHealth(int currentHealth)
     {
+        if (PlayerController.Instance != null && PlayerController.Instance.IsPlayerDie())
+        {
+            HideUI();
+            return;
+        }
+
         healthSlider.value = currentHealth;
 
         if (hpText != null)
-        {
             hpText.text = $"{currentHealth}/{maxHealth}";
-        }
 
-        gameObject.SetActive(true); 
+        gameObject.SetActive(true);
         hideTimer = hideDelay;
     }
+
 
     private void LateUpdate()
     {
         if (targetEnemy == null) return;
-        
+
+        if (targetEnemy.TryGetComponent(out EnemyAI enemy) && enemy.IsDead)
+        {
+            HideUI();
+            return;
+        }
+
+        if (PlayerController.Instance != null && PlayerController.Instance.IsPlayerDie())
+        {
+            HideUI();
+            return;
+        }
+
         Vector3 worldPos = targetEnemy.transform.position + offset;
         if (Camera.main != null)
         {
             Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
             transform.position = screenPos;
         }
-        
+
         if (autoHide && gameObject.activeSelf)
         {
             hideTimer -= Time.deltaTime;
             if (hideTimer <= 0)
-            {
                 gameObject.SetActive(false);
-            }
         }
     }
+
 }
