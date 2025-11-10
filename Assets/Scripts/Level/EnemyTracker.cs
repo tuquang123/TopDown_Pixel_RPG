@@ -1,55 +1,51 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class EnemyTracker : Singleton<EnemyTracker>
 {
-    private List<EnemyAI> trackedEnemies = new List<EnemyAI>();
+    private readonly HashSet<EnemyAI> trackedEnemies = new();
 
     public void Register(EnemyAI enemy)
     {
-        if (!trackedEnemies.Contains(enemy))
+        if (enemy != null)
             trackedEnemies.Add(enemy);
     }
 
     public void Unregister(EnemyAI enemy)
     {
-        trackedEnemies.Remove(enemy);
+        if (enemy != null)
+            trackedEnemies.Remove(enemy);
     }
-    
-    public List<EnemyAI> GetAllEnemies()
-    {
-        return trackedEnemies;
-    }
-    
+
+    public IEnumerable<EnemyAI> GetAllEnemies() => trackedEnemies;
+
     public void ClearAllEnemies()
     {
         foreach (var enemy in trackedEnemies)
         {
-            if (enemy != null && enemy.gameObject.activeInHierarchy)
+            if (enemy == null) continue;
+            if (enemy.gameObject.activeInHierarchy)
             {
-                enemy.gameObject.SetActive(false); 
+                enemy.gameObject.SetActive(false);
                 enemy.EnemyHealthUI?.HideUI();
             }
         }
-
         trackedEnemies.Clear();
     }
-    
-    public List<EnemyAI> GetEnemiesInRange(UnityEngine.Vector2 position, float range)
+
+    public List<EnemyAI> GetEnemiesInRange(Vector2 position, float range)
     {
-        List<EnemyAI> result = new List<EnemyAI>();
+        float sqrRange = range * range;
+        List<EnemyAI> result = new();
 
         foreach (var enemy in trackedEnemies)
         {
             if (enemy == null || enemy.IsDead) continue;
-
-            float dist = UnityEngine.Vector2.Distance(position, enemy.transform.position);
-            if (dist <= range)
-            {
+            float sqrDist = ((Vector2)enemy.transform.position - position).sqrMagnitude;
+            if (sqrDist <= sqrRange)
                 result.Add(enemy);
-            }
         }
 
         return result;
     }
-
 }

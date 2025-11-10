@@ -139,8 +139,18 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         anim = GetComponentInChildren<Animator>();
         currentHealth = maxHealth;
-        EnemyTracker.Instance.Register(this);
     }
+    private void OnEnable()
+    {
+        EnemyTracker.Instance?.Register(this);
+        isDead = false; 
+    }
+
+    private void OnDisable()
+    {
+        EnemyTracker.Instance?.Unregister(this);
+    }
+
 
     private void Update()
     {

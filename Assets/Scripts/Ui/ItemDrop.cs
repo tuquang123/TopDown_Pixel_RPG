@@ -56,8 +56,9 @@ public class ItemDrop : MonoBehaviour, IPooledObject
 
         flyTween?.Kill();
 
-        // Bay nhẹ khi spawn
-        Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(0.2f, 0.6f), 0f);
+        // Bay ra hướng ngẫu nhiên khi spawn
+        Vector2 dir = Random.insideUnitCircle.normalized * Random.Range(1f, 2f);
+        Vector3 offset = new Vector3(dir.x, Mathf.Abs(dir.y) + 0.5f, 0f);
         Vector3 targetPos = transform.position + offset;
 
         flyTween = transform.DOMove(targetPos, flyDuration)
