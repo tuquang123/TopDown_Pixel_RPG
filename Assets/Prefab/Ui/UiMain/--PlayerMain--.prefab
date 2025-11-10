@@ -1264,7 +1264,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.0019779205, y: 0.40306282}
+  m_Offset: {x: 0, y: 0.33}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0.03125, z: 0, w: 0.9375}
     pivot: {x: 0.5, y: 0}
@@ -1274,7 +1274,7 @@ BoxCollider2D:
     drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.5865278, y: 0.7445369}
+  m_Size: {x: 0.41, y: 0.62}
   m_EdgeRadius: 0
 --- !u!50 &2186577120041930870
 Rigidbody2D:
@@ -1288,7 +1288,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
-  m_Mass: 0.43669158
+  m_Mass: 0.25419998
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 0
@@ -1487,11 +1487,11 @@ MonoBehaviour:
   maxMana:
     baseValue: 100
   attack:
-    baseValue: 5
+    baseValue: 25
   defense:
     baseValue: 0
   speed:
-    baseValue: 2
+    baseValue: 2.5
   critChance:
     baseValue: 0
   lifeSteal:

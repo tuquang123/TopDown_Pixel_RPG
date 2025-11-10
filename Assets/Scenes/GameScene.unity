@@ -990,7 +990,7 @@ GameObject:
   - component: {fileID: 247927438}
   - component: {fileID: 247927437}
   m_Layer: 0
-  m_Name: --VFXContain--
+  m_Name: --CommonReferent--
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1032,6 +1032,7 @@ MonoBehaviour:
   iconGold: {fileID: 21300000, guid: 0a38e31b2944c634dbc2d3f32d55188c, type: 3}
   iconExp: {fileID: 21300000, guid: 3b5776aaeee2fae49a2c36d2b86b1144, type: 3}
   itemDropPrefab: {fileID: 4356269681339680784, guid: 811219cbca279fe45a80c1b1a0a96c63, type: 3}
+  deadVFXPrefab: {fileID: 3533435376319919130, guid: ffe419f6459a3ec4093834ac1ccf0398, type: 3}
 --- !u!4 &247927438
 Transform:
   m_ObjectHideFlags: 0
@@ -6068,7 +6069,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2758031490562738548, guid: 18a9cc049135c4344bb91fbd7d87f285, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00024414062
+      value: 230.23727
       objectReference: {fileID: 0}
     - target: {fileID: 3672316957133000220, guid: 18a9cc049135c4344bb91fbd7d87f285, type: 3}
       propertyPath: m_AnchorMax.y
@@ -6461,6 +6462,10 @@ PrefabInstance:
       propertyPath: playerStats
       value: 
       objectReference: {fileID: 7325997695250661373}
+    - target: {fileID: 2126236513719203110, guid: 988bec11c9811a74bb80587b08338749, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -113.40503
+      objectReference: {fileID: 0}
     - target: {fileID: 2658164297457454157, guid: 988bec11c9811a74bb80587b08338749, type: 3}
       propertyPath: playerLevel
       value: 
@@ -7689,7 +7694,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 571406742954357075, guid: 86de61ba740ead147a81ad9d85d291f0, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 45.481853
+      value: 45.481934
       objectReference: {fileID: 0}
     - target: {fileID: 864253695437764627, guid: 86de61ba740ead147a81ad9d85d291f0, type: 3}
       propertyPath: targetPopup

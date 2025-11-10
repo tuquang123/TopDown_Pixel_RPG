@@ -28,4 +28,5 @@ public class CommonReferent : Singleton<CommonReferent>
     public Sprite iconGold;
     public Sprite iconExp;
     public GameObject itemDropPrefab;
+    public GameObject deadVFXPrefab;
 }

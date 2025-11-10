@@ -378,12 +378,12 @@ public class EnemyAI : MonoBehaviour, IDamageable
         }
 
         // --- DROP ITEM ---
-// B1: Tính tổng tỉ lệ
+        // B1: Tính tổng tỉ lệ
         float totalChance = 0f;
         foreach (var drop in dropItems)
             totalChance += drop.dropChance;
 
-// B2: Random trong [0..totalChance)
+        // B2: Random trong [0..totalChance)
         float roll = Random.value * totalChance;
         float cumulative = 0f;
 
@@ -399,7 +399,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
             }
         }
 
-// B3: Spawn nếu có item hợp lệ
+        // B3: Spawn nếu có item hợp lệ
         if (chosenDrop != null && chosenDrop.item != null)
         {
             int amount = 1; // hoặc random trong khoảng min/max tùy bạn
@@ -459,6 +459,15 @@ public class EnemyAI : MonoBehaviour, IDamageable
     private IEnumerator DisableAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
+        ObjectPooler.Instance.Get(
+            CommonReferent.Instance.deadVFXPrefab.name, 
+            CommonReferent.Instance.deadVFXPrefab, 
+            transform.position, 
+            Quaternion.identity, 
+            initSize: 2, 
+            expandable: true
+        );
+
         gameObject.SetActive(false);
     }
 

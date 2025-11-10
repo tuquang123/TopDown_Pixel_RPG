@@ -1,13 +1,19 @@
 using UnityEngine;
 
-public class DestroyVFX : MonoBehaviour
+public class DestroyVFX : MonoBehaviour, IPooledObject
 {
-    public void OnDestroy()
+    public float lifetime = 2f;
+    private float timer;
+
+    public void OnObjectSpawn() => timer = lifetime;
+
+    private void Update()
     {
-        Destroy(gameObject);
+        timer -= Time.deltaTime;
+        if (timer <= 0f)
+            gameObject.SetActive(false);
     }
-    public void OnDeActive()
-    {
-        gameObject.SetActive(false);
-    }
+
+    // Call to Animation
+    public void OnDeActive() => gameObject.SetActive(false);
 }

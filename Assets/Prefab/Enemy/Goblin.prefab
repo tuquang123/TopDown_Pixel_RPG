@@ -276,6 +276,7 @@ GameObject:
   - component: {fileID: 2899345656469414829}
   - component: {fileID: 1656737297614606585}
   - component: {fileID: 5186425366369124732}
+  - component: {fileID: -8244477202541570080}
   m_Layer: 7
   m_Name: Goblin
   m_TagString: Enemy
@@ -411,6 +412,18 @@ MonoBehaviour:
     dropChance: 0.2
   - item: {fileID: 11400000, guid: 7024774b464c897418f46d2be531c843, type: 2}
     dropChance: 0.2
+--- !u!114 &-8244477202541570080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1581309216436780966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2351850326354a2b9ccaa9d163bc1304, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1642773182976143640
 GameObject:
   m_ObjectHideFlags: 0
