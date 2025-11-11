@@ -7,6 +7,9 @@ public class EnemyRangedAI : EnemyAI
     [SerializeField] private Transform firePoint;
     [SerializeField] private float projectileSpeed = 10f;
 
+    [Header("Weapon Type")]
+    public bool isHoldingBow = false; // nếu true → bắn mũi tên
+
     protected override void AttackTarget()
     {
         if (target == null || isTakingDamage) return;
@@ -16,11 +19,21 @@ public class EnemyRangedAI : EnemyAI
         if (Time.time - lastAttackTime >= attackCooldown)
         {
             anim.SetBool(MoveBool, false);
-            anim.SetTrigger(AttackTrigger);
+
+            // Kiểm tra cầm cung
+            if (isHoldingBow)
+            {
+                anim.SetTrigger("7_Shoot"); // trigger mới, animation bắn cung
+            }
+            else
+            {
+                anim.SetTrigger(AttackTrigger); // trigger mặc định (ví dụ ném đá)
+            }
+
             lastAttackTime = Time.time;
         }
     }
-    
+
     protected override void MoveToAttackPosition()
     {
         float distanceToTarget = Vector2.Distance(transform.position, target.position);
@@ -39,7 +52,6 @@ public class EnemyRangedAI : EnemyAI
             anim.SetBool(MoveBool, false);
         }
     }
-
 
     // Gọi từ animation event
     public void FireProjectile()
