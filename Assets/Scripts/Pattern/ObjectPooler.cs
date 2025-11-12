@@ -22,9 +22,9 @@ public class ObjectPooler : MonoBehaviour
     [Header("Pool List")]
     public List<PoolConfig> poolConfigs;
 
-    private Dictionary<string, Queue<GameObject>> poolMap = new();
-    private Dictionary<string, PoolConfig> configMap = new();
-    private Dictionary<string, Transform> parentMap = new();
+    private readonly Dictionary<string, Queue<GameObject>> poolMap = new();
+    private readonly Dictionary<string, PoolConfig> configMap = new();
+    private readonly Dictionary<string, Transform> parentMap = new();
 
     private void Awake()
     {
@@ -52,31 +52,41 @@ public class ObjectPooler : MonoBehaviour
             return;
         }
 
-        Queue<GameObject> objectQueue = new();
-        Transform poolParent = new GameObject($"Pool_{config.tag}").transform;
+        var queue = new Queue<GameObject>();
+        var poolParent = new GameObject($"Pool_{config.tag}").transform;
         poolParent.SetParent(transform);
 
         for (int i = 0; i < config.initialSize; i++)
         {
             GameObject obj = Instantiate(config.prefab, poolParent);
             obj.SetActive(false);
-            objectQueue.Enqueue(obj);
+            queue.Enqueue(obj);
         }
 
-        poolMap[config.tag] = objectQueue;
+        poolMap[config.tag] = queue;
         configMap[config.tag] = config;
         parentMap[config.tag] = poolParent;
     }
 
-    public GameObject Get(string tag, GameObject prefab, Vector3 position, Quaternion rotation, int initSize = 1, bool expandable = true)
+    /// <summary>
+    /// Lấy object từ pool (tự tạo pool mới nếu chưa có).
+    /// </summary>
+    public GameObject Get(string prefabName ,GameObject prefab, Vector3 position, Quaternion rotation, int initSize = 5, bool expandable = true)
     {
-        string poolTag = prefab.name; 
+        if (prefab == null)
+        {
+            Debug.LogError("Prefab NULL khi gọi Get!");
+            return null;
+        }
 
-        if (!poolMap.ContainsKey(poolTag))
+        string tag = prefab.name;
+
+        // Tạo pool mới nếu chưa có
+        if (!poolMap.ContainsKey(tag))
         {
             PoolConfig config = new()
             {
-                tag = poolTag,
+                tag = tag,
                 prefab = prefab,
                 initialSize = initSize,
                 expandable = expandable
@@ -84,45 +94,57 @@ public class ObjectPooler : MonoBehaviour
             CreatePool(config);
         }
 
-        if (configMap[poolTag].prefab == null)
-            configMap[poolTag].prefab = prefab;
-
-        return SpawnFromPool(poolTag, position, rotation);
+        return SpawnFromPool(tag, position, rotation);
     }
 
     private GameObject SpawnFromPool(string tag, Vector3 position, Quaternion rotation)
     {
         if (!poolMap.TryGetValue(tag, out var queue))
         {
-            Debug.LogError($"Không tìm thấy pool với tag '{tag}'!");
+            Debug.LogError($"Không tìm thấy pool '{tag}'!");
             return null;
         }
 
-        if (queue.Count == 0)
+        var config = configMap[tag];
+        GameObject objToSpawn = null;
+
+        // Tìm object chưa active
+        foreach (var obj in queue)
         {
-            var config = configMap[tag];
-            if (config.expandable && config.prefab != null)
+            if (!obj.activeInHierarchy)
             {
-                GameObject obj = Instantiate(config.prefab, parentMap[tag]);
-                obj.SetActive(false);
-                queue.Enqueue(obj);
+                objToSpawn = obj;
+                break;
+            }
+        }
+
+        // Nếu không còn object nào free -> tạo mới nếu cho phép
+        if (objToSpawn == null)
+        {
+            if (config.expandable)
+            {
+                objToSpawn = Instantiate(config.prefab, parentMap[tag]);
+                queue.Enqueue(objToSpawn);
             }
             else
             {
-                Debug.LogWarning($"Pool '{tag}' đã cạn và không thể mở rộng.");
+                Debug.LogWarning($"Pool '{tag}' đã hết object và không thể mở rộng!");
                 return null;
             }
         }
 
-        GameObject objToSpawn = queue.Dequeue();
-        objToSpawn.SetActive(true);
         objToSpawn.transform.SetPositionAndRotation(position, rotation);
+        objToSpawn.SetActive(true);
 
-        if (objToSpawn.TryGetComponent<IPooledObject>(out var pooledObj))
-            pooledObj.OnObjectSpawn();
+        if (objToSpawn.TryGetComponent<IPooledObject>(out var pooled))
+            pooled.OnObjectSpawn();
 
-        queue.Enqueue(objToSpawn);
         return objToSpawn;
+    }
+
+    public void ReturnToPool(GameObject obj)
+    {
+        obj.SetActive(false);
     }
 
     public void ClearPool(string tag)
@@ -130,15 +152,11 @@ public class ObjectPooler : MonoBehaviour
         if (!poolMap.ContainsKey(tag)) return;
 
         foreach (var obj in poolMap[tag])
-        {
             Destroy(obj);
-        }
 
         Destroy(parentMap[tag].gameObject);
-
         poolMap.Remove(tag);
         configMap.Remove(tag);
         parentMap.Remove(tag);
     }
 }
-

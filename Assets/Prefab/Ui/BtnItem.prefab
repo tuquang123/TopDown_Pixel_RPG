@@ -79,7 +79,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 21300000, guid: 519dafacd208bb64c83d5124be03b09d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -524,6 +524,7 @@ MonoBehaviour:
   name: {fileID: 3894647342406129191}
   icon: {fileID: 6415364789004172685}
   lv: {fileID: 978225297537833788}
+  viewport: {fileID: 0}
 --- !u!114 &4971689804953567034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1377,6 +1378,10 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 2100000, guid: 40a61d52d4832434993016b0d07ce8fc, type: 2}
+    - target: {fileID: 7762626718466425304, guid: 2df57d9ce62d59a4587286ed50e1edf4, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8687448870667839817, guid: 2df57d9ce62d59a4587286ed50e1edf4, type: 3}
       propertyPath: m_IsActive
       value: 0

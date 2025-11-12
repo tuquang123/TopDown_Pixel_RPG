@@ -455,7 +455,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 10
   m_SortAtRoot: 0
 --- !u!95 &991678519516922443
 Animator:
@@ -4030,14 +4030,16 @@ MonoBehaviour:
   damagedStunTime: 0.3
   bloodVFXOffset: {x: 0, y: 0.5, z: 0}
   timeDieDelay: 0.65
+  isHoldingSpear: 0
   isBoss: 0
-  goldRange: {x: 1, y: 100}
+  goldRange: {x: 1, y: 2}
   dropItems:
   - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
     dropChance: 0.8
   projectilePrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9, type: 3}
   firePoint: {fileID: 4481364031007190528}
   projectileSpeed: 3
+  isHoldingBow: 0
 --- !u!1 &2506785053518761721
 GameObject:
   m_ObjectHideFlags: 0

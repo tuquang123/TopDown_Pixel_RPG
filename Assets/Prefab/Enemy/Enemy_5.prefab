@@ -1486,7 +1486,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 10
   m_SortAtRoot: 0
 --- !u!95 &1513892425545872092
 Animator:
@@ -5940,12 +5940,12 @@ MonoBehaviour:
   timeDieDelay: 0.65
   isHoldingSpear: 0
   isBoss: 0
-  goldRange: {x: 1, y: 100}
+  goldRange: {x: 1, y: 2}
   dropItems:
   - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
     dropChance: 0.8
   projectilePrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9, type: 3}
-  firePoint: {fileID: 4481364031007190528, guid: ba26189a3812215449ea92e65355c7e2, type: 3}
+  firePoint: {fileID: 323753475188547145}
   projectileSpeed: 3
   isHoldingBow: 1
 --- !u!50 &4942316978328193003

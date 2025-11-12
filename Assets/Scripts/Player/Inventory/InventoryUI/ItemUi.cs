@@ -42,4 +42,5 @@ public class ItemUI : MonoBehaviour
     }
 
     public ItemInstance GetItemData() => itemData;
+    
 }
