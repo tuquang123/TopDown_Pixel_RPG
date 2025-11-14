@@ -108,15 +108,16 @@ public class ObjectPooler : MonoBehaviour
         var config = configMap[tag];
         GameObject objToSpawn = null;
 
-        // Tìm object chưa active
         foreach (var obj in queue)
         {
+            if (obj == null) continue;           
             if (!obj.activeInHierarchy)
             {
                 objToSpawn = obj;
                 break;
             }
         }
+
 
         // Nếu không còn object nào free -> tạo mới nếu cho phép
         if (objToSpawn == null)

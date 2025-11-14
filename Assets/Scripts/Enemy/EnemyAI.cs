@@ -496,18 +496,13 @@ public class EnemyAI : MonoBehaviour, IDamageable
         // UI máu
         if (enemyHealthUI != null)
         {
-            Destroy(enemyHealthUI.gameObject);
+            //Destroy(enemyHealthUI.gameObject);
+            enemyHealthUI.HideUI();
             enemyHealthUI = null;
         }
 
         enemyHealthUI?.HideUI();
         EnemyTracker.Instance.Unregister(this);
-
-        if (isBoss)
-        {
-            OnEnemyDefeated?.Invoke(100); 
-            return;
-        }
         
         StartCoroutine(DisableAfterDelay(timeDieDelay));
        
