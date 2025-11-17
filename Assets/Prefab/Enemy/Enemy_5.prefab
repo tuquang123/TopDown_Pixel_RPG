@@ -5924,7 +5924,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938983fd65654cd7bf4edf70cf8b9a9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: Skeleton
+  enemyName: Enemy 5
   enemyLevel: 1
   maxHealth: 100
   attackDamage: 10
@@ -5940,10 +5940,10 @@ MonoBehaviour:
   timeDieDelay: 0.65
   isHoldingSpear: 0
   isBoss: 0
-  goldRange: {x: 1, y: 2}
+  goldRange: {x: 0, y: 1}
   dropItems:
   - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
-    dropChance: 0.8
+    dropChance: 0.39
   projectilePrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9, type: 3}
   firePoint: {fileID: 323753475188547145}
   projectileSpeed: 3

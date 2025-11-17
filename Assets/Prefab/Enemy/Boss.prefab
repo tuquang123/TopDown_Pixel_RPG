@@ -154,9 +154,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: Goblin
   enemyLevel: 1
-  maxHealth: 1000
-  attackDamage: 10
-  attackRange: 1.5
+  maxHealth: 10000
+  attackDamage: 100
+  attackRange: 1.52
   detectionRange: 20
   attackCooldown: 1
   skipHurtAnimation: 0
@@ -166,8 +166,9 @@ MonoBehaviour:
   damagedStunTime: 0
   bloodVFXOffset: {x: 0, y: 0.5, z: 0}
   timeDieDelay: 0.65
+  isHoldingSpear: 0
   isBoss: 0
-  goldRange: {x: 1, y: 100}
+  goldRange: {x: 1, y: 10}
   dropItems: []
   bossHealthUI: {fileID: 0}
   minionPrefab: {fileID: 0}

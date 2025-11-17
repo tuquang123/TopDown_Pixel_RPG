@@ -3912,7 +3912,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: Goblin
+  enemyName: Enemy 4
   enemyLevel: 1
   maxHealth: 100
   attackDamage: 1
@@ -3928,8 +3928,10 @@ MonoBehaviour:
   timeDieDelay: 0.65
   isHoldingSpear: 0
   isBoss: 0
-  goldRange: {x: 1, y: 2}
-  dropItems: []
+  goldRange: {x: 0, y: 1}
+  dropItems:
+  - item: {fileID: 0}
+    dropChance: 0.07
 --- !u!50 &-6464519558615421790
 Rigidbody2D:
   serializedVersion: 5

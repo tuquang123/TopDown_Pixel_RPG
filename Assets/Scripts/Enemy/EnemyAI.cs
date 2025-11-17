@@ -112,14 +112,14 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
     public static event Action<float> OnEnemyDefeated;
 
+    public int CurrentHealth => currentHealth;
     public bool IsDead => isDead;
     public int MaxHealth => maxHealth;
     public string EnemyName => enemyName;
     public int EnemyLevel => enemyLevel;
     [Header("Attack Type")]
     public bool isHoldingSpear = false; // nếu true → attack mới sẽ là AttackStab
-
-
+    
     protected EnemyHealthUI enemyHealthUI;
     
     [Header("Enemy Type")]
@@ -142,6 +142,8 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         anim = GetComponentInChildren<Animator>();
         currentHealth = maxHealth;
+        
+        enemyHealthUI?.UpdateHealth(currentHealth);
     }
     private void OnEnable()
     {
@@ -185,7 +187,6 @@ public class EnemyAI : MonoBehaviour, IDamageable
         }
     }
     
-
     public void ApplyLevelData(EnemyLevelData data)
     {
         if (data == null)
@@ -197,8 +198,6 @@ public class EnemyAI : MonoBehaviour, IDamageable
         maxHealth = data.maxHealth;
         attackDamage = data.attackDamage;
         moveSpeed = data.moveSpeed;
-        //attackRange = data.attackRange;
-        //detectionRange = data.detectionRange;
         attackCooldown = data.attackCooldown;
         enemyLevel = data.level;
     }
@@ -418,34 +417,67 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         isDead = true;
+
+        HandleDieAnimation();
+        DisableComponents();
+        HandleHealthUI();
+        NotifySystemsBeforeDrop();
+        HandleDrops();
+        NotifySystemsAfterDrop();
+        StartCoroutine(DelayDeactivate());
+    }
+
+    protected virtual void HandleDieAnimation()
+    {
         anim.SetTrigger(DieTrigger);
+    }
+
+    protected virtual void DisableComponents()
+    {
         GetComponent<Collider2D>().enabled = false;
         enabled = false;
+    }
 
+    protected virtual void HandleHealthUI()
+    {
+        if (enemyHealthUI != null)
+        {
+            Destroy(enemyHealthUI.gameObject);
+            enemyHealthUI = null;
+        }
+    }
+
+    protected virtual void NotifySystemsBeforeDrop()
+    {
         OnDeath?.Invoke();
-
-        // Quest report
         QuestManager.Instance.ReportProgress("NV1", enemyName, 1);
+    }
 
-        // --- DROP GOLD ---
+    protected virtual void HandleDrops()
+    {
+        DropGold();
+        DropItems();
+    }
+
+    protected virtual void DropGold()
+    {
         int goldAmount = Random.Range(goldRange.x, goldRange.y + 1);
         if (goldAmount > 0)
         {
             GoldDropHelper.SpawnGoldBurst(transform.position, goldAmount, CommonReferent.Instance.goldPrefab);
         }
+    }
 
-        // --- DROP ITEM ---
-        // B1: Tính tổng tỉ lệ
+    protected virtual void DropItems()
+    {
         float totalChance = 0f;
         foreach (var drop in dropItems)
             totalChance += drop.dropChance;
 
-        // B2: Random trong [0..totalChance)
         float roll = Random.value * totalChance;
         float cumulative = 0f;
 
         EnemyDropItem chosenDrop = null;
-
         foreach (var drop in dropItems)
         {
             cumulative += drop.dropChance;
@@ -456,11 +488,9 @@ public class EnemyAI : MonoBehaviour, IDamageable
             }
         }
 
-        // B3: Spawn nếu có item hợp lệ
         if (chosenDrop != null && chosenDrop.item != null)
         {
-            int amount = 1; // hoặc random trong khoảng min/max tùy bạn
-
+            int amount = 1;
             GameObject prefab = CommonReferent.Instance.itemDropPrefab;
             GameObject dropObj = ObjectPooler.Instance.Get(
                 prefab.name,
@@ -470,183 +500,35 @@ public class EnemyAI : MonoBehaviour, IDamageable
             );
 
             ItemDrop itemDrop = dropObj.GetComponent<ItemDrop>();
-            ItemInstance droppedItem = new ItemInstance(chosenDrop.item, 0); // tạo cấp 0
-            itemDrop.Setup(droppedItem, amount);
-
-            //itemDrop.Setup(chosenDrop.item, amount);
-
-            //RewardPopupManager.Instance.ShowReward(chosenDrop.item.icon, chosenDrop.item.itemName, amount);
+            itemDrop.Setup(new ItemInstance(chosenDrop.item, 0), amount);
 
             Debug.Log($"{enemyName} dropped {chosenDrop.item.itemName} x{amount}");
         }
-        
-        // EXP
-        if (PlayerStats.Instance != null)
-        {
-            var value = 15;
-            var playerLevel = PlayerStats.Instance.GetComponent<PlayerLevel>();
-            if (playerLevel != null)
-            {
-                playerLevel.levelSystem.AddExp(value);
-            }
-            FloatingTextSpawner.Instance.SpawnText("+ EXP :" + value, transform.position, Color.magenta);
-        }
-        
-
-        // UI máu
-        if (enemyHealthUI != null)
-        {
-            //Destroy(enemyHealthUI.gameObject);
-            enemyHealthUI.HideUI();
-            enemyHealthUI = null;
-        }
-
-        enemyHealthUI?.HideUI();
-        EnemyTracker.Instance.Unregister(this);
-        
-        StartCoroutine(DisableAfterDelay(timeDieDelay));
-       
     }
-    
-    private IEnumerator DisableAfterDelay(float delay)
+
+    protected virtual void NotifySystemsAfterDrop()
     {
-        yield return new WaitForSeconds(delay);
+        OnEnemyDefeated?.Invoke(1);
+    }
+
+    protected virtual IEnumerator DelayDeactivate()
+    {
+        yield return new WaitForSeconds(timeDieDelay);
+
         ObjectPooler.Instance.Get(
-            CommonReferent.Instance.deadVFXPrefab.name, 
-            CommonReferent.Instance.deadVFXPrefab, 
-            transform.position, 
-            Quaternion.identity, 
-            initSize: 2, 
+            CommonReferent.Instance.deadVFXPrefab.name,
+            CommonReferent.Instance.deadVFXPrefab,
+            transform.position,
+            Quaternion.identity,
+            initSize: 2,
             expandable: true
         );
 
         gameObject.SetActive(false);
     }
 
-    private IEnumerator ApplyKnockback()
-    {
-        if (target == null) yield break;
-
-        Vector2 knockDir = (transform.position - target.position).normalized;
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (rb != null)
-        {
-            isKnockbacked = true;
-            rb.linearVelocity = knockDir * knockForce;
-        }
-
-        yield return new WaitForSeconds(knockDuration);
-
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector2.zero;
-        }
-
-        isKnockbacked = false;
-    }
-
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
     protected static readonly int DieTrigger = Animator.StringToHash("4_Death");
-
-#if UNITY_EDITOR
-    [Button("Auto Setup Rigidbody, Collider, Layer & UnitRoot")]
-    private void AutoAddRigidbodyAndCollider()
-    {
-        // Add Rigidbody2D nếu chưa có
-        if (GetComponent<Rigidbody2D>() == null)
-        {
-            Rigidbody2D rb = gameObject.AddComponent<Rigidbody2D>();
-            rb.gravityScale = 0;
-            rb.freezeRotation = true;
-            Debug.Log("Rigidbody2D added and configured.");
-        }
-
-        // Add BoxCollider2D nếu chưa có
-        if (GetComponent<BoxCollider2D>() == null)
-        {
-            gameObject.AddComponent<BoxCollider2D>();
-            Debug.Log("BoxCollider2D added.");
-        }
-
-        // Gán tag "Enemy"
-        gameObject.tag = "Enemy";
-        Debug.Log("Tag set to 'Enemy'.");
-
-        if (!IsTagDefined("Enemy"))
-        {
-            Debug.LogWarning("Tag 'Enemy' is not defined in Tag Manager. Please define it manually.");
-        }
-
-        // Gán Layer "Enemy" nếu tồn tại
-        int enemyLayer = LayerMask.NameToLayer("Enemy");
-        if (enemyLayer != -1)
-        {
-            gameObject.layer = enemyLayer;
-            Debug.Log("Layer set to 'Enemy'.");
-        }
-        else
-        {
-            Debug.LogWarning("Layer 'Enemy' is not defined. Please add it manually in the Tag Manager.");
-        }
-
-        // Tìm object con tên "UnitRoot" và gắn CommonAnimationEvents nếu cần
-        Transform unitRoot = transform.Find("UnitRoot");
-        if (unitRoot != null)
-        {
-            if (unitRoot.GetComponent<CommonAnimationEvents>() == null)
-            {
-                unitRoot.gameObject.AddComponent<CommonAnimationEvents>();
-                Debug.Log("CommonAnimationEvents component added to UnitRoot.");
-            }
-            else
-            {
-                Debug.Log("UnitRoot already has CommonAnimationEvents.");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Child named 'UnitRoot' not found under this enemy.");
-        }
-    }
-
-    /// <summary>
-    /// Kiểm tra tag đã tồn tại trong TagManager chưa
-    /// </summary>
-    private bool IsTagDefined(string tag)
-    {
-        for (int i = 0; i < UnityEditorInternal.InternalEditorUtility.tags.Length; i++)
-        {
-            if (UnityEditorInternal.InternalEditorUtility.tags[i] == tag)
-                return true;
-        }
-
-        return false;
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        // Vẽ detection range (vòng xanh)
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
-
-        // Vẽ attack range (vòng đỏ)
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
-
-        // Vẽ máu còn lại (thanh ngang)
-        Gizmos.color = Color.yellow;
-        float healthPercent = Application.isPlaying && maxHealth > 0 ? (float)currentHealth / maxHealth : 1f;
-        Vector3 barStart = transform.position + Vector3.up * 1.2f;
-        Vector3 barEnd = barStart + Vector3.right * healthPercent;
-        Gizmos.DrawLine(barStart, barEnd);
-
-        // Vẽ hướng đang quay mặt
-        Gizmos.color = Color.cyan;
-        Vector3 forwardDir = transform.right * Mathf.Sign(transform.localScale.x);
-        Gizmos.DrawRay(transform.position, forwardDir * 0.8f);
-    }
-
-#endif
 }

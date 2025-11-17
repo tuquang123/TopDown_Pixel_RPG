@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿// ================= SpawnPoint.cs =================
+using System;
+using UnityEngine;
 using System.Collections;
 
 public class SpawnPoint : MonoBehaviour
@@ -8,94 +10,113 @@ public class SpawnPoint : MonoBehaviour
     [SerializeField, Range(1, 10)] private int enemyLevel = 1;
     public float respawnDelay = 10f;
 
-    private GameObject _currentEnemy;
+    [Header("Spawn Conditions")]
+    Transform player;
+    float spawnRange = 12f;       
+    float keepAliveRange = 20f;   
 
-    /// <summary>
-    /// Spawn enemy tại vị trí spawnpoint, kèm UI máu pool.
-    /// </summary>
+    private GameObject _currentEnemy;
+    private bool _waitingRespawn = false;
+
+    private void Start()
+    {
+        player = CommonReferent.Instance.playerPrefab.transform;
+        spawnRange = CommonReferent.Instance.spawnRange;
+        keepAliveRange = CommonReferent.Instance.keepAliveRange;
+    }
+
+    private void Update()
+    {
+        if (player == null) return;
+
+        if (_currentEnemy == null && !_waitingRespawn)
+        {
+            TrySpawn();
+            return;
+        }
+
+        if (_currentEnemy != null)
+        {
+            float dist = Vector3.Distance(player.position, transform.position);
+            if (dist > keepAliveRange)
+            {
+                ForceDespawn();
+            }
+        }
+    }
+
+    private void TrySpawn()
+    {
+        float dist = Vector3.Distance(player.position, transform.position);
+        if (dist > spawnRange) return;
+        Spawn(CommonReferent.Instance.levelDatabase);
+    }
+
+    private void ForceDespawn()
+    {
+        if (_currentEnemy != null)
+        {
+            ObjectPooler.Instance.ReturnToPool(_currentEnemy);
+            _currentEnemy = null;
+        }
+    }
+
     public void Spawn(EnemyLevelDatabase levelDB)
     {
-        if (_currentEnemy != null) return; // enemy vẫn tồn tại, không spawn thêm
+        if (_currentEnemy != null) return;
 
-        if (enemyPrefab == null)
-        {
-            Debug.LogError($"SpawnPoint at {transform.position} is missing enemyPrefab reference!");
-            return;
-        }
-
-        if (ObjectPooler.Instance == null)
-        {
-            Debug.LogError("ObjectPooler.Instance is NULL! Hãy chắc chắn có ObjectPooler trong scene!");
-            return;
-        }
-
-        // Spawn enemy từ pool
-        _currentEnemy = ObjectPooler.Instance.Get(
-            enemyPrefab.name,
-            enemyPrefab,
-            transform.position,
-            Quaternion.identity,
-            initSize: 10,
-            expandable: true
+        _currentEnemy = ObjectPooler.Instance.Get(enemyPrefab.name, enemyPrefab, transform.position, Quaternion.identity, initSize: 1, expandable: true
         );
 
         if (_currentEnemy == null) return;
 
-        // Setup level data
         var ai = _currentEnemy.GetComponent<EnemyAI>();
         var levelData = levelDB.GetDataByLevel(enemyLevel);
         ai.ApplyLevelData(levelData);
-        ai.ResetEnemy();
+        ai.ResetEnemy();  // Set currentHealth = maxHealth
+        
+        GameObject uiObj = Instantiate(CommonReferent.Instance.hpSliderUi, _currentEnemy.transform.position, Quaternion.identity
+        );
 
-        // Setup EnemyHealthUI từ pool
-        if (ai.EnemyHealthUI == null)
-        {
-            GameObject uiObj = ObjectPooler.Instance.Get(
-                CommonReferent.Instance.hpSliderUi.name,
-                CommonReferent.Instance.hpSliderUi,
-                Vector3.zero,
-                Quaternion.identity
-            );
-
-            uiObj.transform.SetParent(CommonReferent.Instance.canvasHp.transform, false);
-
-            EnemyHealthUI uiComp = uiObj.GetComponent<EnemyHealthUI>();
-            uiComp.SetTarget(_currentEnemy);
-            ai.EnemyHealthUI = uiComp;
-        }
-        else
-        {
-            ai.EnemyHealthUI.SetTarget(_currentEnemy);
-            ai.EnemyHealthUI.HideUI();
-        }
-
-        // Khi enemy chết
+        uiObj.transform.SetParent(CommonReferent.Instance.canvasHp.transform, false);
+        uiObj.transform.localScale = Vector3.one;
+        
+        ai.EnemyHealthUI = uiObj.GetComponent<EnemyHealthUI>();
+        ai.EnemyHealthUI.SetTarget(_currentEnemy);
+    
         ai.OnDeath += () =>
         {
-            // hide UI và trả về pool
-            if (ai.EnemyHealthUI != null)
-            {
-                ai.EnemyHealthUI.HideUI();
-            }
-
             _currentEnemy = null;
-            StartCoroutine(RespawnAfterDelay(levelDB));
+            StartCoroutine(RespawnDelayRoutine());
         };
-
-        // Spawn dead VFX pool (chuẩn bị)
-        ObjectPooler.Instance.Get(
-            CommonReferent.Instance.deadVFXPrefab.name,
-            CommonReferent.Instance.deadVFXPrefab,
-            transform.position,
-            Quaternion.identity,
-            initSize: 2,
-            expandable: true
-        );
     }
 
-    private IEnumerator RespawnAfterDelay(EnemyLevelDatabase levelDB)
+    private IEnumerator RespawnDelayRoutine()
     {
+        _waitingRespawn = true;
         yield return new WaitForSeconds(respawnDelay);
-        Spawn(levelDB);
+        _waitingRespawn = false;
+    }
+
+
+    // -------------------------------------------
+    // 🔥 DRAW GIZMOS – giúp debug vùng spawn
+    // -------------------------------------------
+    private void OnDrawGizmos()
+    {
+        // Vùng spawnTrigger range (khi player bước vào, quái mới spawn)
+        Gizmos.color = new Color(0f, 1f, 0f, 0.25f); // xanh nhạt
+        Gizmos.DrawSphere(transform.position, spawnRange);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, spawnRange);
+
+
+        // Vùng keepAlive range (player đi xa hơn → despawn)
+        Gizmos.color = new Color(1f, 0.5f, 0f, 0.2f); // cam nhạt
+        Gizmos.DrawSphere(transform.position, keepAliveRange);
+
+        Gizmos.color = new Color(1f, 0.5f, 0f);
+        Gizmos.DrawWireSphere(transform.position, keepAliveRange);
     }
 }

@@ -10,7 +10,7 @@ public class DestructibleObject : MonoBehaviour
     [Header("Drop Settings")]
     [SerializeField] private int minGold = 1;
     [SerializeField] private int maxGold = 3;
-    [SerializeField, Range(0f, 1f)] private float gemDropChance = 0.5f; // 30% rơi gem
+    [SerializeField, Range(0f, 1f)] private float gemDropChance = 0.5f; // Xác suất rơi gem
     [SerializeField] private int minGem = 1;
     [SerializeField] private int maxGem = 2;
 
@@ -20,6 +20,9 @@ public class DestructibleObject : MonoBehaviour
     [SerializeField] private float flashDuration = 0.1f;
     [SerializeField] private float shakeDuration = 0.1f;
     [SerializeField] private float shakeMagnitude = 0.05f;
+
+    [Header("Respawn")]
+    [SerializeField] private float respawnTime = 10f; // thời gian hồi sinh
 
     private Vector3 originalPos;
     private Coroutine flashCoroutine;
@@ -97,35 +100,68 @@ public class DestructibleObject : MonoBehaviour
     // =====================================================
     private void HandleDestruction()
     {
-        // Hiệu ứng vỡ
-        if (CommonReferent.Instance.destructionVFXPrefab != null)
         {
-            ObjectPooler.Instance.Get("BreakVFX", CommonReferent.Instance.destructionVFXPrefab, transform.position, Quaternion.identity);
-        }
+            // Hiệu ứng vỡ
+            if (CommonReferent.Instance.destructionVFXPrefab != null)
+            {
+                ObjectPooler.Instance.Get("BreakVFX", CommonReferent.Instance.destructionVFXPrefab, transform.position,
+                    Quaternion.identity);
+            }
 
-        // Rơi vàng
-        int totalGold = Random.Range(minGold, maxGold + 1);
-        for (int i = 0; i < totalGold; i++)
-        {
-            Vector3 offset = Random.insideUnitCircle * 0.5f;
-            ObjectPooler.Instance.Get("Gold", CommonReferent.Instance.goldPrefab, transform.position + offset, Quaternion.identity);
-        }
-
-        // Rơi gem (theo xác suất)
-        if (Random.value < gemDropChance)
-        {
-            int totalGem = Random.Range(minGem, maxGem + 1);
-            for (int i = 0; i < totalGem; i++)
+            // Rơi vàng
+            int totalGold = Random.Range(minGold, maxGold + 1);
+            for (int i = 0; i < totalGold; i++)
             {
                 Vector3 offset = Random.insideUnitCircle * 0.5f;
-                ObjectPooler.Instance.Get("Gem", CommonReferent.Instance.gemPrefab, transform.position + offset, Quaternion.identity);
+                ObjectPooler.Instance.Get("Gold", CommonReferent.Instance.goldPrefab, transform.position + offset,
+                    Quaternion.identity);
             }
+
+            // Rơi gem (theo xác suất)
+            if (Random.value < gemDropChance)
+            {
+                int totalGem = Random.Range(minGem, maxGem + 1);
+                for (int i = 0; i < totalGem; i++)
+                {
+                    Vector3 offset = Random.insideUnitCircle * 0.5f;
+                    ObjectPooler.Instance.Get("Gem", CommonReferent.Instance.gemPrefab, transform.position + offset,
+                        Quaternion.identity);
+                }
+            }
+
+            // Báo nhiệm vụ
+            QuestManager.Instance.ReportProgress("NV2", nameOBJ, 1);
+
+            //
+            // Hiệu ứng vỡ, rơi vàng/gem, báo nhiệm vụ...
+
+            // Ẩn vật thể
+            gameObject.SetActive(false);
+
+            // Bắt đầu hồi sinh qua tracker (tracker vẫn active)
+            DestructibleTracker.Instance.StartCoroutine(RespawnAfterDelay());
         }
-
-        // Báo nhiệm vụ
-        QuestManager.Instance.ReportProgress("NV2", nameOBJ, 1);
-
-        // Ẩn vật thể
-        gameObject.SetActive(false);
     }
+
+    private IEnumerator RespawnAfterDelay()
+    {
+        yield return new WaitForSeconds(10f);
+
+        // Reset trạng thái
+        currentHits = 0;
+        spriteRenderer.color = Color.white;
+        transform.localPosition = originalPos;
+
+        // Kích hoạt lại vật thể
+        gameObject.SetActive(true);
+
+        // Nếu dùng tracker
+        DestructibleTracker.Instance?.Register(this);
+    }
+
+
+    // =====================================================
+    // Coroutine hồi sinh vật thể
+    // =====================================================
+
 }

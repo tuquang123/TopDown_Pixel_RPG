@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1354752370147810250
 Transform:
   m_ObjectHideFlags: 0
@@ -524,7 +524,6 @@ MonoBehaviour:
   name: {fileID: 3894647342406129191}
   icon: {fileID: 6415364789004172685}
   lv: {fileID: 978225297537833788}
-  viewport: {fileID: 0}
 --- !u!114 &4971689804953567034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1377,7 +1376,7 @@ PrefabInstance:
     - target: {fileID: 7762626718466425304, guid: 2df57d9ce62d59a4587286ed50e1edf4, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 2100000, guid: 40a61d52d4832434993016b0d07ce8fc, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 7762626718466425304, guid: 2df57d9ce62d59a4587286ed50e1edf4, type: 3}
       propertyPath: m_RaycastTarget
       value: 0
@@ -1392,9 +1391,6 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1304941541029647429, guid: 2df57d9ce62d59a4587286ed50e1edf4, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5435607737554505745}
-    - targetCorrespondingSourceObject: {fileID: 1304941541029647429, guid: 2df57d9ce62d59a4587286ed50e1edf4, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 7855662637603345438}
   m_SourcePrefab: {fileID: 100100000, guid: 2df57d9ce62d59a4587286ed50e1edf4, type: 3}
 --- !u!1 &539225737324694174 stripped
@@ -1402,22 +1398,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1304941541029647429, guid: 2df57d9ce62d59a4587286ed50e1edf4, type: 3}
   m_PrefabInstance: {fileID: 1542381277393821403}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5435607737554505745
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 539225737324694174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee158225ee1e59f4791627785501d950, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shaderTypes: 0
-  normalStrength: 5
-  normalSmoothing: 1
-  computingNormal: 0
 --- !u!114 &7855662637603345438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1425,7 +1405,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 539225737324694174}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: be4629703b5348a6adc168481a685ede, type: 3}
   m_Name: 

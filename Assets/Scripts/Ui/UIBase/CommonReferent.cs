@@ -29,4 +29,7 @@ public class CommonReferent : Singleton<CommonReferent>
     public Sprite iconExp;
     public GameObject itemDropPrefab;
     public GameObject deadVFXPrefab;
+    
+    public float spawnRange = 12f;       
+    public float keepAliveRange = 20f; 
 }

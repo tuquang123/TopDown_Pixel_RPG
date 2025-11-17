@@ -1,3 +1,4 @@
+// ================= EnemyHealthUI.cs =================
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -11,78 +12,95 @@ public class EnemyHealthUI : MonoBehaviour
     [Header("Text UI")]
     [SerializeField] private TextMeshProUGUI nameAndLevelText;
     [SerializeField] private TextMeshProUGUI hpText; 
-    
+
     [SerializeField] private Color enemyHpColor = Color.red;
     [SerializeField] private Color allyHpColor = Color.green;
-    
-    private bool autoHide = true;
 
-    private GameObject targetEnemy;
+    private bool autoHide = true;
     private float hideTimer;
     private int maxHealth;
 
-    public void HideUI()
+    private Camera mainCamera;
+    private TargetInfo currentTarget;
+
+    private struct TargetInfo
     {
-        gameObject.SetActive(false);
+        public GameObject target;
+        public bool isEnemy;
+        public bool isAlly;
+        public bool isDead;
+        public int maxHealth;
+        public string displayName;
+        public Color sliderColor;
     }
-    
+
+    private void Awake()
+    {
+        mainCamera = Camera.main;
+    }
+
+    public void HideUI() => gameObject.SetActive(false);
+
     private void SetSliderColor(Color color)
     {
         if (healthSlider.fillRect != null)
         {
             var fillImage = healthSlider.fillRect.GetComponent<Image>();
-            if (fillImage != null)
-            {
-                fillImage.color = color;
-            }
+            if (fillImage != null) fillImage.color = color;
         }
     }
 
     public void SetTarget(GameObject target)
     {
-        targetEnemy = target;
+        // Reset UI state
+        HideUI();
+        hideTimer = hideDelay;
+        currentTarget = new TargetInfo { target = null };
+
+        if (target == null) return;
+
+        TargetInfo info = new TargetInfo { target = target };
 
         if (target.TryGetComponent(out EnemyAI enemy))
         {
-            maxHealth = enemy.MaxHealth;
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = maxHealth;
-            
-            if (nameAndLevelText != null)
-                nameAndLevelText.text = $"{enemy.EnemyName} (Lv {enemy.EnemyLevel})";
-
-            if (hpText != null)
-                hpText.text = $"{maxHealth}/{maxHealth}";
-            
-            SetSliderColor(enemyHpColor);
-
+            info.isEnemy = true;
+            info.maxHealth = enemy.MaxHealth;
+            info.displayName = $"{enemy.EnemyName} (Lv {enemy.EnemyLevel})";
+            info.sliderColor = enemyHpColor;
             autoHide = true;
         }
         else if (target.TryGetComponent(out AllyStats ally))
         {
-            maxHealth = ally.MaxHP;
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = maxHealth;
-
-            if (nameAndLevelText != null)
-                nameAndLevelText.text = $"{ally.HeroName} (SP)";
-
-            if (hpText != null)
-                hpText.text = $"{maxHealth}/{maxHealth}";
-            
-            SetSliderColor(allyHpColor);
-
+            info.isAlly = true;
+            info.maxHealth = ally.MaxHP;
+            info.displayName = $"{ally.HeroName} (SP)";
+            info.sliderColor = allyHpColor;
             autoHide = false;
         }
-
         else
         {
-            Debug.LogWarning("SetTarget(): Không tìm thấy EnemyAI hoặc AllyStats trên target.");
+            // fallback
+            info.isEnemy = true;
+            info.maxHealth = 1;
+            info.displayName = "Unknown";
+            info.sliderColor = enemyHpColor;
+            autoHide = true;
         }
 
-        //gameObject.SetActive(false);
+        currentTarget = info;
+        maxHealth = info.maxHealth;
+
+        healthSlider.maxValue = maxHealth;
+        healthSlider.value = maxHealth;
+
+        if (nameAndLevelText != null) nameAndLevelText.text = info.displayName;
+        if (hpText != null) hpText.text = $"{maxHealth}/{maxHealth}";
+
+        SetSliderColor(info.sliderColor);
+
+        gameObject.SetActive(!autoHide); // Ally always visible, Enemy hidden until damaged
     }
-    
+
     public void UpdateHealth(int currentHealth)
     {
         if (PlayerController.Instance != null && PlayerController.Instance.IsPlayerDie())
@@ -96,16 +114,18 @@ public class EnemyHealthUI : MonoBehaviour
         if (hpText != null)
             hpText.text = $"{currentHealth}/{maxHealth}";
 
-        gameObject.SetActive(true);
+        if (!gameObject.activeSelf)
+            gameObject.SetActive(true);
+
         hideTimer = hideDelay;
     }
 
-
     private void LateUpdate()
     {
-        if (targetEnemy == null) return;
+        if (currentTarget.target == null) return;
 
-        if (targetEnemy.TryGetComponent(out EnemyAI enemy) && enemy.IsDead)
+        // Check if target is dead
+        if (currentTarget.isEnemy && currentTarget.target.TryGetComponent(out EnemyAI enemy) && enemy.IsDead)
         {
             HideUI();
             return;
@@ -117,19 +137,19 @@ public class EnemyHealthUI : MonoBehaviour
             return;
         }
 
-        Vector3 worldPos = targetEnemy.transform.position + offset;
-        if (Camera.main != null)
+        // Update position
+        if (mainCamera != null)
         {
-            Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+            Vector3 screenPos = mainCamera.WorldToScreenPoint(currentTarget.target.transform.position + offset);
             transform.position = screenPos;
         }
 
-        if (autoHide && gameObject.activeSelf)
+        // Auto hide logic
+        if (autoHide)
         {
             hideTimer -= Time.deltaTime;
-            if (hideTimer <= 0)
-                gameObject.SetActive(false);
+            if (hideTimer <= 0f && gameObject.activeSelf)
+                HideUI();
         }
     }
-
 }

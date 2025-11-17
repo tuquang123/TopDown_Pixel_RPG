@@ -401,18 +401,18 @@ MonoBehaviour:
   timeDieDelay: 0.65
   isHoldingSpear: 0
   isBoss: 0
-  goldRange: {x: 1, y: 2}
+  goldRange: {x: 0, y: 1}
   dropItems:
   - item: {fileID: 11400000, guid: 05286bc7c7604724f885df8b699f40cf, type: 2}
-    dropChance: 0.2
+    dropChance: 0.07
   - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
-    dropChance: 0.2
+    dropChance: 0.06
   - item: {fileID: 11400000, guid: 7216b3f305d6f8c4a9796b97c9816d6f, type: 2}
-    dropChance: 0.2
+    dropChance: 0.1
   - item: {fileID: 11400000, guid: 97f5e80c065a3bf4089e1277636e0363, type: 2}
-    dropChance: 0.2
+    dropChance: 0.01
   - item: {fileID: 11400000, guid: 7024774b464c897418f46d2be531c843, type: 2}
-    dropChance: 0.2
+    dropChance: 0.05
 --- !u!114 &-8244477202541570080
 MonoBehaviour:
   m_ObjectHideFlags: 0

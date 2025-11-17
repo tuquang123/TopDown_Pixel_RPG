@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// ================= ObjectPooler.cs =================
+
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface IPooledObject
@@ -133,12 +135,13 @@ public class ObjectPooler : MonoBehaviour
                 return null;
             }
         }
-
+        
         objToSpawn.transform.SetPositionAndRotation(position, rotation);
         objToSpawn.SetActive(true);
 
         if (objToSpawn.TryGetComponent<IPooledObject>(out var pooled))
             pooled.OnObjectSpawn();
+        
 
         return objToSpawn;
     }
