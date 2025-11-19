@@ -102,21 +102,5 @@ public class SpawnPoint : MonoBehaviour
     // -------------------------------------------
     // 🔥 DRAW GIZMOS – giúp debug vùng spawn
     // -------------------------------------------
-    private void OnDrawGizmos()
-    {
-        // Vùng spawnTrigger range (khi player bước vào, quái mới spawn)
-        Gizmos.color = new Color(0f, 1f, 0f, 0.25f); // xanh nhạt
-        Gizmos.DrawSphere(transform.position, spawnRange);
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, spawnRange);
-
-
-        // Vùng keepAlive range (player đi xa hơn → despawn)
-        Gizmos.color = new Color(1f, 0.5f, 0f, 0.2f); // cam nhạt
-        Gizmos.DrawSphere(transform.position, keepAliveRange);
-
-        Gizmos.color = new Color(1f, 0.5f, 0f);
-        Gizmos.DrawWireSphere(transform.position, keepAliveRange);
-    }
+   
 }
