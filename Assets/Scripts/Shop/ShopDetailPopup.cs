@@ -9,6 +9,7 @@ public class ShopDetailPopup : MonoBehaviour
     public TMP_Text nameText;
     public TMP_Text tierText;
     public TMP_Text descriptionText;
+    public TMP_Text statText;      
     public TMP_Text priceText;
     public Button buyButton;
     public Button cancelButton;
@@ -35,17 +36,19 @@ public class ShopDetailPopup : MonoBehaviour
         nameText.text = data.itemName;
         tierText.text = $"{data.tier}";
         descriptionText.text = data.description;
+
+        // <-- Gọi hàm BUILD STAT ở đây (không lỗi nữa)
+        statText.text = BuildStatText(instance);
+
         priceText.text = $"{data.price} vàng";
 
         buyButton.onClick.RemoveAllListeners();
         cancelButton.onClick.RemoveAllListeners();
 
-        // ⚙️ Gọi cập nhật trạng thái nút khi mở popup
         UpdateBuyButtonState();
 
         buyButton.onClick.AddListener(() =>
         {
-            // Nếu đủ tiền mới cho mua
             if (CurrencyManager.Instance.Gold >= data.price)
             {
                 shopUI.BuyItem(currentItem);
@@ -59,12 +62,14 @@ public class ShopDetailPopup : MonoBehaviour
 
         cancelButton.onClick.AddListener(() => gameObject.SetActive(false));
 
-        // 🔄 Lắng nghe thay đổi vàng realtime
+        // đăng ký listener cập nhật vàng
         CurrencyManager.Instance.OnGoldChanged += OnGoldChanged;
     }
 
     private void UpdateBuyButtonState()
     {
+        if (currentItem == null || currentItem.itemData == null) return;
+
         var enoughGold = CurrencyManager.Instance.Gold >= currentItem.itemData.price;
         buyButton.interactable = enoughGold;
 
@@ -82,12 +87,54 @@ public class ShopDetailPopup : MonoBehaviour
     public void Hide()
     {
         gameObject.SetActive(false);
-        CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
+        if (CurrencyManager.Instance != null)
+            CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
     }
 
     private void OnDisable()
     {
         if (CurrencyManager.Instance != null)
             CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
+    }
+
+    // ----- HÀM BUILD STAT (bổ sung) -----
+    private string BuildStatText(ItemInstance item)
+    {
+        if (item == null || item.itemData == null) return "";
+
+        var data = item.itemData;
+        string stats = "";
+
+        void AddStatLine(string label, ItemStatBonus bonus, float upgradePercent = 0.1f, string suffix = "")
+        {
+            if (bonus == null || !bonus.HasValue) return;
+
+            // Nếu item trong shop thường là chưa nâng cấp, dùng giá trị flat trực tiếp
+            float flat = bonus.flat;
+            float percent = bonus.percent;
+
+            bool showDecimal = (label == "Tốc đánh" || label == "Tốc phép" || label == "Speed");
+
+            if (Mathf.Abs(flat) > 0.0001f)
+                stats += showDecimal
+                    ? $"{label}: {flat:F1}{suffix}\n"
+                    : $"{label}: {Mathf.RoundToInt(flat)}{suffix}\n";
+
+            if (Mathf.Abs(percent) > 0.0001f)
+                stats += showDecimal
+                    ? $"{label}: +{percent:F1}%{suffix}\n"
+                    : $"{label}: +{percent}%{suffix}\n";
+        }
+
+        AddStatLine("Dame", data.attack);
+        AddStatLine("Giáp", data.defense);
+        AddStatLine("Máu", data.health);
+        AddStatLine("Mana", data.mana);
+        AddStatLine("Crit", data.critChance, 0.05f);
+        AddStatLine("Speed", data.speed, 0.05f);
+        AddStatLine("Tốc đánh", data.attackSpeed, 0.05f);
+        AddStatLine("Hút máu", data.lifeSteal, 0.05f);
+
+        return stats.TrimEnd();
     }
 }
