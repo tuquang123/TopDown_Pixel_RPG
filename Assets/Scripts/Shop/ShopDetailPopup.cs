@@ -9,10 +9,10 @@ public class ShopDetailPopup : MonoBehaviour
     public TMP_Text nameText;
     public TMP_Text tierText;
     public TMP_Text descriptionText;
-    public TMP_Text statText;      
     public TMP_Text priceText;
     public Button buyButton;
     public Button cancelButton;
+    public StatDisplayComponent statDisplayComponent;
 
     private ShopUI shopUI;
     private ItemInstance currentItem;
@@ -36,9 +36,8 @@ public class ShopDetailPopup : MonoBehaviour
         nameText.text = data.itemName;
         tierText.text = $"{data.tier}";
         descriptionText.text = data.description;
-
-        // <-- Gọi hàm BUILD STAT ở đây (không lỗi nữa)
-        statText.text = BuildStatText(instance);
+        
+        statDisplayComponent.SetStats(instance);
 
         priceText.text = $"{data.price} vàng";
 
