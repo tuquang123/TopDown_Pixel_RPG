@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SuperArmor 1
   m_EditorClassIdentifier: 
   itemID: armorsuper1
-  itemName: Knight's Helmet1
+  itemName: 'Knight''s '
   icon: {fileID: 8681217020312184217, guid: 7837b3161c8b7477e9711cb259036797, type: 3}
   itemType: 6
   tier: 4
@@ -44,10 +44,8 @@ MonoBehaviour:
     flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 8982820368506593384, guid: 7837b3161c8b7477e9711cb259036797,
-    type: 3}
-  iconRight: {fileID: 6580047532355526111, guid: 7837b3161c8b7477e9711cb259036797,
-    type: 3}
+  iconLeft: {fileID: 8982820368506593384, guid: 7837b3161c8b7477e9711cb259036797, type: 3}
+  iconRight: {fileID: 6580047532355526111, guid: 7837b3161c8b7477e9711cb259036797, type: 3}
   horseData: {fileID: 0}
   baseUpgradeCost: 341
   restoresHealth: 0
@@ -65,3 +63,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

@@ -10,6 +10,8 @@ public class StatDisplayComponent : MonoBehaviour
     [SerializeField] private TextMeshProUGUI critText;
     [SerializeField] private TextMeshProUGUI lifestealText;
     [SerializeField] private TextMeshProUGUI attackSpeedText;
+    [SerializeField] private TextMeshProUGUI healText;
+    [SerializeField] private TextMeshProUGUI manaText;
 
     // ============================
     // 1) PLAYER STAT
@@ -19,11 +21,11 @@ public class StatDisplayComponent : MonoBehaviour
         if (stats == null) return;
 
         attackText.text =
-            $"<sprite name=\"attack_icon\" color=#FF4D4D> " +
+            $"<sprite name=\"attack_icon\" color=#FF8C00> " +
             $"<color=#FFD700>Attack:</color> {stats.attack.Value}";
 
         defenseText.text =
-            $"<sprite name=\"defense_icon\" color=#4DA6FF> " +
+            $"<sprite name=\"defense_icon\" color=#808080> " +
             $"<color=#FFD700>Defense:</color> {stats.defense.Value}";
 
         speedText.text =
@@ -41,6 +43,14 @@ public class StatDisplayComponent : MonoBehaviour
         attackSpeedText.text =
             $"<sprite name=\"attackspeed_icon\" color=#4DFFE3> " +
             $"<color=#FFD700>AttSpeed:</color> {stats.GetAttackSpeed():0.0}";
+
+        healText.text =
+            $"<sprite name=\"health_icon\" color=#FF3333> " +
+            $"<color=#FFD700>HP:</color> {stats.maxHealth.Value}";
+
+        manaText.text =
+            $"<sprite name=\"mana_icon\" color=#3399FF> " +
+            $"<color=#FFD700>Mana:</color> {stats.maxMana.Value}";
     }
 
     // ============================
@@ -52,29 +62,33 @@ public class StatDisplayComponent : MonoBehaviour
 
         var data = item.itemData;
 
-        SetText(attackText,      data.attack,      "attack_icon",      "#FF4D4D",  "Attack");
-        SetText(defenseText,     data.defense,     "defense_icon",     "#4DA6FF",  "Defense");
-        SetText(speedText,       data.speed,       "speed_icon",       "#7CFF4D",  "Speed");
-        SetText(critText,        data.critChance,  "crit_icon",        "#FFB84D",  "Crit", "%");
-        SetText(lifestealText,   data.lifeSteal,   "lifesteal_icon",   "#C44DFF",  "LifeSteal", "%");
-        SetText(attackSpeedText, data.attackSpeed, "attackspeed_icon", "#4DFFE3",  "Atk Speed");
+        SetText(attackText,      data.attack,      "attack_icon",      "#FF8C00", "Attack");
+        SetText(defenseText,     data.defense,     "defense_icon",     "#808080", "Defense");
+        SetText(speedText,       data.speed,       "speed_icon",       "#7CFF4D", "Speed");
+        SetText(critText,        data.critChance,  "crit_icon",        "#FFB84D", "Crit", "%");
+        SetText(lifestealText,   data.lifeSteal,   "lifesteal_icon",   "#C44DFF", "LifeSteal", "%");
+        SetText(attackSpeedText, data.attackSpeed, "attackspeed_icon", "#4DFFE3", "Atk Speed");
+        SetText(healText,        data.health,      "health_icon",          "#FF3333", "HP");
+        SetText(manaText,        data.mana,        "mana_icon",        "#3399FF", "Mana");
     }
 
-    // ============================
-    // Helper format cho item
-    // ============================
+    // Helper cho Item
     private void SetText(TextMeshProUGUI text, ItemStatBonus bonus, string icon, string color, string label, string suffix = "")
     {
         if (bonus == null || !bonus.HasValue)
         {
-            text.text = "";
+            text.gameObject.SetActive(false); // ⛔ Ẩn hoàn toàn dòng stat
             return;
         }
+
+        text.gameObject.SetActive(true); // ✔ Hiện lại khi stat có giá trị
 
         string flatPart = Mathf.Abs(bonus.flat) > 0.01f ? $"{bonus.flat}" : "";
         string percentPart = Mathf.Abs(bonus.percent) > 0.01f ? $"{bonus.percent}%" : "";
         string value = flatPart != "" ? flatPart : percentPart;
 
-        text.text = $"<sprite name=\"{icon}\" color={color}> <color=#FFD700>{label}:</color> {value}{suffix}";
+        text.text =
+            $"<sprite name=\"{icon}\" color={color}> " +
+            $"<color=#FFD700>{label}:</color> {value}{suffix}";
     }
 }
