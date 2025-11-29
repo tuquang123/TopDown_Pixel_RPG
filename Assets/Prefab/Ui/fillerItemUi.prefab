@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1006287309223018537}
   - component: {fileID: 352064103916406648}
   - component: {fileID: 6431086144706344000}
+  - component: {fileID: 7483540628126047268}
   m_Layer: 5
   m_Name: fillerItemUi
   m_TagString: Untagged
@@ -133,6 +134,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7483540628126047268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3365195573133488009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 896582c62ef946cbba458031c2041e07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sfxName: Click
 --- !u!1 &7285534997639991782
 GameObject:
   m_ObjectHideFlags: 0
