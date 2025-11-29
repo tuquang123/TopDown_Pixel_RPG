@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ShopUI : BasePopup
@@ -9,6 +11,35 @@ public class ShopUI : BasePopup
     public InventoryUI inventoryUI;
     private List<ShopItemUI> shopItemUIs = new();
     public ShopDetailPopup detailPopup; 
+    public List<ItemData> allShopItems = new();
+    
+    public void FilterShop(ItemType? type)
+    {
+        // Xóa UI hiện tại
+        foreach (Transform child in contentParent)
+            Destroy(child.gameObject);
+
+        shopItemUIs.Clear();
+
+        // Sử dụng ItemFilter
+        var filteredItems = ItemFilter.FilterByType(allShopItems, type);
+
+        // Build UI
+        SetupShop(filteredItems);
+    }
+
+    
+    public void OnFilterWeapon()   => FilterShop(ItemType.Weapon);
+    public void OnFilterHelmet()   => FilterShop(ItemType.Helmet);
+    public void OnFilterArmor()    => FilterShop(ItemType.SpecialArmor);
+    public void OnFilterBoots()    => FilterShop(ItemType.Boots);
+    public void OnFilterBody()     => FilterShop(ItemType.Clother);
+    public void OnFilterPet()      => FilterShop(ItemType.Horse);
+    public void OnFilterHair() => FilterShop(ItemType.Hair);
+    public void OnFilterCloak() => FilterShop(ItemType.Cloak);
+
+    // nút hiện tất cả
+    public void OnFilterAll()  => FilterShop(null);
 
     public override void Show()
     {
@@ -16,10 +47,15 @@ public class ShopUI : BasePopup
         RefreshShopUI(); 
         if (detailPopup != null)
             detailPopup.Setup(this);
+        
     }
 
     public void SetupShop(List<ItemData> items)
     {
+        
+        if (allShopItems == null || allShopItems.Count == 0)
+            allShopItems = new List<ItemData>(items);  
+        
         foreach (Transform child in contentParent)
         {
             Destroy(child.gameObject);
@@ -83,6 +119,7 @@ public class ShopUI : BasePopup
         }
     }
 
+    
 
     private void RefreshShopUI()
     {
