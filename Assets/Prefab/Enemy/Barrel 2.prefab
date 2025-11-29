@@ -141,11 +141,18 @@ MonoBehaviour:
   gemDropChance: 0.3
   minGem: 0
   maxGem: 1
+  spawnEnemyOnBreak: 1
+  enemySpawnChance: 1
+  useSpawnPoint: 0
+  spawnPoint: {fileID: 0}
+  enemyPrefabs:
+  - {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
   spriteRenderer: {fileID: 7183990723135987594}
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   flashDuration: 0.1
   shakeDuration: 0.1
   shakeMagnitude: 0.05
+  respawnTime: 10
 --- !u!61 &5930329737273603238
 BoxCollider2D:
   m_ObjectHideFlags: 0

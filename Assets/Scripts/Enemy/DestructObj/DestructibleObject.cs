@@ -10,9 +10,18 @@ public class DestructibleObject : MonoBehaviour
     [Header("Drop Settings")]
     [SerializeField] private int minGold = 1;
     [SerializeField] private int maxGold = 3;
-    [SerializeField, Range(0f, 1f)] private float gemDropChance = 0.5f; // Xác suất rơi gem
+
+    [SerializeField, Range(0f, 1f)] private float gemDropChance = 0.5f;
     [SerializeField] private int minGem = 1;
     [SerializeField] private int maxGem = 2;
+
+    [Header("Enemy Spawn On Break")]
+    [SerializeField] private bool spawnEnemyOnBreak = false;
+    [SerializeField, Range(0f, 1f)] private float enemySpawnChance = 1f;   // 1 = luôn spawn
+    [SerializeField] private bool useSpawnPoint = false;
+
+    [SerializeField] private SpawnPoint spawnPoint;      // nếu muốn dùng SpawnPoint
+    [SerializeField] private GameObject[] enemyPrefabs;  // spawn trực tiếp
 
     [Header("Visual Feedback")]
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -22,7 +31,7 @@ public class DestructibleObject : MonoBehaviour
     [SerializeField] private float shakeMagnitude = 0.05f;
 
     [Header("Respawn")]
-    [SerializeField] private float respawnTime = 10f; // thời gian hồi sinh
+    [SerializeField] private float respawnTime = 10f;
 
     private Vector3 originalPos;
     private Coroutine flashCoroutine;
@@ -46,9 +55,6 @@ public class DestructibleObject : MonoBehaviour
         DestructibleTracker.Instance?.Unregister(this);
     }
 
-    // =====================================================
-    // Bị đánh
-    // =====================================================
     public void Hit()
     {
         currentHits++;
@@ -60,9 +66,6 @@ public class DestructibleObject : MonoBehaviour
             HandleDestruction();
     }
 
-    // =====================================================
-    // Hiệu ứng nhấp nháy khi bị đánh
-    // =====================================================
     private void PlayHitFlash()
     {
         if (flashCoroutine != null)
@@ -79,9 +82,6 @@ public class DestructibleObject : MonoBehaviour
         spriteRenderer.color = originalColor;
     }
 
-    // =====================================================
-    // Hiệu ứng rung lắc khi bị đánh
-    // =====================================================
     private IEnumerator Shake()
     {
         float elapsed = 0f;
@@ -96,72 +96,95 @@ public class DestructibleObject : MonoBehaviour
     }
 
     // =====================================================
-    // Phá hủy vật thể
+    // PHÁ HỦY
     // =====================================================
     private void HandleDestruction()
     {
+        // VFX phá
+        if (CommonReferent.Instance.destructionVFXPrefab != null)
         {
-            // Hiệu ứng vỡ
-            if (CommonReferent.Instance.destructionVFXPrefab != null)
-            {
-                ObjectPooler.Instance.Get("BreakVFX", CommonReferent.Instance.destructionVFXPrefab, transform.position,
-                    Quaternion.identity);
-            }
+            ObjectPooler.Instance.Get(
+                "BreakVFX",
+                CommonReferent.Instance.destructionVFXPrefab,
+                transform.position,
+                Quaternion.identity
+            );
+        }
 
-            // Rơi vàng
-            int totalGold = Random.Range(minGold, maxGold + 1);
-            for (int i = 0; i < totalGold; i++)
+        // DROP VÀNG
+        int totalGold = Random.Range(minGold, maxGold + 1);
+        for (int i = 0; i < totalGold; i++)
+        {
+            Vector3 offset = Random.insideUnitCircle * 0.5f;
+            ObjectPooler.Instance.Get(
+                "Gold",
+                CommonReferent.Instance.goldPrefab,
+                transform.position + offset,
+                Quaternion.identity
+            );
+        }
+
+        // DROP GEM
+        if (Random.value < gemDropChance)
+        {
+            int totalGem = Random.Range(minGem, maxGem + 1);
+            for (int i = 0; i < totalGem; i++)
             {
                 Vector3 offset = Random.insideUnitCircle * 0.5f;
-                ObjectPooler.Instance.Get("Gold", CommonReferent.Instance.goldPrefab, transform.position + offset,
-                    Quaternion.identity);
+                ObjectPooler.Instance.Get(
+                    "Gem",
+                    CommonReferent.Instance.gemPrefab,
+                    transform.position + offset,
+                    Quaternion.identity
+                );
             }
+        }
 
-            // Rơi gem (theo xác suất)
-            if (Random.value < gemDropChance)
-            {
-                int totalGem = Random.Range(minGem, maxGem + 1);
-                for (int i = 0; i < totalGem; i++)
-                {
-                    Vector3 offset = Random.insideUnitCircle * 0.5f;
-                    ObjectPooler.Instance.Get("Gem", CommonReferent.Instance.gemPrefab, transform.position + offset,
-                        Quaternion.identity);
-                }
-            }
+        // =====================================================
+        // SPAWN QUÁI (THEO TÙY CHỌN)
+        // =====================================================
+        if (spawnEnemyOnBreak && Random.value <= enemySpawnChance)
+        {
+            SpawnEnemyLogic();
+        }
 
-            // Báo nhiệm vụ
-            QuestManager.Instance.ReportProgress("NV2", nameOBJ, 1);
+        // BÁO NHIỆM VỤ
+        QuestManager.Instance.ReportProgress("NV2", nameOBJ, 1);
 
-            //
-            // Hiệu ứng vỡ, rơi vàng/gem, báo nhiệm vụ...
+        // ẨN VẬT THỂ
+        gameObject.SetActive(false);
 
-            // Ẩn vật thể
-            gameObject.SetActive(false);
+        // HỒI SINH
+        DestructibleTracker.Instance.StartCoroutine(RespawnAfterDelay());
+    }
 
-            // Bắt đầu hồi sinh qua tracker (tracker vẫn active)
-            DestructibleTracker.Instance.StartCoroutine(RespawnAfterDelay());
+    private void SpawnEnemyLogic()
+    { 
+        // Cách 2: Spawn trực tiếp prefab
+        if (enemyPrefabs.Length > 0)
+        {
+            var pick = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+
+            ObjectPooler.Instance.Get(
+                pick.name,
+                pick,
+                transform.position,
+                Quaternion.identity,
+                initSize: 1,
+                expandable: true
+            );
         }
     }
 
     private IEnumerator RespawnAfterDelay()
     {
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(respawnTime);
 
-        // Reset trạng thái
         currentHits = 0;
         spriteRenderer.color = Color.white;
         transform.localPosition = originalPos;
 
-        // Kích hoạt lại vật thể
         gameObject.SetActive(true);
-
-        // Nếu dùng tracker
         DestructibleTracker.Instance?.Register(this);
     }
-
-
-    // =====================================================
-    // Coroutine hồi sinh vật thể
-    // =====================================================
-
 }

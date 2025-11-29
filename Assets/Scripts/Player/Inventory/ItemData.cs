@@ -70,16 +70,29 @@ public static class ItemUtility
     {
         return tier switch
         {
-            ItemTier.Common => new Color(0.8f, 0.8f, 0.8f),
-            ItemTier.Uncommon => new Color(0.2f, 0.8f, 0.2f),
-            ItemTier.Rare => new Color(0.2f, 0.4f, 1f),
-            ItemTier.Epic => new Color(0.6f, 0.2f, 0.8f),
-            ItemTier.Legendary => new Color(1f, 0.6f, 0f),
-            ItemTier.Mythic => new Color(0.9f, 0.1f, 0.1f),
-            _ => Color.white,
+            ItemTier.Common    => HexToColor("#707070"), // sáng hơn rõ rệt
+            ItemTier.Uncommon  => HexToColor("#2E8E52"), // xanh tươi hơn
+            ItemTier.Rare      => HexToColor("#1F64B5"), // xanh dương sáng rõ
+            ItemTier.Epic      => HexToColor("#6A44A3"), // tím epic sáng
+            ItemTier.Legendary => HexToColor("#9A6A19"), // vàng-cam legendary
+            ItemTier.Mythic    => HexToColor("#8B2031"), // đỏ tím mạnh
+            _                  => Color.white,
         };
     }
+
+    private static Color HexToColor(string hex)
+    {
+        if (ColorUtility.TryParseHtmlString(hex, out var color))
+            return color;
+        return Color.white;
+    }
 }
+
+
+
+
+
+
 
 #endregion
 
