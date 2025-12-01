@@ -1,13 +1,13 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!21 &-5539484073156383187
+--- !u!21 &-3378734592734887809
 Material:
   serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: set_icon_stat_0 Material
+  m_Name: icon_color_gold_00 Material
   m_Shader: {fileID: 4800000, guid: cf81c85f95fe47e1a27f6ae460cf182c, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 6a6cbdcbec3aa47e3b87f676c39a8df0, type: 3}
+        m_Texture: {fileID: 2800000, guid: f90931864524c4d51845c8d771dfb44b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 84a92b25f83d49b9bc132d206b370281, type: 3}
-  m_Name: AllSprite
+  m_Name: gold
   m_EditorClassIdentifier: 
   m_Version: 1.1.0
   m_FaceInfo:
@@ -77,39 +77,30 @@ MonoBehaviour:
     m_StrikethroughOffset: 0
     m_StrikethroughThickness: 0
     m_TabWidth: 0
-  m_Material: {fileID: -5539484073156383187}
-  spriteSheet: {fileID: 2800000, guid: 6a6cbdcbec3aa47e3b87f676c39a8df0, type: 3}
+  m_Material: {fileID: -3378734592734887809}
+  spriteSheet: {fileID: 2800000, guid: f90931864524c4d51845c8d771dfb44b, type: 3}
   m_SpriteCharacterTable:
   - m_ElementType: 2
-    m_Unicode: 253
+    m_Unicode: 65534
     m_GlyphIndex: 0
     m_Scale: 1
-    m_Name: health_icon
+    m_Name: gold_icon
   m_GlyphTable:
   - m_Index: 0
     m_Metrics:
-      m_Width: 34
-      m_Height: 27
-      m_HorizontalBearingX: 0.5
-      m_HorizontalBearingY: 21.9
-      m_HorizontalAdvance: 41
+      m_Width: 36.05
+      m_Height: 31.1
+      m_HorizontalBearingX: -2.5
+      m_HorizontalBearingY: 24.53
+      m_HorizontalAdvance: 24.6
     m_GlyphRect:
       m_X: 0
       m_Y: 0
-      m_Width: 34
-      m_Height: 27
+      m_Width: 33
+      m_Height: 38
     m_Scale: 1
     m_AtlasIndex: 0
     m_ClassDefinitionType: 0
-    sprite: {fileID: 21300000, guid: 6a6cbdcbec3aa47e3b87f676c39a8df0, type: 3}
+    sprite: {fileID: 21300000, guid: f90931864524c4d51845c8d771dfb44b, type: 3}
   spriteInfoList: []
-  fallbackSpriteAssets:
-  - {fileID: 11400000}
-  - {fileID: 11400000, guid: 275cb6cc213820e47bdac618e141e641, type: 2}
-  - {fileID: 11400000, guid: 6954d777df4ed2143893fba2732b411b, type: 2}
-  - {fileID: 11400000, guid: de8bccaf7fbe54c439ee5ce819ad93ff, type: 2}
-  - {fileID: 11400000, guid: 6250ce876bce614438d19af360af0573, type: 2}
-  - {fileID: 11400000, guid: 71a18241560e0a843910b239974b8329, type: 2}
-  - {fileID: 11400000, guid: c7660632cc945c6449199260b564b8c2, type: 2}
-  - {fileID: 11400000, guid: ccb38249de8352b45a23735eef59c4c5, type: 2}
-  - {fileID: 11400000, guid: 979dc46e1e1e6a84995d7550a6e103fd, type: 2}
+  fallbackSpriteAssets: []

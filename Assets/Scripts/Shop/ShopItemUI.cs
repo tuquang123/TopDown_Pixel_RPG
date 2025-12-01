@@ -24,7 +24,10 @@ public class ShopItemUI : MonoBehaviour
 
         nameText.text = data.itemName;
         tierText.text = data.tier.ToString();
-        priceText.text = $"{data.price}";
+
+        // ✔ Hiển thị giá + icon vàng
+        priceText.text = $"{data.price} <sprite name=\"gold_icon\">";
+
         backgroundImage.color = ItemUtility.GetColorByTier(data.tier);
 
         buyButton.onClick.RemoveAllListeners();
@@ -34,11 +37,13 @@ public class ShopItemUI : MonoBehaviour
                 shopUI.detailPopup.ShowDetail(itemInstance);
         });
 
-        UpdateButtonState(CurrencyManager.Instance.Gold);
+        // ✔ tránh double-subscribe
+        CurrencyManager.Instance.OnGoldChanged -= UpdateButtonState;
         CurrencyManager.Instance.OnGoldChanged += UpdateButtonState;
+
+        UpdateButtonState(CurrencyManager.Instance.Gold);
     }
     
-
     public void RefreshState()
     {
         UpdateButtonState(CurrencyManager.Instance.Gold);
@@ -52,10 +57,10 @@ public class ShopItemUI : MonoBehaviour
         var data = itemInstance.itemData;
         bool isPurchased = false;
 
-        // ✅ Check trong inventory
+        // ✔ check trong inventory
         foreach (var invItem in shopUI.playerInventory.items)
         {
-            if (invItem == null || invItem.itemData == null) continue; // bỏ slot trống
+            if (invItem == null || invItem.itemData == null) continue;
             if (invItem.itemData.itemID == data.itemID)
             {
                 isPurchased = true;
@@ -63,7 +68,7 @@ public class ShopItemUI : MonoBehaviour
             }
         }
 
-        // ✅ Check trong equipment
+        // ✔ check trong equipment
         if (!isPurchased)
         {
             var equipment = shopUI.playerInventory.GetComponent<Equipment>();
@@ -81,26 +86,22 @@ public class ShopItemUI : MonoBehaviour
             }
         }
 
-        // ✅ Cập nhật UI nút
+        // ✔ Update UI
         if (isPurchased)
         {
             buyButton.interactable = false;
             priceText.text = "Đã mua";
-            Debug.Log($"[ShopItemUI] {data.itemName} đã tồn tại trong inventory/equipment.");
         }
         else 
         {
-            buyButton.interactable = true;
-            priceText.text = $"{data.price}";
-            Debug.Log($"[ShopItemUI] {data.itemName} chưa mua. Gold: {gold}/{data.price} → interactable={buyButton.interactable}");
+            buyButton.interactable = gold >= data.price;
+            priceText.text = $"{data.price} <sprite name=\"gold_icon\">";
         }
     }
     
     private void OnDestroy()
     {
         if (CurrencyManager.Instance != null)
-        {
             CurrencyManager.Instance.OnGoldChanged -= UpdateButtonState;
-        }
     }
 }

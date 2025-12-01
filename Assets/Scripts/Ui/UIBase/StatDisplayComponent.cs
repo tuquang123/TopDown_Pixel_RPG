@@ -23,7 +23,7 @@ public class StatDisplayComponent : MonoBehaviour
         attackText.text =
             $"<sprite name=\"attack_icon\" color=#FF8C00> " +
             $"<color=#FFD700>Attack:</color> {stats.attack.Value}";
-
+        
         defenseText.text =
             $"<sprite name=\"defense_icon\" color=#808080> " +
             $"<color=#FFD700>Defense:</color> {stats.defense.Value}";

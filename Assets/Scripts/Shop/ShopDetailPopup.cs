@@ -39,7 +39,7 @@ public class ShopDetailPopup : MonoBehaviour
         
         statDisplayComponent.SetStats(instance);
 
-        priceText.text = $"{data.price} vàng";
+        priceText.text = $"{data.price} <sprite name=\"gold_icon\" > ";
 
         buyButton.onClick.RemoveAllListeners();
         cancelButton.onClick.RemoveAllListeners();
