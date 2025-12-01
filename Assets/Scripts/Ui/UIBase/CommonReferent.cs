@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CommonReferent : Singleton<CommonReferent>
 {
@@ -20,7 +21,8 @@ public class CommonReferent : Singleton<CommonReferent>
     public PlayerLevel playerLevel;
     public PlayerLevelUI playerLevelUI;
     
-    public EnemyLevelDatabase levelDatabase;
+    public EnemyLevelDatabase enemyLevelDatabase;
+    public LevelDatabase levelDatabase;
     public GameObject arrowPrefab;
     public GameObject spellProjectilePrefab;
     public GameObject dialogBtn;

@@ -49,7 +49,7 @@ public class SpawnPoint : MonoBehaviour
     {
         float dist = Vector3.Distance(player.position, transform.position);
         if (dist > spawnRange) return;
-        Spawn(CommonReferent.Instance.levelDatabase);
+        Spawn(CommonReferent.Instance.enemyLevelDatabase);
     }
 
     private void ForceDespawn()

@@ -63,19 +63,25 @@ public class EnemyTracker : Singleton<EnemyTracker>
     
     public void ClearAllEnemies()
     {
-        foreach (var enemy in trackedEnemies)
+        if (trackedEnemies.Count == 0) return;
+        
+        EnemyAI[] snapshot = new EnemyAI[trackedEnemies.Count];
+        trackedEnemies.CopyTo(snapshot);
+
+        foreach (var enemy in snapshot)
         {
             if (enemy == null) continue;
+
             if (enemy.gameObject.activeInHierarchy)
             {
                 enemy.gameObject.SetActive(false);
                 enemy.EnemyHealthUI?.HideUI();
             }
         }
+
         trackedEnemies.Clear();
     }
-
-
+    
     // Batch update enemy để giảm spike CPU
     private int updateIndex = 0;
     private int batchSize = 10;

@@ -9,14 +9,16 @@ public class LevelManager : Singleton<LevelManager>
         Default
     }
 
-    [SerializeField] private LevelDatabase levelDatabase;
-    [SerializeField] private GameObject player;
+    LevelDatabase levelDatabase;
+    GameObject player;
 
     private int currentLevel = 0;
     private GameObject currentLevelInstance;
     
     void Start()
     {
+        levelDatabase = CommonReferent.Instance.levelDatabase;
+        player = CommonReferent.Instance.playerPrefab;
         LoadLevel(currentLevel);
     }
     
@@ -81,11 +83,11 @@ public class LevelManager : Singleton<LevelManager>
 
             foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
             {
-                var levelDB = CommonReferent.Instance.levelDatabase;
+                var levelDB = CommonReferent.Instance.enemyLevelDatabase;
                 
                 sp.Spawn(levelDB);
             }
-
+            
             Debug.Log($"Đã load level {index}: {levelData.levelName}");
 
             screenFader.FadeOut(0.5f);

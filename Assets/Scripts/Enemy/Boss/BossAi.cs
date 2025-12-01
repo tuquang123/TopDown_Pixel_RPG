@@ -99,7 +99,7 @@ public class BossAI : EnemyAI
         anim.SetTrigger(AttackTrigger);
         yield return new WaitForSeconds(0.5f); // delay gồng trước khi triệu hồi
 
-        EnemyLevelDatabase levelDB = CommonReferent.Instance.levelDatabase;
+        EnemyLevelDatabase levelDB = CommonReferent.Instance.enemyLevelDatabase;
         Transform hpCanvas = CommonReferent.Instance.canvasHp.transform;
 
         for (int i = 0; i < 2; i++)

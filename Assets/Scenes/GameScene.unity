@@ -1003,7 +1003,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 564
+      value: 394
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1079,7 +1079,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 212.9695
+      value: 127.9695
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -6270,9 +6270,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 564411220360788419}
     - target: {fileID: 8182315155306599805, guid: 9147f10bd9b68124097395d0536ad792, type: 3}
+      propertyPath: iconExp
+      value: 
+      objectReference: {fileID: 21300000, guid: 41f18770ca6a24345ae9f7fdf677ea74, type: 3}
+    - target: {fileID: 8182315155306599805, guid: 9147f10bd9b68124097395d0536ad792, type: 3}
       propertyPath: canvasHp
       value: 
       objectReference: {fileID: 4769619494529710054}
+    - target: {fileID: 8182315155306599805, guid: 9147f10bd9b68124097395d0536ad792, type: 3}
+      propertyPath: iconGold
+      value: 
+      objectReference: {fileID: 21300000, guid: b2c956cfb47c640ea80fb559ed2f55f7, type: 3}
     - target: {fileID: 8182315155306599805, guid: 9147f10bd9b68124097395d0536ad792, type: 3}
       propertyPath: dialogBtn
       value: 
@@ -6306,9 +6314,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3654001879579463387}
     - target: {fileID: 8182315155306599805, guid: 9147f10bd9b68124097395d0536ad792, type: 3}
+      propertyPath: levelDatabase
+      value: 
+      objectReference: {fileID: 11400000, guid: ea2359d477d0db1428cb5f631accb517, type: 2}
+    - target: {fileID: 8182315155306599805, guid: 9147f10bd9b68124097395d0536ad792, type: 3}
       propertyPath: playerLevelUI
       value: 
       objectReference: {fileID: 1174800443}
+    - target: {fileID: 8182315155306599805, guid: 9147f10bd9b68124097395d0536ad792, type: 3}
+      propertyPath: enemyLevelDatabase
+      value: 
+      objectReference: {fileID: 11400000, guid: 772ee1512c9cae04c94b3f8f8b705d05, type: 2}
     - target: {fileID: 8874321880034613545, guid: 9147f10bd9b68124097395d0536ad792, type: 3}
       propertyPath: m_Name
       value: ---MainLogic---
