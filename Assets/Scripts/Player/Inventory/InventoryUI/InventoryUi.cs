@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class InventoryUI : BasePopup
 {
@@ -9,12 +11,66 @@ public class InventoryUI : BasePopup
 
     public ItemDetailPanel itemDetailPanel;
 
+    public static class ItemFilter
+    {
+        // lọc theo ItemType, null = tất cả
+        public static List<ItemData> FilterByType(List<ItemData> items, ItemType? type)
+        {
+            if (items == null) return new List<ItemData>();
+
+            if (type == null) return new List<ItemData>(items);
+
+            return items.Where(i => i.itemType == type).ToList();
+        }
+
+        // lọc inventory (ItemInstance)
+        public static List<ItemInstance> FilterInventoryByType(List<ItemInstance> items, ItemType? type)
+        {
+            if (items == null) return new List<ItemInstance>();
+
+            if (type == null) return new List<ItemInstance>(items);
+
+            return items.Where(i => i.itemData.itemType == type).ToList();
+        }
+    }
+    
+    public void FilterInventory(ItemType? type)
+    {
+        Debug.Log($"Filter Inventory - Loại: {type}");
+
+        // Xóa UI hiện tại
+        foreach (Transform child in itemContainer)
+            Destroy(child.gameObject);
+
+        var filteredItems = ItemFilter.FilterInventoryByType(inventory.items, type);
+
+        foreach (ItemInstance item in filteredItems)
+        {
+            GameObject newItem = Instantiate(itemPrefab, itemContainer);
+            newItem.GetComponent<ItemUI>().Setup(item, this);
+        }
+
+        itemDetailPanel.Hide();
+    }
+    
+    public void OnFilterWeapon() => FilterInventory(ItemType.Weapon);
+    public void OnFilterHelmet() => FilterInventory(ItemType.Helmet);
+    public void OnFilterArmor() => FilterInventory(ItemType.SpecialArmor);
+    public void OnFilterBoots() => FilterInventory(ItemType.Boots);
+    public void OnFilterBody() => FilterInventory(ItemType.Clother);
+    public void OnFilterPet() => FilterInventory(ItemType.Horse);
+    public void OnFilterHair() => FilterInventory(ItemType.Hair);
+    public void OnFilterCloak() => FilterInventory(ItemType.Cloak);
+    public void OnFilterAll() => FilterInventory(null);
+
+
+    
     public override void Show()
     {
         base.Show();
         UpdateInventoryUI();
     }
-
+    
     public override void Hide()
     {
         base.Hide();
