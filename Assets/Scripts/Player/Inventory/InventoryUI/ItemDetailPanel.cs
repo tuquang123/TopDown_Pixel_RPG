@@ -61,14 +61,14 @@ public class ItemDetailPanel : MonoBehaviour
 
         // ==== Sell Button ====
         int sellPrice = CalculateSellPrice(currentItem);
-        sellPriceText.text = $"Bán ({sellPrice} vàng)";
+        sellPriceText.text = $"Bán ({sellPrice} <sprite name=\"gold_icon\" > )";
         sellButton.onClick.RemoveAllListeners();
         sellButton.onClick.AddListener(SellItem);
         sellButton.gameObject.SetActive(!isEquipped);
 
         // ==== Upgrade Button ====
         int upgradeCost = currentItem.itemData.baseUpgradeCost * (currentItem.upgradeLevel + 1);
-        upgradeCostText.text = $"Nâng cấp ({upgradeCost} vàng)";
+        upgradeCostText.text = $"Nâng cấp ({upgradeCost} <sprite name=\"gold_icon\" > )";
         upgradeButton.onClick.RemoveAllListeners();
         upgradeButton.onClick.AddListener(UpgradeItem);
         upgradeButton.gameObject.SetActive(!isEquipped);
