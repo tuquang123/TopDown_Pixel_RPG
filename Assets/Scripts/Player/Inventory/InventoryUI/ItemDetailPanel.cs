@@ -15,6 +15,7 @@ public class ItemDetailPanel : MonoBehaviour
     public TMP_Text tierText;
     public ItemIconHandler icon;
     public Image tier;
+    public StatDisplayComponent statDisplayComponent;
 
     private ItemInstance currentItem;
     private InventoryUI inventoryUI;
@@ -42,6 +43,8 @@ public class ItemDetailPanel : MonoBehaviour
 
     public void ShowDetails(ItemInstance item, InventoryUI ui)
     {
+       statDisplayComponent.SetStats(item);
+       
         currentItem = item;
         inventoryUI = ui;
         ItemData itemData = item.itemData;
