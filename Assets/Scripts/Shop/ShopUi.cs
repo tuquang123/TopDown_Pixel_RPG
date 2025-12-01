@@ -44,17 +44,20 @@ public class ShopUI : BasePopup
     public override void Show()
     {
         base.Show();
-        RefreshShopUI(); 
-        if (detailPopup != null)
-            detailPopup.Setup(this);
         
+        SetupShop(allShopItems);
+        
+        RefreshShopUI();
+
+        detailPopup?.Setup(this);
     }
+
 
     public void SetupShop(List<ItemData> items)
     {
         
-        if (allShopItems == null || allShopItems.Count == 0)
-            allShopItems = new List<ItemData>(items);  
+        /*if (allShopItems == null || allShopItems.Count == 0)
+            allShopItems = new List<ItemData>(items);  */
         
         foreach (Transform child in contentParent)
         {
