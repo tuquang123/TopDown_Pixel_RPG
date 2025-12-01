@@ -44,6 +44,17 @@ public class SpawnPoint : MonoBehaviour
             }
         }
     }
+    
+    public void ResetSpawnPoint()
+    {
+        if (_currentEnemy != null)
+        {
+            ObjectPooler.Instance.ReturnToPool(_currentEnemy);
+            _currentEnemy = null;
+        }
+        _waitingRespawn = false;
+    }
+
 
     private void TrySpawn()
     {
@@ -64,7 +75,8 @@ public class SpawnPoint : MonoBehaviour
     public void Spawn(EnemyLevelDatabase levelDB)
     {
         if (_currentEnemy != null) return;
-
+        if (this == null) return;
+        
         _currentEnemy = ObjectPooler.Instance.Get(enemyPrefab.name, enemyPrefab, transform.position, Quaternion.identity, initSize: 1, expandable: true
         );
 
@@ -93,14 +105,12 @@ public class SpawnPoint : MonoBehaviour
 
     private IEnumerator RespawnDelayRoutine()
     {
+        if (this == null || !gameObject)
+            yield break;
+
         _waitingRespawn = true;
         yield return new WaitForSeconds(respawnDelay);
         _waitingRespawn = false;
     }
-
-
-    // -------------------------------------------
-    // 🔥 DRAW GIZMOS – giúp debug vùng spawn
-    // -------------------------------------------
    
 }

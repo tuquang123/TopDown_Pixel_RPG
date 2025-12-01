@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 [System.Serializable]
@@ -204,15 +205,18 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
     private bool isOptimizedActive = true;
 
-    // Hàm gọi từ EnemyTracker để enable/disable update logic
     public void SetActiveForOptimization(bool active)
     {
         isOptimizedActive = active;
-        anim.enabled = active; // tắt animator nếu offscreen
-        // có thể tắt collider nếu muốn
-        GetComponent<Collider2D>().enabled = active && !IsDead;
-    }
 
+        if (anim != null)
+            anim.enabled = active;
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = active && !IsDead;
+    }
+    
     // Thay vì Update(), gọi từ EnemyTracker.UpdateEnemiesBatch()
     public void OptimizedUpdate()
     {
@@ -526,6 +530,12 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
         gameObject.SetActive(false);
     }
+    
+    private bool IsUnityNull(Object obj)
+    {
+        return obj == null || obj.Equals(null);
+    }
+
 
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");

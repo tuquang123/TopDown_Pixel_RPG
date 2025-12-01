@@ -31,6 +31,9 @@ public class CommonReferent : Singleton<CommonReferent>
     public Sprite iconExp;
     public GameObject itemDropPrefab;
     public GameObject deadVFXPrefab;
+    [Header("Default Spawn Position")]
+    public Vector3 defaultEntryPosition = new Vector3(-9, 0, 0);
+
     
     public float spawnRange = 12f;       
     public float keepAliveRange = 20f; 

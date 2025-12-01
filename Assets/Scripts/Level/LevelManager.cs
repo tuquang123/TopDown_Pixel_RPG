@@ -60,11 +60,12 @@ public class LevelManager : Singleton<LevelManager>
         {
             if (currentLevelInstance != null)
             {
-                ClearAllEnemyPools();
-                Destroy(currentLevelInstance);
-            }
+                EnemyTracker.Instance.ClearAllEnemies();
+                
+                ObjectPooler.Instance.ClearAllPools();
 
-            EnemyTracker.Instance.ClearAllEnemies();
+                Destroy(currentLevelInstance); 
+            }
             
             var levelData = levelDatabase.GetLevel(index);
             if (levelData == null) return;
@@ -75,7 +76,7 @@ public class LevelManager : Singleton<LevelManager>
             {
                 TravelDirection.Forward => levelData.entryFromPreviousLevel,
                 TravelDirection.Backward => levelData.entryFromNextLevel,
-                _ => new Vector3(-9,0,0)
+                _ => CommonReferent.Instance.defaultEntryPosition
             };
         
             player.transform.position = targetPos;
@@ -107,7 +108,7 @@ public class LevelManager : Singleton<LevelManager>
         {
             if (sp.enemyPrefab != null)
             {
-                ObjectPooler.Instance.ClearPool(sp.enemyPrefab.name);
+                ObjectPooler.Instance.ClearAllPools();
             }
         }
     }

@@ -151,16 +151,29 @@ public class ObjectPooler : MonoBehaviour
         obj.SetActive(false);
     }
 
-    public void ClearPool(string tag)
+    public void ClearAllPools()
     {
-        if (!poolMap.ContainsKey(tag)) return;
+        // Duyệt tất cả pool tags
+        foreach (var tag in new List<string>(poolMap.Keys))
+        {
+            // Hủy tất cả object trong pool
+            foreach (var obj in poolMap[tag])
+            {
+                if (obj != null)
+                    Destroy(obj);
+            }
 
-        foreach (var obj in poolMap[tag])
-            Destroy(obj);
+            // Hủy parent của pool
+            if (parentMap.ContainsKey(tag) && parentMap[tag] != null)
+                Destroy(parentMap[tag].gameObject);
+        }
 
-        Destroy(parentMap[tag].gameObject);
-        poolMap.Remove(tag);
-        configMap.Remove(tag);
-        parentMap.Remove(tag);
+        // Xóa các dictionary
+        poolMap.Clear();
+        configMap.Clear();
+        parentMap.Clear();
+    
+        Debug.Log("Đã clear toàn bộ pool!");
     }
+
 }

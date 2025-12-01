@@ -7,6 +7,7 @@ public class EnemyManager : MonoBehaviour
 
     private void Update()
     {
+        if (PlayerController.Instance == null) return;
         // 1. Enable/disable enemy theo khoảng cách với player
         if (PlayerController.Instance != null)
         {
