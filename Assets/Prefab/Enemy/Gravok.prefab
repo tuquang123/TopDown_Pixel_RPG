@@ -3917,7 +3917,7 @@ MonoBehaviour:
   maxHealth: 100
   attackDamage: 1
   attackRange: 1
-  detectionRange: 5
+  detectionRange: 2
   attackCooldown: 3.5
   skipHurtAnimation: 0
   moveSpeed: 0.7
@@ -3932,17 +3932,15 @@ MonoBehaviour:
   dropItems:
   - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
     dropChance: 0.07
-  - item: {fileID: 11400000, guid: f43632da25776014f91247c1ea6a2c62, type: 2}
+  - item: {fileID: 11400000, guid: b829b2752dde1494a9d8d425de1bbe59, type: 2}
     dropChance: 0.2
   - item: {fileID: 11400000, guid: 83de3cf626336fb478558efd32d814f6, type: 2}
     dropChance: 0.2
-  - item: {fileID: 11400000, guid: 5970ff1ff47de7d47ad69049a0ed690e, type: 2}
-    dropChance: 0.2
   - item: {fileID: 11400000, guid: be6281ce6caf9c14b97b627fe2968b93, type: 2}
     dropChance: 0.2
-  - item: {fileID: 11400000, guid: 51f477ce659a5af4c996ad653f26a63e, type: 2}
+  - item: {fileID: 11400000, guid: 6a6274b452c81f3468e681af9a24f08f, type: 2}
     dropChance: 0.2
-  - item: {fileID: 11400000, guid: 7216b3f305d6f8c4a9796b97c9816d6f, type: 2}
+  - item: {fileID: 11400000, guid: 26d05879a6c35ac4abef76dec93f6f93, type: 2}
     dropChance: 0.2
 --- !u!50 &-6464519558615421790
 Rigidbody2D:

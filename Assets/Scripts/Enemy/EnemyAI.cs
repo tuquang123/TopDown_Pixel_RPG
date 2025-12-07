@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 public class EnemyDropItem
 {
     public ItemData item; // Item có thể rơi
-    [Range(0f, 1f)] public float dropChance = 0.2f; // 20% rơi
+    //[Range(0f, 1f)] public float dropChance = 0.02f; // 20% rơi
 }
 
 public class EnemyAI : MonoBehaviour, IDamageable
@@ -472,42 +472,38 @@ public class EnemyAI : MonoBehaviour, IDamageable
         }
     }
 
+    [BoxGroup("Drops"), LabelText("Drop Rate %")] 
+    [Range(0f,1f)] public float dropRate = 0.1f; 
     protected virtual void DropItems()
     {
-        float totalChance = 0f;
-        foreach (var drop in dropItems)
-            totalChance += drop.dropChance;
-
-        float roll = Random.value * totalChance;
-        float cumulative = 0f;
-
-        EnemyDropItem chosenDrop = null;
-        foreach (var drop in dropItems)
+        // 1. Roll tỉ lệ rơi chung
+        if (Random.value > dropRate)
         {
-            cumulative += drop.dropChance;
-            if (roll <= cumulative)
-            {
-                chosenDrop = drop;
-                break;
-            }
+            Debug.Log($"{enemyName} dropped NOTHING");
+            return;
         }
 
-        if (chosenDrop != null && chosenDrop.item != null)
-        {
-            int amount = 1;
-            GameObject prefab = CommonReferent.Instance.itemDropPrefab;
-            GameObject dropObj = ObjectPooler.Instance.Get(
-                prefab.name,
-                prefab,
-                transform.position,
-                Quaternion.identity
-            );
+        // 2. Nếu trúng tỉ lệ → random 1 item trong list
+        if (dropItems.Count == 0) return;
 
-            ItemDrop itemDrop = dropObj.GetComponent<ItemDrop>();
-            itemDrop.Setup(new ItemInstance(chosenDrop.item, 0), amount);
+        int index = Random.Range(0, dropItems.Count);
+        EnemyDropItem chosen = dropItems[index];
 
-            Debug.Log($"{enemyName} dropped {chosenDrop.item.itemName} x{amount}");
-        }
+        if (chosen.item == null) return;
+
+        GameObject prefab = CommonReferent.Instance.itemDropPrefab;
+
+        GameObject dropObj = ObjectPooler.Instance.Get(
+            prefab.name,
+            prefab,
+            transform.position,
+            Quaternion.identity
+        );
+
+        ItemDrop itemDrop = dropObj.GetComponent<ItemDrop>();
+        itemDrop.Setup(new ItemInstance(chosen.item, 0), 1);
+
+        Debug.Log($"{enemyName} dropped {chosen.item.itemName} (Rate={dropRate * 100}%)");
     }
 
     protected virtual void NotifySystemsAfterDrop()
@@ -534,6 +530,16 @@ public class EnemyAI : MonoBehaviour, IDamageable
     private bool IsUnityNull(Object obj)
     {
         return obj == null || obj.Equals(null);
+    }
+    private void OnDrawGizmosSelected()
+    {
+        // Attack Range (Đỏ)
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+
+        // Detection Range (Vàng)
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
     }
 
 

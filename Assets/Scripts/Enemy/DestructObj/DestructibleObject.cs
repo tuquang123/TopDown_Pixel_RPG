@@ -20,7 +20,7 @@ public class DestructibleObject : MonoBehaviour
     [SerializeField, Range(0f, 1f)] private float enemySpawnChance = 1f;   // 1 = luôn spawn
     [SerializeField] private bool useSpawnPoint = false;
 
-    [SerializeField] private SpawnPoint spawnPoint;      // nếu muốn dùng SpawnPoint
+    //[SerializeField] private SpawnPoint spawnPoint;      // nếu muốn dùng SpawnPoint
     [SerializeField] private GameObject[] enemyPrefabs;  // spawn trực tiếp
 
     [Header("Visual Feedback")]

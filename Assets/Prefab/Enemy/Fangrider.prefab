@@ -4819,7 +4819,7 @@ MonoBehaviour:
   maxHealth: 500
   attackDamage: 45
   attackRange: 1
-  detectionRange: 5
+  detectionRange: 2
   attackCooldown: 3.5
   skipHurtAnimation: 0
   moveSpeed: 0.7
@@ -4832,20 +4832,16 @@ MonoBehaviour:
   isBoss: 0
   goldRange: {x: 1, y: 2}
   dropItems:
-  - item: {fileID: 11400000, guid: 97f5e80c065a3bf4089e1277636e0363, type: 2}
-    dropChance: 0.2
-  - item: {fileID: 11400000, guid: 29fe848e7fd31424ba91841a98cca720, type: 2}
-    dropChance: 0.2
-  - item: {fileID: 11400000, guid: 5970ff1ff47de7d47ad69049a0ed690e, type: 2}
-    dropChance: 0.2
-  - item: {fileID: 11400000, guid: ab816a2e20f200e44bb21cf2b42adcb4, type: 2}
-    dropChance: 0.2
+  - item: {fileID: 11400000, guid: b829b2752dde1494a9d8d425de1bbe59, type: 2}
+    dropChance: 0.067
+  - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
+    dropChance: 0.073
+  - item: {fileID: 11400000, guid: 9352d6d72f2792f4c8378b0b86b17cb8, type: 2}
+    dropChance: 0.055
   - item: {fileID: 11400000, guid: 9785dba9c8141ac4c8229a95f5c9ca3c, type: 2}
-    dropChance: 0.2
-  - item: {fileID: 11400000, guid: 84b2e8bbac39d9940a781aaaef185746, type: 2}
-    dropChance: 0.2
-  - item: {fileID: 11400000, guid: b3e3ebf81ce74f84dbf74f85ba5a632e, type: 2}
-    dropChance: 0.2
+    dropChance: 0.009
+  - item: {fileID: 11400000, guid: 26d05879a6c35ac4abef76dec93f6f93, type: 2}
+    dropChance: 0.044
 --- !u!50 &-8892388112947226493
 Rigidbody2D:
   serializedVersion: 5
