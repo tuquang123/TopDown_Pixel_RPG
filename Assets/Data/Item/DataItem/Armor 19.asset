@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Armor 19
   m_EditorClassIdentifier: 
   itemID: armor8
-  itemName: Armor8
+  itemName: Leather Armor
   icon: {fileID: -4637655676411158975, guid: 5ed80003cb7f545ab87b7c0b79ad2eed, type: 3}
   itemType: 1
   tier: 2
   price: 481
-  description: Lightweight and flexible
+  description: This hat is beautiful
   attack:
     flat: 74
     percent: 0
@@ -44,10 +44,8 @@ MonoBehaviour:
     flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 4038240812463133292, guid: 5ed80003cb7f545ab87b7c0b79ad2eed,
-    type: 3}
-  iconRight: {fileID: 7972047035149555109, guid: 5ed80003cb7f545ab87b7c0b79ad2eed,
-    type: 3}
+  iconLeft: {fileID: 4038240812463133292, guid: 5ed80003cb7f545ab87b7c0b79ad2eed, type: 3}
+  iconRight: {fileID: 7972047035149555109, guid: 5ed80003cb7f545ab87b7c0b79ad2eed, type: 3}
   horseData: {fileID: 0}
   baseUpgradeCost: 251
   restoresHealth: 0
@@ -65,3 +63,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

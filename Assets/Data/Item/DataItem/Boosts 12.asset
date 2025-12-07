@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Boosts 12
   m_EditorClassIdentifier: 
   itemID: boosts5
-  itemName: Boosts5
+  itemName: white shoes
   icon: {fileID: 1163637350275628661, guid: e7d2d469a9a9548bcb468fc5ff5792c1, type: 3}
   itemType: 4
   tier: 2
@@ -44,10 +44,8 @@ MonoBehaviour:
     flat: 0.6
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 1163637350275628661, guid: e7d2d469a9a9548bcb468fc5ff5792c1,
-    type: 3}
-  iconRight: {fileID: 1018423890234701556, guid: e7d2d469a9a9548bcb468fc5ff5792c1,
-    type: 3}
+  iconLeft: {fileID: 1163637350275628661, guid: e7d2d469a9a9548bcb468fc5ff5792c1, type: 3}
+  iconRight: {fileID: 1018423890234701556, guid: e7d2d469a9a9548bcb468fc5ff5792c1, type: 3}
   horseData: {fileID: 0}
   baseUpgradeCost: 426
   restoresHealth: 0
@@ -65,3 +63,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

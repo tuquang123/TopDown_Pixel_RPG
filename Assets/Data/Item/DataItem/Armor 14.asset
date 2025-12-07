@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Armor 14
   m_EditorClassIdentifier: 
   itemID: armor3
-  itemName: Armor3
+  itemName: Ocean Armor
   icon: {fileID: -5059617106600631265, guid: 20826ee5fbaa8418b93e6ece5f885b00, type: 3}
   itemType: 1
   tier: 3
@@ -44,10 +44,8 @@ MonoBehaviour:
     flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: -4433046098323040821, guid: 20826ee5fbaa8418b93e6ece5f885b00,
-    type: 3}
-  iconRight: {fileID: -8220607459341252921, guid: 20826ee5fbaa8418b93e6ece5f885b00,
-    type: 3}
+  iconLeft: {fileID: -4433046098323040821, guid: 20826ee5fbaa8418b93e6ece5f885b00, type: 3}
+  iconRight: {fileID: -8220607459341252921, guid: 20826ee5fbaa8418b93e6ece5f885b00, type: 3}
   horseData: {fileID: 0}
   baseUpgradeCost: 416
   restoresHealth: 0
@@ -65,3 +63,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Armor 16
   m_EditorClassIdentifier: 
   itemID: armor5
-  itemName: Armor5
+  itemName: Silver armor
   icon: {fileID: -7736556782503057505, guid: 119a166f9da694dd4834e556f1c65f76, type: 3}
   itemType: 1
   tier: 2
@@ -44,10 +44,8 @@ MonoBehaviour:
     flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 1468843896871262044, guid: 119a166f9da694dd4834e556f1c65f76,
-    type: 3}
-  iconRight: {fileID: 6707769398717036949, guid: 119a166f9da694dd4834e556f1c65f76,
-    type: 3}
+  iconLeft: {fileID: 1468843896871262044, guid: 119a166f9da694dd4834e556f1c65f76, type: 3}
+  iconRight: {fileID: 6707769398717036949, guid: 119a166f9da694dd4834e556f1c65f76, type: 3}
   horseData: {fileID: 0}
   baseUpgradeCost: 96
   restoresHealth: 0
@@ -65,3 +63,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

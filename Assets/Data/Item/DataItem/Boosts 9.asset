@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Boosts 9
   m_EditorClassIdentifier: 
   itemID: boosts1
-  itemName: Boosts1
+  itemName: Green leather shoes
   icon: {fileID: 2227563860517246555, guid: e17d600fcd74948bd8547a87f8f5839a, type: 3}
   itemType: 4
   tier: 2
@@ -44,10 +44,8 @@ MonoBehaviour:
     flat: 0.2
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 2227563860517246555, guid: e17d600fcd74948bd8547a87f8f5839a,
-    type: 3}
-  iconRight: {fileID: 142443694952996111, guid: e17d600fcd74948bd8547a87f8f5839a,
-    type: 3}
+  iconLeft: {fileID: 2227563860517246555, guid: e17d600fcd74948bd8547a87f8f5839a, type: 3}
+  iconRight: {fileID: 142443694952996111, guid: e17d600fcd74948bd8547a87f8f5839a, type: 3}
   horseData: {fileID: 0}
   baseUpgradeCost: 442
   restoresHealth: 0
@@ -65,3 +63,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

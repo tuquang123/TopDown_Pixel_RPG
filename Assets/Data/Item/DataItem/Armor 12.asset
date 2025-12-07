@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Armor 12
   m_EditorClassIdentifier: 
   itemID: armor1
-  itemName: Armor1
+  itemName: Iron Plate Armor
   icon: {fileID: -2733704329670916693, guid: 0aba1c3d9e6814991b93ff6a9540656b, type: 3}
   itemType: 1
   tier: 0
@@ -44,10 +44,8 @@ MonoBehaviour:
     flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: -3283878981979326925, guid: 0aba1c3d9e6814991b93ff6a9540656b,
-    type: 3}
-  iconRight: {fileID: -1496476315439836622, guid: 0aba1c3d9e6814991b93ff6a9540656b,
-    type: 3}
+  iconLeft: {fileID: -3283878981979326925, guid: 0aba1c3d9e6814991b93ff6a9540656b, type: 3}
+  iconRight: {fileID: -1496476315439836622, guid: 0aba1c3d9e6814991b93ff6a9540656b, type: 3}
   horseData: {fileID: 0}
   baseUpgradeCost: 212
   restoresHealth: 0
@@ -65,3 +63,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Armor 18
   m_EditorClassIdentifier: 
   itemID: armor7
-  itemName: Armor7
+  itemName: Fire Armor
   icon: {fileID: -8337890454457736744, guid: 91837876145ff43d4a8e8f457b708199, type: 3}
   itemType: 1
   tier: 2
@@ -44,10 +44,8 @@ MonoBehaviour:
     flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 8502403439925346003, guid: 91837876145ff43d4a8e8f457b708199,
-    type: 3}
-  iconRight: {fileID: 1942513663190102962, guid: 91837876145ff43d4a8e8f457b708199,
-    type: 3}
+  iconLeft: {fileID: 8502403439925346003, guid: 91837876145ff43d4a8e8f457b708199, type: 3}
+  iconRight: {fileID: 1942513663190102962, guid: 91837876145ff43d4a8e8f457b708199, type: 3}
   horseData: {fileID: 0}
   baseUpgradeCost: 420
   restoresHealth: 0
@@ -65,3 +63,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

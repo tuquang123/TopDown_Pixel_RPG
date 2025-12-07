@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Boosts 11
   m_EditorClassIdentifier: 
   itemID: boosts3
-  itemName: Boosts3
+  itemName: Purple shoes
   icon: {fileID: 7194678473495877024, guid: 9f70f3b311741431cbbda23a4cfbc285, type: 3}
   itemType: 4
   tier: 4
@@ -44,10 +44,8 @@ MonoBehaviour:
     flat: 1.4
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 7194678473495877024, guid: 9f70f3b311741431cbbda23a4cfbc285,
-    type: 3}
-  iconRight: {fileID: -6802735470812833022, guid: 9f70f3b311741431cbbda23a4cfbc285,
-    type: 3}
+  iconLeft: {fileID: 7194678473495877024, guid: 9f70f3b311741431cbbda23a4cfbc285, type: 3}
+  iconRight: {fileID: -6802735470812833022, guid: 9f70f3b311741431cbbda23a4cfbc285, type: 3}
   horseData: {fileID: 0}
   baseUpgradeCost: 168
   restoresHealth: 0
@@ -65,3 +63,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}
