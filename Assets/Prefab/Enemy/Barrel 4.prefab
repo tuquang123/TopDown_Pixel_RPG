@@ -99,7 +99,6 @@ GameObject:
   - component: {fileID: 9135019875348590536}
   - component: {fileID: 5930329737273603238}
   - component: {fileID: 92814293034727061}
-  - component: {fileID: 1740450259082250099}
   m_Layer: 23
   m_Name: Barrel 4
   m_TagString: Destructible
@@ -225,58 +224,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &1740450259082250099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8824079421453849408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ShadowGroup: 0
-  m_Priority: 0
-  m_ComponentVersion: 5
-  m_HasRenderer: 0
-  m_UseRendererSilhouette: 1
-  m_CastsShadows: 1
-  m_SelfShadows: 0
-  m_AlphaCutoff: 0.1
-  m_ApplyToSortingLayers: 0d17fbfe
-  m_ShapePath:
-  - {x: -1.0005153, y: 1.0214401, z: 0}
-  - {x: -0.89602304, y: 2.9900324, z: 0}
-  - {x: -0.99889797, y: 5.1089315, z: 0}
-  - {x: 0.9410623, y: 5.2490263, z: 0}
-  - {x: 0.97591037, y: 2.1667645, z: 0}
-  - {x: 0.9922075, y: 1.0033573, z: 0}
-  - {x: 0.19086578, y: 0.98452985, z: 0}
-  m_ShapePathHash: -2064562263
-  m_InstanceId: 0
-  m_ShadowShape2DComponent: {fileID: 0}
-  m_ShadowShape2DProvider:
-    rid: -2
-  m_ShadowCastingSource: 1
-  m_ShadowMesh:
-    m_Mesh: {fileID: 0}
-    m_LocalBounds:
-      m_Center: {x: -0.0041539073, y: 3.116778, z: 0}
-      m_Extent: {x: 0.99636143, y: 2.1322482, z: 0}
-    m_EdgeProcessing: 1
-    m_TrimEdge: 0.09
-    m_FlipX: 0
-    m_FlipY: 0
-    m_InitialTrim: 0
-  m_CastingOption: 1
-  m_PreviousTrimEdge: 0.09
-  m_PreviousEdgeProcessing: 1
-  m_PreviousShadowCastingSource: 1
-  m_PreviousShadowShape2DSource: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }

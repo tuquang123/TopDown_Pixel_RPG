@@ -150,11 +150,13 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         EnemyTracker.Instance?.Register(this);
         isDead = false; 
+        ResetEnemy(); 
     }
 
     private void OnDisable()
     {
         EnemyTracker.Instance?.Unregister(this);
+        ResetEnemy(); 
     }
 
 

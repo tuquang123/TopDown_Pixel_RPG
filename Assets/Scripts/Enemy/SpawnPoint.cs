@@ -89,7 +89,6 @@ public class SpawnPoint : MonoBehaviour
         
         GameObject uiObj = Instantiate(CommonReferent.Instance.hpSliderUi, _currentEnemy.transform.position, Quaternion.identity
         );
-
         uiObj.transform.SetParent(CommonReferent.Instance.canvasHp.transform, false);
         uiObj.transform.localScale = Vector3.one;
         
