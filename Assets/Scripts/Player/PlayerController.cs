@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 
@@ -349,6 +350,25 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
         if (targetEnemy == null) return;
         RotateCharacter(targetEnemy.position.x - transform.position.x);
     }
+    public void ApplyKnockback(Vector2 direction, float force, float duration = 0.1f)
+    {
+        StartCoroutine(KnockbackRoutine(direction, force, duration));
+    }
+
+    private IEnumerator KnockbackRoutine(Vector2 direction, float force, float duration)
+    {
+        float timer = 0f;
+        rb.linearVelocity = direction * force;
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        rb.linearVelocity = Vector2.zero; // ngừng knockback
+    }
+
 
     protected virtual void OnDrawGizmosSelected()
     {

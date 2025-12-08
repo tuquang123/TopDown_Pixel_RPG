@@ -45,39 +45,48 @@ public class EnemyRangedAI : EnemyAI
 
         anim.SetBool(MoveBool, true);
 
-        Vector3 dir = (transform.position - attacker.position).normalized;
-        Vector3 targetPos = transform.position + dir * retreatDistance;
+        Vector3 startPos = transform.position;
+        Vector3 dir = (startPos - attacker.position).normalized;
 
-        float duration = retreatDistance / retreatSpeed;
-        float t = 0f;
+        // chỉ retreat theo trục X cho đẹp
+        dir.y = 0;
+        dir.Normalize();
 
-        while (t < 1f)
+        float moved = 0f;
+
+        while (moved < retreatDistance)
         {
-            t += Time.deltaTime / duration;
-            transform.position = Vector3.Lerp(transform.position, targetPos, t);
+            float moveStep = retreatSpeed * Time.deltaTime;
+            moved += moveStep;
+
+            transform.position += dir * moveStep;
+
+            RotateEnemy(dir.x); // xoay hướng chạy lùi
             yield return null;
         }
 
+        anim.SetBool(MoveBool, false);
         isRetreating = false;
     }
-
-
+    
     protected override void MoveToAttackPosition()
     {
         if (isRetreating)
         {
+            // đang chạy lùi thì không làm gì thêm
             anim.SetBool(MoveBool, true);
-            return;        
+            return;
         }
 
-        // Logic bắn giữ khoảng cách của ranged 
-        float distanceToTarget = Vector2.Distance(transform.position, target.position);
+        float distance = Vector2.Distance(transform.position, target.position);
 
-        if (distanceToTarget <= detectionRange)
+        // trong detection → đứng lại
+        if (distance <= detectionRange)
         {
             anim.SetBool(MoveBool, false);
 
-            if (distanceToTarget <= attackRange && Time.time - lastAttackTime >= attackCooldown)
+            // nếu trong attack range → bắn
+            if (distance <= attackRange && Time.time - lastAttackTime >= attackCooldown)
             {
                 AttackTarget();
             }
@@ -87,6 +96,7 @@ public class EnemyRangedAI : EnemyAI
             anim.SetBool(MoveBool, false);
         }
     }
+
     
     protected override void AttackTarget()
     {
