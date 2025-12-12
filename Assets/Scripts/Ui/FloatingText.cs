@@ -8,17 +8,22 @@ public class FloatingText : MonoBehaviour
 
     public void Setup(string text, Color color)
     {
+        // Replace "gold" → sprite tag
+        if (text.Contains("Gold"))
+            text = text.Replace("Gold", "<sprite name=\"gold_icon\">");
+
+        if (text.Contains("CRIT"))
+            text = text.Replace("CRIT", "<sprite name=\"crit_icon\" color=#FF2B2B> ");
+
+
         textMesh.text = text;
         textMesh.color = color;
 
-        // Tạo độ lệch ngang ngẫu nhiên (âm hoặc dương)
-        float randomXOffset = Random.Range(-50f, 50f); // lệch từ -50 đến +50 pixel
+        float randomXOffset = Random.Range(-50f, 50f);
         Vector3 targetPosition = transform.position + new Vector3(randomXOffset, 100f, 0f);
 
-        // Di chuyển lên với độ lệch ngẫu nhiên
         transform.DOMove(targetPosition, 1f).SetEase(Ease.OutCubic);
-
-        // Làm mờ rồi huỷ đối tượng
         textMesh.DOFade(0, 1f).SetEase(Ease.Linear).OnComplete(() => Destroy(gameObject));
     }
+
 }
