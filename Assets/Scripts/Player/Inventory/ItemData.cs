@@ -54,6 +54,12 @@ public enum ItemType
     Hair
 }
 
+public enum WeaponCategory
+{
+    Melee,   // Kiếm, chùy, giáo, dao…
+    Ranged   // Phi tiêu, cung, shuriken…
+}
+
 public enum ItemTier
 {
     Common,
@@ -107,6 +113,9 @@ public class ItemData : ScriptableObject
 
     [BoxGroup("General Info")] [PreviewField(60, ObjectFieldAlignment.Left)] [HideLabel]
     public Sprite icon;
+
+    [BoxGroup("Weapon Settings")]
+    public WeaponCategory weaponCategory;
 
     [BoxGroup("General Info")] [LabelWidth(100)]
     public ItemType itemType;

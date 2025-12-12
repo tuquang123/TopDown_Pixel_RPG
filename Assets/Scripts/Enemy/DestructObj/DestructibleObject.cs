@@ -159,22 +159,46 @@ public class DestructibleObject : MonoBehaviour
     }
 
     private void SpawnEnemyLogic()
-    { 
-        // Cách 2: Spawn trực tiếp prefab
-        if (enemyPrefabs.Length > 0)
-        {
-            var pick = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+    {
+        if (enemyPrefabs.Length == 0) return;
 
-            ObjectPooler.Instance.Get(
-                pick.name,
-                pick,
-                transform.position,
-                Quaternion.identity,
-                initSize: 1,
-                expandable: true
-            );
-        }
+        var pick = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+
+        GameObject enemy = ObjectPooler.Instance.Get(
+            pick.name,
+            pick,
+            transform.position,
+            Quaternion.identity,
+            initSize: 1,
+            expandable: true
+        );
+
+        if (enemy == null) return;
+
+        // ================================
+        // 1. Setup level nếu cần
+        // ================================
+        var ai = enemy.GetComponent<EnemyAI>();
+        if (ai == null) return;
+
+        ai.ResetEnemy();
+
+        // ================================
+        // 2. Tạo HP UI
+        // ================================
+        GameObject uiObj = Instantiate(
+            CommonReferent.Instance.hpSliderUi,
+            transform.position,
+            Quaternion.identity
+        );
+
+        uiObj.transform.SetParent(CommonReferent.Instance.canvasHp.transform, false);
+        uiObj.transform.localScale = Vector3.one;
+
+        ai.EnemyHealthUI = uiObj.GetComponent<EnemyHealthUI>();
+        ai.EnemyHealthUI.SetTarget(enemy);
     }
+
 
     private IEnumerator RespawnAfterDelay()
     {

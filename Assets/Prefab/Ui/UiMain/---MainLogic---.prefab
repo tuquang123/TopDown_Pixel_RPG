@@ -425,15 +425,19 @@ MonoBehaviour:
   skill: {fileID: 0}
   playerLevel: {fileID: 0}
   playerLevelUI: {fileID: 0}
-  levelDatabase: {fileID: 11400000, guid: 772ee1512c9cae04c94b3f8f8b705d05, type: 2}
+  enemyLevelDatabase: {fileID: 11400000, guid: 772ee1512c9cae04c94b3f8f8b705d05, type: 2}
+  levelDatabase: {fileID: 11400000, guid: ea2359d477d0db1428cb5f631accb517, type: 2}
   arrowPrefab: {fileID: 3659391273684521209, guid: 74e8d529a7dc5bb4585e2f1db5be58a6, type: 3}
   spellProjectilePrefab: {fileID: 6638424572933048018, guid: 0602b64ed1a36a142bf90dc82cd21280, type: 3}
   dialogBtn: {fileID: 0}
   dialogShopBtn: {fileID: 0}
-  iconGold: {fileID: 21300000, guid: 0a38e31b2944c634dbc2d3f32d55188c, type: 3}
-  iconExp: {fileID: 21300000, guid: 3b5776aaeee2fae49a2c36d2b86b1144, type: 3}
+  iconGold: {fileID: 21300000, guid: b2c956cfb47c640ea80fb559ed2f55f7, type: 3}
+  iconExp: {fileID: 21300000, guid: 41f18770ca6a24345ae9f7fdf677ea74, type: 3}
   itemDropPrefab: {fileID: 4356269681339680784, guid: 811219cbca279fe45a80c1b1a0a96c63, type: 3}
   deadVFXPrefab: {fileID: 3533435376319919130, guid: ffe419f6459a3ec4093834ac1ccf0398, type: 3}
+  defaultEntryPosition: {x: -9, y: 0, z: 0}
+  spawnRange: 12
+  keepAliveRange: 20
 --- !u!1 &8558078210425513926
 GameObject:
   m_ObjectHideFlags: 0
@@ -479,8 +483,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67f50d4a7eb24d1a9c3faad5144aa093, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelDatabase: {fileID: 11400000, guid: ea2359d477d0db1428cb5f631accb517, type: 2}
-  player: {fileID: 0}
   screenFader: {fileID: 0}
 --- !u!114 &2476531925629170732
 MonoBehaviour:

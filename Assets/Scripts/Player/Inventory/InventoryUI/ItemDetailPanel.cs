@@ -38,8 +38,16 @@ public class ItemDetailPanel : MonoBehaviour
         }
 
         Debug.Log($"Đã bán {currentItem.itemData.itemName} +{currentItem.upgradeLevel} với giá {goldEarned} vàng.");
+
+        // 🔥 Toast thông báo bán thành công
+        GameEvents.OnShowToast.Raise(
+            $"Sold {currentItem.itemData.itemName} +{currentItem.upgradeLevel}, earned {goldEarned} gold!"
+        );
+
+
         gameObject.SetActive(false);
     }
+
 
     public void ShowDetails(ItemInstance item, InventoryUI ui)
     {
@@ -178,10 +186,12 @@ public class ItemDetailPanel : MonoBehaviour
             currentItem.upgradeLevel++;
             Debug.Log($"Nâng cấp thành công! Cấp độ mới: {currentItem.upgradeLevel}");
             ShowDetails(currentItem, inventoryUI); 
+            GameEvents.OnShowToast.Raise($"Succes Upgrade Item! {currentItem.itemData.itemName} - {currentItem.upgradeLevel}" );
         }
         else
         {
             Debug.Log("Không đủ vàng để nâng cấp.");
+            GameEvents.OnShowToast.Raise("Không đủ vàng để nâng cấp.");
         }
     }
 

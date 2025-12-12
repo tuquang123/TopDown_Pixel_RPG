@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
@@ -118,8 +119,6 @@ public class EnemyAI : MonoBehaviour, IDamageable
     public int MaxHealth => maxHealth;
     public string EnemyName => enemyName;
     public int EnemyLevel => enemyLevel;
-    [Header("Attack Type")]
-    public bool isHoldingSpear = false; // nếu true → attack mới sẽ là AttackStab
     
     protected EnemyHealthUI enemyHealthUI;
     
@@ -137,8 +136,11 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
     [BoxGroup("Drops"), LabelText("Item Drops")]
     public List<EnemyDropItem> dropItems = new List<EnemyDropItem>();
+    
+    [Header("Attack Type")]
+    public bool isHoldingSpear = false;
 
-
+    public int exp = 3;
     protected virtual void Start()
     {
         anim = GetComponentInChildren<Animator>();
@@ -150,11 +152,13 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         EnemyTracker.Instance?.Register(this);
         isDead = false; 
+        ResetEnemy(); 
     }
 
     private void OnDisable()
     {
         EnemyTracker.Instance?.Unregister(this);
+        ResetEnemy(); 
     }
 
 
@@ -508,7 +512,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
     protected virtual void NotifySystemsAfterDrop()
     {
-        OnEnemyDefeated?.Invoke(1);
+        OnEnemyDefeated?.Invoke(exp);
     }
 
     protected virtual IEnumerator DelayDeactivate()

@@ -15,9 +15,13 @@ MonoBehaviour:
   levels:
   - levelName: level 1
     levelPrefab: {fileID: 3918573245951797597, guid: df2086d4bfee6944b83212481089df5d, type: 3}
-    entryFromNextLevel: {x: 0, y: -1, z: 0}
-    entryFromPreviousLevel: {x: 0, y: -7, z: 0}
+    entryFromNextLevel: {x: 0, y: 0, z: 0}
+    entryFromPreviousLevel: {x: 0, y: 0, z: 0}
   - levelName: level 2
     levelPrefab: {fileID: 3918573245951797597, guid: 23f22fffd53952141b905753676a08a9, type: 3}
-    entryFromNextLevel: {x: 0, y: -1, z: 0}
-    entryFromPreviousLevel: {x: 0, y: -7, z: 0}
+    entryFromNextLevel: {x: -30, y: 22, z: -0.01339219}
+    entryFromPreviousLevel: {x: 0, y: 0, z: 0}
+  - levelName: levelBoss
+    levelPrefab: {fileID: 3918573245951797597, guid: 07e8d5f7e5521a04ab42932f6255e7ec, type: 3}
+    entryFromNextLevel: {x: 0, y: 0, z: 0}
+    entryFromPreviousLevel: {x: 0, y: 0, z: 0}

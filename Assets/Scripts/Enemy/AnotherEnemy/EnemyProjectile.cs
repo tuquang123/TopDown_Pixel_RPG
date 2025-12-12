@@ -6,7 +6,9 @@ public class EnemyProjectile : MonoBehaviour
     private GameObject owner;
 
     [SerializeField] private float lifetime = 3f;
-
+    [SerializeField] private float knockbackForce = 5f;
+    [SerializeField] private float knockbackDuration = 0.1f;
+    
     public void Init(int dmg, GameObject ownerObj)
     {
         damage = dmg;
@@ -21,7 +23,16 @@ public class EnemyProjectile : MonoBehaviour
         if (other.TryGetComponent(out IDamageable damageable))
         {
             damageable.TakeDamage(damage);
+
+            // === Nếu trúng Player → knockback ===
+            if (other.TryGetComponent(out PlayerController player))
+            {
+                Vector2 dir = (player.transform.position - transform.position).normalized;
+                player.ApplyKnockback(dir, knockbackForce, knockbackDuration);
+            }
+
             Destroy(gameObject);
         }
     }
+
 }

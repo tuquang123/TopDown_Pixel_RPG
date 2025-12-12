@@ -99,7 +99,6 @@ GameObject:
   - component: {fileID: 9135019875348590536}
   - component: {fileID: 5930329737273603238}
   - component: {fileID: 92814293034727061}
-  - component: {fileID: 1740450259082250099}
   m_Layer: 23
   m_Name: Barrel 1
   m_TagString: Destructible
@@ -142,9 +141,8 @@ MonoBehaviour:
   minGem: 1
   maxGem: 1
   spawnEnemyOnBreak: 1
-  enemySpawnChance: 1
+  enemySpawnChance: 0.3
   useSpawnPoint: 0
-  spawnPoint: {fileID: 0}
   enemyPrefabs:
   - {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
   spriteRenderer: {fileID: 7183990723135987594}
@@ -226,58 +224,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &1740450259082250099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8824079421453849408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ShadowGroup: 0
-  m_Priority: 0
-  m_ComponentVersion: 5
-  m_HasRenderer: 0
-  m_UseRendererSilhouette: 1
-  m_CastsShadows: 1
-  m_SelfShadows: 0
-  m_AlphaCutoff: 0.1
-  m_ApplyToSortingLayers: 0d17fbfe
-  m_ShapePath:
-  - {x: -0.23341112, y: -0.1836539, z: 0}
-  - {x: -0.4542321, y: 0.51904714, z: 0}
-  - {x: -0.29729608, y: 1.0606989, z: 0}
-  - {x: 0.28241354, y: 1.060764, z: 0}
-  - {x: 0.41891107, y: 0.48647162, z: 0}
-  - {x: 0.26168042, y: -0.098674454, z: 0}
-  - {x: 0.016199121, y: -0.24576895, z: 0}
-  m_ShapePathHash: 1939554667
-  m_InstanceId: 0
-  m_ShadowShape2DComponent: {fileID: 0}
-  m_ShadowShape2DProvider:
-    rid: -2
-  m_ShadowCastingSource: 1
-  m_ShadowMesh:
-    m_Mesh: {fileID: 0}
-    m_LocalBounds:
-      m_Center: {x: -0.017660499, y: 0.40749747, z: 0}
-      m_Extent: {x: 0.4365716, y: 0.65326643, z: 0}
-    m_EdgeProcessing: 1
-    m_TrimEdge: 0.09
-    m_FlipX: 0
-    m_FlipY: 0
-    m_InitialTrim: 0
-  m_CastingOption: 1
-  m_PreviousTrimEdge: 0.09
-  m_PreviousEdgeProcessing: 1
-  m_PreviousShadowCastingSource: 1
-  m_PreviousShadowShape2DSource: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
