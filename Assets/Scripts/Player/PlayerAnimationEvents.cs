@@ -16,7 +16,14 @@ public class CommonAnimationEvents : MonoBehaviour
     {
         if (playerController != null)
         {
-            playerController.ApplyAttackDamage();
+            if (playerController.IsRangeWeapon)
+            {
+                playerController.ThrowShuriken();
+            }
+            else
+            {
+                playerController.ApplyAttackDamage();
+            }
         }
         else if (enemyAI is EnemyRangedAI rangedAI)
         {

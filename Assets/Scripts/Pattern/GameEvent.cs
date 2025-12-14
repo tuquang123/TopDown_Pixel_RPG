@@ -65,5 +65,6 @@ public static class GameEvents
     public static GameEvent OnPlayerDied = new();
     public static GameEvent OnResetGame = new();
     public static GameEvent<string> OnShowToast = new();
+    public static GameEvent<bool> OnEquipItemRange = new();
 
 }

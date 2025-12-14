@@ -32,6 +32,8 @@ public class CommonReferent : Singleton<CommonReferent>
     public Sprite iconExp;
     public GameObject itemDropPrefab;
     public GameObject deadVFXPrefab;
+    public GameObject surikenPrefab;
+    
     [Header("Default Spawn Position")]
     public Vector3 defaultEntryPosition = new Vector3(-9, 0, 0);
 

@@ -2,13 +2,15 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 
-public class PlayerController : Singleton<PlayerController>, IGameEventListener
+public class PlayerController : Singleton<PlayerController>, IGameEventListener , IGameEventListener<bool> 
 {
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
 
     [SerializeField] protected float detectionRange = 3f;
-    [SerializeField] protected float attackRange = 1f;
+    //[SerializeField] protected float attackRange = 1f;
+    [SerializeField] private float meleeRange = 1f;
+    [SerializeField] private float rangedRange = 5f;
     [SerializeField] protected Transform attackPoint;
     [SerializeField] protected float attackRadius = 0.8f;
     [SerializeField] protected GameObject vfxDust;
@@ -27,7 +29,10 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
     public bool IsMoving() => moveInput.magnitude > 0.01f;
     public bool IsDashing => GetComponent<PlayerDash>()?.IsDashing == true;
     public bool IsAttacking => anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
-
+    
+    float CurrentAttackRange => IsRangeWeapon ? rangedRange : meleeRange;
+    
+    public bool IsRangeWeapon;
     
     protected virtual void Start()
     {
@@ -137,15 +142,39 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
 
     protected virtual void MoveToTarget(Transform target, System.Action onFacing = null)
     {
-        if (target == null) return;
-        if (stats.isDead) return; 
+        if (target == null || stats.isDead) return;
 
         Vector2 playerPos = transform.position;
         Vector2 targetPos = target.position;
 
+        float distance = Vector2.Distance(playerPos, targetPos);
+        float moveSpeed = stats.speed.Value;
+
+        // ===== RANGED WEAPON =====
+        if (IsRangeWeapon)
+        {
+            if (distance > CurrentAttackRange)
+            {
+                Vector2 dir = (targetPos - playerPos).normalized;
+                rb.linearVelocity = dir * moveSpeed;
+                RotateCharacter(dir.x);
+                anim.SetBool(MoveBool, true);
+            }
+            else
+            {
+                rb.linearVelocity = Vector2.zero;
+                anim.SetBool(MoveBool, false);
+                RotateCharacter(targetPos.x - playerPos.x);
+                onFacing?.Invoke();
+                TryAttack();
+            }
+
+            return;
+        }
+
+        // ===== MELEE WEAPON (giữ logic cũ) =====
         float yDiff = Mathf.Abs(playerPos.y - targetPos.y);
         float xDiff = Mathf.Abs(playerPos.x - targetPos.x);
-        float moveSpeed = stats.speed.Value;
         float yTolerance = 0.1f;
 
         if (yDiff > yTolerance)
@@ -154,7 +183,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
             rb.linearVelocity = dirY * moveSpeed;
             anim.SetBool(MoveBool, true);
         }
-        else if (xDiff > attackRange * 0.8f)
+        else if (xDiff > CurrentAttackRange * 0.8f)
         {
             Vector2 dirX = new Vector2(targetPos.x - playerPos.x, 0).normalized;
             rb.linearVelocity = dirX * moveSpeed;
@@ -165,34 +194,65 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
         {
             rb.linearVelocity = Vector2.zero;
             anim.SetBool(MoveBool, false);
-            if (!IsDashing)
-                RotateCharacter(targetPos.x - playerPos.x);
+            RotateCharacter(targetPos.x - playerPos.x);
             onFacing?.Invoke();
-            
-            if (Time.time - lastAttackTime >= 1f / stats.GetAttackSpeed())
-            {
-                if (stats.isUsingSkill) return;
-                if (targetEnemy != null)
-                {
-                    if (targetEnemy.TryGetComponent(out EnemyAI enemy))
-                    {
-                        if (enemy != null && !enemy.IsDead)
-                        {
-                            lastAttackTime = Time.time;
-                            anim.SetTrigger(AttackTrigger);
-                        }
-                    }
-                }
-                else
-                {
-                    lastAttackTime = Time.time;
-                    anim.SetTrigger(AttackTrigger); 
-                }
-            }
-
-
+            TryAttack();
         }
     }
+
+    
+    private void TryAttack()
+    {
+        if (Time.time - lastAttackTime < 1f / stats.GetAttackSpeed())
+            return;
+
+        if (stats.isUsingSkill) return;
+
+        lastAttackTime = Time.time;
+
+        if (IsRangeWeapon)
+            anim.SetTrigger("AttackRange"); // animation ném
+        else
+            anim.SetTrigger(AttackTrigger);
+    }
+    
+    public void ThrowShuriken()
+    {
+        if (CommonReferent.Instance.surikenPrefab == null) return;
+
+        Vector2 dir;
+
+        Transform target = null;
+
+        if (targetEnemy != null)
+            target = targetEnemy;
+        else if (targetDestructible != null)
+            target = targetDestructible;
+
+        if (target != null)
+        {
+            dir = ((Vector2)target.position - (Vector2)attackPoint.position).normalized;
+        }
+        else
+        {
+            // fallback nếu ko có target
+            dir = transform.localScale.x < 0 ? Vector2.right : Vector2.left;
+        }
+
+        var shuriken = Instantiate(
+            CommonReferent.Instance.surikenPrefab,
+            attackPoint.position,
+            Quaternion.identity
+        );
+
+        shuriken.GetComponent<ShurikenProjectile>().Init(
+            (int)stats.attack.Value,
+            dir,
+            stats.GetCritChance(),
+            stats.lifeSteal.Value
+        );
+    }
+
     
     // Gọi trong Animation Event, KHÔNG gọi trong Update
     public void ApplyAttackDamage()
@@ -368,15 +428,14 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
 
         rb.linearVelocity = Vector2.zero; // ngừng knockback
     }
-
-
+    
     protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
 
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.DrawWireSphere(transform.position, CurrentAttackRange);
 
         if (attackPoint != null)
         {
@@ -389,8 +448,30 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener
     {
         anim = GetComponentInChildren<Animator>();
     }
+    
+    public void OnEventRaised(bool value)
+    {
+        IsRangeWeapon = value;
+        if (IsRangeWeapon)
+        {
+            detectionRange += 3;
+        }
+        else
+        {
+            detectionRange = 1;
+        }
+    }
 
-    private void OnEnable() => GameEvents.OnUpdateAnimation.RegisterListener(this);
-    private void OnDisable() => GameEvents.OnUpdateAnimation.UnregisterListener(this);
+    private void OnEnable()
+    {
+        GameEvents.OnUpdateAnimation.RegisterListener(this);
+        GameEvents.OnEquipItemRange.RegisterListener(this);
+    }
+
+    private void OnDisable()
+    {
+        GameEvents.OnUpdateAnimation.UnregisterListener(this);
+        GameEvents.OnEquipItemRange.UnregisterListener(this);
+    }
     
 }
