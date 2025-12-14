@@ -3912,7 +3912,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: Enemy 4
+  enemyName: Gravok
   enemyLevel: 1
   maxHealth: 100
   attackDamage: 1
@@ -3926,22 +3926,21 @@ MonoBehaviour:
   damagedStunTime: 0.2
   bloodVFXOffset: {x: 0.2, y: 0, z: 0}
   timeDieDelay: 0.65
-  isHoldingSpear: 0
+  rangedHitThreshold: 3
+  rangedHitWindow: 2
+  requireHitToAggro: 1
   isBoss: 0
   goldRange: {x: 0, y: 1}
   dropItems:
   - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
-    dropChance: 0.07
   - item: {fileID: 11400000, guid: b829b2752dde1494a9d8d425de1bbe59, type: 2}
-    dropChance: 0.2
   - item: {fileID: 11400000, guid: 83de3cf626336fb478558efd32d814f6, type: 2}
-    dropChance: 0.2
   - item: {fileID: 11400000, guid: be6281ce6caf9c14b97b627fe2968b93, type: 2}
-    dropChance: 0.2
   - item: {fileID: 11400000, guid: 6a6274b452c81f3468e681af9a24f08f, type: 2}
-    dropChance: 0.2
   - item: {fileID: 11400000, guid: 26d05879a6c35ac4abef76dec93f6f93, type: 2}
-    dropChance: 0.2
+  isHoldingSpear: 0
+  exp: 3
+  dropRate: 0.1
 --- !u!50 &-6464519558615421790
 Rigidbody2D:
   serializedVersion: 5

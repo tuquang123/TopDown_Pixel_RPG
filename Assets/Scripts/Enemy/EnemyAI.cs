@@ -111,7 +111,20 @@ public class EnemyAI : MonoBehaviour, IDamageable
     private bool isKnockbacked = false;
 
     #endregion
+    
+    [Header("Anti Ranged Pressure")]
+    [SerializeField] protected int rangedHitThreshold = 3;
+    [SerializeField] protected float rangedHitWindow = 2f;
 
+    protected int rangedHitCount = 0;
+    protected float lastRangedHitTime = -999f;
+    protected bool isUnderRangedPressure = false;
+    
+    [Header("Aggro")]
+    [SerializeField] protected bool requireHitToAggro = true;
+    protected bool isAggro = false;
+
+    
     public static event Action<float> OnEnemyDefeated;
 
     public int CurrentHealth => currentHealth;
@@ -160,11 +173,22 @@ public class EnemyAI : MonoBehaviour, IDamageable
         EnemyTracker.Instance?.Unregister(this);
         ResetEnemy(); 
     }
-
-
+    
     private void Update()
     {
         if (isDead || isTakingDamage || isKnockbacked) return;
+        
+        if (requireHitToAggro && !isAggro)
+        {
+            anim.SetBool(MoveBool, false);
+            return;
+        }
+        
+        if (isUnderRangedPressure && Time.time - lastRangedHitTime > rangedHitWindow)
+        {
+            isUnderRangedPressure = false;
+            rangedHitCount = 0;
+        }
 
         FindClosestTarget();
 
@@ -225,6 +249,12 @@ public class EnemyAI : MonoBehaviour, IDamageable
     public void OptimizedUpdate()
     {
         if (!isOptimizedActive || IsDead) return;
+        
+        if (requireHitToAggro && !isAggro)
+        {
+            anim.SetBool(MoveBool, false);
+            return;
+        }
 
         // --- Logic di chuyển, tấn công ---
         FindClosestTarget();
@@ -234,6 +264,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
             anim.SetBool(MoveBool, false);
             return;
         }
+        
 
         if (target.TryGetComponent(out PlayerStats playerStats) && playerStats.isDead)
         {
@@ -360,12 +391,27 @@ public class EnemyAI : MonoBehaviour, IDamageable
         }
     }
 
+    protected void RegisterRangedPressure()
+    {
+        if (Time.time - lastRangedHitTime > rangedHitWindow)
+            rangedHitCount = 0;
+
+        rangedHitCount++;
+        lastRangedHitTime = Time.time;
+
+        if (rangedHitCount >= rangedHitThreshold)
+            isUnderRangedPressure = true;
+    }
+
     public virtual void TakeDamage(int damage, bool isCrit = false)
     {
         if (isDead) return;
 
         currentHealth -= damage;
         enemyHealthUI?.UpdateHealth(currentHealth);
+        
+        RegisterRangedPressure();
+        isAggro = true;
 
         if (!skipHurtAnimation)
             anim.SetTrigger(DamagedTrigger);
@@ -375,7 +421,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         string damageText = isCrit ? $"CRIT -{damage}" : $"-{damage}";
         Color damageColor = isCrit ? new Color(1f, 0.84f, 0.2f) : Color.white;
 
-        FloatingTextSpawner.Instance.SpawnText(damageText, transform.position + Vector3.up * 0.8f, damageColor);
+        FloatingTextSpawner.Instance.SpawnText(damageText, transform.position + Vector3.up * 1.2f, damageColor);
         SpawnBloodVFX();
 
         if (currentHealth <= 0)
@@ -415,6 +461,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         isDead = false;
         isTakingDamage = false;
         enabled = true;
+        isAggro = false;
         GetComponent<Collider2D>().enabled = true;
         enemyHealthUI?.UpdateHealth(currentHealth);
     }

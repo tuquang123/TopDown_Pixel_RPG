@@ -214,7 +214,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
         
         LevelManager.Instance.LoadSpecificLevel(0, LevelManager.TravelDirection.Default);
         
-        yield return new WaitForSeconds(0.1f); 
+        yield return new WaitForSeconds(0.35f); 
         
         Revive(); 
     }

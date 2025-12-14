@@ -14,6 +14,9 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     [SerializeField] protected Transform attackPoint;
     [SerializeField] protected float attackRadius = 0.8f;
     [SerializeField] protected GameObject vfxDust;
+    [Header("Combat")]
+    [SerializeField] private bool allowAutoAttack = true;
+
 
     protected Rigidbody2D rb;
     protected Animator anim;
@@ -49,6 +52,16 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         if (stats.isDead) return;
 
         moveInput = GetMoveInput();
+        
+        bool isAttacking = IsAttacking;
+
+        if (isAttacking)
+        {
+            rb.linearVelocity = Vector2.zero;
+            anim.SetBool(MoveBool, false);
+            return;
+        }
+
         bool isMoving = IsMoving();
         anim.SetBool(MoveBool, isMoving);
 
@@ -75,6 +88,13 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         }
         else
         {
+            if (!allowAutoAttack)
+            {
+                rb.linearVelocity = Vector2.zero;
+                anim.SetBool(MoveBool, false);
+                return;
+            }
+            
             FindClosestEnemy();
 
             if (targetEnemy != null)
@@ -397,12 +417,14 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
 
     public void RotateCharacter(float direction)
     {
-        if (IsDashing) return;
+        if (IsDashing || IsAttacking) return;
+
         if (direction < 0)
             transform.localScale = new Vector3(1, 1, 1);
         else if (direction > 0)
-            transform.localScale = new Vector3(-1, 1, 1); 
+            transform.localScale = new Vector3(-1, 1, 1);
     }
+
 
     protected void FaceEnemy()
     {

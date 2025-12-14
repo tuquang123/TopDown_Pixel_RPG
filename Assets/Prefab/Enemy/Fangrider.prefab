@@ -4814,7 +4814,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: Enemy6
+  enemyName: Fangrider
   enemyLevel: 1
   maxHealth: 500
   attackDamage: 45
@@ -4828,20 +4828,20 @@ MonoBehaviour:
   damagedStunTime: 0.2
   bloodVFXOffset: {x: 0.2, y: 0, z: 0}
   timeDieDelay: 0.65
-  isHoldingSpear: 0
+  rangedHitThreshold: 3
+  rangedHitWindow: 2
+  requireHitToAggro: 1
   isBoss: 0
   goldRange: {x: 1, y: 2}
   dropItems:
   - item: {fileID: 11400000, guid: b829b2752dde1494a9d8d425de1bbe59, type: 2}
-    dropChance: 0.067
   - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
-    dropChance: 0.073
   - item: {fileID: 11400000, guid: 9352d6d72f2792f4c8378b0b86b17cb8, type: 2}
-    dropChance: 0.055
   - item: {fileID: 11400000, guid: 9785dba9c8141ac4c8229a95f5c9ca3c, type: 2}
-    dropChance: 0.009
   - item: {fileID: 11400000, guid: 26d05879a6c35ac4abef76dec93f6f93, type: 2}
-    dropChance: 0.044
+  isHoldingSpear: 0
+  exp: 3
+  dropRate: 0.1
 --- !u!50 &-8892388112947226493
 Rigidbody2D:
   serializedVersion: 5
