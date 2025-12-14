@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Sword 1
   m_EditorClassIdentifier: 
   itemID: sword
-  itemName: Sword
+  itemName: iron sword
   icon: {fileID: 21300000, guid: df96032537d4c482e9b20c674c73dc45, type: 3}
   itemType: 0
   tier: 0
   price: 363
-  description: sword
+  description: an ordinary sword
   attack:
     flat: 97
     percent: 0
@@ -63,3 +63,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}
