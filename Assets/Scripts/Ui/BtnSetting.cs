@@ -4,50 +4,59 @@ using UnityEngine.UI;
 public class UISettingController : MonoBehaviour
 {
     [Header("Panel")]
-    public GameObject settingPanel;
+    [SerializeField] private GameObject settingPanel;
 
     [Header("Sliders")]
-    public Slider bgmSlider;
-    public Slider sfxSlider;
+    [SerializeField] private Slider bgmSlider;
+    [SerializeField] private Slider sfxSlider;
 
-    void Start()
+    private void Start()
     {
-        // Hiển thị panel theo mặc định (có thể false nếu muốn ẩn)
+        // Ẩn panel khi bắt đầu
         if (settingPanel != null)
             settingPanel.SetActive(false);
 
-        // Khởi tạo giá trị slider theo AudioManager
-        if (bgmSlider != null)
+        // Init BGM slider
+        if (bgmSlider != null && AudioManager.Instance != null)
         {
             bgmSlider.value = AudioManager.Instance.bgmSource.volume;
             bgmSlider.onValueChanged.AddListener(SetBGMVolume);
         }
 
-        if (sfxSlider != null)
+        // Init SFX slider
+        if (sfxSlider != null && AudioManager.Instance != null)
         {
             sfxSlider.value = AudioManager.Instance.sfxSource.volume;
             sfxSlider.onValueChanged.AddListener(SetSFXVolume);
         }
     }
 
-    // Toggle panel Setting
+    // Mở / đóng Setting Panel
     public void ToggleSetting()
     {
+        if (settingPanel == null) return;
+
+        settingPanel.SetActive(!settingPanel.activeSelf);
+    }
+
+    // Đóng Setting Panel (Button Close gọi hàm này)
+    public void CloseSetting()
+    {
         if (settingPanel != null)
-            settingPanel.SetActive(!settingPanel.activeSelf);
+            settingPanel.SetActive(false);
     }
 
     // Set volume BGM
     private void SetBGMVolume(float value)
     {
-        if (AudioManager.Instance.bgmSource != null)
+        if (AudioManager.Instance != null && AudioManager.Instance.bgmSource != null)
             AudioManager.Instance.bgmSource.volume = value;
     }
 
     // Set volume SFX
     private void SetSFXVolume(float value)
     {
-        if (AudioManager.Instance.sfxSource != null)
+        if (AudioManager.Instance != null && AudioManager.Instance.sfxSource != null)
             AudioManager.Instance.sfxSource.volume = value;
     }
 }
