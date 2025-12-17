@@ -57,7 +57,8 @@ public enum ItemType
 public enum WeaponCategory
 {
     Melee,   // Kiếm, chùy, giáo, dao…
-    Ranged   // Phi tiêu, cung, shuriken…
+    Ranged,   // Phi tiêu, cung, shuriken…
+    HeavyMelee // Axe , Hammer
 }
 
 public enum ItemTier

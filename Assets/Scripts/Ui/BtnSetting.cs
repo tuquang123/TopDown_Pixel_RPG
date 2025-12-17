@@ -1,62 +1,70 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UISettingController : MonoBehaviour
+public class UISettingController : BasePopup
 {
-    [Header("Panel")]
-    [SerializeField] private GameObject settingPanel;
-
     [Header("Sliders")]
     [SerializeField] private Slider bgmSlider;
     [SerializeField] private Slider sfxSlider;
 
+    protected virtual void Awake()
+    {
+        canvasGroup = GetComponent<CanvasGroup>() 
+                      ?? gameObject.AddComponent<CanvasGroup>();
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        transform.localScale = Vector3.zero;
+
+        
+    }
+
+
     private void Start()
     {
-        // Ẩn panel khi bắt đầu
-        if (settingPanel != null)
-            settingPanel.SetActive(false);
+        InitSliders();
+    }
 
-        // Init BGM slider
-        if (bgmSlider != null && AudioManager.Instance != null)
+    private void InitSliders()
+    {
+        if (AudioManager.Instance == null) return;
+
+        if (bgmSlider != null)
         {
             bgmSlider.value = AudioManager.Instance.bgmSource.volume;
             bgmSlider.onValueChanged.AddListener(SetBGMVolume);
         }
 
-        // Init SFX slider
-        if (sfxSlider != null && AudioManager.Instance != null)
+        if (sfxSlider != null)
         {
             sfxSlider.value = AudioManager.Instance.sfxSource.volume;
             sfxSlider.onValueChanged.AddListener(SetSFXVolume);
         }
     }
 
-    // Mở / đóng Setting Panel
-    public void ToggleSetting()
+    // Button OPEN Setting gọi hàm này
+    public void OpenSetting()
     {
-        if (settingPanel == null) return;
-
-        settingPanel.SetActive(!settingPanel.activeSelf);
+        Show();
     }
 
-    // Đóng Setting Panel (Button Close gọi hàm này)
+    // Button CLOSE Setting gọi hàm này
     public void CloseSetting()
     {
-        if (settingPanel != null)
-            settingPanel.SetActive(false);
+        Hide();
     }
 
-    // Set volume BGM
     private void SetBGMVolume(float value)
     {
-        if (AudioManager.Instance != null && AudioManager.Instance.bgmSource != null)
+        if (AudioManager.Instance?.bgmSource != null)
             AudioManager.Instance.bgmSource.volume = value;
     }
 
-    // Set volume SFX
     private void SetSFXVolume(float value)
     {
-        if (AudioManager.Instance != null && AudioManager.Instance.sfxSource != null)
+        if (AudioManager.Instance?.sfxSource != null)
             AudioManager.Instance.sfxSource.volume = value;
     }
 }

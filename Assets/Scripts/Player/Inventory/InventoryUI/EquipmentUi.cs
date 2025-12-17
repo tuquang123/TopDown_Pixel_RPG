@@ -97,14 +97,7 @@ public class EquipmentUI : MonoBehaviour
 
         ItemType type = itemInstance.itemData.itemType;
 
-        if (itemInstance.itemData.weaponCategory == WeaponCategory.Ranged)
-        {
-            GameEvents.OnEquipItemRange.Raise(true);
-        }
-        else
-        {
-            GameEvents.OnEquipItemRange.Raise(false);
-        }
+        GameEvents.OnEquipItemRange.Raise(itemInstance.itemData.weaponCategory);
 
         if (equipmentManager.equippedItems.ContainsKey(type))
         {

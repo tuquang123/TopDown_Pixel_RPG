@@ -16,7 +16,7 @@ public class CommonAnimationEvents : MonoBehaviour
     {
         if (playerController != null)
         {
-            if (playerController.IsRangeWeapon)
+            if (playerController.typeWeapon == WeaponCategory.Ranged)
             {
                 playerController.ThrowShuriken();
             }

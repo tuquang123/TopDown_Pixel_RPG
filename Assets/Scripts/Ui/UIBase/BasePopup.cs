@@ -4,7 +4,7 @@ using DG.Tweening;
 [RequireComponent(typeof(CanvasGroup))]
 public class BasePopup : MonoBehaviour
 {
-    private CanvasGroup canvasGroup;
+    protected CanvasGroup canvasGroup;
     private Tween fadeTween;
     private Tween scaleTween;
 

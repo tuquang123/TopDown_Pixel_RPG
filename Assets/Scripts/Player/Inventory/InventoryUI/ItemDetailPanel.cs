@@ -68,6 +68,7 @@ public class ItemDetailPanel : MonoBehaviour
         icon.SetupIcons(item);
         tier.color =  ItemUtility.GetColorByTier(item.itemData.tier);
         tierText.text = $"{item.itemData.tier}";
+        tierText.color =  ItemUtility.GetColorByTier(item.itemData.tier);
         descriptionText.text = itemData.description;
 
         // ==== Sell Button ====

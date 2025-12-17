@@ -1315,11 +1315,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43030b43d4705934fa2495dba51a168c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionRange: 2
-  attackRange: 1
+  baseDetectionRange: 1
+  meleeRange: 1
+  rangedRange: 5
   attackPoint: {fileID: 212721936305039982}
   attackRadius: 0.8
   vfxDust: {fileID: 2258320781521006159}
+  allowAutoAttack: 1
+  typeWeapon: 0
 --- !u!114 &868799524688306759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1339,7 +1342,7 @@ MonoBehaviour:
     growthFactor: 1.5
     skillPoints: 0
   playerStats: {fileID: 6414742079472401658}
-  skillPoints: 0
+  skillPoints: 5
 --- !u!114 &4108057913524240495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1483,7 +1486,7 @@ MonoBehaviour:
   level: 1
   skillPoints: 0
   maxHealth:
-    baseValue: 10000
+    baseValue: 1000
   maxMana:
     baseValue: 100
   attack:
@@ -3536,7 +3539,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 20
   m_Sprite: {fileID: 6091646097524040222, guid: e98546c3e54e315468077b1421edec90, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -5331,7 +5334,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -15
+  m_SortingOrder: -12
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -13939,7 +13942,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 20
   m_Sprite: {fileID: 4877034544634808614, guid: 0b9c230ca66ea4342b3aceb75a7660cd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -15589,7 +15592,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 20
   m_Sprite: {fileID: 3542576845232984704, guid: 0a20171862873424aa2ed0dd2418cf18, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -16312,15 +16315,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 6
-  m_Sprite: {fileID: 0}
-  m_Color: {r: 0.18490559, g: 0.17129932, b: 0.17129932, a: 1}
+  m_Sprite: {fileID: -1283211923427779501, guid: c1cc2dd275a56b54ba3d1af6f8ceddd8, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.78125, y: 0.625}
+  m_Size: {x: 0.63, y: 0.63}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &7141095381727311166

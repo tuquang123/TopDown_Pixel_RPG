@@ -35,6 +35,7 @@ public class ShopDetailPopup : MonoBehaviour
         icon.SetupIcons(instance);
         nameText.text = data.itemName;
         tierText.text = $"{data.tier}";
+        tierText.color = ItemUtility.GetColorByTier(data.tier);
         descriptionText.text = data.description;
         
         statDisplayComponent.SetStats(instance);

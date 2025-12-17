@@ -2,22 +2,23 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 
-public class PlayerController : Singleton<PlayerController>, IGameEventListener , IGameEventListener<bool> 
+public class PlayerController : Singleton<PlayerController>, IGameEventListener , IGameEventListener<WeaponCategory> 
 {
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
+    private static readonly int AttackRange = Animator.StringToHash("AttackRange");
 
-    [SerializeField] protected float detectionRange = 3f;
-    //[SerializeField] protected float attackRange = 1f;
+    [SerializeField] protected float baseDetectionRange = 1f;
+   
     [SerializeField] private float meleeRange = 1f;
     [SerializeField] private float rangedRange = 5f;
     [SerializeField] protected Transform attackPoint;
     [SerializeField] protected float attackRadius = 0.8f;
     [SerializeField] protected GameObject vfxDust;
+    
     [Header("Combat")]
     [SerializeField] private bool allowAutoAttack = true;
-
-
+    
     protected Rigidbody2D rb;
     protected Animator anim;
     protected Transform targetEnemy;
@@ -33,9 +34,9 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     public bool IsDashing => GetComponent<PlayerDash>()?.IsDashing == true;
     public bool IsAttacking => anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
     
-    float CurrentAttackRange => IsRangeWeapon ? rangedRange : meleeRange;
+    float CurrentAttackRange => typeWeapon == WeaponCategory.Ranged ? rangedRange : meleeRange;
     
-    public bool IsRangeWeapon;
+    public WeaponCategory typeWeapon;
     
     protected virtual void Start()
     {
@@ -137,7 +138,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
 
         if (IsMoving())
         {
-            float moveSpeed = stats.speed.Value;
+            float moveSpeed = GetHeavyWeaponMoveSpeed();
             rb.linearVelocity = moveInput.normalized * moveSpeed;
         }
         else if (targetEnemy == null && targetDestructible == null)
@@ -155,7 +156,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     
     protected virtual void MovePlayer()
     {
-        float moveSpeed = stats.speed.Value;
+        float moveSpeed = GetHeavyWeaponMoveSpeed();
         rb.linearVelocity = moveInput.normalized * moveSpeed;
         RotateCharacter(moveInput.x);
     }
@@ -168,10 +169,10 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         Vector2 targetPos = target.position;
 
         float distance = Vector2.Distance(playerPos, targetPos);
-        float moveSpeed = stats.speed.Value;
+        float moveSpeed = GetHeavyWeaponMoveSpeed();
 
         // ===== RANGED WEAPON =====
-        if (IsRangeWeapon)
+        if (typeWeapon == WeaponCategory.Ranged)
         {
             if (distance > CurrentAttackRange)
             {
@@ -223,18 +224,22 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     
     private void TryAttack()
     {
-        if (Time.time - lastAttackTime < 1f / stats.GetAttackSpeed())
+        float finalAttackSpeed =
+            stats.GetAttackSpeed() * GetWeaponAttackSpeedMultiplier();
+
+        if (Time.time - lastAttackTime < 1f / finalAttackSpeed)
             return;
 
         if (stats.isUsingSkill) return;
 
         lastAttackTime = Time.time;
 
-        if (IsRangeWeapon)
-            anim.SetTrigger("AttackRange"); // animation ném
+        if (typeWeapon == WeaponCategory.Ranged)
+            anim.SetTrigger(AttackRange);
         else
             anim.SetTrigger(AttackTrigger);
     }
+
     
     public void ThrowShuriken()
     {
@@ -373,7 +378,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         targetEnemy = null;
         float minDist = Mathf.Infinity;
 
-        foreach (var enemy in EnemyTracker.Instance.GetEnemiesInRange(transform.position, detectionRange))
+        foreach (var enemy in EnemyTracker.Instance.GetEnemiesInRange(transform.position, GetDetectionRange()))
         {
             if (enemy.IsDead) continue;
 
@@ -388,8 +393,8 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     
     protected void FindClosestDestructible()
     {
-        var list = DestructibleTracker.Instance.GetInRange(transform.position, detectionRange);
-        float minDist = detectionRange;
+        var list = DestructibleTracker.Instance.GetInRange(transform.position, GetDetectionRange());
+        float minDist = GetDetectionRange();
         targetDestructible = null;
 
         foreach (var obj in list)
@@ -451,10 +456,48 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         rb.linearVelocity = Vector2.zero; // ngừng knockback
     }
     
+    float GetHeavyWeaponMoveSpeed()
+    {
+        float speed = stats.speed.Value;
+
+        if (typeWeapon == WeaponCategory.HeavyMelee)
+            speed *= 0.5f;
+
+        return speed;
+    }
+    
+    float GetDetectionRange()
+    {
+        float range = baseDetectionRange;
+
+        switch (typeWeapon)
+        {
+            case WeaponCategory.Ranged:
+                range += 3f;
+                break;
+
+            case WeaponCategory.HeavyMelee:
+                range += 1.5f;
+                break;
+
+            case WeaponCategory.Melee:
+            default:
+                break;
+        }
+
+        return range;
+    }
+
+    
+    float GetWeaponAttackSpeedMultiplier()
+    {
+        return typeWeapon == WeaponCategory.HeavyMelee ? 0.5f : 1f;
+    }
+    
     protected virtual void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
+        Gizmos.DrawWireSphere(transform.position, GetDetectionRange());
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, CurrentAttackRange);
@@ -471,17 +514,9 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         anim = GetComponentInChildren<Animator>();
     }
     
-    public void OnEventRaised(bool value)
+    public void OnEventRaised(WeaponCategory type)
     {
-        IsRangeWeapon = value;
-        if (IsRangeWeapon)
-        {
-            detectionRange += 3;
-        }
-        else
-        {
-            detectionRange = 1;
-        }
+        typeWeapon = type;
     }
 
     private void OnEnable()

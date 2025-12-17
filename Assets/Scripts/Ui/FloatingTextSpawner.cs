@@ -39,4 +39,27 @@ public class FloatingTextSpawner : Singleton<FloatingTextSpawner>
             Debug.LogWarning("Prefab không có component FloatingText.");
         }
     }
+    public void SpawnText(string text, Vector3 worldPosition, Color color, float fontSize = 50f)
+    {
+        if (floatingTextPrefab == null || floatingTextCanvas == null || mainCam == null)
+        {
+            Debug.LogWarning("FloatingTextSpawner thiếu thiết lập (prefab/canvas/camera).");
+            return;
+        }
+
+        Vector3 screenPosition = mainCam.WorldToScreenPoint(worldPosition);
+
+        GameObject go = Instantiate(floatingTextPrefab, floatingTextCanvas);
+        go.transform.position = screenPosition;
+
+        if (go.TryGetComponent(out FloatingText floatingText))
+        {
+            floatingText.Setup(text, color, fontSize);
+        }
+        else
+        {
+            Debug.LogWarning("Prefab không có component FloatingText.");
+        }
+    }
+
 }

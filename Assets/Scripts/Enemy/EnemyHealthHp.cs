@@ -5,22 +5,26 @@ using TMPro;
 
 public class EnemyHealthUI : MonoBehaviour
 {
+    [Header("UI")]
     [SerializeField] private Slider healthSlider;
+    [SerializeField] private TextMeshProUGUI nameAndLevelText;
+    [SerializeField] private TextMeshProUGUI hpText;
+
+    [Header("Position")]
     [SerializeField] private Vector3 offset = new Vector3(0, 1f, 0);
+
+    [Header("Auto Hide")]
     [SerializeField] private float hideDelay = 2f;
 
-    [Header("Text UI")]
-    [SerializeField] private TextMeshProUGUI nameAndLevelText;
-    [SerializeField] private TextMeshProUGUI hpText; 
-
+    [Header("Colors")]
     [SerializeField] private Color enemyHpColor = Color.red;
     [SerializeField] private Color allyHpColor = Color.green;
 
-    private bool autoHide = true;
+    private Camera mainCamera;
     private float hideTimer;
     private int maxHealth;
+    private bool autoHide;
 
-    private Camera mainCamera;
     private TargetInfo currentTarget;
 
     private struct TargetInfo
@@ -28,34 +32,82 @@ public class EnemyHealthUI : MonoBehaviour
         public GameObject target;
         public bool isEnemy;
         public bool isAlly;
-        public bool isDead;
         public int maxHealth;
         public string displayName;
         public Color sliderColor;
     }
 
+    #region Unity Lifecycle
+
     private void Awake()
     {
         mainCamera = Camera.main;
+        HideUI();
     }
 
-    public void HideUI() => gameObject.SetActive(false);
-
-    private void SetSliderColor(Color color)
+    private void OnDestroy()
     {
-        if (healthSlider.fillRect != null)
+        currentTarget = default;
+    }
+
+    private void LateUpdate()
+    {
+        if (!this) return;
+        if (currentTarget.target == null) return;
+
+        if (PlayerController.Instance != null &&
+            PlayerController.Instance.IsPlayerDie())
         {
-            var fillImage = healthSlider.fillRect.GetComponent<Image>();
-            if (fillImage != null) fillImage.color = color;
+            HideUI();
+            return;
         }
+
+        // Enemy chết → hide
+        if (currentTarget.isEnemy &&
+            currentTarget.target.TryGetComponent(out EnemyAI enemy) &&
+            enemy.IsDead)
+        {
+            HideUI();
+            return;
+        }
+
+        // Follow world position
+        if (mainCamera != null)
+        {
+            Vector3 screenPos =
+                mainCamera.WorldToScreenPoint(
+                    currentTarget.target.transform.position + offset);
+
+            transform.position = screenPos;
+        }
+
+        // Auto hide (enemy only)
+        if (autoHide && gameObject.activeSelf)
+        {
+            hideTimer -= Time.deltaTime;
+            if (hideTimer <= 0f)
+                HideUI();
+        }
+    }
+
+    #endregion
+
+    #region Public API
+
+    public void HideUI()
+    {
+        if (!this) return;
+        if (gameObject != null && gameObject.activeSelf)
+            gameObject.SetActive(false);
     }
 
     public void SetTarget(GameObject target)
     {
-        // Reset UI state
+        if (!this) return;
+
         HideUI();
         hideTimer = hideDelay;
-        currentTarget = new TargetInfo { target = null };
+        currentTarget = default;
 
         if (target == null) return;
 
@@ -73,13 +125,12 @@ public class EnemyHealthUI : MonoBehaviour
         {
             info.isAlly = true;
             info.maxHealth = ally.MaxHP;
-            info.displayName = $"{ally.HeroName} (SP)";
+            info.displayName = $"{ally.HeroName}";
             info.sliderColor = allyHpColor;
             autoHide = false;
         }
         else
         {
-            // fallback
             info.isEnemy = true;
             info.maxHealth = 1;
             info.displayName = "Unknown";
@@ -93,17 +144,26 @@ public class EnemyHealthUI : MonoBehaviour
         healthSlider.maxValue = maxHealth;
         healthSlider.value = maxHealth;
 
-        if (nameAndLevelText != null) nameAndLevelText.text = info.displayName;
-        if (hpText != null) hpText.text = $"{maxHealth}/{maxHealth}";
+        if (nameAndLevelText != null)
+            nameAndLevelText.text = info.displayName;
+
+        if (hpText != null)
+            hpText.text = $"{maxHealth}/{maxHealth}";
 
         SetSliderColor(info.sliderColor);
 
-        gameObject.SetActive(!autoHide); // Ally always visible, Enemy hidden until damaged
+        if (!autoHide)
+            gameObject.SetActive(true);
     }
 
     public void UpdateHealth(int currentHealth)
     {
-        if (PlayerController.Instance != null && PlayerController.Instance.IsPlayerDie())
+        // ===== FIX CỐT LÕI MissingReferenceException =====
+        if (!this) return;
+        if (currentTarget.target == null) return;
+
+        if (PlayerController.Instance != null &&
+            PlayerController.Instance.IsPlayerDie())
         {
             HideUI();
             return;
@@ -120,36 +180,18 @@ public class EnemyHealthUI : MonoBehaviour
         hideTimer = hideDelay;
     }
 
-    private void LateUpdate()
+    #endregion
+
+    #region Helpers
+
+    private void SetSliderColor(Color color)
     {
-        if (currentTarget.target == null) return;
+        if (healthSlider.fillRect == null) return;
 
-        // Check if target is dead
-        if (currentTarget.isEnemy && currentTarget.target.TryGetComponent(out EnemyAI enemy) && enemy.IsDead)
-        {
-            HideUI();
-            return;
-        }
-
-        if (PlayerController.Instance != null && PlayerController.Instance.IsPlayerDie())
-        {
-            HideUI();
-            return;
-        }
-
-        // Update position
-        if (mainCamera != null)
-        {
-            Vector3 screenPos = mainCamera.WorldToScreenPoint(currentTarget.target.transform.position + offset);
-            transform.position = screenPos;
-        }
-
-        // Auto hide logic
-        if (autoHide)
-        {
-            hideTimer -= Time.deltaTime;
-            if (hideTimer <= 0f && gameObject.activeSelf)
-                HideUI();
-        }
+        Image fillImage = healthSlider.fillRect.GetComponent<Image>();
+        if (fillImage != null)
+            fillImage.color = color;
     }
+
+    #endregion
 }

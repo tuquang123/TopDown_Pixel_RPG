@@ -152,6 +152,36 @@ public class EnemyAI : MonoBehaviour, IDamageable
     
     [Header("Attack Type")]
     public bool isHoldingSpear = false;
+    [Header("Enemy Info On Select")]
+    [SerializeField] private EnemyInfoPopupUI infoUIPrefab;
+    [SerializeField] private float infoYOffset = 1.8f;
+
+    private EnemyInfoPopupUI infoUIInstance;
+    private void OnMouseDown()
+    {
+        if (isDead) return;
+
+        EnemyInfoPopupUI.Instance.Show(this);
+    }
+
+    private void ShowInfoOnSelect()
+    {
+        // Nếu đã có thì hủy để tránh bị chồng
+        if (infoUIInstance != null)
+        {
+            Destroy(infoUIInstance.gameObject);
+        }
+
+        infoUIInstance = Instantiate(
+            infoUIPrefab,
+            transform.position + Vector3.up * infoYOffset,
+            Quaternion.identity,
+            transform
+        );
+
+        infoUIInstance.Show(this);
+    }
+  
 
     public int exp = 3;
     protected virtual void Start()
@@ -405,6 +435,19 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
     public virtual void TakeDamage(int damage, bool isCrit = false)
     {
+        
+        if (isDead) return;
+
+        currentHealth -= damage;
+        if (EnemyInfoPopupUI.Instance != null)
+            EnemyInfoPopupUI.Instance.Refresh();
+
+        enemyHealthUI?.UpdateHealth(currentHealth);
+
+        // 🔥 UPDATE POPUP
+        if (EnemyInfoPopupUI.Instance != null)
+            EnemyInfoPopupUI.Instance.Refresh();
+        
         if (isDead) return;
 
         currentHealth -= damage;
@@ -500,6 +543,12 @@ public class EnemyAI : MonoBehaviour, IDamageable
             Destroy(enemyHealthUI.gameObject);
             enemyHealthUI = null;
         }
+        if (infoUIInstance != null)
+        {
+            Destroy(infoUIInstance.gameObject);
+            infoUIInstance = null;
+        }
+
     }
 
     protected virtual void NotifySystemsBeforeDrop()
