@@ -1,134 +1,121 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class ShopUI : BasePopup
 {
+    [Header("UI")]
     public GameObject itemUIPrefab;
     public Transform contentParent;
+    public ShopDetailPopup detailPopup;
+
+    [Header("Data")]
     public Inventory playerInventory;
     public InventoryUI inventoryUI;
-    private List<ShopItemUI> shopItemUIs = new();
-    public ShopDetailPopup detailPopup; 
     public List<ItemData> allShopItems = new();
-    
-    public void FilterShop(ItemType? type)
-    {
-        // Xóa UI hiện tại
-        foreach (Transform child in contentParent)
-            Destroy(child.gameObject);
 
-        shopItemUIs.Clear();
+    private readonly List<ShopItemUI> shopItemUIs = new();
 
-        // Sử dụng ItemFilter
-        var filteredItems = ItemFilter.FilterByType(allShopItems, type);
-
-        // Build UI
-        SetupShop(filteredItems);
-    }
-
-    
-    public void OnFilterWeapon()   => FilterShop(ItemType.Weapon);
-    public void OnFilterHelmet()   => FilterShop(ItemType.Helmet);
-    public void OnFilterArmor()    => FilterShop(ItemType.SpecialArmor);
-    public void OnFilterBoots()    => FilterShop(ItemType.Boots);
-    public void OnFilterBody()     => FilterShop(ItemType.Clother);
-    public void OnFilterPet()      => FilterShop(ItemType.Horse);
-    public void OnFilterHair() => FilterShop(ItemType.Hair);
-    public void OnFilterCloak() => FilterShop(ItemType.Cloak);
-
-    // nút hiện tất cả
-    public void OnFilterAll()  => FilterShop(null);
+    #region SHOW / FILTER
 
     public override void Show()
     {
         base.Show();
-        
         SetupShop(allShopItems);
-        
-        RefreshShopUI();
-
         detailPopup?.Setup(this);
     }
 
+    public void OnFilterAll()        => FilterShop(null);
+    public void OnFilterWeapon()     => FilterShop(ItemType.Weapon);
+    public void OnFilterHelmet()     => FilterShop(ItemType.Helmet);
+    public void OnFilterArmor()      => FilterShop(ItemType.SpecialArmor);
+    public void OnFilterBoots()      => FilterShop(ItemType.Boots);
+    public void OnFilterBody()       => FilterShop(ItemType.Clother);
+    public void OnFilterPet()        => FilterShop(ItemType.Horse);
+    public void OnFilterHair()       => FilterShop(ItemType.Hair);
+    public void OnFilterCloak()      => FilterShop(ItemType.Cloak);
+
+    public void FilterShop(ItemType? type)
+    {
+        var filteredItems = ItemFilter.FilterByType(allShopItems, type);
+        SetupShop(filteredItems);
+    }
+
+    #endregion
+
+    #region SETUP SHOP
+
+    private void ClearShop()
+    {
+        foreach (Transform child in contentParent)
+            Destroy(child.gameObject);
+
+        shopItemUIs.Clear();
+    }
+
+    private bool IsItemOwned(ItemData data)
+    {
+        return playerInventory.items.Any(i => i.itemData.itemID == data.itemID);
+    }
 
     public void SetupShop(List<ItemData> items)
     {
-        
-        /*if (allShopItems == null || allShopItems.Count == 0)
-            allShopItems = new List<ItemData>(items);  */
-        
-        foreach (Transform child in contentParent)
-        {
-            Destroy(child.gameObject);
-        }
-        shopItemUIs.Clear();
+        ClearShop();
 
         if (items == null || items.Count == 0)
-        {
-            Debug.LogWarning("Danh sách vật phẩm cửa hàng rỗng hoặc null.");
             return;
-        }
 
         foreach (var item in items)
         {
-            if (item == null) continue;
+            if (item == null)
+                continue;
+
+            // 🔥 ĐÃ MUA → KHÔNG HIỆN
+            if (IsItemOwned(item))
+                continue;
+
             var uiObj = Instantiate(itemUIPrefab, contentParent);
             var shopItemUI = uiObj.GetComponent<ShopItemUI>();
-            
-            var tempInstance = new ItemInstance(item);  
+
+            var tempInstance = new ItemInstance(item);
             shopItemUI.Setup(tempInstance, this);
 
             shopItemUIs.Add(shopItemUI);
         }
-
     }
+
+    #endregion
+
+    #region BUY
 
     public void BuyItem(ItemInstance instance)
     {
         if (instance == null || instance.itemData == null)
+            return;
+
+        var data = instance.itemData;
+
+        // đã sở hữu
+        if (IsItemOwned(data))
+            return;
+
+        // không đủ vàng
+        if (!CurrencyManager.Instance.SpendGold(data.price))
         {
-            Debug.LogError("ItemInstance hoặc ItemData null trong BuyItem.");
+            GameEvents.OnShowToast.Raise("Gold not enough!");
             return;
         }
 
-        var data = instance.itemData;
-        
-        foreach (var invItem in playerInventory.items)
-        {
-            if (invItem.itemData.itemID == data.itemID)
-            {
-                Debug.Log($"{data.itemName} đã mua rồi.");
-                return;
-            }
-        }
+        // thêm vào inventory
+        var newInstance = new ItemInstance(data);
+        playerInventory.AddItem(newInstance);
+        inventoryUI.UpdateInventoryUI();
 
-        if (CurrencyManager.Instance.SpendGold(data.price))
-        {
-            var newInstance = new ItemInstance(data);
+        // 🔥 BUILD LẠI SHOP NGAY
+        SetupShop(allShopItems);
 
-            playerInventory.AddItem(newInstance);
-            inventoryUI.UpdateInventoryUI();
-            RefreshShopUI();
-
-            Debug.Log($"Đã mua {data.itemName} với giá {data.price} vàng.");
-            GameEvents.OnShowToast.Raise("Succes purchase Item!");
-        }
-        else
-        {
-            Debug.Log("Không đủ vàng để mua vật phẩm.");
-            GameEvents.OnShowToast.Raise("Gold not enough!");
-        }
+        GameEvents.OnShowToast.Raise("Success purchase Item!");
     }
 
-    
-
-    private void RefreshShopUI()
-    {
-        foreach (var shopItemUI in shopItemUIs)
-        {
-            shopItemUI.RefreshState();
-        }
-    }
+    #endregion
 }

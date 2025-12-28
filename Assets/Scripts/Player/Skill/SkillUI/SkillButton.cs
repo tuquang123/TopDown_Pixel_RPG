@@ -4,10 +4,15 @@ using UnityEngine.UI;
 
 public class SkillButton : MonoBehaviour
 {
+    [Header("UI")]
     [SerializeField] private Button button;
     [SerializeField] private TextMeshProUGUI label;
-    [SerializeField] private TextMeshProUGUI levelText; // 👈 thêm dòng này
+    [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private Image iconImage;
+
+    [Header("Lock UI")]
+    [SerializeField] private GameObject lockOverlay;
+    [SerializeField] private Image dimImage;
 
     private SkillData skillData;
     private SkillSystem skillSystem;
@@ -22,10 +27,7 @@ public class SkillButton : MonoBehaviour
         label.text = data.skillName;
         iconImage.sprite = data.icon;
 
-        // 👇 Hiển thị cấp độ (ví dụ: 1/10)
-        int currentLevel = system.GetSkillLevel(data.skillID); // hoặc data.currentLevel nếu có sẵn
-        int maxLevel = data.maxLevel; // hoặc giá trị cố định nếu chưa có trong data
-        levelText.text = $"{currentLevel}/{maxLevel}";
+        Refresh();
 
         button.onClick.RemoveAllListeners();
         button.onClick.AddListener(OnClick);
@@ -33,6 +35,34 @@ public class SkillButton : MonoBehaviour
 
     private void OnClick()
     {
+        // 🔥 CHỈ GỌI SETUP – KHÔNG ĐỤNG LOGIC LOCK
         detailPanel.Setup(skillData, skillSystem);
     }
+
+    public void Refresh()
+    {
+        RefreshLevelText();
+        RefreshLockState();
+    }
+
+    private void RefreshLevelText()
+    {
+        int currentLevel = skillSystem.GetSkillLevel(skillData.skillID);
+        levelText.text = $"{currentLevel}/{skillData.maxLevel}";
+    }
+
+    private void RefreshLockState()
+    {
+        bool isUnlocked = skillSystem.IsSkillUnlocked(skillData.skillID);
+
+        lockOverlay.SetActive(!isUnlocked);
+        dimImage.enabled = !isUnlocked;
+
+        // vẫn cho click để xem info
+        button.interactable = true;
+    }
+    
+    
+    
+    
 }

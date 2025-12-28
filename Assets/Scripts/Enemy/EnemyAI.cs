@@ -437,8 +437,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         
         if (isDead) return;
-
-        currentHealth -= damage;
+        
         if (EnemyInfoPopupUI.Instance != null)
             EnemyInfoPopupUI.Instance.Refresh();
 

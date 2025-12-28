@@ -15,6 +15,7 @@ MonoBehaviour:
   itemID: iron armor
   itemName: Iron Armor
   icon: {fileID: 1589403714872849932, guid: fbddd4306af2b47458c43097d5b91f87, type: 3}
+  weaponCategory: 0
   itemType: 6
   tier: 3
   price: 702
@@ -44,10 +45,8 @@ MonoBehaviour:
     flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 4425119332354987815, guid: fbddd4306af2b47458c43097d5b91f87,
-    type: 3}
-  iconRight: {fileID: 889668667309676848, guid: fbddd4306af2b47458c43097d5b91f87,
-    type: 3}
+  iconLeft: {fileID: 4425119332354987815, guid: fbddd4306af2b47458c43097d5b91f87, type: 3}
+  iconRight: {fileID: 889668667309676848, guid: fbddd4306af2b47458c43097d5b91f87, type: 3}
   horseData: {fileID: 0}
   baseUpgradeCost: 153
   restoresHealth: 0

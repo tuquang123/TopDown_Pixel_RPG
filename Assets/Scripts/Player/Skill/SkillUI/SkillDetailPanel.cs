@@ -1,91 +1,142 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 public class SkillDetailPanel : MonoBehaviour
 {
-    [Header("UI Elements")] [SerializeField]
-    private TextMeshProUGUI nameText;
+    // 🔥 EVENT BÁO UI REFRESH
+    public static event Action OnSkillChanged;
 
+    [Header("UI Elements")]
+    [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private TextMeshProUGUI levelText;
     [SerializeField] private Image iconImage;
+    [SerializeField] private TextMeshProUGUI skillPointText;
 
+    [Header("Buttons")]
     [SerializeField] private Button learnButton;
     [SerializeField] private Button assignButton;
     [SerializeField] private Button closeButton;
     [SerializeField] private Button closeButtonFull;
+
+    [Header("Lock UI")]
+    [SerializeField] private GameObject lockRoot;
+    [Header("Dim UI")]
+    [SerializeField] private Image dimImage;
+
+    [Header("Assign")]
     [SerializeField] private SkillAssignPanel assignPanel;
-    
-    [SerializeField] private TextMeshProUGUI skillPointText;
 
     private SkillData currentSkill;
     private SkillSystem skillSystem;
 
-    private void OnClickAssign()
-    {
-        assignPanel.Show(currentSkill, skillSystem);
-    }
-
+    // =========================
+    // SETUP
+    // =========================
     public void Setup(SkillData skillData, SkillSystem system)
     {
         currentSkill = skillData;
         skillSystem = system;
-        
-        skillPointText.text = "Skill Point : " + PlayerStats.Instance.skillPoints;
 
+        // ===== RESET UI =====
+        ResetLockState();
+
+        // ===== BASIC INFO =====
+        skillPointText.text = $"Skill Point : {PlayerStats.Instance.skillPoints}";
         nameText.text = currentSkill.skillName;
         iconImage.sprite = currentSkill.icon;
 
         int currentLevel = skillSystem.GetSkillLevel(currentSkill.skillID);
         levelText.text = $"Level: {currentLevel}/{currentSkill.maxLevel}";
+        descriptionText.text = BuildDescription(currentLevel);
 
-        string fullDescription = "";
+        // ===== STATE =====
+        bool isUnlocked = currentLevel > 0;
+        bool canLearn = skillSystem.CanUnlockSkill(currentSkill.skillID);
+        bool canUpgrade = currentLevel < currentSkill.maxLevel;
+        bool isActive = currentSkill.skillType == SkillType.Active;
 
-        // Current level description
+        // ===== UI LOGIC =====
+        if (!isUnlocked)
+        {
+            // 🔒 CHƯA HỌC
+            dimImage.enabled = true;
+            lockRoot.SetActive(true);
+
+            if (canLearn)
+            {
+                learnButton.gameObject.SetActive(true);
+                learnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Learn";
+            }
+        }
+        else
+        {
+            // 🔓 ĐÃ HỌC
+            dimImage.enabled = false;
+            lockRoot.SetActive(false);
+
+            if (canUpgrade)
+            {
+                learnButton.gameObject.SetActive(true);
+                learnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Upgrade";
+            }
+
+            if (isActive)
+                assignButton.gameObject.SetActive(true);
+        }
+
+        HookButtons();
+        gameObject.SetActive(true);
+    }
+
+
+    // =========================
+    // DESCRIPTION
+    // =========================
+    private string BuildDescription(int currentLevel)
+    {
+        string result = "";
+
         if (currentLevel > 0)
         {
             SkillLevelStat currentStat = currentSkill.GetLevelStat(currentLevel);
             if (currentStat != null)
             {
-                string desc = currentSkill.descriptionTemplate
-                    .Replace("{value}", currentStat.value.ToString())
-                    .Replace("{mana}", currentStat.manaCost.ToString())
-                    .Replace("{cooldown}", currentStat.cooldown.ToString("0.#"))
-                    .Replace("{duration}", currentStat.duration.ToString("0.#"));
-
-                fullDescription += $"<b>Current (Level {currentLevel}):</b>\n{desc}\n\n";
+                result += $"<b>Current (Level {currentLevel}):</b>\n";
+                result += FormatDesc(currentStat) + "\n\n";
             }
         }
 
-        // Next level preview
         int nextLevel = currentLevel + 1;
         if (nextLevel <= currentSkill.maxLevel)
         {
             SkillLevelStat nextStat = currentSkill.GetLevelStat(nextLevel);
             if (nextStat != null)
             {
-                string desc = currentSkill.descriptionTemplate
-                    .Replace("{value}", nextStat.value.ToString())
-                    .Replace("{mana}", nextStat.manaCost.ToString())
-                    .Replace("{cooldown}", nextStat.cooldown.ToString("0.#"))
-                    .Replace("{duration}", nextStat.duration.ToString("0.#"));
-
-                fullDescription += $"<b>Next (Level {nextLevel}):</b>\n{desc}";
+                result += $"<b>Next (Level {nextLevel}):</b>\n";
+                result += FormatDesc(nextStat);
             }
         }
 
-        descriptionText.text = fullDescription;
+        return result;
+    }
 
-        // Learn & assign condition check
-        bool isUnlocked = skillSystem.IsSkillUnlocked(currentSkill.skillID);
-        bool canLearn = skillSystem.CanUnlockSkill(currentSkill.skillID);
-        bool isActive = currentSkill.skillType == SkillType.Active;
+    private string FormatDesc(SkillLevelStat stat)
+    {
+        return currentSkill.descriptionTemplate
+            .Replace("{value}", stat.value.ToString())
+            .Replace("{mana}", stat.manaCost.ToString())
+            .Replace("{cooldown}", stat.cooldown.ToString("0.#"))
+            .Replace("{duration}", stat.duration.ToString("0.#"));
+    }
 
-        learnButton.gameObject.SetActive(canLearn);
-        assignButton.gameObject.SetActive(isUnlocked && isActive);
-
-        // Hook up events
+    // =========================
+    // BUTTONS
+    // =========================
+    private void HookButtons()
+    {
         learnButton.onClick.RemoveAllListeners();
         assignButton.onClick.RemoveAllListeners();
         closeButton.onClick.RemoveAllListeners();
@@ -95,39 +146,50 @@ public class SkillDetailPanel : MonoBehaviour
         assignButton.onClick.AddListener(OnClickAssign);
         closeButton.onClick.AddListener(Hide);
         closeButtonFull.onClick.AddListener(Hide);
-
-        gameObject.SetActive(true);
     }
-
 
     private void OnClickLearn()
     {
-        if (skillSystem.CanUnlockSkill(currentSkill.skillID))
-        {
-            bool success = skillSystem.UnlockSkill(currentSkill.skillID);
-            if (success)
-            {
-                skillSystem.DecrementSkillPoint();
+        if (!skillSystem.UnlockSkill(currentSkill.skillID))
+            return;
 
-                if (currentSkill.skillType == SkillType.Passive)
-                {
-                    skillSystem.UseSkill(currentSkill.skillID);
-                    Debug.Log($"Đã kích hoạt kỹ năng thụ động: {currentSkill.skillName}");
-                }
+        skillSystem.DecrementSkillPoint();
 
-                Setup(currentSkill, skillSystem); // Refresh
-            }
-            else
-            {
-                Debug.Log("Đã đạt cấp tối đa.");
-            }
-        }
-        else
-        {
-            Debug.Log("Không đủ điểm kỹ năng hoặc không thể nâng cấp.");
-        }
+        if (currentSkill.skillType == SkillType.Passive)
+            skillSystem.UseSkill(currentSkill.skillID);
+
+        OnSkillChanged?.Invoke();
+        Setup(currentSkill, skillSystem);
     }
 
+
+
+    private void OnClickAssign()
+    {
+        assignPanel.Show(currentSkill, skillSystem);
+    }
+
+    // =========================
+    // LOCK STATE
+    // =========================
+    private void ResetLockState()
+    {
+        lockRoot.SetActive(false);
+        learnButton.gameObject.SetActive(false);
+        assignButton.gameObject.SetActive(false);
+
+        if (dimImage != null)
+            dimImage.enabled = false; // mặc định sáng
+    }
+
+    private void ShowLocked()
+    {
+        lockRoot.SetActive(true);
+    }
+
+    // =========================
+    // VISIBILITY
+    // =========================
     public void Hide()
     {
         assignPanel.Hide();

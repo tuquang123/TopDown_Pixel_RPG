@@ -14,6 +14,12 @@ public class ShopDetailPopup : MonoBehaviour
     public Button cancelButton;
     public StatDisplayComponent statDisplayComponent;
 
+    [Header("Weapon Info")]
+    public TMP_Text weaponRangeText;
+
+    [Header("Tier Background")]
+    public Image backgroundImage;
+
     private ShopUI shopUI;
     private ItemInstance currentItem;
 
@@ -32,15 +38,56 @@ public class ShopDetailPopup : MonoBehaviour
 
         gameObject.SetActive(true);
 
+        // ===== Icon + Name =====
         icon.SetupIcons(instance);
         nameText.text = data.itemName;
-        tierText.text = $"{data.tier}";
+
+        // ===== Tier =====
+        tierText.text = data.tier.ToString();
         tierText.color = ItemUtility.GetColorByTier(data.tier);
+        ApplyTierBackgroundColor(data.tier);
+
+        // ===== Description =====
         descriptionText.text = data.description;
-        
+
+        // ===== Weapon Category (GIỐNG INVENTORY) =====
+        if (data.itemType == ItemType.Weapon)
+        {
+            weaponRangeText.gameObject.SetActive(true);
+
+            switch (data.weaponCategory)
+            {
+                case WeaponCategory.Melee:
+                    weaponRangeText.text = "Cận chiến";
+                    weaponRangeText.color = new Color(0.85f, 0.85f, 0.85f);
+                    break;
+
+                case WeaponCategory.Ranged:
+                    weaponRangeText.text = "Đánh xa";
+                    weaponRangeText.color = new Color(0.6f, 0.8f, 1f);
+                    break;
+
+                case WeaponCategory.HeavyMelee:
+                    weaponRangeText.text = "Cận nặng";
+                    weaponRangeText.color = new Color(1f, 0.7f, 0.4f);
+                    break;
+
+                default:
+                    weaponRangeText.text = "Không xác định";
+                    weaponRangeText.color = Color.white;
+                    break;
+            }
+        }
+        else
+        {
+            weaponRangeText.gameObject.SetActive(false);
+        }
+
+        // ===== Stats =====
         statDisplayComponent.SetStats(instance);
 
-        priceText.text = $"{data.price} <sprite name=\"gold_icon\" > ";
+        // ===== Price =====
+        priceText.text = $"{data.price} <sprite name=\"gold_icon\">";
 
         buyButton.onClick.RemoveAllListeners();
         cancelButton.onClick.RemoveAllListeners();
@@ -62,19 +109,27 @@ public class ShopDetailPopup : MonoBehaviour
 
         cancelButton.onClick.AddListener(() => gameObject.SetActive(false));
 
-        // đăng ký listener cập nhật vàng
         CurrencyManager.Instance.OnGoldChanged += OnGoldChanged;
+    }
+
+    private void ApplyTierBackgroundColor(ItemTier tier)
+    {
+        if (backgroundImage == null) return;
+
+        Color tierColor = ItemUtility.GetColorByTier(tier);
+        tierColor.a = 1f;
+        backgroundImage.color = tierColor;
     }
 
     private void UpdateBuyButtonState()
     {
         if (currentItem == null || currentItem.itemData == null) return;
 
-        var enoughGold = CurrencyManager.Instance.Gold >= currentItem.itemData.price;
+        bool enoughGold = CurrencyManager.Instance.Gold >= currentItem.itemData.price;
         buyButton.interactable = enoughGold;
 
         var colors = buyButton.colors;
-        colors.normalColor = enoughGold ? Color.white : new Color(1, 1, 1, 0.5f);
+        colors.normalColor = enoughGold ? Color.white : new Color(1f, 1f, 1f, 0.5f);
         buyButton.colors = colors;
     }
 
@@ -87,6 +142,7 @@ public class ShopDetailPopup : MonoBehaviour
     public void Hide()
     {
         gameObject.SetActive(false);
+
         if (CurrencyManager.Instance != null)
             CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
     }
@@ -96,8 +152,6 @@ public class ShopDetailPopup : MonoBehaviour
         if (CurrencyManager.Instance != null)
             CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
     }
-
-    // ----- HÀM BUILD STAT (bổ sung) -----
     private string BuildStatText(ItemInstance item)
     {
         if (item == null || item.itemData == null) return "";

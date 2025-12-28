@@ -10,6 +10,17 @@ public class SkillUIController : BasePopup
     public SkillDetailPanel skillDetailPanel;
     [SerializeField] private ScrollRect scrollRect;
 
+    // 🔥 THÊM
+    private void OnEnable()
+    {
+        SkillDetailPanel.OnSkillChanged += RefreshSkillButtons;
+    }
+
+    private void OnDisable()
+    {
+        SkillDetailPanel.OnSkillChanged -= RefreshSkillButtons;
+    }
+
     public override void Show()
     {
         base.Show();
@@ -20,13 +31,10 @@ public class SkillUIController : BasePopup
 
     private IEnumerator ResetScrollPositionDelayed()
     {
-        yield return null; // Frame 1: chờ layout update
-        yield return null; // Frame 2: đảm bảo layout + content size đã hoàn chỉnh
-
+        yield return null;
+        yield return null;
         scrollRect.verticalNormalizedPosition = 1f;
     }
-
-
 
     private void RefreshSkillButtons()
     {
@@ -40,9 +48,9 @@ public class SkillUIController : BasePopup
 
         foreach (SkillData skillData in skillSystem.skillList)
         {
-            GameObject skillButtonObject = Instantiate(skillButtonPrefab, skillListContainer);
-            SkillButton skillButton = skillButtonObject.GetComponent<SkillButton>();
-            skillButton.Initialize(skillData, skillSystem, skillDetailPanel);
+            GameObject obj = Instantiate(skillButtonPrefab, skillListContainer);
+            SkillButton btn = obj.GetComponent<SkillButton>();
+            btn.Initialize(skillData, skillSystem, skillDetailPanel);
         }
     }
 }

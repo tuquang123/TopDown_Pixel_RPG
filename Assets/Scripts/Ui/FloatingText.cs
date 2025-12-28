@@ -10,7 +10,13 @@ public class FloatingText : MonoBehaviour
     {
         // Replace text → sprite
         if (text.Contains("Gold"))
-            text = text.Replace("Gold", "<sprite name=\"gold_icon\">");
+        {
+            text = text.Replace("Gold", "");                  // bỏ chữ Gold
+            text = text.Replace(":", "");                     // bỏ :
+            text = text.Replace("+ ", "+");                   // gọn dấu +
+            text = text.Trim() + " <sprite name=\"gold_icon\">";
+        }
+
 
         if (text.Contains("CRIT"))
             text = text.Replace("CRIT", "<sprite name=\"crit_icon\" color=#FF2B2B> ");
