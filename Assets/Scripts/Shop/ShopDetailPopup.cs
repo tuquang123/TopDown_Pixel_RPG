@@ -116,10 +116,14 @@ public class ShopDetailPopup : MonoBehaviour
     {
         if (backgroundImage == null) return;
 
-        Color tierColor = ItemUtility.GetColorByTier(tier);
-        tierColor.a = 1f;
-        backgroundImage.color = tierColor;
+        backgroundImage.sprite =
+            CommonReferent.Instance.itemTierColorConfig.GetBackground(tier);
+
+        backgroundImage.color = Color.white; // BẮT BUỘC
     }
+
+
+
 
     private void UpdateBuyButtonState()
     {

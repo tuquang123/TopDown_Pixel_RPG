@@ -164,25 +164,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         EnemyInfoPopupUI.Instance.Show(this);
     }
 
-    private void ShowInfoOnSelect()
-    {
-        // Nếu đã có thì hủy để tránh bị chồng
-        if (infoUIInstance != null)
-        {
-            Destroy(infoUIInstance.gameObject);
-        }
-
-        infoUIInstance = Instantiate(
-            infoUIPrefab,
-            transform.position + Vector3.up * infoYOffset,
-            Quaternion.identity,
-            transform
-        );
-
-        infoUIInstance.Show(this);
-    }
-  
-
+    
     public int exp = 3;
     protected virtual void Start()
     {
@@ -614,7 +596,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         yield return new WaitForSeconds(timeDieDelay);
 
-        ObjectPooler.Instance.Get(
+        /*ObjectPooler.Instance.Get(
             CommonReferent.Instance.deadVFXPrefab.name,
             CommonReferent.Instance.deadVFXPrefab,
             transform.position,
@@ -623,7 +605,8 @@ public class EnemyAI : MonoBehaviour, IDamageable
             expandable: true
         );
 
-        gameObject.SetActive(false);
+        gameObject.SetActive(false);*/
+        Destroy(gameObject);
     }
     
     private bool IsUnityNull(Object obj)

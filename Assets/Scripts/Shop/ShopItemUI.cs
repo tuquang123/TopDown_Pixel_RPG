@@ -28,8 +28,9 @@ public class ShopItemUI : MonoBehaviour
         // ✔ Hiển thị giá + icon vàng
         priceText.text = $"{data.price} <sprite name=\"gold_icon\">";
 
-        backgroundImage.color = ItemUtility.GetColorByTier(data.tier);
-
+        backgroundImage.sprite =
+            CommonReferent.Instance.itemTierColorConfig
+                .GetBackground(data.tier);
         buyButton.onClick.RemoveAllListeners();
         buyButton.onClick.AddListener(() => 
         {

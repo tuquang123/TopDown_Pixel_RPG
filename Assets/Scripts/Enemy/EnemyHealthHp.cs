@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using VHierarchy.Libs;
 
 public class EnemyHealthUI : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class EnemyHealthUI : MonoBehaviour
 
     private TargetInfo currentTarget;
 
-    private struct TargetInfo
+    private class TargetInfo
     {
         public GameObject target;
         public bool isEnemy;
@@ -52,31 +53,46 @@ public class EnemyHealthUI : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!this) return;
-        if (currentTarget.target == null) return;
+        // UI hoặc script đã bị destroy → thoát
+        if (gameObject == null) return;
 
-        if (PlayerController.Instance != null &&
-            PlayerController.Instance.IsPlayerDie())
+        // Không có target hoặc target đã bị destroy
+        if (currentTarget == null || !currentTarget.target)
         {
-            HideUI();
+            Destroy(gameObject);
             return;
         }
 
-        // Enemy chết → hide
-        if (currentTarget.isEnemy &&
-            currentTarget.target.TryGetComponent(out EnemyAI enemy) &&
-            enemy.IsDead)
+        // Player chết → xoá UI
+        if (PlayerController.Instance != null &&
+            PlayerController.Instance.IsPlayerDie())
         {
-            HideUI();
+            Destroy(gameObject);
             return;
+        }
+
+        // Enemy chết → xoá UI
+        if (currentTarget.isEnemy)
+        {
+            // TUYỆT ĐỐI không gọi TryGetComponent nếu target có thể chết
+            if (!currentTarget.target)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            if (currentTarget.target.TryGetComponent(out EnemyAI enemy) && enemy.IsDead)
+            {
+                Destroy(gameObject);
+                return;
+            }
         }
 
         // Follow world position
         if (mainCamera != null)
         {
-            Vector3 screenPos =
-                mainCamera.WorldToScreenPoint(
-                    currentTarget.target.transform.position + offset);
+            Vector3 screenPos = mainCamera.WorldToScreenPoint(
+                currentTarget.target.transform.position + offset);
 
             transform.position = screenPos;
         }
@@ -89,6 +105,7 @@ public class EnemyHealthUI : MonoBehaviour
                 HideUI();
         }
     }
+
 
     #endregion
 

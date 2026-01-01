@@ -365,6 +365,37 @@ MonoBehaviour:
   nextButton: {fileID: 0}
   skipButton: {fileID: 0}
   dialogueDatabase: {fileID: 11400000, guid: 5b5e016bd6ee8d244afba58c47b1451f, type: 2}
+--- !u!1 &6209499714254433846
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2788182361958153149}
+  m_Layer: 0
+  m_Name: EnemyRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2788182361958153149
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6209499714254433846}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7000765787583490286}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7947889435906513831
 GameObject:
   m_ObjectHideFlags: 0
@@ -436,6 +467,8 @@ MonoBehaviour:
   itemDropPrefab: {fileID: 4356269681339680784, guid: 811219cbca279fe45a80c1b1a0a96c63, type: 3}
   deadVFXPrefab: {fileID: 3533435376319919130, guid: ffe419f6459a3ec4093834ac1ccf0398, type: 3}
   surikenPrefab: {fileID: 4242056843081411000, guid: 158815c996fcdd0489dab07574371741, type: 3}
+  itemTierColorConfig: {fileID: 11400000, guid: c4b2c61ac7e96614faf792b32e48dade, type: 2}
+  enemyRoot: {fileID: 6209499714254433846}
   defaultEntryPosition: {x: -9, y: 0, z: 0}
   spawnRange: 12
   keepAliveRange: 20
@@ -535,6 +568,7 @@ Transform:
   - {fileID: 2632216034416029631}
   - {fileID: 3569076006776392107}
   - {fileID: 5165756846307479669}
+  - {fileID: 2788182361958153149}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2604363641924113300

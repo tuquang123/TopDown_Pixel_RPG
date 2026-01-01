@@ -1,6 +1,7 @@
 ﻿// ================= EnemyTracker.cs =================
 using System.Collections.Generic;
 using UnityEngine;
+using VHierarchy.Libs;
 
 public class EnemyTracker : Singleton<EnemyTracker>
 {
@@ -72,9 +73,10 @@ public class EnemyTracker : Singleton<EnemyTracker>
         {
             if (enemy == null) continue;
 
-            if (enemy.gameObject.activeInHierarchy)
+            //if (enemy.gameObject.activeInHierarchy)
             {
-                enemy.gameObject.SetActive(false);
+                //enemy.gameObject.SetActive(false);
+                enemy.gameObject.Destroy();
                 enemy.EnemyHealthUI?.HideUI();
             }
         }

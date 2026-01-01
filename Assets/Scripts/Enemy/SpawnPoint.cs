@@ -77,8 +77,8 @@ public class SpawnPoint : MonoBehaviour
         if (_currentEnemy != null) return;
         if (this == null) return;
         
-        _currentEnemy = ObjectPooler.Instance.Get(enemyPrefab.name, enemyPrefab, transform.position, Quaternion.identity, initSize: 1, expandable: true
-        );
+        _currentEnemy = Instantiate(enemyPrefab, transform.position,
+            Quaternion.identity , gameObject.transform);
 
         if (_currentEnemy == null) return;
 
@@ -87,8 +87,7 @@ public class SpawnPoint : MonoBehaviour
         ai.ApplyLevelData(levelData);
         ai.ResetEnemy();  // Set currentHealth = maxHealth
         
-        GameObject uiObj = Instantiate(CommonReferent.Instance.hpSliderUi, _currentEnemy.transform.position, Quaternion.identity
-        );
+        GameObject uiObj = Instantiate(CommonReferent.Instance.hpSliderUi, _currentEnemy.transform.position, Quaternion.identity);
         uiObj.transform.SetParent(CommonReferent.Instance.canvasHp.transform, false);
         uiObj.transform.localScale = Vector3.one;
         

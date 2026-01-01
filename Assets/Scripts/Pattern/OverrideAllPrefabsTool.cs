@@ -1,70 +1,135 @@
-﻿#if UNITY_EDITOR
+﻿using UnityEngine;
 using UnityEditor;
-using UnityEditor.SceneManagement;
-#endif
+using System.Collections.Generic;
 
-using UnityEngine;
-
-#if UNITY_EDITOR
 public class OverrideAllPrefabsTool : EditorWindow
 {
-    [MenuItem("Tools/Prefab/Override All Prefabs In Scene")]
-    static void Open()
+    private Vector2 scroll;
+    private List<PrefabItem> prefabItems = new();
+
+    [MenuItem("Tools/Prefab/Override Prefabs In Scene")]
+    public static void Open()
     {
         GetWindow<OverrideAllPrefabsTool>("Override Prefabs");
     }
 
-    void OnGUI()
+    private void OnEnable()
     {
-        GUILayout.Space(10);
-        EditorGUILayout.HelpBox(
-            "Override ALL prefab instances in current scene.\n" +
-            "⚠ This will apply current instance values as overrides.",
-            MessageType.Warning
-        );
-
-        GUILayout.Space(10);
-
-        if (GUILayout.Button("OVERRIDE ALL PREFABS", GUILayout.Height(40)))
-        {
-            if (EditorUtility.DisplayDialog(
-                    "Confirm Override",
-                    "Are you sure you want to override ALL prefab instances in the scene?",
-                    "Yes, Override",
-                    "Cancel"))
-            {
-                OverrideAllPrefabs();
-            }
-        }
+        Refresh();
     }
 
-    static void OverrideAllPrefabs()
+    private void Refresh()
     {
-        int count = 0;
+        prefabItems.Clear();
 
-        GameObject[] allObjects = Object.FindObjectsOfType<GameObject>(true);
+        GameObject[] allObjects = FindObjectsOfType<GameObject>(true);
 
-        foreach (GameObject go in allObjects)
+        foreach (var go in allObjects)
         {
             if (!PrefabUtility.IsPartOfPrefabInstance(go))
                 continue;
 
-            GameObject root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
-            if (root == null) continue;
+            var root = PrefabUtility.GetOutermostPrefabInstanceRoot(go);
+            if (root == null)
+                continue;
+
+            if (prefabItems.Exists(p => p.instanceRoot == root))
+                continue;
+
+            if (!PrefabUtility.HasPrefabInstanceAnyOverrides(root, false))
+                continue;
+
+            string path = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(root);
+
+            prefabItems.Add(new PrefabItem
+            {
+                instanceRoot = root,
+                prefabPath = path,
+                isSelected = true
+            });
+        }
+    }
+
+    private void OnGUI()
+    {
+        GUILayout.Space(5);
+
+        if (GUILayout.Button("🔄 Refresh List", GUILayout.Height(30)))
+        {
+            Refresh();
+        }
+
+        GUILayout.Space(5);
+
+        EditorGUILayout.LabelField($"Found {prefabItems.Count} prefab(s) with overrides", EditorStyles.boldLabel);
+
+        scroll = EditorGUILayout.BeginScrollView(scroll);
+
+        foreach (var item in prefabItems)
+        {
+            EditorGUILayout.BeginHorizontal("box");
+
+            item.isSelected = EditorGUILayout.Toggle(item.isSelected, GUILayout.Width(20));
+
+            EditorGUILayout.BeginVertical();
+            EditorGUILayout.LabelField(item.instanceRoot.name, EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(item.prefabPath, EditorStyles.miniLabel);
+            EditorGUILayout.EndVertical();
+
+            if (GUILayout.Button("Select", GUILayout.Width(60)))
+            {
+                Selection.activeGameObject = item.instanceRoot;
+                EditorGUIUtility.PingObject(item.instanceRoot);
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        EditorGUILayout.EndScrollView();
+
+        GUILayout.Space(10);
+
+        GUI.enabled = prefabItems.Exists(p => p.isSelected);
+
+        if (GUILayout.Button("✅ Apply Selected Prefabs", GUILayout.Height(35)))
+        {
+            ApplySelected();
+        }
+
+        GUI.enabled = true;
+    }
+
+    private void ApplySelected()
+    {
+        int count = 0;
+
+        foreach (var item in prefabItems)
+        {
+            if (!item.isSelected)
+                continue;
+
+            Object prefabAsset = PrefabUtility.GetCorrespondingObjectFromSource(item.instanceRoot);
+            if (prefabAsset == null)
+                continue;
+
+            Undo.RegisterCompleteObjectUndo(prefabAsset, "Override Prefab");
 
             PrefabUtility.ApplyPrefabInstance(
-                root,
-                InteractionMode.AutomatedAction
+                item.instanceRoot,
+                InteractionMode.UserAction
             );
 
             count++;
         }
 
-        EditorSceneManager.MarkSceneDirty(
-            EditorSceneManager.GetActiveScene()
-        );
+        Debug.Log($"[Override Tool] Applied {count} prefab(s)");
+        Refresh();
+    }
 
-        Debug.Log($"✅ Overridden {count} prefab instances in scene.");
+    private class PrefabItem
+    {
+        public GameObject instanceRoot;
+        public string prefabPath;
+        public bool isSelected;
     }
 }
-#endif

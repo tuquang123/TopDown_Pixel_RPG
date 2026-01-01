@@ -134,7 +134,9 @@ public class EquipmentUI : MonoBehaviour
                 
                 //slotUI.icon.color = Color.white;
                 slotUI.iconDefault.gameObject.SetActive(false);
-                slotUI.background.color = ItemUtility.GetColorByTier(item.itemData.tier);
+                slotUI.background.sprite =
+                    CommonReferent.Instance.itemTierColorConfig.GetBackground(item.itemData.tier);
+
                 slotUI.button.gameObject.SetActive(true);
             }
             else

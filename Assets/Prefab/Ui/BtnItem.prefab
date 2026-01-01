@@ -313,7 +313,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.81886786, g: 0.08497676, b: 0.08497676, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -521,9 +521,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 41746755120495722}
   selectedImage: {fileID: 8986836600795295478}
-  name: {fileID: 3894647342406129191}
+  nameText: {fileID: 3894647342406129191}
+  lvText: {fileID: 978225297537833788}
   icon: {fileID: 6415364789004172685}
-  lv: {fileID: 978225297537833788}
+  button: {fileID: 4971689804953567034}
 --- !u!114 &4971689804953567034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -810,7 +811,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2262461877249051635
 RectTransform:
   m_ObjectHideFlags: 0

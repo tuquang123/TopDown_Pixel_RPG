@@ -72,7 +72,11 @@ public class ItemDetailPanel : MonoBehaviour
 
     icon.SetupIcons(item);
 
-    tier.color = ItemUtility.GetColorByTier(itemData.tier);
+    tier.sprite =
+        CommonReferent.Instance.itemTierColorConfig.GetBackground(itemData.tier);
+
+    tier.color = Color.white; // QUAN TRỌNG
+
     tierText.text = itemData.tier.ToString();
     tierText.color = ItemUtility.GetColorByTier(itemData.tier);
 

@@ -163,15 +163,8 @@ public class DestructibleObject : MonoBehaviour
         if (enemyPrefabs.Length == 0) return;
 
         var pick = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-
-        GameObject enemy = ObjectPooler.Instance.Get(
-            pick.name,
-            pick,
-            transform.position,
-            Quaternion.identity,
-            initSize: 1,
-            expandable: true
-        );
+        
+        var enemy = Instantiate(pick, transform.position, Quaternion.identity ,CommonReferent.Instance.enemyRoot.transform);
 
         if (enemy == null) return;
 

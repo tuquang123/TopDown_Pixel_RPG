@@ -4,29 +4,36 @@ using UnityEngine.UI;
 
 public class ItemUI : MonoBehaviour
 {
+    [Header("UI")]
     public Image backgroundImage;
-    public Image selectedImage; // ảnh viền sáng / border chọn
-    public TMP_Text name;
+    public Image selectedImage;
+    public TMP_Text nameText;
+    public TMP_Text lvText;
     public ItemIconHandler icon;
-    public TMP_Text lv;
 
     private ItemInstance itemData;
     private InventoryUI inventoryUI;
-
+    public Button button;
+    
     public void Setup(ItemInstance data, InventoryUI ui)
     {
         itemData = data;
         inventoryUI = ui;
 
         icon.SetupIcons(data);
-        name.text = data.itemData.itemName;
-        lv.text = data.upgradeLevel > 0 ? $" {data.upgradeLevel}" : "";
 
-        backgroundImage.color = ItemUtility.GetColorByTier(data.itemData.tier);
-        selectedImage.gameObject.SetActive(false); // ẩn viền khi load
+        nameText.text = data.itemData.itemName;
+        lvText.text = data.upgradeLevel > 0
+            ? $"+{data.upgradeLevel}"
+            : string.Empty;
 
-        GetComponent<Button>().onClick.RemoveAllListeners();
-        GetComponent<Button>().onClick.AddListener(OnItemClicked);
+        // ✅ ĐÚNG
+        backgroundImage.sprite = CommonReferent.Instance.itemTierColorConfig.GetBackground(data.itemData.tier);
+
+        selectedImage.gameObject.SetActive(false);
+
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(OnItemClicked);
     }
 
     private void OnItemClicked()
@@ -41,6 +48,8 @@ public class ItemUI : MonoBehaviour
         selectedImage.gameObject.SetActive(isSelected);
     }
 
-    public ItemInstance GetItemData() => itemData;
-    
+    public ItemInstance GetItemData()
+    {
+        return itemData;
+    }
 }

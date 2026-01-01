@@ -33,6 +33,8 @@ public class CommonReferent : Singleton<CommonReferent>
     public GameObject itemDropPrefab;
     public GameObject deadVFXPrefab;
     public GameObject surikenPrefab;
+    public ItemTierColorConfig itemTierColorConfig;
+    public GameObject enemyRoot;
     
     [Header("Default Spawn Position")]
     public Vector3 defaultEntryPosition = new Vector3(-9, 0, 0);
