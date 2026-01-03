@@ -153,8 +153,23 @@ public class EnemyAI : MonoBehaviour, IDamageable
     [Header("Attack Type")]
     public bool isHoldingSpear = false;
     [Header("Enemy Info On Select")]
-    [SerializeField] private EnemyInfoPopupUI infoUIPrefab;
+    
     [SerializeField] private float infoYOffset = 1.8f;
+    
+    #region Patrol
+
+    [Header("Patrol")]
+    [SerializeField] protected bool enablePatrol = true;
+    [SerializeField] protected float patrolRadius = 3f;
+    [SerializeField] protected float patrolWaitTime = 2f;
+
+    protected Vector3 spawnPosition;
+    protected Vector3 patrolTarget;
+    protected bool isPatrolling = false;
+    protected float patrolWaitTimer = 0f;
+
+    #endregion
+
 
     private EnemyInfoPopupUI infoUIInstance;
     private void OnMouseDown()
@@ -177,6 +192,8 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         EnemyTracker.Instance?.Register(this);
         isDead = false; 
+        spawnPosition = transform.position;
+        ChooseNewPatrolPoint();
         ResetEnemy(); 
     }
 
@@ -192,7 +209,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         
         if (requireHitToAggro && !isAggro)
         {
-            anim.SetBool(MoveBool, false);
+            Patrol();
             return;
         }
         
@@ -228,6 +245,42 @@ public class EnemyAI : MonoBehaviour, IDamageable
         }
     }
     
+    protected void Patrol()
+    {
+        if (!enablePatrol || isDead) return;
+
+        if (patrolWaitTimer > 0f)
+        {
+            patrolWaitTimer -= Time.deltaTime;
+            anim.SetBool(MoveBool, false);
+            return;
+        }
+
+        float dist = Vector2.Distance(transform.position, patrolTarget);
+
+        if (dist <= 0.1f)
+        {
+            patrolWaitTimer = patrolWaitTime;
+            ChooseNewPatrolPoint();
+            return;
+        }
+
+        Vector2 dir = (patrolTarget - transform.position).normalized;
+        transform.position += (Vector3)(dir * moveSpeed * Time.deltaTime);
+
+        RotateEnemy(dir.x);
+        anim.SetBool(MoveBool, true);
+    }
+
+    
+    protected void ChooseNewPatrolPoint()
+    {
+        Vector2 randomOffset = Random.insideUnitCircle * patrolRadius;
+        patrolTarget = spawnPosition + new Vector3(randomOffset.x, randomOffset.y, 0);
+        isPatrolling = true;
+    }
+
+    
     public void ApplyLevelData(EnemyLevelData data)
     {
         if (data == null)
@@ -257,10 +310,10 @@ public class EnemyAI : MonoBehaviour, IDamageable
             col.enabled = active && !IsDead;
     }
     
-    // Thay vì Update(), gọi từ EnemyTracker.UpdateEnemiesBatch()
     public void OptimizedUpdate()
     {
-        if (!isOptimizedActive || IsDead) return;
+        if (!isOptimizedActive || isDead || isTakingDamage || isKnockbacked)
+            return;
         
         if (requireHitToAggro && !isAggro)
         {
@@ -481,6 +534,10 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
     public void ResetEnemy()
     {
+        spawnPosition = transform.position;
+        ChooseNewPatrolPoint();
+        patrolWaitTimer = 0f;
+
         currentHealth = maxHealth;
         isDead = false;
         isTakingDamage = false;
@@ -595,17 +652,6 @@ public class EnemyAI : MonoBehaviour, IDamageable
     protected virtual IEnumerator DelayDeactivate()
     {
         yield return new WaitForSeconds(timeDieDelay);
-
-        /*ObjectPooler.Instance.Get(
-            CommonReferent.Instance.deadVFXPrefab.name,
-            CommonReferent.Instance.deadVFXPrefab,
-            transform.position,
-            Quaternion.identity,
-            initSize: 2,
-            expandable: true
-        );
-
-        gameObject.SetActive(false);*/
         Destroy(gameObject);
     }
     

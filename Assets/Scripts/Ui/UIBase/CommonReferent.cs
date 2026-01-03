@@ -9,7 +9,6 @@ public class CommonReferent : Singleton<CommonReferent>
     public GameObject playerPrefab;
     public GameObject bloodVfxPrefab;
     public GameObject destructionVFXPrefab;
-    public GameObject hitVFXPrefab;
     public BossHealthUI bossHealthUI;
     public GameObject  canvasHp;
     public GameObject  hpSliderUi;
@@ -31,7 +30,6 @@ public class CommonReferent : Singleton<CommonReferent>
     public Sprite iconGold;
     public Sprite iconExp;
     public GameObject itemDropPrefab;
-    public GameObject deadVFXPrefab;
     public GameObject surikenPrefab;
     public ItemTierColorConfig itemTierColorConfig;
     public GameObject enemyRoot;

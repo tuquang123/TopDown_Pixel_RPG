@@ -52,15 +52,12 @@ public class Equipment : MonoBehaviour
             {
                 playerEquipment?.UpdateEquipment(instance.itemData);
                 playerEquipmentHourse?.UpdateEquipment(instance.itemData);
-                //ApplyItemStats(instance, stats);
             }
         }
     }
 
     public void ReapplyEquipmentStats(PlayerStats stats)
     {
-        //stats.ResetToBaseStats();
-
         foreach (var kvp in equippedItems)
         {
             var item = kvp.Value;
@@ -71,7 +68,18 @@ public class Equipment : MonoBehaviour
         }
     }
 
-
+    public void OnEventTypeWeapon()
+    {
+        foreach (var kvp in equippedItems)
+        {
+            if(kvp.Value.itemData.itemType != ItemType.Weapon) return;
+            if (kvp.Value.itemData.weaponCategory == WeaponCategory.Ranged)
+            {
+                GameEvents.OnEquipItemRange.Raise(kvp.Value.itemData.weaponCategory);
+            }
+        }
+    }
+    
     public void EquipItem(ItemInstance instance, PlayerStats stats)
     {
         if (instance == null || instance.itemData == null) return;

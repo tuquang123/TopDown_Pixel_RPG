@@ -6,19 +6,19 @@ public class GameManager : MonoBehaviour
 {
     public bool allAllItem;
     
+    private bool hasLoaded = false;
+    
     private IEnumerator Start()
     {
-        // Chờ 1 frame để tất cả Singleton (QuestManager, CommonReferent...) Awake xong
-        yield return null;  
+        yield return null;
+
         LoadGame();
+        hasLoaded = true;
 
-        //if (allAllItem) AddAllItemsToInventory();
-        if (allAllItem) StartCheatIfNeeded();
-
-        // Cheat test
-       // TriggerKillGoblinQuest();
+        if (allAllItem)
+            StartCheatIfNeeded();
     }
-
+    
     private void OnApplicationPause(bool pause)
     {
         if (pause) SaveGame(); // Auto save khi minimize hoặc thoát app
@@ -26,17 +26,31 @@ public class GameManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        SaveGame(); // Editor / PC build vẫn gọi
+#if UNITY_EDITOR
+        SaveGame();
+        return;
+#endif
+        SaveGame();
     }
+
 
     public void SaveGame()
     {
-        SaveManager.Save(CommonReferent.Instance.playerStats, 
+        if (!hasLoaded)
+        {
+            Debug.LogWarning("[GameManager] Skip save: game not loaded yet");
+            return;
+        }
+
+        SaveManager.Save(
+            CommonReferent.Instance.playerStats,
             CommonReferent.Instance.inventory,
-            CommonReferent.Instance.equipment, 
-            CommonReferent.Instance.skill, 
-            CommonReferent.Instance.playerLevel);
+            CommonReferent.Instance.equipment,
+            CommonReferent.Instance.skill,
+            CommonReferent.Instance.playerLevel
+        );
     }
+
 
     public void LoadGame()
     {
@@ -56,16 +70,7 @@ public class GameManager : MonoBehaviour
     {
         SaveManager.Clear();
     }
-
-    // Cheat
-    public void TriggerKillGoblinQuest()
-    {
-        var quest = QuestManager.Instance.questDatabase.GetQuestByID("NV1");
-        if (quest != null)
-        {
-            QuestManager.Instance.StartQuest(quest);
-        }
-    }
+    
 
     // Cheat
     private void AddAllItemsToInventory()
@@ -95,5 +100,6 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    
 
 }

@@ -87,6 +87,7 @@ public static class SaveManager
         skill.FromData(data.skill);
         
         equipment.ReapplyEquipmentStats(playerStats);
+        equipment.OnEventTypeWeapon();
         skill.ReapplyPassiveSkills(playerStats);
         
         playerStats.Revive();

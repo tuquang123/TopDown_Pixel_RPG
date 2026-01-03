@@ -32,7 +32,14 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     public bool IsPlayerDie() => stats.isDead;
     public bool IsMoving() => moveInput.magnitude > 0.01f;
     public bool IsDashing => GetComponent<PlayerDash>()?.IsDashing == true;
-    public bool IsAttacking => anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
+    public bool IsAttacking
+    {
+        get
+        {
+            var state = anim.GetCurrentAnimatorStateInfo(0);
+            return state.IsTag("Attack") && state.normalizedTime < 1f;
+        }
+    }
     
     float CurrentAttackRange => typeWeapon == WeaponCategory.Ranged ? rangedRange : meleeRange;
     
@@ -51,7 +58,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     protected virtual void Update()
     {
         if (stats.isDead) return;
-
+       
         moveInput = GetMoveInput();
         
         bool isAttacking = IsAttacking;
@@ -128,7 +135,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     protected virtual void FixedUpdate()
     {
         if (stats.isDead || IsDashing) return;
-
+        
         if (vfxDust != null)
         {
             bool shouldPlay = IsMoving();
@@ -233,7 +240,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         if (stats.isUsingSkill) return;
 
         lastAttackTime = Time.time;
-
+        
         if (typeWeapon == WeaponCategory.Ranged)
             anim.SetTrigger(AttackRange);
         else

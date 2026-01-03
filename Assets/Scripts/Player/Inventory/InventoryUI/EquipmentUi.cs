@@ -131,24 +131,25 @@ public class EquipmentUI : MonoBehaviour
             if (equipmentManager.equippedItems.TryGetValue(type, out ItemInstance item))
             {
                 slotUI.icon.SetupIcons(item);
-                
-                //slotUI.icon.color = Color.white;
                 slotUI.iconDefault.gameObject.SetActive(false);
-                slotUI.background.sprite =
-                    CommonReferent.Instance.itemTierColorConfig.GetBackground(item.itemData.tier);
+
+                slotUI.background.sprite = CommonReferent.Instance.itemTierColorConfig.GetBackground(item.itemData.tier);
+                slotUI.background.color = Color.white; // BẮT BUỘC, nếu không sprite sẽ trong suốt
 
                 slotUI.button.gameObject.SetActive(true);
             }
             else
             {
                 slotUI.icon.HideAllIcons();
-                //slotUI.icon.color = new Color(1, 1, 1, 0); // Làm trong suốt
                 slotUI.iconDefault.gameObject.SetActive(true);
-                slotUI.background.color = new Color32(39, 39, 39, 255); // Màu #272727 full opacity
+                slotUI.background.sprite = null;
+                slotUI.background.color = new Color(1, 1, 1, 0); // trong suốt
                 slotUI.button.gameObject.SetActive(false);
             }
+
         }
     }
+    
     private EquipmentSlotUI currentSelectedSlot;
 
     public void SelectSlot(EquipmentSlotUI newSlot)

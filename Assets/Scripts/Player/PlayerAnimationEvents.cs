@@ -10,7 +10,7 @@ public class CommonAnimationEvents : MonoBehaviour
         playerController = GetComponentInParent<PlayerController>();
         enemyAI = GetComponentInParent<EnemyAI>();
     }
-
+    
     // Gọi từ animation event: melee hit
     public void OnAttackHit()
     {
