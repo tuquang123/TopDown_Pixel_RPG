@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using VHierarchy.Libs;
 
 public class EnemyHealthUI : MonoBehaviour
 {
