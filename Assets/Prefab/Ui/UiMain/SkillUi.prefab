@@ -299,7 +299,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 87770301702553054}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -308,8 +308,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000038146973, y: -0.6635132}
-  m_SizeDelta: {x: -0.000045776, y: 9.289}
+  m_AnchoredPosition: {x: -1.3588405, y: -1.647583}
+  m_SizeDelta: {x: 19.770386, y: 19.740234}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1064440978389818021
 CanvasRenderer:
@@ -339,7 +339,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e9ea96e5b40c141f098cb415649f7691, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2da9659ea9f6547808423fb363e16e47, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1259,8 +1259,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1.3030653, y: 1.0091707}
-  m_SizeDelta: {x: 128.818, y: 143.227}
+  m_AnchoredPosition: {x: 0.0009460449, y: -1.3610535}
+  m_SizeDelta: {x: 152.226, y: 167.278}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4161490129255723896
 CanvasRenderer:
@@ -1545,8 +1545,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000038146973, y: -0.000015258789}
-  m_SizeDelta: {x: -94.193, y: -75.208}
+  m_AnchoredPosition: {x: 0.000076293945, y: 0.000061035156}
+  m_SizeDelta: {x: -94.19299, y: -75.20801}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6191262901910965477
 CanvasRenderer:
@@ -2611,81 +2611,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &7310741786221386956
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1803943097668450812}
-  - component: {fileID: 5294750774256004313}
-  - component: {fileID: 2248348677701739382}
-  m_Layer: 5
-  m_Name: bgg
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1803943097668450812
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7310741786221386956}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1046155100868068293}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1.3030653, y: 1.0091707}
-  m_SizeDelta: {x: 128.818, y: 143.227}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &5294750774256004313
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7310741786221386956}
-  m_CullTransparentMesh: 1
---- !u!114 &2248348677701739382
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7310741786221386956}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 0.78431374}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &7320205429831131390
 GameObject:
   m_ObjectHideFlags: 0
@@ -2806,7 +2731,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8906793024457425236}
   m_HandleRect: {fileID: 5631511990282848048}
   m_Direction: 2
-  m_Value: 0.00000053018726
+  m_Value: 0.0000015905619
   m_Size: 0.8748394
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3404,15 +3329,14 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4771808266182518144}
-  - {fileID: 1803943097668450812}
   - {fileID: 8542079433708222704}
   - {fileID: 2216823052465879987}
   m_Father: {fileID: 6718897792841641636}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -221.03513}
-  m_SizeDelta: {x: 150, y: 150}
+  m_AnchoredPosition: {x: 4.358878, y: -224.55176}
+  m_SizeDelta: {x: 152.23, y: 164.552}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5161721203310651447
 CanvasRenderer:
@@ -3442,8 +3366,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 5103189783574893730, guid: cf5d08316c75345e6870151f3cfdf1f2, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 4878136261585288319, guid: d4bb719ab9cd5a74ebf05579d70143e7, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -3630,6 +3554,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2521881168921610895, guid: 66eaae2d1ff78e24dabeb61a545d2b78, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2da9659ea9f6547808423fb363e16e47, type: 3}
     - target: {fileID: 4194154082287526420, guid: 66eaae2d1ff78e24dabeb61a545d2b78, type: 3}
       propertyPath: m_Name
       value: BtnSkillAssign (2)
@@ -3743,6 +3671,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2521881168921610895, guid: 66eaae2d1ff78e24dabeb61a545d2b78, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2da9659ea9f6547808423fb363e16e47, type: 3}
     - target: {fileID: 4194154082287526420, guid: 66eaae2d1ff78e24dabeb61a545d2b78, type: 3}
       propertyPath: m_Name
       value: BtnSkillAssign (4)
@@ -3856,6 +3788,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2521881168921610895, guid: 66eaae2d1ff78e24dabeb61a545d2b78, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2da9659ea9f6547808423fb363e16e47, type: 3}
     - target: {fileID: 4194154082287526420, guid: 66eaae2d1ff78e24dabeb61a545d2b78, type: 3}
       propertyPath: m_Name
       value: BtnSkillAssign (3)
@@ -3969,6 +3905,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2521881168921610895, guid: 66eaae2d1ff78e24dabeb61a545d2b78, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2da9659ea9f6547808423fb363e16e47, type: 3}
     - target: {fileID: 4194154082287526420, guid: 66eaae2d1ff78e24dabeb61a545d2b78, type: 3}
       propertyPath: m_Name
       value: BtnSkillAssign (1)
@@ -4218,6 +4158,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2521881168921610895, guid: 66eaae2d1ff78e24dabeb61a545d2b78, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2da9659ea9f6547808423fb363e16e47, type: 3}
     - target: {fileID: 4194154082287526420, guid: 66eaae2d1ff78e24dabeb61a545d2b78, type: 3}
       propertyPath: m_Name
       value: BtnSkillAssign

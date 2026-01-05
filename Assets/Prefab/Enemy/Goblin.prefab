@@ -385,7 +385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: 'Goblin VIP '
+  enemyName: Goblin
   enemyLevel: 1
   maxHealth: 100
   attackDamage: 15
@@ -411,8 +411,10 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 05286bc7c7604724f885df8b699f40cf, type: 2}
   - item: {fileID: 11400000, guid: a0409bc12a82a4f4a99677d3a01de88a, type: 2}
   isHoldingSpear: 0
-  infoUIPrefab: {fileID: 2793437860541180072, guid: cf9ec72ed425102419c6ae838786727d, type: 3}
   infoYOffset: 1.8
+  enablePatrol: 1
+  patrolRadius: 3
+  patrolWaitTime: 2
   exp: 3
   dropRate: 0.1
 --- !u!114 &-8244477202541570080

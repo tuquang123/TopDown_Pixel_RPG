@@ -669,6 +669,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
     }
+    
 
 
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
