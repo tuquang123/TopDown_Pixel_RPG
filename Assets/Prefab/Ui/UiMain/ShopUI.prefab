@@ -378,6 +378,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 7922441072386512895}
   - {fileID: 4366755353800658946}
   - {fileID: 8676677721501387437}
   - {fileID: 4944166330103079584}
@@ -386,7 +387,6 @@ RectTransform:
   - {fileID: 21266995697608743}
   - {fileID: 8296529510671954636}
   - {fileID: 610779821928047103}
-  - {fileID: 7922441072386512895}
   m_Father: {fileID: 8349138585595880495}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -1200,7 +1200,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3536957800439793427}
   m_HandleRect: {fileID: 8383840520706290683}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 1.0000008
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

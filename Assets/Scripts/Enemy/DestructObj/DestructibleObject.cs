@@ -58,7 +58,8 @@ public class DestructibleObject : MonoBehaviour
     public void Hit()
     {
         currentHits++;
-
+        
+        FloatingTextSpawner.Instance.SpawnText("-1", transform.position + Vector3.up * 1.2f, Color.white);
         PlayHitFlash();
         StartCoroutine(Shake());
 
