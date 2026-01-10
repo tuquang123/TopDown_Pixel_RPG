@@ -76,6 +76,7 @@ public class PlayerMovementPUN : MonoBehaviourPun, IPunObservable
         // Owner: di chuyển bằng physics
         rb.linearVelocity = moveInput * moveSpeed;
     }
+    
 
     // =========================
     // INPUT

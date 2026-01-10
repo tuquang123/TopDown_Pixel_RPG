@@ -1,7 +1,7 @@
 ﻿using Pattern;
 using Photon.Pun;
 
-public class CameraFollowPUN : MonoBehaviourPun
+public class CameraFollowPUN : MonoBehaviourPun 
 {
     void Start()
     {
