@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class ShopDetailPopup : MonoBehaviour
 {
@@ -20,8 +21,29 @@ public class ShopDetailPopup : MonoBehaviour
     [Header("Tier Background")]
     public Image backgroundImage;
 
+    [Header("Animation")]
+    public float animDuration = 0.25f;
+    public AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+
     private ShopUI shopUI;
     private ItemInstance currentItem;
+
+    private CanvasGroup canvasGroup;
+    private Coroutine animCoroutine;
+
+    private void Awake()
+    {
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+        canvasGroup.alpha = 0;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        transform.localScale = Vector3.zero;
+        gameObject.SetActive(false);
+    }
 
     public void Setup(ShopUI shop)
     {
@@ -29,14 +51,13 @@ public class ShopDetailPopup : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    // ================= SHOW =================
     public void ShowDetail(ItemInstance instance)
     {
         if (instance == null || instance.itemData == null) return;
 
         currentItem = instance;
         var data = instance.itemData;
-
-        gameObject.SetActive(true);
 
         // ===== Icon + Name =====
         icon.SetupIcons(instance);
@@ -50,28 +71,24 @@ public class ShopDetailPopup : MonoBehaviour
         // ===== Description =====
         descriptionText.text = data.description;
 
-        // ===== Weapon Category (GIỐNG INVENTORY) =====
+        // ===== Weapon Category =====
         if (data.itemType == ItemType.Weapon)
         {
             weaponRangeText.gameObject.SetActive(true);
-
             switch (data.weaponCategory)
             {
                 case WeaponCategory.Melee:
                     weaponRangeText.text = "Cận chiến";
                     weaponRangeText.color = new Color(0.85f, 0.85f, 0.85f);
                     break;
-
                 case WeaponCategory.Ranged:
                     weaponRangeText.text = "Đánh xa";
                     weaponRangeText.color = new Color(0.6f, 0.8f, 1f);
                     break;
-
                 case WeaponCategory.HeavyMelee:
                     weaponRangeText.text = "Cận nặng";
                     weaponRangeText.color = new Color(1f, 0.7f, 0.4f);
                     break;
-
                 default:
                     weaponRangeText.text = "Không xác định";
                     weaponRangeText.color = Color.white;
@@ -99,7 +116,7 @@ public class ShopDetailPopup : MonoBehaviour
             if (CurrencyManager.Instance.Gold >= data.price)
             {
                 shopUI.BuyItem(currentItem);
-                gameObject.SetActive(false);
+                Hide();
             }
             else
             {
@@ -107,11 +124,83 @@ public class ShopDetailPopup : MonoBehaviour
             }
         });
 
-        cancelButton.onClick.AddListener(() => gameObject.SetActive(false));
+        cancelButton.onClick.AddListener(Hide);
 
         CurrencyManager.Instance.OnGoldChanged += OnGoldChanged;
+
+        PlayOpenAnimation();
     }
 
+    // ================= ANIMATION =================
+    private void PlayOpenAnimation()
+    {
+        if (animCoroutine != null)
+            StopCoroutine(animCoroutine);
+
+        gameObject.SetActive(true);
+        animCoroutine = StartCoroutine(OpenAnim());
+    }
+
+    private IEnumerator OpenAnim()
+    {
+        canvasGroup.alpha = 0;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+        transform.localScale = Vector3.zero;
+
+        float t = 0f;
+        while (t < animDuration)
+        {
+            t += Time.unscaledDeltaTime;
+            float p = t / animDuration;
+
+            float scale = scaleCurve.Evaluate(p);
+            transform.localScale = Vector3.one * scale;
+            canvasGroup.alpha = p;
+
+            yield return null;
+        }
+
+        transform.localScale = Vector3.one;
+        canvasGroup.alpha = 1;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+    }
+
+    public void Hide()
+    {
+        if (!gameObject.activeSelf) return;
+
+        if (animCoroutine != null)
+            StopCoroutine(animCoroutine);
+
+        animCoroutine = StartCoroutine(CloseAnim());
+    }
+
+    private IEnumerator CloseAnim()
+    {
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        float t = 0f;
+        while (t < animDuration)
+        {
+            t += Time.unscaledDeltaTime;
+            float p = t / animDuration;
+
+            transform.localScale = Vector3.one * (1 - p);
+            canvasGroup.alpha = 1 - p;
+
+            yield return null;
+        }
+
+        gameObject.SetActive(false);
+
+        if (CurrencyManager.Instance != null)
+            CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
+    }
+
+    // ================= HELPERS =================
     private void ApplyTierBackgroundColor(ItemTier tier)
     {
         if (backgroundImage == null) return;
@@ -119,11 +208,8 @@ public class ShopDetailPopup : MonoBehaviour
         backgroundImage.sprite =
             CommonReferent.Instance.itemTierColorConfig.GetBackground(tier);
 
-        backgroundImage.color = Color.white; // BẮT BUỘC
+        backgroundImage.color = Color.white;
     }
-
-
-
 
     private void UpdateBuyButtonState()
     {
@@ -143,56 +229,9 @@ public class ShopDetailPopup : MonoBehaviour
             UpdateBuyButtonState();
     }
 
-    public void Hide()
-    {
-        gameObject.SetActive(false);
-
-        if (CurrencyManager.Instance != null)
-            CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
-    }
-
     private void OnDisable()
     {
         if (CurrencyManager.Instance != null)
             CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
-    }
-    private string BuildStatText(ItemInstance item)
-    {
-        if (item == null || item.itemData == null) return "";
-
-        var data = item.itemData;
-        string stats = "";
-
-        void AddStatLine(string label, ItemStatBonus bonus, float upgradePercent = 0.1f, string suffix = "")
-        {
-            if (bonus == null || !bonus.HasValue) return;
-
-            // Nếu item trong shop thường là chưa nâng cấp, dùng giá trị flat trực tiếp
-            float flat = bonus.flat;
-            float percent = bonus.percent;
-
-            bool showDecimal = (label == "Tốc đánh" || label == "Tốc phép" || label == "Speed");
-
-            if (Mathf.Abs(flat) > 0.0001f)
-                stats += showDecimal
-                    ? $"{label}: {flat:F1}{suffix}\n"
-                    : $"{label}: {Mathf.RoundToInt(flat)}{suffix}\n";
-
-            if (Mathf.Abs(percent) > 0.0001f)
-                stats += showDecimal
-                    ? $"{label}: +{percent:F1}%{suffix}\n"
-                    : $"{label}: +{percent}%{suffix}\n";
-        }
-
-        AddStatLine("Dame", data.attack);
-        AddStatLine("Giáp", data.defense);
-        AddStatLine("Máu", data.health);
-        AddStatLine("Mana", data.mana);
-        AddStatLine("Crit", data.critChance, 0.05f);
-        AddStatLine("Speed", data.speed, 0.05f);
-        AddStatLine("Tốc đánh", data.attackSpeed, 0.05f);
-        AddStatLine("Hút máu", data.lifeSteal, 0.05f);
-
-        return stats.TrimEnd();
     }
 }

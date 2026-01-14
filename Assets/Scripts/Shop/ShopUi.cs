@@ -16,24 +16,98 @@ public class ShopUI : BasePopup
 
     private readonly List<ShopItemUI> shopItemUIs = new();
 
-    #region SHOW / FILTER
+    // ================= FILTER HIGHLIGHT =================
+    [Header("Filter Buttons")]
+    public List<FilterButtonUI> filterButtons = new();
+
+    private FilterButtonUI currentFilter;
+    // ====================================================
+
+    #region SHOW
 
     public override void Show()
     {
         base.Show();
+
         SetupShop(allShopItems);
         detailPopup?.Setup(this);
+
+        // Auto chọn filter All
+        if (filterButtons != null && filterButtons.Count > 0)
+            SelectFilter(filterButtons[0]);
     }
 
-    public void OnFilterAll()        => FilterShop(null);
-    public void OnFilterWeapon()     => FilterShop(ItemType.Weapon);
-    public void OnFilterHelmet()     => FilterShop(ItemType.Helmet);
-    public void OnFilterArmor()      => FilterShop(ItemType.SpecialArmor);
-    public void OnFilterBoots()      => FilterShop(ItemType.Boots);
-    public void OnFilterBody()       => FilterShop(ItemType.Clother);
-    public void OnFilterPet()        => FilterShop(ItemType.Horse);
-    public void OnFilterHair()       => FilterShop(ItemType.Hair);
-    public void OnFilterCloak()      => FilterShop(ItemType.Cloak);
+    #endregion
+
+    #region FILTER BUTTONS
+
+    private void SelectFilter(FilterButtonUI btn)
+    {
+        if (currentFilter == btn)
+            return;
+
+        if (currentFilter != null)
+            currentFilter.SetSelected(false);
+
+        currentFilter = btn;
+
+        if (currentFilter != null)
+            currentFilter.SetSelected(true);
+    }
+
+    public void OnFilterAll(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterShop(null);
+    }
+
+    public void OnFilterWeapon(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterShop(ItemType.Weapon);
+    }
+
+    public void OnFilterHelmet(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterShop(ItemType.Helmet);
+    }
+
+    public void OnFilterArmor(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterShop(ItemType.SpecialArmor);
+    }
+
+    public void OnFilterBoots(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterShop(ItemType.Boots);
+    }
+
+    public void OnFilterBody(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterShop(ItemType.Clother);
+    }
+
+    public void OnFilterPet(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterShop(ItemType.Horse);
+    }
+
+    public void OnFilterHair(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterShop(ItemType.Hair);
+    }
+
+    public void OnFilterCloak(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterShop(ItemType.Cloak);
+    }
 
     public void FilterShop(ItemType? type)
     {
@@ -70,7 +144,6 @@ public class ShopUI : BasePopup
             if (item == null)
                 continue;
 
-            // 🔥 ĐÃ MUA → KHÔNG HIỆN
             if (IsItemOwned(item))
                 continue;
 
@@ -95,23 +168,19 @@ public class ShopUI : BasePopup
 
         var data = instance.itemData;
 
-        // đã sở hữu
         if (IsItemOwned(data))
             return;
 
-        // không đủ vàng
         if (!CurrencyManager.Instance.SpendGold(data.price))
         {
             GameEvents.OnShowToast.Raise("Gold not enough!");
             return;
         }
 
-        // thêm vào inventory
         var newInstance = new ItemInstance(data);
         playerInventory.AddItem(newInstance);
         inventoryUI.UpdateInventoryUI();
 
-        // 🔥 BUILD LẠI SHOP NGAY
         SetupShop(allShopItems);
 
         GameEvents.OnShowToast.Raise("Success purchase Item!");

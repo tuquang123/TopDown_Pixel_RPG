@@ -4,40 +4,110 @@ using UnityEngine;
 
 public class InventoryUI : BasePopup
 {
+    [Header("Inventory UI")]
     public Transform itemContainer;
     public Inventory inventory;
     public GameObject itemPrefab;
     public EquipmentUI equipmentUi;
-
     public ItemDetailPanel itemDetailPanel;
+
+    [Header("Filter Buttons")]
+    public List<FilterButtonUI> filterButtons = new List<FilterButtonUI>();
+    private FilterButtonUI currentFilter;
+
+    private ItemUI currentSelectedItem;
+
+    #region FILTER LOGIC
+
+    private void SelectFilter(FilterButtonUI btn)
+    {
+        if (currentFilter == btn)
+            return;
+
+        if (currentFilter != null)
+            currentFilter.SetSelected(false);
+
+        currentFilter = btn;
+        currentFilter.SetSelected(true);
+    }
+
+    public void OnFilterAll(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterInventory(null);
+    }
+
+    public void OnFilterWeapon(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterInventory(ItemType.Weapon);
+    }
+
+    public void OnFilterHelmet(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterInventory(ItemType.Helmet);
+    }
+
+    public void OnFilterArmor(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterInventory(ItemType.SpecialArmor);
+    }
+
+    public void OnFilterBoots(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterInventory(ItemType.Boots);
+    }
+
+    public void OnFilterBody(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterInventory(ItemType.Clother);
+    }
+
+    public void OnFilterPet(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterInventory(ItemType.Horse);
+    }
+
+    public void OnFilterHair(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterInventory(ItemType.Hair);
+    }
+
+    public void OnFilterCloak(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        FilterInventory(ItemType.Cloak);
+    }
+
+    #endregion
+
+    #region FILTER / INVENTORY
 
     public static class ItemFilter
     {
-        // lọc theo ItemType, null = tất cả
         public static List<ItemData> FilterByType(List<ItemData> items, ItemType? type)
         {
             if (items == null) return new List<ItemData>();
-
             if (type == null) return new List<ItemData>(items);
-
             return items.Where(i => i.itemType == type).ToList();
         }
 
-        // lọc inventory (ItemInstance)
         public static List<ItemInstance> FilterInventoryByType(List<ItemInstance> items, ItemType? type)
         {
             if (items == null) return new List<ItemInstance>();
-
             if (type == null) return new List<ItemInstance>(items);
-
             return items.Where(i => i.itemData.itemType == type).ToList();
         }
     }
-    
+
     public void FilterInventory(ItemType? type)
     {
-        Debug.Log($"Filter Inventory - Loại: {type}");
-
         // Xóa UI hiện tại
         foreach (Transform child in itemContainer)
             Destroy(child.gameObject);
@@ -51,26 +121,45 @@ public class InventoryUI : BasePopup
         }
 
         itemDetailPanel.Hide();
+        currentSelectedItem = null;
     }
-    
-    public void OnFilterWeapon() => FilterInventory(ItemType.Weapon);
-    public void OnFilterHelmet() => FilterInventory(ItemType.Helmet);
-    public void OnFilterArmor() => FilterInventory(ItemType.SpecialArmor);
-    public void OnFilterBoots() => FilterInventory(ItemType.Boots);
-    public void OnFilterBody() => FilterInventory(ItemType.Clother);
-    public void OnFilterPet() => FilterInventory(ItemType.Horse);
-    public void OnFilterHair() => FilterInventory(ItemType.Hair);
-    public void OnFilterCloak() => FilterInventory(ItemType.Cloak);
-    public void OnFilterAll() => FilterInventory(null);
 
+    #endregion
 
-    
+    #region SELECT ITEM
+
+    public void SelectItem(ItemUI newItem)
+    {
+        if (currentSelectedItem != null)
+            currentSelectedItem.SetSelected(false);
+
+        currentSelectedItem = newItem;
+        currentSelectedItem.SetSelected(true);
+
+        // Hiển thị detail panel
+        itemDetailPanel.gameObject.SetActive(true);
+
+    }
+
+    #endregion
+
+    #region SHOW / HIDE
+
     public override void Show()
     {
         base.Show();
+
         UpdateInventoryUI();
+
+        // Auto chọn filter All khi mở
+        if (filterButtons != null && filterButtons.Count > 0)
+        {
+            SelectFilter(filterButtons[0]);
+            FilterInventory(null); // 🔥 QUAN TRỌNG
+        }
     }
-    
+
+
     public override void Hide()
     {
         base.Hide();
@@ -79,31 +168,18 @@ public class InventoryUI : BasePopup
 
     public void UpdateInventoryUI()
     {
-        Debug.Log($"Reload Inventory UI - Số lượng item: {inventory.items.Count}");
-
         foreach (Transform child in itemContainer)
-        {
             Destroy(child.gameObject);
-        }
 
         foreach (ItemInstance item in inventory.items)
         {
-            Debug.Log($"Tạo item: {item.itemData.itemName}");
             GameObject newItem = Instantiate(itemPrefab, itemContainer);
             newItem.GetComponent<ItemUI>().Setup(item, this);
         }
 
         itemDetailPanel.Hide();
+        currentSelectedItem = null;
     }
-    private ItemUI currentSelectedItem;
-     
-     public void SelectItem(ItemUI newItem)
-     {
-         if (currentSelectedItem != null)
-             currentSelectedItem.SetSelected(false); // tắt chọn cũ
-     
-         currentSelectedItem = newItem;
-         currentSelectedItem.SetSelected(true); // bật chọn mới
-     }
-}
 
+    #endregion
+}
