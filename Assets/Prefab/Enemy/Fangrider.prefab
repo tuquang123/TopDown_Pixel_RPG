@@ -1664,9 +1664,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2078007694743351655}
   - component: {fileID: 3937619195935427539}
-  - component: {fileID: -2588946340693580472}
   - component: {fileID: -8892388112947226493}
   - component: {fileID: 7702793797727614244}
+  - component: {fileID: -2588946340693580472}
   m_Layer: 7
   m_Name: Fangrider
   m_TagString: Enemy
@@ -4802,46 +4802,6 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 95bc898d1e9bdc0428109504a3fa80a0, type: 2}
   - {fileID: 7400000, guid: 4fe865043f99d8d488336f5c75256b8f, type: 2}
   - {fileID: 7400000, guid: b5b99dfcf045f484fbc5959057ff85b3, type: 2}
---- !u!114 &-2588946340693580472
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2226953740800684622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyName: Fangrider
-  enemyLevel: 1
-  maxHealth: 500
-  attackDamage: 45
-  attackRange: 1
-  detectionRange: 2
-  attackCooldown: 3.5
-  skipHurtAnimation: 0
-  moveSpeed: 0.7
-  knockForce: 1.5
-  knockDuration: 0.2
-  damagedStunTime: 0.2
-  bloodVFXOffset: {x: 0.2, y: 0, z: 0}
-  timeDieDelay: 0.65
-  rangedHitThreshold: 3
-  rangedHitWindow: 2
-  requireHitToAggro: 1
-  isBoss: 0
-  goldRange: {x: 1, y: 2}
-  dropItems:
-  - item: {fileID: 11400000, guid: b829b2752dde1494a9d8d425de1bbe59, type: 2}
-  - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
-  - item: {fileID: 11400000, guid: 9352d6d72f2792f4c8378b0b86b17cb8, type: 2}
-  - item: {fileID: 11400000, guid: 9785dba9c8141ac4c8229a95f5c9ca3c, type: 2}
-  - item: {fileID: 11400000, guid: 26d05879a6c35ac4abef76dec93f6f93, type: 2}
-  isHoldingSpear: 0
-  exp: 3
-  dropRate: 0.1
 --- !u!50 &-8892388112947226493
 Rigidbody2D:
   serializedVersion: 5
@@ -4915,6 +4875,50 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &-2588946340693580472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2226953740800684622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c60a64f1d47ad8047a2692e17727df56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyName: Fangrider
+  enemyLevel: 1
+  maxHealth: 500
+  attackDamage: 45
+  attackRange: 1
+  detectionRange: 2
+  attackCooldown: 3.5
+  skipHurtAnimation: 0
+  moveSpeed: 0.7
+  knockForce: 1.5
+  knockDuration: 0.2
+  damagedStunTime: 0.2
+  bloodVFXOffset: {x: 0.2, y: 0, z: 0}
+  timeDieDelay: 0.65
+  rangedHitThreshold: 3
+  rangedHitWindow: 2
+  requireHitToAggro: 1
+  isBoss: 0
+  goldRange: {x: 1, y: 2}
+  dropItems:
+  - item: {fileID: 11400000, guid: b829b2752dde1494a9d8d425de1bbe59, type: 2}
+  - item: {fileID: 11400000, guid: af03cfafb6829d04991d910df034afe5, type: 2}
+  - item: {fileID: 11400000, guid: 9352d6d72f2792f4c8378b0b86b17cb8, type: 2}
+  - item: {fileID: 11400000, guid: 9785dba9c8141ac4c8229a95f5c9ca3c, type: 2}
+  - item: {fileID: 11400000, guid: 26d05879a6c35ac4abef76dec93f6f93, type: 2}
+  isHoldingSpear: 0
+  infoYOffset: 1.8
+  enablePatrol: 0
+  patrolRadius: 3
+  patrolWaitTime: 2
+  exp: 3
+  dropRate: 0.1
 --- !u!1 &2340316211728648110
 GameObject:
   m_ObjectHideFlags: 0

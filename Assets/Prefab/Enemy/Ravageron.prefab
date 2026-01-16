@@ -3545,20 +3545,24 @@ MonoBehaviour:
   damagedStunTime: 0.2
   bloodVFXOffset: {x: 0.2, y: 0, z: 0}
   timeDieDelay: 0.65
-  isHoldingSpear: 1
+  rangedHitThreshold: 3
+  rangedHitWindow: 2
+  requireHitToAggro: 1
   isBoss: 0
   goldRange: {x: 0, y: 1}
   dropItems:
   - item: {fileID: 11400000, guid: b829b2752dde1494a9d8d425de1bbe59, type: 2}
-    dropChance: 0.2
   - item: {fileID: 11400000, guid: 9785dba9c8141ac4c8229a95f5c9ca3c, type: 2}
-    dropChance: 0.2
   - item: {fileID: 11400000, guid: 26d05879a6c35ac4abef76dec93f6f93, type: 2}
-    dropChance: 0.2
   - item: {fileID: 11400000, guid: 40f1756891608044482f991871259ff7, type: 2}
-    dropChance: 0.2
   - item: {fileID: 11400000, guid: a4c8bdbb4e0f75b4789b1703ccfb7bda, type: 2}
-    dropChance: 0.2
+  isHoldingSpear: 1
+  infoYOffset: 1.8
+  enablePatrol: 0
+  patrolRadius: 3
+  patrolWaitTime: 2
+  exp: 3
+  dropRate: 0.1
 --- !u!50 &3601980688408329975
 Rigidbody2D:
   serializedVersion: 5

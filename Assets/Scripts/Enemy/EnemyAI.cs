@@ -156,6 +156,9 @@ public class EnemyAI : MonoBehaviour, IDamageable
     
     [SerializeField] private float infoYOffset = 1.8f;
     
+    [BoxGroup("Drops"), LabelText("Drop Rate %")] 
+    [Range(0f,1f)] public float dropRate = 0.1f; 
+    
     #region Patrol
 
     [Header("Patrol")]
@@ -167,6 +170,8 @@ public class EnemyAI : MonoBehaviour, IDamageable
     protected Vector3 patrolTarget;
     protected bool isPatrolling = false;
     protected float patrolWaitTimer = 0f;
+	
+	public int exp = 3;
 
     #endregion
 
@@ -178,9 +183,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
         EnemyInfoPopupUI.Instance.Show(this);
     }
-
     
-    public int exp = 3;
     protected virtual void Start()
     {
         anim = GetComponentInChildren<Animator>();
@@ -421,6 +424,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
     protected virtual void AttackTarget()
     {
         if (target == null || isTakingDamage) return;
+        if (isDead) return;
 
         RotateEnemy(target.position.x - transform.position.x);
 
@@ -431,7 +435,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
             // Kiểm tra cầm thương
             if (isHoldingSpear)
             {
-                anim.SetTrigger("8_Attack"); // đây là attack mới
+                anim.SetTrigger(LongAttack); // đây là attack mới
             }
             else
             {
@@ -446,6 +450,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
     public void DealDamageToTarget()
     {
         if (target == null) return;
+        if (isDead) return;
         
         float distance = Vector2.Distance(transform.position, target.position);
         if (distance > attackRange) return;
@@ -470,7 +475,6 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
     public virtual void TakeDamage(int damage, bool isCrit = false)
     {
-        
         if (isDead) return;
         
         if (EnemyInfoPopupUI.Instance != null)
@@ -482,8 +486,6 @@ public class EnemyAI : MonoBehaviour, IDamageable
         if (EnemyInfoPopupUI.Instance != null)
             EnemyInfoPopupUI.Instance.Refresh();
         
-        if (isDead) return;
-
         currentHealth -= damage;
         enemyHealthUI?.UpdateHealth(currentHealth);
         
@@ -609,19 +611,14 @@ public class EnemyAI : MonoBehaviour, IDamageable
             GoldDropHelper.SpawnGoldBurst(transform.position, goldAmount, CommonReferent.Instance.goldPrefab);
         }
     }
-
-    [BoxGroup("Drops"), LabelText("Drop Rate %")] 
-    [Range(0f,1f)] public float dropRate = 0.1f; 
+    
     protected virtual void DropItems()
     {
-        // 1. Roll tỉ lệ rơi chung
         if (Random.value > dropRate)
         {
-            Debug.Log($"{enemyName} dropped NOTHING");
             return;
         }
-
-        // 2. Nếu trúng tỉ lệ → random 1 item trong list
+        
         if (dropItems.Count == 0) return;
 
         int index = Random.Range(0, dropItems.Count);
@@ -640,8 +637,6 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
         ItemDrop itemDrop = dropObj.GetComponent<ItemDrop>();
         itemDrop.Setup(new ItemInstance(chosen.item, 0), 1);
-
-        Debug.Log($"{enemyName} dropped {chosen.item.itemName} (Rate={dropRate * 100}%)");
     }
 
     protected virtual void NotifySystemsAfterDrop()
@@ -655,25 +650,17 @@ public class EnemyAI : MonoBehaviour, IDamageable
         Destroy(gameObject);
     }
     
-    private bool IsUnityNull(Object obj)
-    {
-        return obj == null || obj.Equals(null);
-    }
     private void OnDrawGizmosSelected()
     {
-        // Attack Range (Đỏ)
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
-
-        // Detection Range (Vàng)
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
     }
     
-
-
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
     private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
     protected static readonly int DieTrigger = Animator.StringToHash("4_Death");
+    private static readonly int LongAttack = Animator.StringToHash("8_Attack");
 }

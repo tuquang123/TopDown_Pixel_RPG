@@ -307,8 +307,10 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
             if (isCrit)
                 damage = Mathf.RoundToInt(damage * 1.5f);
 
+            if (enemy.IsDead) return; 
+            
             enemy.TakeDamage(damage, isCrit);
-
+            
             int healedAmount = stats.HealFromLifeSteal(damage);
             if (healedAmount > 0)
                 totalHealed += healedAmount;
