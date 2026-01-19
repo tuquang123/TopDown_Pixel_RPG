@@ -364,6 +364,7 @@ MonoBehaviour:
   dialoguePanel: {fileID: 0}
   nextButton: {fileID: 0}
   skipButton: {fileID: 0}
+  canvasGroup: {fileID: 0}
   dialogueDatabase: {fileID: 11400000, guid: 5b5e016bd6ee8d244afba58c47b1451f, type: 2}
 --- !u!1 &6209499714254433846
 GameObject:
@@ -445,7 +446,6 @@ MonoBehaviour:
   playerPrefab: {fileID: 0}
   bloodVfxPrefab: {fileID: 6484301405218222007, guid: 83907561ca565a94c905d1a42da3e8f8, type: 3}
   destructionVFXPrefab: {fileID: 3533435376319919130, guid: ffe419f6459a3ec4093834ac1ccf0398, type: 3}
-  hitVFXPrefab: {fileID: 3533435376319919130, guid: ffe419f6459a3ec4093834ac1ccf0398, type: 3}
   bossHealthUI: {fileID: 0}
   canvasHp: {fileID: 0}
   hpSliderUi: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
@@ -465,7 +465,6 @@ MonoBehaviour:
   iconGold: {fileID: 21300000, guid: b2c956cfb47c640ea80fb559ed2f55f7, type: 3}
   iconExp: {fileID: 21300000, guid: 41f18770ca6a24345ae9f7fdf677ea74, type: 3}
   itemDropPrefab: {fileID: 4356269681339680784, guid: 811219cbca279fe45a80c1b1a0a96c63, type: 3}
-  deadVFXPrefab: {fileID: 3533435376319919130, guid: ffe419f6459a3ec4093834ac1ccf0398, type: 3}
   surikenPrefab: {fileID: 4242056843081411000, guid: 158815c996fcdd0489dab07574371741, type: 3}
   itemTierColorConfig: {fileID: 11400000, guid: c4b2c61ac7e96614faf792b32e48dade, type: 2}
   enemyRoot: {fileID: 6209499714254433846}

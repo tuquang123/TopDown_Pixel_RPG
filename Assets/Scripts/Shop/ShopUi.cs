@@ -8,6 +8,8 @@ public class ShopUI : BasePopup
     public GameObject itemUIPrefab;
     public Transform contentParent;
     public ShopDetailPopup detailPopup;
+    private ItemType? currentFilterType = null;
+    private bool isFirstShow = true;
 
     [Header("Data")]
     public Inventory playerInventory;
@@ -28,14 +30,22 @@ public class ShopUI : BasePopup
     public override void Show()
     {
         base.Show();
-
-        SetupShop(allShopItems);
         detailPopup?.Setup(this);
 
-        // Auto chọn filter All
-        if (filterButtons != null && filterButtons.Count > 0)
+        if (isFirstShow)
+        {
+            isFirstShow = false;
+
             SelectFilter(filterButtons[0]);
+            FilterShop(null); // 🔥 CHUẨN
+        }
+        else
+        {
+            FilterShop(currentFilterType);
+        }
     }
+
+
 
     #endregion
 
@@ -57,60 +67,71 @@ public class ShopUI : BasePopup
 
     public void OnFilterAll(FilterButtonUI btn)
     {
-        SelectFilter(btn);
-        FilterShop(null);
+        SelectFilter(btn);          // (1)
+        currentFilterType = null;   // (2) ALL = null
+        FilterShop(null);           // (3)
     }
+
 
     public void OnFilterWeapon(FilterButtonUI btn)
     {
-        SelectFilter(btn);
-        FilterShop(ItemType.Weapon);
+        SelectFilter(btn);                  // (1) Highlight nút
+        currentFilterType = ItemType.Weapon; // (2) Lưu filter
+        FilterShop(currentFilterType);       // (3) Apply filter
     }
+
 
     public void OnFilterHelmet(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        FilterShop(ItemType.Helmet);
-    }
-
-    public void OnFilterArmor(FilterButtonUI btn)
-    {
-        SelectFilter(btn);
-        FilterShop(ItemType.SpecialArmor);
+        currentFilterType = ItemType.Helmet;
+        FilterShop(currentFilterType);
     }
 
     public void OnFilterBoots(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        FilterShop(ItemType.Boots);
+        currentFilterType = ItemType.Boots;
+        FilterShop(currentFilterType);
+    }
+    public void OnFilterArmor(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        currentFilterType = ItemType.SpecialArmor;
+        FilterShop(currentFilterType);
     }
 
     public void OnFilterBody(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        FilterShop(ItemType.Clother);
+        currentFilterType = ItemType.Clother;
+        FilterShop(currentFilterType);
     }
-
     public void OnFilterPet(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        FilterShop(ItemType.Horse);
+        currentFilterType = ItemType.Horse;
+        FilterShop(currentFilterType);
     }
 
     public void OnFilterHair(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        FilterShop(ItemType.Hair);
+        currentFilterType = ItemType.Hair;
+        FilterShop(currentFilterType);
     }
 
     public void OnFilterCloak(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        FilterShop(ItemType.Cloak);
+        currentFilterType = ItemType.Cloak;
+        FilterShop(currentFilterType);
     }
 
     public void FilterShop(ItemType? type)
     {
+        currentFilterType = type; // 🔥 CHỐT STATE TẠI ĐÂY
+
         var filteredItems = ItemFilter.FilterByType(allShopItems, type);
         SetupShop(filteredItems);
     }
@@ -177,14 +198,15 @@ public class ShopUI : BasePopup
             return;
         }
 
-        var newInstance = new ItemInstance(data);
-        playerInventory.AddItem(newInstance);
+        playerInventory.AddItem(new ItemInstance(data));
         inventoryUI.UpdateInventoryUI();
 
-        SetupShop(allShopItems);
+        // 🔥 GIỮ FILTER
+        FilterShop(currentFilterType);
 
         GameEvents.OnShowToast.Raise("Success purchase Item!");
     }
+
 
     #endregion
 }

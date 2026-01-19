@@ -2,6 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Collections;
+using DG.Tweening;
+
+
 
 public class ItemDetailPanel : MonoBehaviour
 {
@@ -18,8 +22,13 @@ public class ItemDetailPanel : MonoBehaviour
     public Image tier;
     public StatDisplayComponent statDisplayComponent;
     public TMP_Text weaponCategoryText;
+    [Header("Animation")]
+    public float animDuration = 0.25f;
+private Tween openTween;
+private Tween closeTween;
+    private CanvasGroup canvasGroup;
+   
     
-
     [SerializeField] private ConfirmPopup confirmPopupPrefab;
     private ConfirmPopup currentPopup;
 
@@ -190,7 +199,8 @@ public class ItemDetailPanel : MonoBehaviour
 
     statText.text = statsText.TrimEnd();
 
-    gameObject.SetActive(true);
+    PlayOpenAnimation();
+
 }
 
 
@@ -331,6 +341,73 @@ public class ItemDetailPanel : MonoBehaviour
 
     public void Hide()
     {
+        if (!gameObject.activeSelf) return;
+
+        openTween?.Kill();
+        closeTween?.Kill();
+
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        closeTween = DOTween.Sequence()
+            .Append(canvasGroup.DOFade(0f, animDuration * 0.6f))
+            .Join(transform.DOScale(0.9f, animDuration * 0.6f))
+            .OnComplete(() =>
+            {
+                gameObject.SetActive(false);
+            });
+    }
+
+
+  
+
+    private void Awake()
+    {
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        transform.localScale = Vector3.one * 0.9f;
         gameObject.SetActive(false);
     }
+
+    private void PlayOpenAnimation()
+    {
+        openTween?.Kill();
+        closeTween?.Kill();
+
+        gameObject.SetActive(true);
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        transform.localScale = Vector3.one * 0.9f;
+
+        openTween = DOTween.Sequence()
+            .Append(canvasGroup.DOFade(1f, animDuration * 0.8f))
+            .Join(transform.DOScale(1f, animDuration)
+                .SetEase(Ease.OutBack))
+            .OnComplete(() =>
+            {
+                canvasGroup.interactable = true;
+                canvasGroup.blocksRaycasts = true;
+            });
+    }
+
+
+   
+
+    private float EaseOutBack(float x)
+    {
+        float c1 = 1.70158f;
+        float c3 = c1 + 1f;
+        return 1 + c3 * Mathf.Pow(x - 1, 3) + c1 * Mathf.Pow(x - 1, 2);
+    }
+
+    
 }

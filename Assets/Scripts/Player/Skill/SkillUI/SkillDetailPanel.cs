@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 public class SkillDetailPanel : MonoBehaviour
 {
@@ -31,6 +32,11 @@ public class SkillDetailPanel : MonoBehaviour
 
     private SkillData currentSkill;
     private SkillSystem skillSystem;
+    [Header("Animation")]
+    [SerializeField] private float animDuration = 0.25f;
+
+    private CanvasGroup canvasGroup;
+    private Coroutine animCoroutine;
 
     // =========================
     // SETUP
@@ -88,7 +94,8 @@ public class SkillDetailPanel : MonoBehaviour
         }
 
         HookButtons();
-        gameObject.SetActive(true);
+        PlayOpenAnimation();
+
     }
 
 
@@ -193,6 +200,91 @@ public class SkillDetailPanel : MonoBehaviour
     public void Hide()
     {
         assignPanel.Hide();
+
+        if (!gameObject.activeSelf) return;
+
+        if (animCoroutine != null)
+            StopCoroutine(animCoroutine);
+
+        animCoroutine = StartCoroutine(CloseAnim());
+    }
+
+    private void Awake()
+    {
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
+        canvasGroup.alpha = 0;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        transform.localScale = Vector3.zero;
         gameObject.SetActive(false);
     }
+    private void PlayOpenAnimation()
+    {
+        if (animCoroutine != null)
+            StopCoroutine(animCoroutine);
+
+        gameObject.SetActive(true);
+        animCoroutine = StartCoroutine(OpenAnim_Pop());
+    }
+
+    private IEnumerator OpenAnim_Pop()
+    {
+        canvasGroup.alpha = 0;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+        transform.localScale = Vector3.zero;
+
+        float t = 0f;
+        while (t < animDuration)
+        {
+            t += Time.unscaledDeltaTime;
+            float p = t / animDuration;
+
+            float scale = EaseOutBack(p);
+            transform.localScale = Vector3.one * scale;
+            canvasGroup.alpha = p;
+
+            yield return null;
+        }
+
+        transform.localScale = Vector3.one;
+        canvasGroup.alpha = 1;
+        canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
+    }
+
+    private float EaseOutBack(float x)
+    {
+        float c1 = 1.70158f;
+        float c3 = c1 + 1f;
+        return 1 + c3 * Mathf.Pow(x - 1, 3) + c1 * Mathf.Pow(x - 1, 2);
+    }
+    private IEnumerator CloseAnim()
+    {
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        float t = 0f;
+        Vector3 startScale = transform.localScale;
+
+        while (t < animDuration * 0.7f)
+        {
+            t += Time.unscaledDeltaTime;
+            float p = t / (animDuration * 0.7f);
+
+            transform.localScale = Vector3.Lerp(startScale, Vector3.zero, p);
+            canvasGroup.alpha = 1 - p;
+            yield return null;
+        }
+
+        canvasGroup.alpha = 0;
+        transform.localScale = Vector3.zero;
+        gameObject.SetActive(false);
+    }
+
+    
 }

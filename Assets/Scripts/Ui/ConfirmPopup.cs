@@ -11,6 +11,7 @@ public class ConfirmPopup : MonoBehaviour
     public Button cancelButton;
     public TMP_Text titleText;
     public TMP_Text messageText;
+    public Button backgroundButton;
 
     private Action onConfirm;
     public Action OnClosed;
@@ -19,7 +20,11 @@ public class ConfirmPopup : MonoBehaviour
     {
         confirmButton.onClick.AddListener(OnConfirmClicked);
         cancelButton.onClick.AddListener(Hide);
+
+        if (backgroundButton != null)
+            backgroundButton.onClick.AddListener(Hide);
     }
+
 
     public void Show(string title, string message, Action confirmAction)
     {

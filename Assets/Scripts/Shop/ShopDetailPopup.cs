@@ -2,6 +2,9 @@
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using DG.Tweening;
+
+
 
 public class ShopDetailPopup : MonoBehaviour
 {
@@ -14,7 +17,8 @@ public class ShopDetailPopup : MonoBehaviour
     public Button buyButton;
     public Button cancelButton;
     public StatDisplayComponent statDisplayComponent;
-
+private Tween openTween;
+private Tween closeTween;
     [Header("Weapon Info")]
     public TMP_Text weaponRangeText;
 
@@ -23,27 +27,27 @@ public class ShopDetailPopup : MonoBehaviour
 
     [Header("Animation")]
     public float animDuration = 0.25f;
-    public AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+  
 
     private ShopUI shopUI;
     private ItemInstance currentItem;
 
     private CanvasGroup canvasGroup;
-    private Coroutine animCoroutine;
-
+    
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
         if (canvasGroup == null)
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
 
-        canvasGroup.alpha = 0;
+        canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
-        transform.localScale = Vector3.zero;
+        transform.localScale = Vector3.one * 0.9f;
         gameObject.SetActive(false);
     }
+
 
     public void Setup(ShopUI shop)
     {
@@ -134,72 +138,50 @@ public class ShopDetailPopup : MonoBehaviour
     // ================= ANIMATION =================
     private void PlayOpenAnimation()
     {
-        if (animCoroutine != null)
-            StopCoroutine(animCoroutine);
+        openTween?.Kill();
+        closeTween?.Kill();
 
         gameObject.SetActive(true);
-        animCoroutine = StartCoroutine(OpenAnim());
-    }
 
-    private IEnumerator OpenAnim()
-    {
-        canvasGroup.alpha = 0;
+        canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
-        transform.localScale = Vector3.zero;
 
-        float t = 0f;
-        while (t < animDuration)
-        {
-            t += Time.unscaledDeltaTime;
-            float p = t / animDuration;
+        transform.localScale = Vector3.one * 0.9f;
 
-            float scale = scaleCurve.Evaluate(p);
-            transform.localScale = Vector3.one * scale;
-            canvasGroup.alpha = p;
-
-            yield return null;
-        }
-
-        transform.localScale = Vector3.one;
-        canvasGroup.alpha = 1;
-        canvasGroup.interactable = true;
-        canvasGroup.blocksRaycasts = true;
+        openTween = DOTween.Sequence()
+            .Append(canvasGroup.DOFade(1f, animDuration * 0.8f))
+            .Join(transform
+                .DOScale(1f, animDuration)
+                .SetEase(Ease.OutBack))
+            .OnComplete(() =>
+            {
+                canvasGroup.interactable = true;
+                canvasGroup.blocksRaycasts = true;
+            });
     }
-
+    
     public void Hide()
     {
         if (!gameObject.activeSelf) return;
 
-        if (animCoroutine != null)
-            StopCoroutine(animCoroutine);
+        openTween?.Kill();
+        closeTween?.Kill();
 
-        animCoroutine = StartCoroutine(CloseAnim());
-    }
-
-    private IEnumerator CloseAnim()
-    {
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
-        float t = 0f;
-        while (t < animDuration)
-        {
-            t += Time.unscaledDeltaTime;
-            float p = t / animDuration;
+        closeTween = DOTween.Sequence()
+            .Append(canvasGroup.DOFade(0f, animDuration * 0.6f))
+            .Join(transform.DOScale(0.9f, animDuration * 0.6f))
+            .OnComplete(() =>
+            {
+                gameObject.SetActive(false);
 
-            transform.localScale = Vector3.one * (1 - p);
-            canvasGroup.alpha = 1 - p;
-
-            yield return null;
-        }
-
-        gameObject.SetActive(false);
-
-        if (CurrencyManager.Instance != null)
-            CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
+                if (CurrencyManager.Instance != null)
+                    CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
+            });
     }
-
     // ================= HELPERS =================
     private void ApplyTierBackgroundColor(ItemTier tier)
     {

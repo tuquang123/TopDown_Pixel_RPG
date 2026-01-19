@@ -3,6 +3,9 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+
+
 
 public class DialogueSystem : Singleton<DialogueSystem>
 {
@@ -12,14 +15,17 @@ public class DialogueSystem : Singleton<DialogueSystem>
     public GameObject dialoguePanel;
     public Button nextButton;
     public Button skipButton;
-
-    [Header("Database")]
+    public CanvasGroup canvasGroup; 
+    private Tween openTween;
+    private Tween closeTween;
+    [Header("Database")] 
     public DialogueDatabase dialogueDatabase;
 
     private Queue<DialogueLine> lines;
     private bool isTyping = false;
     private string currentFullSentence = "";
     private System.Action onComplete;
+    private Coroutine typingCoroutine;
 
     private void Start()
     {
@@ -51,15 +57,30 @@ public class DialogueSystem : Singleton<DialogueSystem>
     private void StartDialogue(Dialogue dialogue)
     {
         dialoguePanel.SetActive(true);
+
+        // reset
+        openTween?.Kill();
+        closeTween?.Kill();
+
+        canvasGroup.alpha = 0f;
+        dialoguePanel.transform.localScale = Vector3.one * 0.9f;
+
+        openTween = DOTween.Sequence()
+            .Append(canvasGroup.DOFade(1f, 0.2f))
+            .Join(dialoguePanel.transform
+                .DOScale(1f, 0.25f)
+                .SetEase(Ease.OutBack));
+
         lines = new Queue<DialogueLine>(dialogue.lines);
         DisplayNextLine();
     }
+
 
     private void OnNextClicked()
     {
         if (isTyping)
         {
-            StopAllCoroutines();
+            StopCoroutine(typingCoroutine);
             dialogueText.text = currentFullSentence;
             isTyping = false;
         }
@@ -68,6 +89,7 @@ public class DialogueSystem : Singleton<DialogueSystem>
             DisplayNextLine();
         }
     }
+
 
     private void DisplayNextLine()
     {
@@ -81,16 +103,19 @@ public class DialogueSystem : Singleton<DialogueSystem>
         nameText.text = line.speakerName;
         currentFullSentence = line.sentence;
 
-        StopAllCoroutines();
-        StartCoroutine(TypeSentence(line.sentence));
+        if (typingCoroutine != null)
+            StopCoroutine(typingCoroutine);
+
+        typingCoroutine = StartCoroutine(TypeSentence(line.sentence));
     }
+
 
     IEnumerator TypeSentence(string sentence)
     {
         dialogueText.text = "";
         isTyping = true;
 
-        foreach (var letter in sentence.ToCharArray())
+        foreach (char letter in sentence)
         {
             dialogueText.text += letter;
             yield return new WaitForSeconds(0.02f);
@@ -99,12 +124,28 @@ public class DialogueSystem : Singleton<DialogueSystem>
         isTyping = false;
     }
 
+
     private void EndDialogue()
     {
-        dialoguePanel.SetActive(false);
-        onComplete?.Invoke();
-        onComplete = null;
+        if (typingCoroutine != null)
+            StopCoroutine(typingCoroutine);
+
+        openTween?.Kill();
+        closeTween?.Kill();
+
+        closeTween = DOTween.Sequence()
+            .Append(canvasGroup.DOFade(0f, 0.15f))
+            .Join(dialoguePanel.transform
+                .DOScale(0.9f, 0.15f))
+            .OnComplete(() =>
+            {
+                dialoguePanel.SetActive(false);
+                onComplete?.Invoke();
+                onComplete = null;
+            });
     }
+
+
 }
 
 // ===== Thêm enum trạng thái quest =====

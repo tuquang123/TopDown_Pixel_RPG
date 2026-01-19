@@ -231,6 +231,24 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     
     private void TryAttack()
     {
+        if (targetEnemy != null)
+        {
+            var enemy = targetEnemy.GetComponent<EnemyAI>();
+            if (enemy == null || enemy.IsDead)
+                return;
+        }
+        else if (targetDestructible != null)
+        {
+            var des = targetDestructible.GetComponent<DestructibleObject>();
+            if (des == null)
+                return;
+        }
+        else
+        {
+            return;
+        }
+
+        
         float finalAttackSpeed =
             stats.GetAttackSpeed() * GetWeaponAttackSpeedMultiplier();
 

@@ -7,6 +7,9 @@ public class UISettingController : BasePopup
     [SerializeField] private Slider bgmSlider;
     [SerializeField] private Slider sfxSlider;
 
+    private const string BGM_KEY = "BGM_VOLUME";
+    private const string SFX_KEY = "SFX_VOLUME";
+
     protected virtual void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>() 
@@ -17,14 +20,23 @@ public class UISettingController : BasePopup
         canvasGroup.blocksRaycasts = false;
 
         transform.localScale = Vector3.zero;
-
-        
     }
-
 
     private void Start()
     {
+        LoadVolume();
         InitSliders();
+    }
+
+    private void LoadVolume()
+    {
+        if (AudioManager.Instance == null) return;
+
+        float bgm = PlayerPrefs.GetFloat(BGM_KEY, 1f);
+        float sfx = PlayerPrefs.GetFloat(SFX_KEY, 1f);
+
+        AudioManager.Instance.bgmSource.volume = bgm;
+        AudioManager.Instance.sfxSource.volume = sfx;
     }
 
     private void InitSliders()
@@ -33,24 +45,22 @@ public class UISettingController : BasePopup
 
         if (bgmSlider != null)
         {
-            bgmSlider.value = AudioManager.Instance.bgmSource.volume;
+            bgmSlider.SetValueWithoutNotify(AudioManager.Instance.bgmSource.volume);
             bgmSlider.onValueChanged.AddListener(SetBGMVolume);
         }
 
         if (sfxSlider != null)
         {
-            sfxSlider.value = AudioManager.Instance.sfxSource.volume;
+            sfxSlider.SetValueWithoutNotify(AudioManager.Instance.sfxSource.volume);
             sfxSlider.onValueChanged.AddListener(SetSFXVolume);
         }
     }
 
-    // Button OPEN Setting gọi hàm này
     public void OpenSetting()
     {
         Show();
     }
 
-    // Button CLOSE Setting gọi hàm này
     public void CloseSetting()
     {
         Hide();
@@ -58,13 +68,19 @@ public class UISettingController : BasePopup
 
     private void SetBGMVolume(float value)
     {
-        if (AudioManager.Instance?.bgmSource != null)
-            AudioManager.Instance.bgmSource.volume = value;
+        if (AudioManager.Instance?.bgmSource == null) return;
+
+        AudioManager.Instance.bgmSource.volume = value;
+        PlayerPrefs.SetFloat(BGM_KEY, value);
+        PlayerPrefs.Save();
     }
 
     private void SetSFXVolume(float value)
     {
-        if (AudioManager.Instance?.sfxSource != null)
-            AudioManager.Instance.sfxSource.volume = value;
+        if (AudioManager.Instance?.sfxSource == null) return;
+
+        AudioManager.Instance.sfxSource.volume = value;
+        PlayerPrefs.SetFloat(SFX_KEY, value);
+        PlayerPrefs.Save();
     }
 }
