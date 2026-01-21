@@ -130,9 +130,13 @@ public class ShopUI : BasePopup
 
     public void FilterShop(ItemType? type)
     {
-        currentFilterType = type; // 🔥 CHỐT STATE TẠI ĐÂY
+        currentFilterType = type;
 
-        var filteredItems = ItemFilter.FilterByType(allShopItems, type);
+        var filteredItems = ItemFilter.FilterByType(allShopItems, type)
+            .OrderBy(i => i.tier)        // 🔥 cùi → vip
+            .ThenBy(i => i.price)        // cùng tier thì rẻ trước
+            .ToList();
+
         SetupShop(filteredItems);
     }
 

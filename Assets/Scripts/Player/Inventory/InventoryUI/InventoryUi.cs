@@ -105,14 +105,16 @@ public class InventoryUI : BasePopup
             return items.Where(i => i.itemData.itemType == type).ToList();
         }
     }
-
     public void FilterInventory(ItemType? type)
     {
-        // Xóa UI hiện tại
         foreach (Transform child in itemContainer)
             Destroy(child.gameObject);
 
-        var filteredItems = ItemFilter.FilterInventoryByType(inventory.items, type);
+        var filteredItems = ItemFilter
+            .FilterInventoryByType(inventory.items, type)
+            .OrderBy(i => i.itemData.tier)     // 🔥 cùi → vip
+            .ThenBy(i => i.itemData.price)     // cùng tier → rẻ trước
+            .ToList();
 
         foreach (ItemInstance item in filteredItems)
         {
@@ -123,6 +125,7 @@ public class InventoryUI : BasePopup
         itemDetailPanel.Hide();
         currentSelectedItem = null;
     }
+    
 
     #endregion
 

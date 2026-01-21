@@ -46,56 +46,69 @@ public class SkillDetailPanel : MonoBehaviour
         currentSkill = skillData;
         skillSystem = system;
 
-        // ===== RESET UI =====
+        RefreshUI();        // chỉ update nội dung
+        HookButtons();
+        PlayOpenAnimation(); // chỉ chạy khi mở panel lần đầu
+    }
+    private void RefreshUI()
+    {
         ResetLockState();
 
-        // ===== BASIC INFO =====
-        skillPointText.text = $"Skill Point : {PlayerStats.Instance.skillPoints}";
+        int skillPoint = PlayerStats.Instance.skillPoints;
+        int currentLevel = skillSystem.GetSkillLevel(currentSkill.skillID);
+        bool hasSkillPoint = skillPoint > 0;
+        bool isUnlocked = currentLevel > 0;
+        bool isMaxLevel = currentLevel >= currentSkill.maxLevel;
+        bool isActive = currentSkill.skillType == SkillType.Active;
+
+        skillPointText.text = $"Skill Point : {skillPoint}";
         nameText.text = currentSkill.skillName;
         iconImage.sprite = currentSkill.icon;
 
-        int currentLevel = skillSystem.GetSkillLevel(currentSkill.skillID);
         levelText.text = $"Level: {currentLevel}/{currentSkill.maxLevel}";
         descriptionText.text = BuildDescription(currentLevel);
 
-        // ===== STATE =====
-        bool isUnlocked = currentLevel > 0;
-        bool canLearn = skillSystem.CanUnlockSkill(currentSkill.skillID);
-        bool canUpgrade = currentLevel < currentSkill.maxLevel;
-        bool isActive = currentSkill.skillType == SkillType.Active;
-
-        // ===== UI LOGIC =====
         if (!isUnlocked)
         {
-            // 🔒 CHƯA HỌC
             dimImage.enabled = true;
             lockRoot.SetActive(true);
 
-            if (canLearn)
+            if (hasSkillPoint)
             {
                 learnButton.gameObject.SetActive(true);
+                learnButton.interactable = true;
                 learnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Learn";
             }
         }
         else
         {
-            // 🔓 ĐÃ HỌC
             dimImage.enabled = false;
             lockRoot.SetActive(false);
 
-            if (canUpgrade)
+            if (!isMaxLevel && hasSkillPoint)
             {
                 learnButton.gameObject.SetActive(true);
+                learnButton.interactable = true;
                 learnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Upgrade";
             }
 
             if (isActive)
                 assignButton.gameObject.SetActive(true);
         }
+    }
 
-        HookButtons();
-        PlayOpenAnimation();
 
+    private void ResetLockState()
+    {
+        lockRoot.SetActive(false);
+
+        learnButton.gameObject.SetActive(false);
+        learnButton.interactable = true; // 🔴 QUAN TRỌNG
+
+        assignButton.gameObject.SetActive(false);
+
+        if (dimImage != null)
+            dimImage.enabled = false;
     }
 
 
@@ -157,8 +170,13 @@ public class SkillDetailPanel : MonoBehaviour
 
     private void OnClickLearn()
     {
+        learnButton.interactable = false;
+
         if (!skillSystem.UnlockSkill(currentSkill.skillID))
+        {
+            learnButton.interactable = true;
             return;
+        }
 
         skillSystem.DecrementSkillPoint();
 
@@ -166,8 +184,11 @@ public class SkillDetailPanel : MonoBehaviour
             skillSystem.UseSkill(currentSkill.skillID);
 
         OnSkillChanged?.Invoke();
-        Setup(currentSkill, skillSystem);
+
+        RefreshUI();   // ✅ chỉ update UI, KHÔNG animation, KHÔNG reset panel
     }
+
+
 
 
 
@@ -179,15 +200,7 @@ public class SkillDetailPanel : MonoBehaviour
     // =========================
     // LOCK STATE
     // =========================
-    private void ResetLockState()
-    {
-        lockRoot.SetActive(false);
-        learnButton.gameObject.SetActive(false);
-        assignButton.gameObject.SetActive(false);
-
-        if (dimImage != null)
-            dimImage.enabled = false; // mặc định sáng
-    }
+  
 
     private void ShowLocked()
     {

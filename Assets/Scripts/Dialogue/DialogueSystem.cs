@@ -26,6 +26,9 @@ public class DialogueSystem : Singleton<DialogueSystem>
     private string currentFullSentence = "";
     private System.Action onComplete;
     private Coroutine typingCoroutine;
+[Header("Animation")]
+[SerializeField] private RectTransform dialogContent;
+[SerializeField] private CanvasGroup dialogCanvasGroup;
 
     private void Start()
     {
@@ -53,27 +56,26 @@ public class DialogueSystem : Singleton<DialogueSystem>
 
 
     
-    // ===== Nội bộ xử lý thoại =====
-    private void StartDialogue(Dialogue dialogue)
-    {
-        dialoguePanel.SetActive(true);
+  private void StartDialogue(Dialogue dialogue)
+  {
+      dialoguePanel.SetActive(true);
+  
+      openTween?.Kill();
+      closeTween?.Kill();
+  
+      dialogCanvasGroup.alpha = 0f;
+      dialogContent.localScale = Vector3.one * 0.9f;
+  
+      openTween = DOTween.Sequence()
+          .Append(dialogCanvasGroup.DOFade(1f, 0.2f))
+          .Join(dialogContent
+              .DOScale(1f, 0.25f)
+              .SetEase(Ease.OutBack));
+  
+      lines = new Queue<DialogueLine>(dialogue.lines);
+      DisplayNextLine();
+  }
 
-        // reset
-        openTween?.Kill();
-        closeTween?.Kill();
-
-        canvasGroup.alpha = 0f;
-        dialoguePanel.transform.localScale = Vector3.one * 0.9f;
-
-        openTween = DOTween.Sequence()
-            .Append(canvasGroup.DOFade(1f, 0.2f))
-            .Join(dialoguePanel.transform
-                .DOScale(1f, 0.25f)
-                .SetEase(Ease.OutBack));
-
-        lines = new Queue<DialogueLine>(dialogue.lines);
-        DisplayNextLine();
-    }
 
 
     private void OnNextClicked()
@@ -125,25 +127,22 @@ public class DialogueSystem : Singleton<DialogueSystem>
     }
 
 
-    private void EndDialogue()
-    {
-        if (typingCoroutine != null)
-            StopCoroutine(typingCoroutine);
+  private void EndDialogue()
+  {
+      openTween?.Kill();
+      closeTween?.Kill();
+  
+      closeTween = DOTween.Sequence()
+          .Append(dialogCanvasGroup.DOFade(0f, 0.15f))
+          .Join(dialogContent.DOScale(0.9f, 0.15f))
+          .OnComplete(() =>
+          {
+              dialoguePanel.SetActive(false);
+              onComplete?.Invoke();
+              onComplete = null;
+          });
+  }
 
-        openTween?.Kill();
-        closeTween?.Kill();
-
-        closeTween = DOTween.Sequence()
-            .Append(canvasGroup.DOFade(0f, 0.15f))
-            .Join(dialoguePanel.transform
-                .DOScale(0.9f, 0.15f))
-            .OnComplete(() =>
-            {
-                dialoguePanel.SetActive(false);
-                onComplete?.Invoke();
-                onComplete = null;
-            });
-    }
 
 
 }
