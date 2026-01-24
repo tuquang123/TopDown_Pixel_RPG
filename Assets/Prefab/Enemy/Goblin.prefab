@@ -401,7 +401,7 @@ MonoBehaviour:
   timeDieDelay: 0.65
   rangedHitThreshold: 3
   rangedHitWindow: 2
-  requireHitToAggro: 1
+  requireHitToAggro: 0
   isBoss: 0
   goldRange: {x: 0, y: 1}
   dropItems:
@@ -412,11 +412,11 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: a0409bc12a82a4f4a99677d3a01de88a, type: 2}
   isHoldingSpear: 0
   infoYOffset: 1.8
-  enablePatrol: 0
+  dropRate: 0.1
+  enablePatrol: 1
   patrolRadius: 3
   patrolWaitTime: 2
   exp: 3
-  dropRate: 0.1
 --- !u!114 &-8244477202541570080
 MonoBehaviour:
   m_ObjectHideFlags: 0

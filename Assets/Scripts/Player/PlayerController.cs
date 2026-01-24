@@ -234,8 +234,9 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         if (targetEnemy != null)
         {
             var enemy = targetEnemy.GetComponent<EnemyAI>();
-            if (enemy == null || enemy.IsDead)
+            if (enemy == null || enemy.IsDead || enemy.CurrentHealth <= 0)
                 return;
+
         }
         else if (targetDestructible != null)
         {
@@ -324,8 +325,6 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
 
             if (isCrit)
                 damage = Mathf.RoundToInt(damage * 1.5f);
-
-            if (enemy.IsDead) return; 
             
             enemy.TakeDamage(damage, isCrit);
             

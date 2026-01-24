@@ -477,11 +477,6 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         
-        if (EnemyInfoPopupUI.Instance != null)
-            EnemyInfoPopupUI.Instance.Refresh();
-
-        enemyHealthUI?.UpdateHealth(currentHealth);
-
         // 🔥 UPDATE POPUP
         if (EnemyInfoPopupUI.Instance != null)
             EnemyInfoPopupUI.Instance.Refresh();
@@ -492,8 +487,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         RegisterRangedPressure();
         isAggro = true;
 
-        if (!skipHurtAnimation)
-            anim.SetTrigger(DamagedTrigger);
+        if (!skipHurtAnimation) anim.SetTrigger(DamagedTrigger);
 
         isTakingDamage = true;
 
@@ -562,7 +556,17 @@ public class EnemyAI : MonoBehaviour, IDamageable
         NotifySystemsBeforeDrop();
         HandleDrops();
         NotifySystemsAfterDrop();
-        StartCoroutine(DelayDeactivate());
+        Destroy(gameObject);
+        if (CommonReferent.Instance.destructionVFXPrefab != null)
+        {
+            ObjectPooler.Instance.Get(
+                "BreakVFX",
+                CommonReferent.Instance.destructionVFXPrefab,
+                transform.position,
+                Quaternion.identity
+            );
+        }
+        //StartCoroutine(DelayDeactivate());
     }
 
     protected virtual void HandleDieAnimation()
