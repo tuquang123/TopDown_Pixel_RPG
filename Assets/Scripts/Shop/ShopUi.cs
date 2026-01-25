@@ -5,47 +5,46 @@ using UnityEngine;
 public class ShopUI : BasePopup
 {
     [Header("UI")]
-    public GameObject itemUIPrefab;
-    public Transform contentParent;
-    public ShopDetailPopup detailPopup;
-    private ItemType? currentFilterType = null;
-    private bool isFirstShow = true;
+    [SerializeField] private ShopItemUI itemUIPrefab;
+    [SerializeField] private Transform contentParent;
+    [SerializeField] private ShopDetailPopup detailPopup;
+
+    [Header("Filter Buttons")]
+    [SerializeField] private List<FilterButtonUI> filterButtons = new();
 
     [Header("Data")]
     public Inventory playerInventory;
     public InventoryUI inventoryUI;
     public List<ItemData> allShopItems = new();
 
-    private readonly List<ShopItemUI> shopItemUIs = new();
+    // ================= INTERNAL =================
+    private readonly List<ShopItemUI> activeUIs = new();
+    private readonly Queue<ShopItemUI> pool = new();
 
-    // ================= FILTER HIGHLIGHT =================
-    [Header("Filter Buttons")]
-    public List<FilterButtonUI> filterButtons = new();
-
+    private ItemType? currentFilterType = null;
     private FilterButtonUI currentFilter;
-    // ====================================================
+    private bool isBuilt = false;
+    
+    public ShopDetailPopup DetailPopupUI => detailPopup;
 
-    #region SHOW
+    #region SHOW / HIDE
 
     public override void Show()
     {
         base.Show();
         detailPopup?.Setup(this);
 
-        if (isFirstShow)
+        if (!isBuilt)
         {
-            isFirstShow = false;
-
+            isBuilt = true;
             SelectFilter(filterButtons[0]);
-            FilterShop(null); // 🔥 CHUẨN
+            ApplyFilter(null);
         }
         else
         {
-            FilterShop(currentFilterType);
+            ApplyFilter(currentFilterType);
         }
     }
-
-
 
     #endregion
 
@@ -60,126 +59,127 @@ public class ShopUI : BasePopup
             currentFilter.SetSelected(false);
 
         currentFilter = btn;
-
-        if (currentFilter != null)
-            currentFilter.SetSelected(true);
+        currentFilter.SetSelected(true);
     }
 
     public void OnFilterAll(FilterButtonUI btn)
     {
-        SelectFilter(btn);          // (1)
-        currentFilterType = null;   // (2) ALL = null
-        FilterShop(null);           // (3)
+        SelectFilter(btn);
+        ApplyFilter(null);
     }
-
 
     public void OnFilterWeapon(FilterButtonUI btn)
     {
-        SelectFilter(btn);                  // (1) Highlight nút
-        currentFilterType = ItemType.Weapon; // (2) Lưu filter
-        FilterShop(currentFilterType);       // (3) Apply filter
+        SelectFilter(btn);
+        ApplyFilter(ItemType.Weapon);
     }
-
 
     public void OnFilterHelmet(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        currentFilterType = ItemType.Helmet;
-        FilterShop(currentFilterType);
+        ApplyFilter(ItemType.Helmet);
     }
 
     public void OnFilterBoots(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        currentFilterType = ItemType.Boots;
-        FilterShop(currentFilterType);
+        ApplyFilter(ItemType.Boots);
     }
+
     public void OnFilterArmor(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        currentFilterType = ItemType.SpecialArmor;
-        FilterShop(currentFilterType);
+        ApplyFilter(ItemType.SpecialArmor);
     }
 
     public void OnFilterBody(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        currentFilterType = ItemType.Clother;
-        FilterShop(currentFilterType);
+        ApplyFilter(ItemType.Clother);
     }
+
     public void OnFilterPet(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        currentFilterType = ItemType.Horse;
-        FilterShop(currentFilterType);
+        ApplyFilter(ItemType.Horse);
     }
 
     public void OnFilterHair(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        currentFilterType = ItemType.Hair;
-        FilterShop(currentFilterType);
+        ApplyFilter(ItemType.Hair);
     }
 
     public void OnFilterCloak(FilterButtonUI btn)
     {
         SelectFilter(btn);
-        currentFilterType = ItemType.Cloak;
-        FilterShop(currentFilterType);
-    }
-
-    public void FilterShop(ItemType? type)
-    {
-        currentFilterType = type;
-
-        var filteredItems = ItemFilter.FilterByType(allShopItems, type)
-            .OrderBy(i => i.tier)        // 🔥 cùi → vip
-            .ThenBy(i => i.price)        // cùng tier thì rẻ trước
-            .ToList();
-
-        SetupShop(filteredItems);
+        ApplyFilter(ItemType.Cloak);
     }
 
     #endregion
 
-    #region SETUP SHOP
+    #region FILTER LOGIC
 
-    private void ClearShop()
+    private void ApplyFilter(ItemType? type)
     {
-        foreach (Transform child in contentParent)
-            Destroy(child.gameObject);
+        currentFilterType = type;
 
-        shopItemUIs.Clear();
+        var filteredItems = ItemFilter.FilterByType(allShopItems, type)
+            .OrderBy(i => i.tier)
+            .ThenBy(i => i.price)
+            .Where(i => !IsItemOwned(i))
+            .ToList();
+
+        BuildShop(filteredItems);
     }
 
-    private bool IsItemOwned(ItemData data)
-    {
-        return playerInventory.items.Any(i => i.itemData.itemID == data.itemID);
-    }
+    #endregion
 
-    public void SetupShop(List<ItemData> items)
+    #region SHOP BUILD (POOL BASED)
+
+    public void BuildShop(List<ItemData> items)
     {
-        ClearShop();
+        ReleaseAll();
 
         if (items == null || items.Count == 0)
             return;
 
-        foreach (var item in items)
+        for (int i = 0; i < items.Count; i++)
         {
-            if (item == null)
+            var data = items[i];
+            if (data == null)
                 continue;
 
-            if (IsItemOwned(item))
-                continue;
+            var ui = GetUI();
+            ui.transform.SetParent(contentParent, false);
+            ui.gameObject.SetActive(true);
 
-            var uiObj = Instantiate(itemUIPrefab, contentParent);
-            var shopItemUI = uiObj.GetComponent<ShopItemUI>();
+            var instance = new ItemInstance(data);
+            ui.Setup(instance, this);
 
-            var tempInstance = new ItemInstance(item);
-            shopItemUI.Setup(tempInstance, this);
-
-            shopItemUIs.Add(shopItemUI);
+            activeUIs.Add(ui);
         }
+    }
+
+    private void ReleaseAll()
+    {
+        for (int i = 0; i < activeUIs.Count; i++)
+        {
+            var ui = activeUIs[i];
+            ui.gameObject.SetActive(false);
+            pool.Enqueue(ui);
+        }
+        activeUIs.Clear();
+    }
+
+    private ShopItemUI GetUI()
+    {
+        if (pool.Count > 0)
+            return pool.Dequeue();
+
+        var ui = Instantiate(itemUIPrefab, contentParent);
+        ui.gameObject.SetActive(false);
+        return ui;
     }
 
     #endregion
@@ -205,12 +205,20 @@ public class ShopUI : BasePopup
         playerInventory.AddItem(new ItemInstance(data));
         inventoryUI.UpdateInventoryUI();
 
-        // 🔥 GIỮ FILTER
-        FilterShop(currentFilterType);
+        // 🔥 giữ filter hiện tại
+        ApplyFilter(currentFilterType);
 
         GameEvents.OnShowToast.Raise("Success purchase Item!");
     }
 
+    #endregion
+
+    #region UTIL
+
+    private bool IsItemOwned(ItemData data)
+    {
+        return playerInventory.items.Any(i => i.itemData.itemID == data.itemID);
+    }
 
     #endregion
 }

@@ -17,8 +17,9 @@ public class ShopDetailPopup : MonoBehaviour
     public Button buyButton;
     public Button cancelButton;
     public StatDisplayComponent statDisplayComponent;
-private Tween openTween;
-private Tween closeTween;
+    private Tween openTween;
+    private Tween closeTween;
+    
     [Header("Weapon Info")]
     public TMP_Text weaponRangeText;
 

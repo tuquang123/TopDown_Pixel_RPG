@@ -67,7 +67,6 @@ public class NPCShopTrigger : MonoBehaviour
         if (shopUI != null)
         {
             shopUI.Show();
-            shopUI.SetupShop(shopItems);
         }
     }
 
