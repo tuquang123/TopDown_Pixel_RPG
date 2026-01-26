@@ -3,81 +3,127 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
+public enum PopupType
+{
+    Shop,
+    Inventory,
+    Settings,
+    Stats,
+    Skill
+}
+    
+[Serializable]
+public class PopupEntry
+{
+    public PopupType type;
+    public BasePopup prefab;
+}
+
 public class UIManager : Singleton<UIManager>
 {
-    private Dictionary<Type, BasePopup> popupTypeDict = new();
+    [Header("Blur Background")]
     [SerializeField] private GameObject blurBG;
-    
+
+    [Header("Popup Prefabs")]
+    [SerializeField] private List<PopupEntry> popupEntries;
+
+    // popupType -> prefab
+    private Dictionary<PopupType, BasePopup> popupPrefabDict = new();
+
+    // popupType -> instance đang mở
+    private Dictionary<PopupType, BasePopup> activePopups = new();
+
     protected override void Awake()
     {
         base.Awake();
-        
-        var popups = GetComponentsInChildren<BasePopup>(true);
-        foreach (var popup in popups)
+
+        popupPrefabDict.Clear();
+        activePopups.Clear();
+
+        foreach (var entry in popupEntries)
         {
-            popupTypeDict[popup.GetType()] = popup;
+            if (entry.prefab == null) continue;
+
+            if (!popupPrefabDict.ContainsKey(entry.type))
+            {
+                popupPrefabDict.Add(entry.type, entry.prefab);
+            }
         }
+
+        UpdateBlurState();
     }
+
+    // ================== SHOW ==================
+
+    public void ShowPopupByType(PopupType type)
+    {
+        // đã mở rồi thì không mở lại
+        if (activePopups.ContainsKey(type))
+            return;
+
+        if (!popupPrefabDict.TryGetValue(type, out var prefab))
+        {
+            Debug.LogWarning($"[UIManager] Không tìm thấy prefab cho popup: {type}");
+            return;
+        }
+
+        var instance = Instantiate(prefab, transform);
+        activePopups[type] = instance;
+
+        instance.Show();
+        UpdateBlurState();
+    }
+
+    // ================== HIDE ==================
+
+    public void HidePopupByType(PopupType type)
+    {
+        if (!activePopups.TryGetValue(type, out var popup))
+            return;
+
+        popup.Hide(); // popup tự Destroy
+        activePopups.Remove(type);
+
+        UpdateBlurState();
+    }
+
+    public void HideAllPopups()
+    {
+        foreach (var popup in activePopups.Values)
+        {
+            if (popup != null)
+                popup.Hide();
+        }
+
+        activePopups.Clear();
+        UpdateBlurState();
+    }
+
+    // ================== CHECK ==================
+
+    public bool IsPopupOpen(PopupType type)
+    {
+        return activePopups.ContainsKey(type);
+    }
+
+    public bool HasAnyPopupOpen()
+    {
+        return activePopups.Count > 0;
+    }
+
+    // ================== BLUR ==================
+
     public void UpdateBlurState()
     {
         if (blurBG == null) return;
 
-        bool anyActive = false;
-        foreach (var popup in popupTypeDict.Values)
-        {
-            if (popup.gameObject.activeSelf)
-            {
-                anyActive = true;
-                break;
-            }
-        }
+        bool anyPopupOpen = activePopups.Count > 0;
+        blurBG.SetActive(anyPopupOpen);
 
-        blurBG.SetActive(anyActive);
-        
-         if (blurBG.TryGetComponent(out CanvasGroup cg))
-         {
-             cg.DOFade(anyActive ? .5f : 0f, 0.15f);
-         }
-    }
-
-
-    public void ShowPopup<T>() where T : BasePopup
-    {
-        if (popupTypeDict.TryGetValue(typeof(T), out var popup))
+        if (blurBG.TryGetComponent(out CanvasGroup cg))
         {
-            popup.Show();
-        }
-        else
-        {
-            Debug.LogWarning($"[UIManager] Popup {typeof(T)} not found.");
-        }
-    }
-
-    public void HidePopup<T>() where T : BasePopup
-    {
-        if (popupTypeDict.TryGetValue(typeof(T), out var popup))
-        {
-            popup.Hide();
-        }
-        else
-        {
-            Debug.LogWarning($"[UIManager] Popup {typeof(T)} not found.");
-        }
-    }
-    
-    public T GetPopup<T>() where T : BasePopup
-    {
-        if (popupTypeDict.TryGetValue(typeof(T), out var popup))
-            return popup as T;
-
-        return null;
-    }
-    
-    public void HideAllPopups()
-    {
-        foreach (var popup in popupTypeDict.Values)
-        {
-            popup.Hide();
+            cg.DOFade(anyPopupOpen ? 0.5f : 0f, 0.15f)
+              .SetUpdate(true);
         }
     }
 }

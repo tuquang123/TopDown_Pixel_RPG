@@ -2,34 +2,50 @@
 
 public class UIButtonPopupLink : MonoBehaviour
 {
-    [SerializeField] private BasePopup targetPopup;
+    [Header("Popup")]
+    [SerializeField] private PopupType popupType;
+
+    [Header("Options")]
     [SerializeField] private bool hideOthers = false;
 
+    /// <summary>
+    /// Mở popup
+    /// </summary>
     public void Open()
     {
         if (hideOthers)
+        {
             UIManager.Instance.HideAllPopups();
+        }
 
-        targetPopup?.Show();
+        UIManager.Instance.ShowPopupByType(popupType);
     }
 
+    /// <summary>
+    /// Đóng popup
+    /// </summary>
     public void Close()
     {
-        targetPopup?.Hide();
+        UIManager.Instance.HidePopupByType(popupType);
     }
 
+    /// <summary>
+    /// Bật / tắt popup
+    /// </summary>
     public void Toggle()
     {
-        if (targetPopup == null) return;
-
-        if (targetPopup.gameObject.activeSelf)
-            targetPopup.Hide();
+        if (UIManager.Instance.IsPopupOpen(popupType))
+        {
+            UIManager.Instance.HidePopupByType(popupType);
+        }
         else
         {
             if (hideOthers)
+            {
                 UIManager.Instance.HideAllPopups();
+            }
 
-            targetPopup.Show();
+            UIManager.Instance.ShowPopupByType(popupType);
         }
     }
 }

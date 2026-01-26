@@ -90,7 +90,7 @@ public class Equipment : MonoBehaviour
             stats.Consume(instance.itemData);
 
             // Trừ khỏi inventory
-            inventoryUI.inventory.RemoveItem(instance);
+            inventoryUI.Inventory.RemoveItem(instance);
             inventoryUI.UpdateInventoryUI();
             return;
         }

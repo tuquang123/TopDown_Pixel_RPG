@@ -13,8 +13,8 @@ public class ShopUI : BasePopup
     [SerializeField] private List<FilterButtonUI> filterButtons = new();
 
     [Header("Data")]
-    public Inventory playerInventory;
-    public InventoryUI inventoryUI;
+    Inventory playerInventory;
+    InventoryUI inventoryUI;
     public List<ItemData> allShopItems = new();
 
     // ================= INTERNAL =================
@@ -26,6 +26,7 @@ public class ShopUI : BasePopup
     private bool isBuilt = false;
     
     public ShopDetailPopup DetailPopupUI => detailPopup;
+    public Inventory PlayerInventory => playerInventory;
 
     #region SHOW / HIDE
 
@@ -33,7 +34,9 @@ public class ShopUI : BasePopup
     {
         base.Show();
         detailPopup?.Setup(this);
-
+        playerInventory = CommonReferent.Instance.playerPrefab.GetComponent<Inventory>();
+        inventoryUI = CommonReferent.Instance.inventoryUI;
+            
         if (!isBuilt)
         {
             isBuilt = true;
@@ -44,6 +47,11 @@ public class ShopUI : BasePopup
         {
             ApplyFilter(currentFilterType);
         }
+    }
+    
+    public void Close()
+    {
+            UIManager.Instance.HidePopupByType(PopupType.Shop);
     }
 
     #endregion

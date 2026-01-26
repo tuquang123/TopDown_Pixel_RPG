@@ -3399,9 +3399,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02a3c1943eec4d95a98053f1541cc454, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  equipmentManager: {fileID: 0}
   inventoryUI: {fileID: 2876455384403315936}
-  playerStats: {fileID: 0}
   weaponSlot: {fileID: 8712131043228269949}
   armorSlot: {fileID: 7014745787491033880}
   helmetSlot: {fileID: 6595142154816307339}
@@ -9104,7 +9102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b8783363067ea49b8d91075137b796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPopup: {fileID: 0}
+  popupType: 0
   hideOthers: 0
 --- !u!1 &4334311385852448971
 GameObject:
@@ -9350,7 +9348,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b8783363067ea49b8d91075137b796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPopup: {fileID: 0}
+  popupType: 0
   hideOthers: 0
 --- !u!1 &4449856429815113897
 GameObject:
@@ -10090,7 +10088,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b8783363067ea49b8d91075137b796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPopup: {fileID: 0}
+  popupType: 0
   hideOthers: 0
 --- !u!1 &4901140208341255349
 GameObject:
@@ -13289,7 +13287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b8783363067ea49b8d91075137b796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPopup: {fileID: 0}
+  popupType: 0
   hideOthers: 0
 --- !u!1 &6090673224097639849
 GameObject:
@@ -13529,7 +13527,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b8783363067ea49b8d91075137b796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPopup: {fileID: 0}
+  popupType: 0
   hideOthers: 0
 --- !u!1 &6174727614062258167
 GameObject:
@@ -17025,7 +17023,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b8783363067ea49b8d91075137b796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPopup: {fileID: 0}
+  popupType: 0
   hideOthers: 0
 --- !u!1 &7530213614513210673
 GameObject:
@@ -18342,7 +18340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b8783363067ea49b8d91075137b796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPopup: {fileID: 0}
+  popupType: 0
   hideOthers: 0
 --- !u!1 &7839492204714536490
 GameObject:
@@ -18358,7 +18356,7 @@ GameObject:
   - component: {fileID: 4650882485384695493}
   - component: {fileID: 2876455384403315936}
   m_Layer: 5
-  m_Name: InventoryUI
+  m_Name: -InventoryUI-
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18385,8 +18383,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -109.664566}
-  m_SizeDelta: {x: 1025.2812, y: 2116.061}
+  m_AnchoredPosition: {x: 0, y: 3.5}
+  m_SizeDelta: {x: 0, y: -423}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7579129722923850786
 CanvasRenderer:
@@ -18434,7 +18432,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7839492204714536490}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -18451,11 +18449,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemContainer: {fileID: 4857175897262127593}
-  inventory: {fileID: 0}
   itemPrefab: {fileID: 2931907725555971704, guid: 34af2d254f2a3454aaf34ec04d2c467f, type: 3}
   equipmentUi: {fileID: 6923758885556296286}
   itemDetailPanel: {fileID: 1512733289651490210}
-  filterButtons: []
+  filterButtons:
+  - {fileID: 1521783499203829847}
+  - {fileID: 4479853784971894116}
+  - {fileID: 4596021502426223351}
+  - {fileID: 8907092877909783024}
+  - {fileID: 1154228680666687433}
+  - {fileID: 8555382397234549154}
+  - {fileID: 8495295568622076291}
+  - {fileID: 9136899837121710470}
+  - {fileID: 6954004237078748522}
 --- !u!1 &7848890711606352966
 GameObject:
   m_ObjectHideFlags: 0
@@ -19590,7 +19596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b8783363067ea49b8d91075137b796, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPopup: {fileID: 0}
+  popupType: 0
   hideOthers: 0
 --- !u!1 &8190190429566799096
 GameObject:
@@ -19794,7 +19800,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 5036069817503040640}
   m_Direction: 2
   m_Value: 1
-  m_Size: 1
+  m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -6,7 +6,7 @@ public class InventoryUI : BasePopup
 {
     [Header("Inventory UI")]
     public Transform itemContainer;
-    public Inventory inventory;
+    Inventory inventory;
     public GameObject itemPrefab;
     public EquipmentUI equipmentUi;
     public ItemDetailPanel itemDetailPanel;
@@ -16,6 +16,8 @@ public class InventoryUI : BasePopup
     private FilterButtonUI currentFilter;
 
     private ItemUI currentSelectedItem;
+    
+    public Inventory Inventory => inventory;
 
     #region FILTER LOGIC
 
@@ -151,6 +153,8 @@ public class InventoryUI : BasePopup
     public override void Show()
     {
         base.Show();
+
+        inventory = CommonReferent.Instance.playerPrefab.GetComponent<Inventory>();
 
         UpdateInventoryUI();
 

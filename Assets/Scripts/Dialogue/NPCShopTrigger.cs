@@ -63,13 +63,10 @@ public class NPCShopTrigger : MonoBehaviour
 
     private void OpenShop()
     {
-        var shopUI = UIManager.Instance.GetPopup<ShopUI>();
-        if (shopUI != null)
-        {
-            shopUI.Show();
-        }
+        UIManager.Instance.ShowPopupByType(PopupType.Shop);
     }
 
+    
     public void SetTarget(GameObject npc)
     {
         targetNPC = npc;

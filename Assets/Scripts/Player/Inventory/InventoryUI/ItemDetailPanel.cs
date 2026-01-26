@@ -24,8 +24,8 @@ public class ItemDetailPanel : MonoBehaviour
     public TMP_Text weaponCategoryText;
     [Header("Animation")]
     public float animDuration = 0.25f;
-private Tween openTween;
-private Tween closeTween;
+    private Tween openTween;
+    private Tween closeTween;
     private CanvasGroup canvasGroup;
    
     
@@ -47,7 +47,7 @@ private Tween closeTween;
         int goldEarned = CalculateSellPrice(currentItem);
         CurrencyManager.Instance.AddGold(goldEarned);
 
-        if (inventoryUI.inventory.RemoveItem(currentItem))
+        if (inventoryUI.Inventory.RemoveItem(currentItem))
         {
             inventoryUI.UpdateInventoryUI();
         }
@@ -215,7 +215,7 @@ private Tween closeTween;
             playerStats.Consume(currentItem.itemData);
         }
 
-        if (inventoryUI.inventory.RemoveItem(currentItem))
+        if (inventoryUI.Inventory.RemoveItem(currentItem))
         {
             inventoryUI.UpdateInventoryUI();
         }
@@ -248,7 +248,7 @@ private Tween closeTween;
         {
             inventoryUI.equipmentUi.EquipItem(currentItem);
 
-            if (inventoryUI.inventory.RemoveItem(currentItem))
+            if (inventoryUI.Inventory.RemoveItem(currentItem))
             {
                 inventoryUI.UpdateInventoryUI();
             }

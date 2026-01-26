@@ -52,14 +52,14 @@ public class ShopItemUI : MonoBehaviour
 
     private void UpdateButtonState(int gold)
     {
-        if (itemInstance == null || itemInstance.itemData == null || shopUI == null || shopUI.playerInventory == null) 
+        if (itemInstance == null || itemInstance.itemData == null || shopUI == null || shopUI.PlayerInventory == null) 
             return;
 
         var data = itemInstance.itemData;
         bool isPurchased = false;
 
         // ✔ check trong inventory
-        foreach (var invItem in shopUI.playerInventory.items)
+        foreach (var invItem in shopUI.PlayerInventory.items)
         {
             if (invItem == null || invItem.itemData == null) continue;
             if (invItem.itemData.itemID == data.itemID)
@@ -72,7 +72,7 @@ public class ShopItemUI : MonoBehaviour
         // ✔ check trong equipment
         if (!isPurchased)
         {
-            var equipment = shopUI.playerInventory.GetComponent<Equipment>();
+            var equipment = shopUI.PlayerInventory.GetComponent<Equipment>();
             if (equipment != null)
             {
                 foreach (var kvp in equipment.equippedItems)

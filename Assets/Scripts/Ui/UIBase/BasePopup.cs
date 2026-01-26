@@ -19,36 +19,29 @@ public class BasePopup : MonoBehaviour
         canvasGroup.blocksRaycasts = false;
 
         transform.localScale = Vector3.zero;
-        gameObject.SetActive(false);
     }
 
     public virtual void Show()
     {
-        gameObject.SetActive(true);
-
-        Time.timeScale = 0f; // ⛔ PAUSE GAME
+        Time.timeScale = 0f; // pause game
 
         fadeTween?.Kill();
         scaleTween?.Kill();
 
-        canvasGroup.alpha = 0f;
-        transform.localScale = Vector3.zero;
-
         fadeTween = canvasGroup
             .DOFade(1f, 0.2f)
-            .SetUpdate(true); // ✅ ignore timescale
+            .SetUpdate(true);
 
         scaleTween = transform
             .DOScale(Vector3.one, 0.25f)
             .SetEase(Ease.OutBack)
-            .SetUpdate(true); // ✅ ignore timescale
+            .SetUpdate(true);
 
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
 
         UIManager.Instance?.UpdateBlurState();
     }
-
 
     public virtual void Hide()
     {
@@ -65,13 +58,9 @@ public class BasePopup : MonoBehaviour
             .SetUpdate(true)
             .OnComplete(() =>
             {
-                canvasGroup.interactable = false;
-                canvasGroup.blocksRaycasts = false;
-                gameObject.SetActive(false);
-
-                Time.timeScale = 1f; // ▶ RESUME GAME
+                Time.timeScale = 1f; // resume game
                 UIManager.Instance?.UpdateBlurState();
+                Destroy(gameObject); // 🔥 destroy popup
             });
     }
-
 }

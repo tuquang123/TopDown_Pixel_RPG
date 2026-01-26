@@ -6,7 +6,7 @@ public class SkillUIController : BasePopup
 {
     public GameObject skillButtonPrefab;
     public Transform skillListContainer;
-    public SkillSystem skillSystem;
+    SkillSystem skillSystem;
     public SkillDetailPanel skillDetailPanel;
     [SerializeField] private ScrollRect scrollRect;
 
@@ -24,6 +24,7 @@ public class SkillUIController : BasePopup
     public override void Show()
     {
         base.Show();
+        skillSystem = CommonReferent.Instance.playerPrefab.GetComponent<SkillSystem>();
         RefreshSkillButtons();
         skillDetailPanel.Hide();
         StartCoroutine(ResetScrollPositionDelayed());

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 public class EquipmentUI : MonoBehaviour
 {
-    public Equipment equipmentManager;
+    Equipment equipmentManager;
     public InventoryUI inventoryUI;
-    public PlayerStats playerStats;
+    PlayerStats playerStats;
 
     public EquipmentSlotUI weaponSlot;
     public EquipmentSlotUI armorSlot;
@@ -23,6 +23,9 @@ public class EquipmentUI : MonoBehaviour
 
     private void Start()
     {
+        playerStats = CommonReferent.Instance.playerPrefab.GetComponent<PlayerStats>();
+        equipmentManager = CommonReferent.Instance.playerPrefab.GetComponent<Equipment>();
+        
         slotMapping = new Dictionary<ItemType, EquipmentSlotUI>
         {
             { ItemType.Weapon, weaponSlot },
@@ -105,7 +108,7 @@ public class EquipmentUI : MonoBehaviour
         }
 
         equipmentManager.EquipItem(itemInstance, playerStats);
-        inventoryUI.inventory.RemoveItem(itemInstance);
+        inventoryUI.Inventory.RemoveItem(itemInstance);
 
         UpdateEquipmentUI();
         inventoryUI.UpdateInventoryUI();
@@ -116,7 +119,7 @@ public class EquipmentUI : MonoBehaviour
         ItemInstance unequipped = equipmentManager.UnequipItem(itemType, playerStats);
         if (unequipped == null) return;
 
-        inventoryUI.inventory.AddItem(unequipped);
+        inventoryUI.Inventory.AddItem(unequipped);
         UpdateEquipmentUI();
         inventoryUI.UpdateInventoryUI();
     }
