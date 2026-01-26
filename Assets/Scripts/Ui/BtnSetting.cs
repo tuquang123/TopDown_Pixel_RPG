@@ -83,4 +83,8 @@ public class UISettingController : BasePopup
         PlayerPrefs.SetFloat(SFX_KEY, value);
         PlayerPrefs.Save();
     }
+    public void Close()
+    {
+        UIManager.Instance.HidePopupByType(PopupType.Settings);
+    }
 }

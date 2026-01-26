@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,17 +10,38 @@ public class SkillUIController : BasePopup
     SkillSystem skillSystem;
     public SkillDetailPanel skillDetailPanel;
     [SerializeField] private ScrollRect scrollRect;
+    [SerializeField] private TextMeshProUGUI skillPointText;
 
     // 🔥 THÊM
     private void OnEnable()
     {
-        SkillDetailPanel.OnSkillChanged += RefreshSkillButtons;
+        if (skillSystem == null)
+            skillSystem = CommonReferent.Instance.playerPrefab.GetComponent<SkillSystem>();
+
+        SkillDetailPanel.OnSkillChanged += OnSkillChanged;
     }
+
 
     private void OnDisable()
     {
-        SkillDetailPanel.OnSkillChanged -= RefreshSkillButtons;
+        SkillDetailPanel.OnSkillChanged -= OnSkillChanged;
     }
+
+    private void OnSkillChanged()
+    {
+        RefreshSkillButtons();
+        RefreshSkillPoint();   
+    }
+
+    private void RefreshSkillPoint()
+    {
+        if (skillSystem == null || skillPointText == null)
+            return;
+
+        skillPointText.text = $"Skill Point : {PlayerStats.Instance.skillPoints}";
+
+    }
+
 
     public override void Show()
     {
@@ -28,6 +50,7 @@ public class SkillUIController : BasePopup
         RefreshSkillButtons();
         skillDetailPanel.Hide();
         StartCoroutine(ResetScrollPositionDelayed());
+        RefreshSkillPoint();
     }
 
     private IEnumerator ResetScrollPositionDelayed()
@@ -36,7 +59,10 @@ public class SkillUIController : BasePopup
         yield return null;
         scrollRect.verticalNormalizedPosition = 1f;
     }
-
+    public void Close()
+    {
+        UIManager.Instance.HidePopupByType(PopupType.Skill);
+    }
     private void RefreshSkillButtons()
     {
         foreach (Transform child in skillListContainer)

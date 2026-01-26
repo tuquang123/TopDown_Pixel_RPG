@@ -13,4 +13,8 @@ public class PlayerStatsPopupUI : BasePopup
             statDisplayComponent.SetStats(PlayerStats.Instance);
         }
     }
+    public void Close()
+    {
+        UIManager.Instance.HidePopupByType(PopupType.Stats);
+    }
 }

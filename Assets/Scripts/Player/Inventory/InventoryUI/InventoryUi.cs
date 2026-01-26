@@ -189,4 +189,8 @@ public class InventoryUI : BasePopup
     }
 
     #endregion
+    public void Close()
+    {
+        UIManager.Instance.HidePopupByType(PopupType.Inventory);
+    }
 }
