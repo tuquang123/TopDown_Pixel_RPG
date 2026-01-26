@@ -16,42 +16,76 @@ public class StatDisplayComponent : MonoBehaviour
     // ============================
     // 1) PLAYER STAT
     // ============================
-    public void SetStats(PlayerStats stats)
-    {
-        if (stats == null) return;
+ public void SetStats(PlayerStats stats)
+{
+    if (stats == null) return;
 
-        attackText.text =
-            $"<sprite name=\"attack_icon\" color=#FF8C00> " +
-            $"<color=#FFD700>Attack:</color> {stats.attack.Value}";
-        
-        defenseText.text =
-            $"<sprite name=\"defense_icon\" color=#808080> " +
-            $"<color=#FFD700>Defense:</color> {stats.defense.Value}";
+    // ===== ATTACK =====
+    float baseAtk = stats.attack.baseValue;
+    float bonusAtk = stats.attack.Value - baseAtk;
+    attackText.text =
+        bonusAtk > 0.01f
+            ? $"<sprite name=\"attack_icon\" color=#FF8C00> <color=#FFD700>Attack:</color> {FormatStat(baseAtk)} <color=#00FF00>(+{FormatStat(bonusAtk)})</color>"
+            : $"<sprite name=\"attack_icon\" color=#FF8C00> <color=#FFD700>Attack:</color> {FormatStat(baseAtk)}";
 
-        speedText.text =
-            $"<sprite name=\"speed_icon\" color=#7CFF4D> " +
-            $"<color=#FFD700>Speed:</color> {stats.speed.Value}";
+    // ===== DEFENSE =====
+    float baseDef = stats.defense.baseValue;
+    float bonusDef = stats.defense.Value - baseDef;
+    defenseText.text =
+        bonusDef > 0.01f
+            ? $"<sprite name=\"defense_icon\" color=#808080> <color=#FFD700>Defense:</color> {FormatStat(baseDef)} <color=#00FF00>(+{FormatStat(bonusDef)})</color>"
+            : $"<sprite name=\"defense_icon\" color=#808080> <color=#FFD700>Defense:</color> {FormatStat(baseDef)}";
 
-        critText.text =
-            $"<sprite name=\"crit_icon\" color=#FFB84D> " +
-            $"<color=#FFD700>Crit:</color> {stats.critChance.Value}%";
+    // ===== SPEED =====
+    float baseSpd = stats.speed.baseValue;
+    float bonusSpd = stats.speed.Value - baseSpd;
+    speedText.text =
+        bonusSpd > 0.01f
+            ? $"<sprite name=\"speed_icon\" color=#7CFF4D> <color=#FFD700>Speed:</color> {FormatStat(baseSpd)} <color=#00FF00>(+{FormatStat(bonusSpd)})</color>"
+            : $"<sprite name=\"speed_icon\" color=#7CFF4D> <color=#FFD700>Speed:</color> {FormatStat(baseSpd)}";
 
-        lifestealText.text =
-            $"<sprite name=\"lifesteal_icon\" color=#C44DFF> " +
-            $"<color=#FFD700>LifeSteal:</color> {stats.lifeSteal.Value}%";
+    // ===== CRIT =====
+    float baseCrit = stats.critChance.baseValue;
+    float bonusCrit = stats.critChance.Value - baseCrit;
+    critText.text =
+        bonusCrit > 0.01f
+            ? $"<sprite name=\"crit_icon\" color=#FFB84D> <color=#FFD700>Crit:</color> {FormatStat(baseCrit)}% <color=#00FF00>(+{FormatStat(bonusCrit)}%)</color>"
+            : $"<sprite name=\"crit_icon\" color=#FFB84D> <color=#FFD700>Crit:</color> {FormatStat(baseCrit)}%";
 
-        attackSpeedText.text =
-            $"<sprite name=\"attackspeed_icon\" color=#4DFFE3> " +
-            $"<color=#FFD700>AttSpeed:</color> {stats.GetAttackSpeed():0.0}";
+    // ===== LIFESTEAL =====
+    float baseLS = stats.lifeSteal.baseValue;
+    float bonusLS = stats.lifeSteal.Value - baseLS;
+    lifestealText.text =
+        bonusLS > 0.01f
+            ? $"<sprite name=\"lifesteal_icon\" color=#C44DFF> <color=#FFD700>LifeSteal:</color> {FormatStat(baseLS)}% <color=#00FF00>(+{FormatStat(bonusLS)}%)</color>"
+            : $"<sprite name=\"lifesteal_icon\" color=#C44DFF> <color=#FFD700>LifeSteal:</color> {FormatStat(baseLS)}%";
 
-        healText.text =
-            $"<sprite name=\"health_icon\" color=#FF3333> " +
-            $"<color=#FFD700>HP:</color> {stats.maxHealth.Value}";
+    // ===== ATTACK SPEED =====
+    float baseAtkSpd = stats.attackSpeed.baseValue;
+    float bonusAtkSpd = stats.attackSpeed.Value - baseAtkSpd;
+    attackSpeedText.text =
+        bonusAtkSpd > 0.01f
+            ? $"<sprite name=\"attackspeed_icon\" color=#4DFFE3> <color=#FFD700>AttSpeed:</color> {FormatStat(baseAtkSpd)} <color=#00FF00>(+{FormatStat(bonusAtkSpd)})</color>"
+            : $"<sprite name=\"attackspeed_icon\" color=#4DFFE3> <color=#FFD700>AttSpeed:</color> {FormatStat(baseAtkSpd)}";
 
-        manaText.text =
-            $"<sprite name=\"mana_icon\" color=#3399FF> " +
-            $"<color=#FFD700>Mana:</color> {stats.maxMana.Value}";
-    }
+    // ===== HP =====
+    float baseHP = stats.maxHealth.baseValue;
+    float bonusHP = stats.maxHealth.Value - baseHP;
+    healText.text =
+        bonusHP > 0.01f
+            ? $"<sprite name=\"health_icon\" color=#FF3333> <color=#FFD700>HP:</color> {FormatStat(baseHP)} <color=#00FF00>(+{FormatStat(bonusHP)})</color>"
+            : $"<sprite name=\"health_icon\" color=#FF3333> <color=#FFD700>HP:</color> {FormatStat(baseHP)}";
+
+    // ===== MANA =====
+    float baseMana = stats.maxMana.baseValue;
+    float bonusMana = stats.maxMana.Value - baseMana;
+    manaText.text =
+        bonusMana > 0.01f
+            ? $"<sprite name=\"mana_icon\" color=#3399FF> <color=#FFD700>Mana:</color> {FormatStat(baseMana)} <color=#00FF00>(+{FormatStat(bonusMana)})</color>"
+            : $"<sprite name=\"mana_icon\" color=#3399FF> <color=#FFD700>Mana:</color> {FormatStat(baseMana)}";
+}
+
+
 
     // ============================
     // 2) ITEM STAT
@@ -91,4 +125,11 @@ public class StatDisplayComponent : MonoBehaviour
             $"<sprite name=\"{icon}\" color={color}> " +
             $"<color=#FFD700>{label}:</color> {value}{suffix}";
     }
+    private string FormatStat(float value)
+    {
+        return value % 1 == 0
+            ? value.ToString("0")
+            : value.ToString("0.0");
+    }
+
 }
