@@ -23,7 +23,7 @@ public class BasePopup : MonoBehaviour
 
     public virtual void Show()
     {
-        Time.timeScale = 0f; // pause game
+        //Time.timeScale = 0f; // pause game
 
         fadeTween?.Kill();
         scaleTween?.Kill();
@@ -58,7 +58,7 @@ public class BasePopup : MonoBehaviour
             .SetUpdate(true)
             .OnComplete(() =>
             {
-                Time.timeScale = 1f; // resume game
+                //Time.timeScale = 1f; // resume game
                 UIManager.Instance?.UpdateBlurState();
                 Destroy(gameObject); // 🔥 destroy popup
             });

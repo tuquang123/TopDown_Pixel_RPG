@@ -14,7 +14,6 @@ public class ShopUI : BasePopup
 
     [Header("Data")]
     Inventory playerInventory;
-    InventoryUI inventoryUI;
     public List<ItemData> allShopItems = new();
 
     // ================= INTERNAL =================
@@ -35,8 +34,7 @@ public class ShopUI : BasePopup
         base.Show();
         detailPopup?.Setup(this);
         playerInventory = CommonReferent.Instance.playerPrefab.GetComponent<Inventory>();
-        inventoryUI = CommonReferent.Instance.inventoryUI;
-            
+        
         if (!isBuilt)
         {
             isBuilt = true;
@@ -199,6 +197,8 @@ public class ShopUI : BasePopup
         if (instance == null || instance.itemData == null)
             return;
 
+        detailPopup.Hide();
+        
         var data = instance.itemData;
 
         if (IsItemOwned(data))
@@ -211,7 +211,6 @@ public class ShopUI : BasePopup
         }
 
         playerInventory.AddItem(new ItemInstance(data));
-        inventoryUI.UpdateInventoryUI();
 
         // 🔥 giữ filter hiện tại
         ApplyFilter(currentFilterType);

@@ -82,7 +82,7 @@ public class EquipmentUI : MonoBehaviour
     {
         if (!equipmentManager.equippedItems.TryGetValue(type, out ItemInstance instance)) return;
 
-        inventoryUI.itemDetailPanel.ShowDetails(instance, inventoryUI);
+        inventoryUI.itemDetailPanel.Show(instance, inventoryUI);
 
         inventoryUI.itemDetailPanel.equipButton.onClick.RemoveAllListeners();
         inventoryUI.itemDetailPanel.equipButton.onClick.AddListener(() =>

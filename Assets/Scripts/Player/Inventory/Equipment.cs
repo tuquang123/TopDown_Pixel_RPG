@@ -8,7 +8,6 @@ public class Equipment : MonoBehaviour
 
     [SerializeField] private PlayerEquipment playerEquipment;
     [SerializeField] private PlayerEquipment playerEquipmentHourse;
-    public InventoryUI inventoryUI;
 
 
     public List<EquipmentData> ToData()
@@ -88,10 +87,6 @@ public class Equipment : MonoBehaviour
         if (type == ItemType.Consumable)
         {
             stats.Consume(instance.itemData);
-
-            // Trừ khỏi inventory
-            inventoryUI.Inventory.RemoveItem(instance);
-            inventoryUI.UpdateInventoryUI();
             return;
         }
         

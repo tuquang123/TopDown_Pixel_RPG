@@ -2940,7 +2940,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6203679483885237609}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -3897,6 +3897,7 @@ GameObject:
   - component: {fileID: 8583500266991218164}
   - component: {fileID: 1116431430123043265}
   - component: {fileID: 8848667754844392976}
+  - component: {fileID: 6129123709533283450}
   m_Layer: 5
   m_Name: DetailPopup
   m_TagString: Untagged
@@ -3976,15 +3977,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   icon: {fileID: 349994961314479124}
   nameText: {fileID: 2210806412588114924}
-  tierText: {fileID: 7822832063927201818}
   descriptionText: {fileID: 3814192630284654427}
+  statText: {fileID: 0}
+  tierText: {fileID: 7822832063927201818}
+  weaponCategoryText: {fileID: 3030976332088238529}
   priceText: {fileID: 8437539732555440011}
   buyButton: {fileID: 8670507938674269660}
   cancelButton: {fileID: 5090539650553927539}
+  tierBackground: {fileID: 6586298224622959407}
   statDisplayComponent: {fileID: 549838068149720477}
-  weaponRangeText: {fileID: 3030976332088238529}
-  backgroundImage: {fileID: 6586298224622959407}
-  animDuration: 0.25
+  fadeDuration: 0.2
+  scaleDuration: 0.25
+--- !u!225 &6129123709533283450
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7018891227086220842}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7346504684902206544
 GameObject:
   m_ObjectHideFlags: 0

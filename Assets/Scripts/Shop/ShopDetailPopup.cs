@@ -1,54 +1,58 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections;
 using DG.Tweening;
 
-
-
+[RequireComponent(typeof(CanvasGroup))]
 public class ShopDetailPopup : MonoBehaviour
 {
-    [Header("References")]
+    [Header("UI")]
     public ItemIconHandler icon;
     public TMP_Text nameText;
-    public TMP_Text tierText;
     public TMP_Text descriptionText;
+    public TMP_Text tierText;
+    public TMP_Text weaponCategoryText;
     public TMP_Text priceText;
+
     public Button buyButton;
     public Button cancelButton;
-    public StatDisplayComponent statDisplayComponent;
-    private Tween openTween;
-    private Tween closeTween;
-    
-    [Header("Weapon Info")]
-    public TMP_Text weaponRangeText;
 
-    [Header("Tier Background")]
-    public Image backgroundImage;
+    public Image tierBackground;
+    public StatDisplayComponent statDisplayComponent;
 
     [Header("Animation")]
-    public float animDuration = 0.25f;
-  
-
-    private ShopUI shopUI;
-    private ItemInstance currentItem;
+    public float fadeDuration = 0.2f;
+    public float scaleDuration = 0.25f;
 
     private CanvasGroup canvasGroup;
-    
+    private Tween fadeTween;
+    private Tween scaleTween;
+
+    private ItemInstance currentItem;
+    private ShopUI shopUI;
+
+    // ================= UNITY =================
+
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
-            canvasGroup = gameObject.AddComponent<CanvasGroup>();
 
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
-        transform.localScale = Vector3.one * 0.9f;
+        transform.localScale = Vector3.zero;
         gameObject.SetActive(false);
     }
 
+    private void OnDisable()
+    {
+        fadeTween?.Kill();
+        scaleTween?.Kill();
+        UnregisterGoldEvent();
+    }
+
+    // ================= SHOW / HIDE =================
 
     public void Setup(ShopUI shop)
     {
@@ -56,165 +60,201 @@ public class ShopDetailPopup : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    // ================= SHOW =================
-    public void ShowDetail(ItemInstance instance)
+    public void Show(ItemInstance item)
     {
-        if (instance == null || instance.itemData == null) return;
+        if (item == null || item.itemData == null) return;
 
-        currentItem = instance;
-        var data = instance.itemData;
-
-        // ===== Icon + Name =====
-        icon.SetupIcons(instance);
-        nameText.text = data.itemName;
-
-        // ===== Tier =====
-        tierText.text = data.tier.ToString();
-        tierText.color = ItemUtility.GetColorByTier(data.tier);
-        ApplyTierBackgroundColor(data.tier);
-
-        // ===== Description =====
-        descriptionText.text = data.description;
-
-        // ===== Weapon Category =====
-        if (data.itemType == ItemType.Weapon)
-        {
-            weaponRangeText.gameObject.SetActive(true);
-            switch (data.weaponCategory)
-            {
-                case WeaponCategory.Melee:
-                    weaponRangeText.text = "Cận chiến";
-                    weaponRangeText.color = new Color(0.85f, 0.85f, 0.85f);
-                    break;
-                case WeaponCategory.Ranged:
-                    weaponRangeText.text = "Đánh xa";
-                    weaponRangeText.color = new Color(0.6f, 0.8f, 1f);
-                    break;
-                case WeaponCategory.HeavyMelee:
-                    weaponRangeText.text = "Cận nặng";
-                    weaponRangeText.color = new Color(1f, 0.7f, 0.4f);
-                    break;
-                default:
-                    weaponRangeText.text = "Không xác định";
-                    weaponRangeText.color = Color.white;
-                    break;
-            }
-        }
-        else
-        {
-            weaponRangeText.gameObject.SetActive(false);
-        }
-
-        // ===== Stats =====
-        statDisplayComponent.SetStats(instance);
-
-        // ===== Price =====
-        priceText.text = $"{data.price} <sprite name=\"gold_icon\">";
-
-        buyButton.onClick.RemoveAllListeners();
-        cancelButton.onClick.RemoveAllListeners();
-
-        UpdateBuyButtonState();
-
-        buyButton.onClick.AddListener(() =>
-        {
-            if (CurrencyManager.Instance.Gold >= data.price)
-            {
-                shopUI.BuyItem(currentItem);
-                Hide();
-            }
-            else
-            {
-                GameEvents.OnShowToast.Raise("Gold not enough!");
-            }
-        });
-
-        cancelButton.onClick.AddListener(Hide);
-
-        CurrencyManager.Instance.OnGoldChanged += OnGoldChanged;
-
-        PlayOpenAnimation();
-    }
-
-    // ================= ANIMATION =================
-    private void PlayOpenAnimation()
-    {
-        openTween?.Kill();
-        closeTween?.Kill();
+        currentItem = item;
+        RefreshUI();
 
         gameObject.SetActive(true);
+        RegisterGoldEvent();
+        PlayShowAnimation();
+    }
+
+    public void Hide()
+    {
+        PlayHideAnimation();
+    }
+
+    private void PlayShowAnimation()
+    {
+        fadeTween?.Kill();
+        scaleTween?.Kill();
 
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
+        transform.localScale = Vector3.zero;
 
-        transform.localScale = Vector3.one * 0.9f;
+        fadeTween = canvasGroup
+            .DOFade(1f, fadeDuration)
+            .SetUpdate(true);
 
-        openTween = DOTween.Sequence()
-            .Append(canvasGroup.DOFade(1f, animDuration * 0.8f))
-            .Join(transform
-                .DOScale(1f, animDuration)
-                .SetEase(Ease.OutBack))
+        scaleTween = transform
+            .DOScale(Vector3.one, scaleDuration)
+            .SetEase(Ease.OutBack)
+            .SetUpdate(true)
             .OnComplete(() =>
             {
                 canvasGroup.interactable = true;
                 canvasGroup.blocksRaycasts = true;
             });
     }
-    
-    public void Hide()
-    {
-        if (!gameObject.activeSelf) return;
 
-        openTween?.Kill();
-        closeTween?.Kill();
+    private void PlayHideAnimation()
+    {
+        fadeTween?.Kill();
+        scaleTween?.Kill();
 
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
-        closeTween = DOTween.Sequence()
-            .Append(canvasGroup.DOFade(0f, animDuration * 0.6f))
-            .Join(transform.DOScale(0.9f, animDuration * 0.6f))
+        fadeTween = canvasGroup
+            .DOFade(0f, fadeDuration * 0.75f)
+            .SetUpdate(true);
+
+        scaleTween = transform
+            .DOScale(Vector3.zero, scaleDuration * 0.8f)
+            .SetEase(Ease.InBack)
+            .SetUpdate(true)
             .OnComplete(() =>
             {
+                currentItem = null; // 🔥 FIX CỐT LÕI
+                UnregisterGoldEvent(); // 🔥 chủ động tháo event
                 gameObject.SetActive(false);
-
-                if (CurrencyManager.Instance != null)
-                    CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
             });
     }
-    // ================= HELPERS =================
-    private void ApplyTierBackgroundColor(ItemTier tier)
+
+
+    // ================= UI =================
+
+    private void RefreshUI()
     {
-        if (backgroundImage == null) return;
+        ItemData data = currentItem.itemData;
 
-        backgroundImage.sprite =
-            CommonReferent.Instance.itemTierColorConfig.GetBackground(tier);
+        // Icon + Name
+        icon.SetupIcons(currentItem);
+        nameText.text = data.itemName;
 
-        backgroundImage.color = Color.white;
+        // Tier
+        tierBackground.sprite =
+            CommonReferent.Instance.itemTierColorConfig.GetBackground(data.tier);
+        tierBackground.color = Color.white;
+
+        tierText.text = data.tier.ToString();
+        tierText.color = ItemUtility.GetColorByTier(data.tier);
+
+        // Description
+        descriptionText.text = data.description;
+
+        // Weapon Category
+        SetupWeaponCategory(data);
+
+        // Stats
+        statDisplayComponent.SetStats(currentItem);
+
+        // Price
+        priceText.text = $"{data.price} <sprite name=\"gold_icon\">";
+
+        SetupButtons();
+        UpdateBuyButtonState();
     }
 
-    private void UpdateBuyButtonState()
+    private void SetupWeaponCategory(ItemData data)
     {
-        if (currentItem == null || currentItem.itemData == null) return;
+        if (data.itemType != ItemType.Weapon)
+        {
+            weaponCategoryText.gameObject.SetActive(false);
+            return;
+        }
 
-        bool enoughGold = CurrencyManager.Instance.Gold >= currentItem.itemData.price;
-        buyButton.interactable = enoughGold;
+        weaponCategoryText.gameObject.SetActive(true);
 
-        var colors = buyButton.colors;
-        colors.normalColor = enoughGold ? Color.white : new Color(1f, 1f, 1f, 0.5f);
-        buyButton.colors = colors;
+        switch (data.weaponCategory)
+        {
+            case WeaponCategory.Melee:
+                weaponCategoryText.text = "Cận chiến";
+                weaponCategoryText.color = Color.white;
+                break;
+            case WeaponCategory.Ranged:
+                weaponCategoryText.text = "Đánh xa";
+                weaponCategoryText.color = new Color(0.6f, 0.8f, 1f);
+                break;
+            case WeaponCategory.HeavyMelee:
+                weaponCategoryText.text = "Cận nặng";
+                weaponCategoryText.color = new Color(1f, 0.7f, 0.4f);
+                break;
+        }
+    }
+
+    // ================= BUTTON =================
+
+    private void SetupButtons()
+    {
+        buyButton.onClick.RemoveAllListeners();
+        cancelButton.onClick.RemoveAllListeners();
+
+        buyButton.onClick.AddListener(OnClickBuy);
+        cancelButton.onClick.AddListener(Hide);
+    }
+
+    private void OnClickBuy()
+    {
+        int price = currentItem.itemData.price;
+
+        if (CurrencyManager.Instance.Gold < price)
+        {
+            GameEvents.OnShowToast.Raise("Không đủ vàng");
+            return;
+        }
+
+        ForceHideImmediate();
+        shopUI.BuyItem(currentItem);
+        Hide();
+    }
+    
+    private void ForceHideImmediate()
+    {
+        fadeTween?.Kill(true);
+        scaleTween?.Kill(true);
+
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        gameObject.SetActive(false);
+    }
+
+
+    // ================= GOLD EVENT =================
+
+    private void RegisterGoldEvent()
+    {
+        if (CurrencyManager.Instance != null)
+            CurrencyManager.Instance.OnGoldChanged += OnGoldChanged;
+    }
+
+    private void UnregisterGoldEvent()
+    {
+        if (CurrencyManager.Instance != null)
+            CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
     }
 
     private void OnGoldChanged(int gold)
     {
-        if (gameObject.activeSelf)
-            UpdateBuyButtonState();
+        if (!canvasGroup.interactable) return;
+        if (currentItem == null) return;
+        UpdateBuyButtonState();
     }
-
-    private void OnDisable()
+    
+    private void UpdateBuyButtonState()
     {
-        if (CurrencyManager.Instance != null)
-            CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
+        bool enough = CurrencyManager.Instance.Gold >= currentItem.itemData.price;
+        buyButton.interactable = enough;
+
+        var colors = buyButton.colors;
+        colors.normalColor = enough ? Color.white : new Color(1f, 1f, 1f, 0.5f);
+        buyButton.colors = colors;
     }
 }

@@ -10,7 +10,7 @@ public class AllySlot
 public class TeamAssistHandler : MonoBehaviour, IGameEventListener<string>
 {
     [SerializeField] private AllySlot[] allySlots;
-    [SerializeField] private HeroManager heroManager;
+    //[SerializeField] private HeroManager heroManager;
 
     private void OnEnable()
     {
@@ -97,7 +97,7 @@ public class TeamAssistHandler : MonoBehaviour, IGameEventListener<string>
 
     private Hero GetHeroById(string id)
     {
-        foreach (var hero in heroManager.allHeroes)
+        foreach (var hero in CommonReferent.Instance.heroManager.allHeroes)
         {
             if (hero.data.id == id)
                 return hero;

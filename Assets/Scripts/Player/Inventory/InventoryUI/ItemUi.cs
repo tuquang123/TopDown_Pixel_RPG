@@ -40,7 +40,7 @@ public class ItemUI : MonoBehaviour
     {
         inventoryUI.SelectItem(this);
         inventoryUI.itemDetailPanel.Hide();
-        inventoryUI.itemDetailPanel.ShowDetails(itemData, inventoryUI);
+        inventoryUI.itemDetailPanel.Show(itemData, inventoryUI);
     }
 
     public void SetSelected(bool isSelected)

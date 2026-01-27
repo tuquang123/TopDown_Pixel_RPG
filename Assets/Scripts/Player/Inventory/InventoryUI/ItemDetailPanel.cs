@@ -2,396 +2,99 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
-using System.Collections;
 using DG.Tweening;
 
-
-
+[RequireComponent(typeof(CanvasGroup))]
 public class ItemDetailPanel : MonoBehaviour
 {
+    [Header("UI")]
     public TMP_Text nameText;
     public TMP_Text descriptionText;
     public TMP_Text statText;
+    public TMP_Text tierText;
+    public TMP_Text weaponCategoryText;
+    public TMP_Text upgradeCostText;
+    public TMP_Text sellPriceText;
+
     public Button equipButton;
     public Button upgradeButton;
-    public TMP_Text upgradeCostText;
     public Button sellButton;
-    public TMP_Text sellPriceText;
-    public TMP_Text tierText;
-    public ItemIconHandler icon;
-    public Image tier;
-    public StatDisplayComponent statDisplayComponent;
-    public TMP_Text weaponCategoryText;
-    [Header("Animation")]
-    public float animDuration = 0.25f;
-    private Tween openTween;
-    private Tween closeTween;
-    private CanvasGroup canvasGroup;
-   
-    
-    [SerializeField] private ConfirmPopup confirmPopupPrefab;
-    private ConfirmPopup currentPopup;
 
+    public ItemIconHandler icon;
+    public Image tierBackground;
+    public StatDisplayComponent statDisplayComponent;
+
+    [Header("Animation (BasePopup Style)")]
+    public float fadeDuration = 0.2f;
+    public float scaleDuration = 0.25f;
+
+    [Header("Confirm Popup")]
+    [SerializeField] private ConfirmPopup confirmPopupPrefab;
+
+    private CanvasGroup canvasGroup;
+    private Tween fadeTween;
+    private Tween scaleTween;
+
+    private ConfirmPopup currentPopup;
     private ItemInstance currentItem;
     private InventoryUI inventoryUI;
 
-    private int CalculateSellPrice(ItemInstance item)
-    {
-        int baseValue = item.itemData.baseUpgradeCost;
-        float upgradeMultiplier = 0.6f + (item.upgradeLevel * 0.2f);
-        return Mathf.RoundToInt(baseValue * upgradeMultiplier);
-    }
-
-    private void SellItem()
-    {
-        int goldEarned = CalculateSellPrice(currentItem);
-        CurrencyManager.Instance.AddGold(goldEarned);
-
-        if (inventoryUI.Inventory.RemoveItem(currentItem))
-        {
-            inventoryUI.UpdateInventoryUI();
-        }
-
-        Debug.Log($"Đã bán {currentItem.itemData.itemName} +{currentItem.upgradeLevel} với giá {goldEarned} vàng.");
-
-        // 🔥 Toast thông báo bán thành công
-        GameEvents.OnShowToast.Raise(
-            $"Sold {currentItem.itemData.itemName} +{currentItem.upgradeLevel}, earned {goldEarned} gold!"
-        );
-
-
-        gameObject.SetActive(false);
-    }
-
-
-  public void ShowDetails(ItemInstance item, InventoryUI ui)
-{
-    statDisplayComponent.SetStats(item);
-
-    currentItem = item;
-    inventoryUI = ui;
-    ItemData itemData = item.itemData;
-
-    bool isEquipped = inventoryUI.equipmentUi.IsItemEquipped(item);
-
-    // ===== General Info =====
-    nameText.text = item.upgradeLevel >= 1
-        ? $"{itemData.itemName} +{item.upgradeLevel}"
-        : itemData.itemName;
-
-    icon.SetupIcons(item);
-
-    tier.sprite =
-        CommonReferent.Instance.itemTierColorConfig.GetBackground(itemData.tier);
-
-    tier.color = Color.white; // QUAN TRỌNG
-
-    tierText.text = itemData.tier.ToString();
-    tierText.color = ItemUtility.GetColorByTier(itemData.tier);
-
-    descriptionText.text = itemData.description;
-
-    // ===== Weapon Category (CẬN / XA / NẶNG) =====
-    if (itemData.itemType == ItemType.Weapon)
-    {
-        weaponCategoryText.gameObject.SetActive(true);
-
-        switch (itemData.weaponCategory)
-        {
-            case WeaponCategory.Melee:
-                weaponCategoryText.text = "Cận chiến";
-                weaponCategoryText.color = new Color(0.85f, 0.85f, 0.85f);
-                break;
-
-            case WeaponCategory.Ranged:
-                weaponCategoryText.text = "Đánh xa";
-                weaponCategoryText.color = new Color(0.6f, 0.8f, 1f);
-                break;
-
-            case WeaponCategory.HeavyMelee:
-                weaponCategoryText.text = "Cận nặng";
-                weaponCategoryText.color = new Color(1f, 0.7f, 0.4f);
-                break;
-        }
-    }
-    else
-    {
-        weaponCategoryText.gameObject.SetActive(false);
-    }
-
-    // ===== Sell Button =====
-    int sellPrice = CalculateSellPrice(currentItem);
-    sellPriceText.text = $"Bán ({sellPrice} <sprite name=\"gold_icon\">)";
-    sellButton.onClick.RemoveAllListeners();
-    sellButton.onClick.AddListener(ShowSellConfirm);
-
-    sellButton.gameObject.SetActive(!isEquipped);
-
-    // ===== Upgrade Button =====
-    int upgradeCost = itemData.baseUpgradeCost * (currentItem.upgradeLevel + 1);
-    upgradeCostText.text = $"Nâng cấp ({upgradeCost} <sprite name=\"gold_icon\">)";
-    upgradeButton.onClick.RemoveAllListeners();
-    upgradeButton.onClick.AddListener(ShowUpgradeConfirm);
-
-    upgradeButton.gameObject.SetActive(!isEquipped);
-
-    // ===== Equip / Use Button =====
-    equipButton.onClick.RemoveAllListeners();
-
-    string statsText = "";
-
-    if (itemData.itemType == ItemType.Consumable)
-    {
-        // ===== Consumable =====
-        equipButton.GetComponentInChildren<TMP_Text>().text = "Dùng";
-        equipButton.onClick.AddListener(ConsumeItem);
-        upgradeButton.gameObject.SetActive(false);
-
-        if (itemData.restoresHealth)
-        {
-            string value = itemData.percentageBased
-                ? $"{itemData.healthRestoreAmount}%"
-                : $"{itemData.healthRestoreAmount}";
-            statsText += $"Hồi máu: {value}\n";
-        }
-
-        if (itemData.restoresMana)
-        {
-            string value = itemData.percentageBased
-                ? $"{itemData.manaRestoreAmount}%"
-                : $"{itemData.manaRestoreAmount}";
-            statsText += $"Hồi mana: {value}\n";
-        }
-    }
-    else
-    {
-        // ===== Equipment =====
-        equipButton.GetComponentInChildren<TMP_Text>().text = "Trang bị";
-        equipButton.onClick.AddListener(EquipItem);
-
-        void AddStatLine(string label, ItemStatBonus bonus, float upgradePercent = 0.1f)
-        {
-            if (bonus == null || !bonus.HasValue) return;
-
-            float flat = bonus.flat + (bonus.flat * upgradePercent * (item.upgradeLevel - 1));
-            float percent = bonus.percent;
-
-            bool showDecimal = label == "Tốc đánh";
-
-            if (flat != 0)
-                statsText += showDecimal
-                    ? $"{label}: {flat:F1}\n"
-                    : $"{label}: {Mathf.RoundToInt(flat)}\n";
-
-            if (percent != 0)
-                statsText += $"{label}: +{percent}%\n";
-        }
-
-        AddStatLine("Dame", itemData.attack);
-        AddStatLine("Giáp", itemData.defense);
-        AddStatLine("Máu", itemData.health);
-        AddStatLine("Mana", itemData.mana);
-        AddStatLine("Crit", itemData.critChance, 0.05f);
-        AddStatLine("Speed", itemData.speed, 0.05f);
-        AddStatLine("Tốc đánh", itemData.attackSpeed, 0.05f);
-        AddStatLine("Hút máu", itemData.lifeSteal, 0.05f);
-    }
-
-    statText.text = statsText.TrimEnd();
-
-    PlayOpenAnimation();
-
-}
-
-
-
-    private void ConsumeItem()
-    {
-        if (currentItem == null) return;
-
-        var playerStats = PlayerStats.Instance;
-        if (playerStats != null)
-        {
-            playerStats.Consume(currentItem.itemData);
-        }
-
-        if (inventoryUI.Inventory.RemoveItem(currentItem))
-        {
-            inventoryUI.UpdateInventoryUI();
-        }
-
-        Debug.Log($"Đã dùng {currentItem.itemData.itemName}");
-        gameObject.SetActive(false);
-    }
-
-    private void UpgradeItem()
-    {
-        int upgradeCost = currentItem.itemData.baseUpgradeCost * currentItem.upgradeLevel + 1;
-
-        if (CurrencyManager.Instance.SpendGold(upgradeCost))
-        {
-            currentItem.upgradeLevel++;
-            Debug.Log($"Nâng cấp thành công! Cấp độ mới: {currentItem.upgradeLevel}");
-            ShowDetails(currentItem, inventoryUI); 
-            GameEvents.OnShowToast.Raise($"Succes Upgrade Item! {currentItem.itemData.itemName} - {currentItem.upgradeLevel}" );
-        }
-        else
-        {
-            Debug.Log("Không đủ vàng để nâng cấp.");
-            GameEvents.OnShowToast.Raise("Không đủ vàng để nâng cấp.");
-        }
-    }
-
-    private void EquipItem()
-    {
-        if (inventoryUI.equipmentUi != null && currentItem != null)
-        {
-            inventoryUI.equipmentUi.EquipItem(currentItem);
-
-            if (inventoryUI.Inventory.RemoveItem(currentItem))
-            {
-                inventoryUI.UpdateInventoryUI();
-            }
-
-            gameObject.SetActive(false);
-        }
-    }
-    private void ShowUpgradeConfirm()
-    {
-        int nextLevel = currentItem.upgradeLevel + 1;
-        int cost = currentItem.itemData.baseUpgradeCost * nextLevel;
-
-        string title = "Nâng cấp trang bị";
-
-        string message =
-            $"{currentItem.itemData.itemName} " +
-            $"+{currentItem.upgradeLevel} → +{nextLevel}\n\n" +
-            BuildUpgradeStatPreview() +
-            $"\nGiá: {cost} vàng";
-
-        ShowConfirm(title, message, UpgradeItem);
-    }
-
-
-    private string BuildUpgradeStatPreview()
-    {
-        string text = "";
-
-        void Add(string name, ItemStatBonus stat, float scale = 0.1f)
-        {
-            if (stat == null || !stat.HasValue) return;
-
-            float current = stat.flat + stat.flat * scale * (currentItem.upgradeLevel - 1);
-            float next = stat.flat + stat.flat * scale * currentItem.upgradeLevel;
-            float diff = next - current;
-
-            string curStr = current % 1 == 0 ? current.ToString("0") : current.ToString("0.0");
-            string nextStr = next % 1 == 0 ? next.ToString("0") : next.ToString("0.0");
-            string diffStr = diff % 1 == 0 ? diff.ToString("0") : diff.ToString("0.0");
-
-            if (diff > 0)
-                text += $"{name}: {curStr} → {nextStr} (+{diffStr})\n";
-        }
-
-        var data = currentItem.itemData;
-        Add("Dame", data.attack);
-        Add("Giáp", data.defense);
-        Add("Máu", data.health);
-        Add("Crit", data.critChance, 0.05f);
-        Add("Tốc đánh", data.attackSpeed, 0.05f);
-
-        return text;
-    }
-
-
-    private void ShowConfirm(string title, string message, Action onConfirm)
-    {
-        if (currentPopup != null)
-            return;
-
-        Canvas canvas = GetComponentInParent<Canvas>();
-        currentPopup = Instantiate(confirmPopupPrefab, canvas.transform);
-
-        currentPopup.OnClosed = () =>
-        {
-            currentPopup = null;
-        };
-
-        currentPopup.Show(title, message, onConfirm);
-    }
-
-
-
-   
-
-    private void ShowSellConfirm()
-    {
-        int sellPrice = CalculateSellPrice(currentItem);
-
-        string title = "Xác nhận bán";
-
-        string message =
-            $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel}\n\n" +
-            $"Giá: {sellPrice} vàng";
-
-        ShowConfirm(title, message, SellItem);
-    }
-
-
-
-    public void Hide()
-    {
-        if (!gameObject.activeSelf) return;
-
-        openTween?.Kill();
-        closeTween?.Kill();
-
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
-
-        closeTween = DOTween.Sequence()
-            .Append(canvasGroup.DOFade(0f, animDuration * 0.6f))
-            .Join(transform.DOScale(0.9f, animDuration * 0.6f))
-            .OnComplete(() =>
-            {
-                gameObject.SetActive(false);
-            });
-    }
-
-
-  
+    // ================= UNITY =================
 
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
-            canvasGroup = gameObject.AddComponent<CanvasGroup>();
 
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
-        transform.localScale = Vector3.one * 0.9f;
+        transform.localScale = Vector3.zero;
         gameObject.SetActive(false);
     }
 
-    private void PlayOpenAnimation()
+    private void OnDisable()
     {
-        openTween?.Kill();
-        closeTween?.Kill();
+        fadeTween?.Kill();
+        scaleTween?.Kill();
+    }
+
+    // ================= SHOW / HIDE =================
+
+    public void Show(ItemInstance item, InventoryUI ui)
+    {
+        currentItem = item;
+        inventoryUI = ui;
+
+        RefreshUI();
 
         gameObject.SetActive(true);
+        PlayShowAnimation();
+    }
+
+    public void Hide()
+    {
+        PlayHideAnimation();
+    }
+
+    private void PlayShowAnimation()
+    {
+        fadeTween?.Kill();
+        scaleTween?.Kill();
 
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
+        transform.localScale = Vector3.zero;
 
-        transform.localScale = Vector3.one * 0.9f;
+        fadeTween = canvasGroup
+            .DOFade(1f, fadeDuration)
+            .SetUpdate(true);
 
-        openTween = DOTween.Sequence()
-            .Append(canvasGroup.DOFade(1f, animDuration * 0.8f))
-            .Join(transform.DOScale(1f, animDuration)
-                .SetEase(Ease.OutBack))
+        scaleTween = transform
+            .DOScale(Vector3.one, scaleDuration)
+            .SetEase(Ease.OutBack)
+            .SetUpdate(true)
             .OnComplete(() =>
             {
                 canvasGroup.interactable = true;
@@ -399,15 +102,234 @@ public class ItemDetailPanel : MonoBehaviour
             });
     }
 
-
-   
-
-    private float EaseOutBack(float x)
+    private void PlayHideAnimation()
     {
-        float c1 = 1.70158f;
-        float c3 = c1 + 1f;
-        return 1 + c3 * Mathf.Pow(x - 1, 3) + c1 * Mathf.Pow(x - 1, 2);
+        fadeTween?.Kill();
+        scaleTween?.Kill();
+
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
+        fadeTween = canvasGroup
+            .DOFade(0f, fadeDuration * 0.75f)
+            .SetUpdate(true);
+
+        scaleTween = transform
+            .DOScale(Vector3.zero, scaleDuration * 0.8f)
+            .SetEase(Ease.InBack)
+            .SetUpdate(true)
+            .OnComplete(() =>
+            {
+                gameObject.SetActive(false);
+            });
     }
 
-    
+    // ================= UI REFRESH =================
+
+    private void RefreshUI()
+    {
+        ItemData data = currentItem.itemData;
+        bool isEquipped = inventoryUI.equipmentUi.IsItemEquipped(currentItem);
+
+        // Icon + Name
+        icon.SetupIcons(currentItem);
+        nameText.text = currentItem.upgradeLevel > 0
+            ? $"{data.itemName} +{currentItem.upgradeLevel}"
+            : data.itemName;
+
+        // Tier
+        tierBackground.sprite =
+            CommonReferent.Instance.itemTierColorConfig.GetBackground(data.tier);
+        tierBackground.color = Color.white;
+
+        tierText.text = data.tier.ToString();
+        tierText.color = ItemUtility.GetColorByTier(data.tier);
+
+        // Description
+        descriptionText.text = data.description;
+
+        // Weapon Category
+        if (data.itemType == ItemType.Weapon)
+        {
+            weaponCategoryText.gameObject.SetActive(true);
+            switch (data.weaponCategory)
+            {
+                case WeaponCategory.Melee:
+                    weaponCategoryText.text = "Cận chiến";
+                    weaponCategoryText.color = Color.white;
+                    break;
+                case WeaponCategory.Ranged:
+                    weaponCategoryText.text = "Đánh xa";
+                    weaponCategoryText.color = new Color(0.6f, 0.8f, 1f);
+                    break;
+                case WeaponCategory.HeavyMelee:
+                    weaponCategoryText.text = "Cận nặng";
+                    weaponCategoryText.color = new Color(1f, 0.7f, 0.4f);
+                    break;
+            }
+        }
+        else
+        {
+            weaponCategoryText.gameObject.SetActive(false);
+        }
+
+        // Stats
+        statDisplayComponent.SetStats(currentItem);
+        statText.text = BuildStatText(currentItem);
+
+        // Buttons
+        SetupButtons(currentItem, data, isEquipped);
+    }
+
+    // ================= BUTTONS =================
+
+    private void SetupButtons(ItemInstance item, ItemData data, bool isEquipped)
+    {
+        equipButton.onClick.RemoveAllListeners();
+        upgradeButton.onClick.RemoveAllListeners();
+        sellButton.onClick.RemoveAllListeners();
+
+        if (data.itemType == ItemType.Consumable)
+        {
+            equipButton.GetComponentInChildren<TMP_Text>().text = "Dùng";
+            equipButton.onClick.AddListener(ConsumeItem);
+
+            upgradeButton.gameObject.SetActive(false);
+            sellButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            equipButton.GetComponentInChildren<TMP_Text>().text = "Trang bị";
+            equipButton.onClick.AddListener(EquipItem);
+
+            upgradeButton.gameObject.SetActive(!isEquipped);
+            sellButton.gameObject.SetActive(!isEquipped);
+
+            int upgradeCost = data.baseUpgradeCost * (item.upgradeLevel + 1);
+            upgradeCostText.text = $"Nâng cấp ({upgradeCost} <sprite name=\"gold_icon\">)";
+            upgradeButton.onClick.AddListener(ShowUpgradeConfirm);
+        }
+
+        int sellPrice = CalculateSellPrice(item);
+        sellPriceText.text = $"Bán ({sellPrice} <sprite name=\"gold_icon\">)";
+        sellButton.onClick.AddListener(ShowSellConfirm);
+    }
+
+    // ================= ACTIONS =================
+
+    private void EquipItem()
+    {
+        inventoryUI.equipmentUi.EquipItem(currentItem);
+        inventoryUI.Inventory.RemoveItem(currentItem);
+        inventoryUI.UpdateInventoryUI();
+        Hide();
+    }
+
+    private void ConsumeItem()
+    {
+        PlayerStats.Instance?.Consume(currentItem.itemData);
+        inventoryUI.Inventory.RemoveItem(currentItem);
+        inventoryUI.UpdateInventoryUI();
+        Hide();
+    }
+
+    private void UpgradeItem()
+    {
+        int cost = currentItem.itemData.baseUpgradeCost * (currentItem.upgradeLevel + 1);
+
+        if (!CurrencyManager.Instance.SpendGold(cost))
+        {
+            GameEvents.OnShowToast.Raise("Không đủ vàng");
+            return;
+        }
+
+        currentItem.upgradeLevel++;
+        GameEvents.OnShowToast.Raise("Nâng cấp thành công!");
+        RefreshUI();
+    }
+
+    private void SellItem()
+    {
+        int gold = CalculateSellPrice(currentItem);
+        CurrencyManager.Instance.AddGold(gold);
+
+        inventoryUI.Inventory.RemoveItem(currentItem);
+        inventoryUI.UpdateInventoryUI();
+
+        GameEvents.OnShowToast.Raise($"Đã bán {currentItem.itemData.itemName}");
+        Hide();
+    }
+
+    // ================= CONFIRM =================
+
+    private void ShowUpgradeConfirm()
+    {
+        int next = currentItem.upgradeLevel + 1;
+        int cost = currentItem.itemData.baseUpgradeCost * next;
+
+        ShowConfirm(
+            "Nâng cấp",
+            $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel} → +{next}\nGiá: {cost} vàng",
+            UpgradeItem
+        );
+    }
+
+    private void ShowSellConfirm()
+    {
+        int price = CalculateSellPrice(currentItem);
+
+        ShowConfirm(
+            "Xác nhận bán",
+            $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel}\nGiá: {price} vàng",
+            SellItem
+        );
+    }
+
+    private void ShowConfirm(string title, string message, Action onConfirm)
+    {
+        if (currentPopup != null) return;
+
+        Canvas canvas = GetComponentInParent<Canvas>();
+        currentPopup = Instantiate(confirmPopupPrefab, canvas.transform);
+        currentPopup.OnClosed = () => currentPopup = null;
+        currentPopup.Show(title, message, onConfirm);
+    }
+
+    // ================= HELPERS =================
+
+    private int CalculateSellPrice(ItemInstance item)
+    {
+        int baseValue = item.itemData.baseUpgradeCost;
+        float multi = 0.6f + item.upgradeLevel * 0.2f;
+        return Mathf.RoundToInt(baseValue * multi);
+    }
+
+    private string BuildStatText(ItemInstance item)
+    {
+        string text = "";
+        ItemData d = item.itemData;
+
+        void Add(string name, ItemStatBonus stat, float scale = 0.1f)
+        {
+            if (stat == null || !stat.HasValue) return;
+
+            float value = stat.flat + stat.flat * scale * (item.upgradeLevel - 1);
+            if (value != 0)
+                text += $"{name}: {value}\n";
+
+            if (stat.percent != 0)
+                text += $"{name}: +{stat.percent}%\n";
+        }
+
+        Add("Dame", d.attack);
+        Add("Giáp", d.defense);
+        Add("Máu", d.health);
+        Add("Mana", d.mana);
+        Add("Crit", d.critChance, 0.05f);
+        Add("Speed", d.speed, 0.05f);
+        Add("Tốc đánh", d.attackSpeed, 0.05f);
+        Add("Hút máu", d.lifeSteal, 0.05f);
+
+        return text.TrimEnd();
+    }
 }

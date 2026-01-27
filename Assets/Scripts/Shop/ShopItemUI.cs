@@ -35,7 +35,7 @@ public class ShopItemUI : MonoBehaviour
         buyButton.onClick.AddListener(() => 
         {
             if (shopUI.DetailPopupUI != null)
-                shopUI.DetailPopupUI.ShowDetail(itemInstance);
+                shopUI.DetailPopupUI.Show(itemInstance);
         });
 
         // ✔ tránh double-subscribe

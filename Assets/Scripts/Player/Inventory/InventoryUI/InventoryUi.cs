@@ -170,7 +170,7 @@ public class InventoryUI : BasePopup
     public override void Hide()
     {
         base.Hide();
-        itemDetailPanel.Hide(); // Ẩn panel chi tiết nếu có
+        itemDetailPanel.Hide(); 
     }
 
     public void UpdateInventoryUI()
