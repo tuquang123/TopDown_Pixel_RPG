@@ -57,15 +57,21 @@ public class Equipment : MonoBehaviour
 
     public void ReapplyEquipmentStats(PlayerStats stats)
     {
+        foreach (var kvp in itemModifiers)
+        {
+            foreach (var mod in kvp.Value)
+                stats.RemoveStatModifier(mod);
+        }
+
+        itemModifiers.Clear();
+
         foreach (var kvp in equippedItems)
         {
-            var item = kvp.Value;
-            if (item != null)
-            {
-                ApplyItemStats(item, stats);
-            }
+            if (kvp.Value != null)
+                ApplyItemStats(kvp.Value, stats);
         }
     }
+
 
     public void OnEventTypeWeapon()
     {
@@ -115,29 +121,50 @@ public class Equipment : MonoBehaviour
 
         return instance;
     }
-
+    
+    public static class ItemStatCalculator
+    {
+        public static float GetUpgradedValue(float baseValue, int upgradeLevel, float perLevel = 0.1f)
+        {
+            int safeLevel = Mathf.Max(1, upgradeLevel);
+            return baseValue * (1f + perLevel * (safeLevel - 1));
+        }
+    }
+    
     private void ApplyItemStats(ItemInstance instance, PlayerStats stats)
     {
-        if (instance.itemData == null) return;
+        if (instance == null || instance.itemData == null) return;
 
-        float upgradePercent = 0.1f * (instance.upgradeLevel - 1);
+        // safety tuyệt đối
+        int safeLevel = Mathf.Max(1, instance.upgradeLevel);
         List<StatModifier> appliedMods = new();
 
         void AddStat(ItemStatBonus bonus, StatType type)
         {
             if (bonus == null) return;
 
+            // FLAT
             if (bonus.flat != 0)
             {
-                float upgradedFlat = bonus.flat + bonus.flat * upgradePercent;
-                var mod = new StatModifier(type, upgradedFlat, StatModType.Flat);
+                float flatValue = ItemStatCalculator.GetUpgradedValue(
+                    bonus.flat,
+                    safeLevel
+                );
+
+                var mod = new StatModifier(type, flatValue, StatModType.Flat);
                 stats.ApplyStatModifier(mod);
                 appliedMods.Add(mod);
             }
 
+            // PERCENT
             if (bonus.percent != 0)
             {
-                var mod = new StatModifier(type, bonus.percent, StatModType.Percent);
+                float percentValue = ItemStatCalculator.GetUpgradedValue(
+                    bonus.percent,
+                    safeLevel
+                );
+
+                var mod = new StatModifier(type, percentValue, StatModType.Percent);
                 stats.ApplyStatModifier(mod);
                 appliedMods.Add(mod);
             }
@@ -152,8 +179,10 @@ public class Equipment : MonoBehaviour
         AddStat(instance.itemData.attackSpeed, StatType.AttackSpeed);
         AddStat(instance.itemData.lifeSteal, StatType.LifeSteal);
 
+        // lưu để remove / reapply không bị stack
         itemModifiers[instance] = appliedMods;
     }
+
 
     private void RemoveItemStats(ItemInstance instance, PlayerStats stats)
     {

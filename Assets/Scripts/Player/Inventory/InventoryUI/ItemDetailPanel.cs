@@ -10,7 +10,7 @@ public class ItemDetailPanel : MonoBehaviour
     [Header("UI")]
     public TMP_Text nameText;
     public TMP_Text descriptionText;
-    public TMP_Text statText;
+    //public TMP_Text statText;
     public TMP_Text tierText;
     public TMP_Text weaponCategoryText;
     public TMP_Text upgradeCostText;
@@ -133,8 +133,8 @@ public class ItemDetailPanel : MonoBehaviour
 
         // Icon + Name
         icon.SetupIcons(currentItem);
-        nameText.text = currentItem.upgradeLevel > 0
-            ? $"{data.itemName} +{currentItem.upgradeLevel}"
+        nameText.text = currentItem.upgradeLevel - 1 > 0
+            ? $"{data.itemName} +{currentItem.upgradeLevel -1}"
             : data.itemName;
 
         // Tier
@@ -175,7 +175,6 @@ public class ItemDetailPanel : MonoBehaviour
 
         // Stats
         statDisplayComponent.SetStats(currentItem);
-        statText.text = BuildStatText(currentItem);
 
         // Buttons
         SetupButtons(currentItem, data, isEquipped);
@@ -302,34 +301,5 @@ public class ItemDetailPanel : MonoBehaviour
         int baseValue = item.itemData.baseUpgradeCost;
         float multi = 0.6f + item.upgradeLevel * 0.2f;
         return Mathf.RoundToInt(baseValue * multi);
-    }
-
-    private string BuildStatText(ItemInstance item)
-    {
-        string text = "";
-        ItemData d = item.itemData;
-
-        void Add(string name, ItemStatBonus stat, float scale = 0.1f)
-        {
-            if (stat == null || !stat.HasValue) return;
-
-            float value = stat.flat + stat.flat * scale * (item.upgradeLevel - 1);
-            if (value != 0)
-                text += $"{name}: {value}\n";
-
-            if (stat.percent != 0)
-                text += $"{name}: +{stat.percent}%\n";
-        }
-
-        Add("Dame", d.attack);
-        Add("Giáp", d.defense);
-        Add("Máu", d.health);
-        Add("Mana", d.mana);
-        Add("Crit", d.critChance, 0.05f);
-        Add("Speed", d.speed, 0.05f);
-        Add("Tốc đánh", d.attackSpeed, 0.05f);
-        Add("Hút máu", d.lifeSteal, 0.05f);
-
-        return text.TrimEnd();
     }
 }

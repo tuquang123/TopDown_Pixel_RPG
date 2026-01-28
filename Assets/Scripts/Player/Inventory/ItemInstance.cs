@@ -1,40 +1,90 @@
 ﻿using System;
+using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class ItemInstance
 {
-    public ItemData itemData;     
-    public int upgradeLevel = 0;   
-    public int instanceID;       
-    
+    public ItemData itemData;
+
+    // ⚠️ QUY ƯỚC CHUẨN:
+    // level 1 = item gốc, CHƯA nâng cấp
+    [Min(1)]
+    public int upgradeLevel;
+
+    public int instanceID;
+
+    // =========================
+    // CONSTRUCTOR – TẠO ITEM MỚI
+    // =========================
     public ItemInstance(ItemData data)
     {
+        if (data == null)
+        {
+            Debug.LogError("ItemInstance: ItemData is null");
+            return;
+        }
+
         itemData = data;
-        upgradeLevel = 0;
+        upgradeLevel = 1; // ✅ FIX: level gốc PHẢI là 1
         instanceID = GenerateUniqueID();
     }
-    
-    public ItemInstance(ItemData data, int upgradeLevel, int instanceID = -1)
+
+    // =========================
+    // CONSTRUCTOR – LOAD TỪ SAVE
+    // =========================
+    public ItemInstance(ItemData data, int loadedUpgradeLevel, int loadedInstanceID = -1)
     {
+        if (data == null)
+        {
+            Debug.LogError("ItemInstance: ItemData is null");
+            return;
+        }
+
         itemData = data;
-        this.upgradeLevel = upgradeLevel;
-        
-        this.instanceID = (instanceID == -1) ? GenerateUniqueID() : instanceID;
+
+        // ✅ FIX: clamp tuyệt đối, không cho < 1
+        upgradeLevel = Mathf.Max(1, loadedUpgradeLevel);
+
+        instanceID = (loadedInstanceID <= 0)
+            ? GenerateUniqueID()
+            : loadedInstanceID;
     }
 
+    // =========================
+    // NÂNG CẤP ITEM (SAFE)
+    // =========================
+    public void Upgrade(int amount = 1)
+    {
+        upgradeLevel = Mathf.Max(1, upgradeLevel + amount);
+    }
 
+    // =========================
+    // SET LEVEL TRỰC TIẾP (ADMIN / DEBUG)
+    // =========================
+    public void SetUpgradeLevel(int level)
+    {
+        upgradeLevel = Mathf.Max(1, level);
+    }
+
+    // =========================
+    // SAVE DATA
+    // =========================
     public ItemInstanceData ToData()
     {
         return new ItemInstanceData
         {
             itemID = itemData.itemID,
-            upgradeLevel = upgradeLevel,
+            upgradeLevel = Mathf.Max(1, upgradeLevel), // double safety
             instanceID = instanceID
         };
     }
-    
+
+    // =========================
+    // INTERNAL
+    // =========================
     private int GenerateUniqueID()
     {
         return Guid.NewGuid().GetHashCode();
     }
 }
+

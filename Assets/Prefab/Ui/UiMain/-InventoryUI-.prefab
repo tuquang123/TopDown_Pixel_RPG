@@ -18971,18 +18971,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 2550326659906806855}
   descriptionText: {fileID: 4334477446658463999}
-  statText: {fileID: 5357516732096950043}
+  tierText: {fileID: 1466296756463347212}
+  weaponCategoryText: {fileID: 2284212553652050978}
+  upgradeCostText: {fileID: 3052261019104795487}
+  sellPriceText: {fileID: 7862399192415223973}
   equipButton: {fileID: 7753004422904939993}
   upgradeButton: {fileID: 6216840332409809261}
-  upgradeCostText: {fileID: 3052261019104795487}
   sellButton: {fileID: 1018767937378904900}
-  sellPriceText: {fileID: 7862399192415223973}
-  tierText: {fileID: 1466296756463347212}
   icon: {fileID: 8668394322201257540}
-  tier: {fileID: 2289950033428154876}
+  tierBackground: {fileID: 2289950033428154876}
   statDisplayComponent: {fileID: 9183721739710053323}
-  weaponCategoryText: {fileID: 2284212553652050978}
-  animDuration: 0.25
+  fadeDuration: 0.2
+  scaleDuration: 0.25
   confirmPopupPrefab: {fileID: 6123839258030252458, guid: 2c8565058df86604596927e0c23de87c, type: 3}
 --- !u!225 &3636938893077388841
 CanvasGroup:

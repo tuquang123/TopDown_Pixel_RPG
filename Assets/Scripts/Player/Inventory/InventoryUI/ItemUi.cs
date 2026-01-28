@@ -23,8 +23,8 @@ public class ItemUI : MonoBehaviour
         icon.SetupIcons(data);
 
         nameText.text = data.itemData.itemName;
-        lvText.text = data.upgradeLevel > 0
-            ? $"+{data.upgradeLevel}"
+        lvText.text = data.upgradeLevel-1 > 0
+            ? $"+{data.upgradeLevel-1}"
             : string.Empty;
 
         // ✅ ĐÚNG
