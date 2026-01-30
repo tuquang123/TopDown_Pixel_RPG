@@ -266,12 +266,80 @@ public class ItemDetailPanel : MonoBehaviour
         int next = currentItem.upgradeLevel + 1;
         int cost = currentItem.itemData.baseUpgradeCost * next;
 
+        string statText = BuildUpgradeStatText(currentItem);
+
         ShowConfirm(
             "Nâng cấp",
-            $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel} → +{next}\nGiá: {cost} vàng",
+            $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel - 1} → +{next - 1}\n" +
+            statText +
+            $"\n\nGiá: {cost} vàng",
             UpgradeItem
         );
     }
+    private string BuildUpgradeStatText(ItemInstance item)
+    {
+        var d = item.itemData;
+        int curLv = item.upgradeLevel;
+        int nextLv = curLv + 1;
+
+        string text = "";
+
+        AppendStat(ref text, "Attack",     d.attack,      curLv, nextLv);
+        AppendStat(ref text, "Defense",    d.defense,     curLv, nextLv);
+        AppendStat(ref text, "Speed",      d.speed,       curLv, nextLv);
+        AppendStat(ref text, "Crit",       d.critChance,  curLv, nextLv, true);
+        AppendStat(ref text, "LifeSteal",  d.lifeSteal,   curLv, nextLv, true);
+        AppendStat(ref text, "Atk Speed",  d.attackSpeed, curLv, nextLv);
+        AppendStat(ref text, "HP",         d.health,      curLv, nextLv);
+        AppendStat(ref text, "Mana",       d.mana,        curLv, nextLv);
+
+        return text;
+    }
+
+
+    private void AppendStat(
+        ref string text,
+        string label,
+        ItemStatBonus bonus,
+        int curLv,
+        int nextLv,
+        bool isPercent = false
+    )
+    {
+        if (bonus == null || !bonus.HasValue) return;
+
+        float cur = 0;
+        float next = 0;
+
+        if (Mathf.Abs(bonus.flat) > 0.01f)
+        {
+            cur = Equipment.ItemStatCalculator.GetUpgradedValue(bonus.flat, curLv);
+            next = Equipment.ItemStatCalculator.GetUpgradedValue(bonus.flat, nextLv);
+        }
+        else if (Mathf.Abs(bonus.percent) > 0.01f)
+        {
+            cur = Equipment.ItemStatCalculator.GetUpgradedValue(bonus.percent, curLv);
+            next = Equipment.ItemStatCalculator.GetUpgradedValue(bonus.percent, nextLv);
+        }
+
+        if (Mathf.Approximately(cur, next)) return;
+
+        float add = next - cur;
+
+        string suffix = isPercent ? "%" : "";
+
+        text +=
+            $"\n{label}: {Format(cur)}{suffix} → {Format(next)}{suffix} " +
+            $"<color=#00FF00>(+{Format(add)}{suffix})</color>";
+    }
+    
+    private string Format(float value)
+    {
+        return value % 1 == 0
+            ? value.ToString("0")
+            : value.ToString("0.0");
+    }
+
 
     private void ShowSellConfirm()
     {
@@ -302,4 +370,5 @@ public class ItemDetailPanel : MonoBehaviour
         float multi = 0.6f + item.upgradeLevel * 0.2f;
         return Mathf.RoundToInt(baseValue * multi);
     }
+    
 }

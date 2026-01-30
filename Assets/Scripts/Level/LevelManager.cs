@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class LevelManager : Singleton<LevelManager>
 {
@@ -14,14 +15,21 @@ public class LevelManager : Singleton<LevelManager>
 
     private int currentLevel = 0;
     private GameObject currentLevelInstance;
-    
+    private bool isLoadingFromSave = false;
+    private Vector3 savedPlayerPosition;
+
     void Start()
     {
         levelDatabase = CommonReferent.Instance.levelDatabase;
         player = CommonReferent.Instance.playerPrefab;
-        LoadLevel(currentLevel);
+        LoadGame();
     }
-    
+
+    private void OnApplicationQuit()
+    {
+        SaveGame();
+    }
+
     public void LoadSpecificLevel(int index, TravelDirection direction)
     {
         if (index < 0 || index >= levelDatabase.TotalLevels)
@@ -79,8 +87,13 @@ public class LevelManager : Singleton<LevelManager>
                 _ => CommonReferent.Instance.defaultEntryPosition
             };
         
-            player.transform.position = targetPos;
-            PositionAlliesAroundPlayer(targetPos);
+            Vector3 finalPos = isLoadingFromSave ? savedPlayerPosition : targetPos;
+
+            player.transform.position = finalPos;
+            PositionAlliesAroundPlayer(finalPos);
+
+            isLoadingFromSave = false;
+
 
             foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
             {
@@ -122,6 +135,44 @@ public class LevelManager : Singleton<LevelManager>
             ally.transform.position = center + (Vector3)offset;
         }
     }
+    [System.Serializable]
+    private class SaveData
+    {
+        public int levelIndex;
+        public Vector3 playerPosition;
+    }
+    public void SaveGame()
+    {
+        SaveData data = new SaveData
+        {
+            levelIndex = currentLevel,
+            playerPosition = player.transform.position
+        };
+
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString("SAVE_DATA", json);
+        PlayerPrefs.Save();
+
+        Debug.Log("Save game thành công");
+    }
+    
+    public void LoadGame()
+    {
+        if (!PlayerPrefs.HasKey("SAVE_DATA"))
+        {
+            Debug.LogWarning("Chưa có save");
+            return;
+        }
+
+        string json = PlayerPrefs.GetString("SAVE_DATA");
+        SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+        isLoadingFromSave = true;
+        savedPlayerPosition = data.playerPosition;
+
+        LoadSpecificLevel(data.levelIndex, TravelDirection.Default);
+    }
+    
 
 
 }
