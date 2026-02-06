@@ -268,14 +268,22 @@ public class ItemDetailPanel : MonoBehaviour
 
         string statText = BuildUpgradeStatText(currentItem);
 
-        ShowConfirm(
-            "Nâng cấp",
-            $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel - 1} → +{next - 1}\n" +
-            statText +
-            $"\n\nGiá: {cost} vàng",
-            UpgradeItem
-        );
+        UIManager.Instance.ShowPopupByType(PopupType.ItemConfirm);
+
+        if (UIManager.Instance.TryGetPopup(PopupType.ItemConfirm, out var popup)
+            && popup is ConfirmPopup confirm)
+        {
+            confirm.Show(
+                "Nâng cấp",
+                $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel - 1} → +{next - 1}\n" +
+                statText +
+                $"\n\nGiá: {cost} vàng",
+                UpgradeItem
+            );
+        }
     }
+
+
     private string BuildUpgradeStatText(ItemInstance item)
     {
         var d = item.itemData;
@@ -345,12 +353,19 @@ public class ItemDetailPanel : MonoBehaviour
     {
         int price = CalculateSellPrice(currentItem);
 
-        ShowConfirm(
-            "Xác nhận bán",
-            $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel}\nGiá: {price} vàng",
-            SellItem
-        );
+        UIManager.Instance.ShowPopupByType(PopupType.ItemConfirm);
+
+        if (UIManager.Instance.TryGetPopup(PopupType.ItemConfirm, out var popup)
+            && popup is ConfirmPopup confirm)
+        {
+            confirm.Show(
+                "Xác nhận bán",
+                $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel}\nGiá: {price} vàng",
+                SellItem
+            );
+        }
     }
+
 
     private void ShowConfirm(string title, string message, Action onConfirm)
     {

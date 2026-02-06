@@ -53,6 +53,20 @@ public class CurrencyManager : MonoBehaviour
         Debug.Log($"Đã tiêu {amount} vàng. Tổng vàng: {Gold}");
         return true;
     }
+    public bool SpendGems(int amount)
+    {
+        if (Gems < amount)
+        {
+            Debug.Log($"Không đủ ngọc để tiêu {amount}. Tổng ngọc hiện tại: {Gems}");
+            return false;
+        }
+
+        Gems -= amount;
+        OnGemsChanged?.Invoke(Gems);
+        SaveCurrency();
+        Debug.Log($"Đã tiêu {amount} ngọc. Tổng ngọc: {Gems}");
+        return true;
+    }
 
     private void SaveCurrency()
     {

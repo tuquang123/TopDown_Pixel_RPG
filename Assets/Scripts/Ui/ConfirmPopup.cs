@@ -3,7 +3,8 @@ using TMPro;
 using UnityEngine.UI;
 using System;
 
-public class ConfirmPopup : MonoBehaviour
+public class ConfirmPopup : BasePopup
+
 {
     [Header("UI")]
    
@@ -16,8 +17,10 @@ public class ConfirmPopup : MonoBehaviour
     private Action onConfirm;
     public Action OnClosed;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         confirmButton.onClick.AddListener(OnConfirmClicked);
         cancelButton.onClick.AddListener(Hide);
 
@@ -40,12 +43,13 @@ public class ConfirmPopup : MonoBehaviour
         Hide();
     }
 
-    public void Hide()
+    public override void Hide()
     {
         messageText.text = "";
         onConfirm = null;
 
         OnClosed?.Invoke();
-        Destroy(gameObject); // 🔥 prefab lifecycle
+        base.Hide();
     }
+
 }

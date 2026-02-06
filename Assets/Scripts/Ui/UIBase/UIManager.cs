@@ -9,7 +9,9 @@ public enum PopupType
     Inventory,
     Settings,
     Stats,
-    Skill
+    Skill,
+    ItemConfirm,
+    Gacha
 }
     
 [Serializable]
@@ -55,24 +57,7 @@ public class UIManager : Singleton<UIManager>
 
     // ================== SHOW ==================
 
-    public void ShowPopupByType(PopupType type)
-    {
-        // đã mở rồi thì không mở lại
-        if (activePopups.ContainsKey(type))
-            return;
-
-        if (!popupPrefabDict.TryGetValue(type, out var prefab))
-        {
-            Debug.LogWarning($"[UIManager] Không tìm thấy prefab cho popup: {type}");
-            return;
-        }
-
-        var instance = Instantiate(prefab, transform);
-        activePopups[type] = instance;
-
-        instance.Show();
-        UpdateBlurState();
-    }
+   
 
     // ================== HIDE ==================
 
@@ -126,4 +111,59 @@ public class UIManager : Singleton<UIManager>
               .SetUpdate(true);
         }
     }
+  
+    
+    public BasePopup ShowPopupByType(PopupType type)
+    {
+        if (activePopups.TryGetValue(type, out var existing))
+        {
+            if (existing != null)
+                return existing;
+
+            // popup đã bị destroy → xoá reference cũ
+            activePopups.Remove(type);
+        }
+
+        if (!popupPrefabDict.TryGetValue(type, out var prefab))
+        {
+            Debug.LogWarning($"[UIManager] Không tìm thấy prefab cho popup: {type}");
+            return null;
+        }
+
+        var instance = Instantiate(prefab, transform);
+        activePopups[type] = instance;
+
+        instance.Show();
+        UpdateBlurState();
+
+        return instance;
+    }
+
+
+
+    
+    public bool TryGetPopup(PopupType type, out BasePopup popup)
+    {
+        return activePopups.TryGetValue(type, out popup);
+    }
+    // ================== GACHA ==================
+
+    public GachaPopup OpenGacha()
+    {
+        var popup = ShowPopupByType(PopupType.Gacha);
+
+        return popup as GachaPopup;
+    }
+
+    public void CloseGacha()
+    {
+        HidePopupByType(PopupType.Gacha);
+    }
+
+    public bool IsGachaOpen()
+    {
+        return IsPopupOpen(PopupType.Gacha);
+    }
+
+
 }
