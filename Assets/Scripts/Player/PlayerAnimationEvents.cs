@@ -16,7 +16,11 @@ public class CommonAnimationEvents : MonoBehaviour
     {
         if (playerController != null)
         {
-            if (playerController.typeWeapon == WeaponCategory.Ranged)
+            if (playerController.typeWeapon == WeaponCategory.Bow)
+            {
+                playerController.FireArrow();
+            }
+            else if (playerController.typeWeapon == WeaponCategory.Ranged)
             {
                 playerController.ThrowShuriken();
             }
@@ -24,6 +28,7 @@ public class CommonAnimationEvents : MonoBehaviour
             {
                 playerController.ApplyAttackDamage();
             }
+
         }
         else if (enemyAI is EnemyRangedAI rangedAI)
         {

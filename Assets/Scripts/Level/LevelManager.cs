@@ -21,7 +21,7 @@ public class LevelManager : Singleton<LevelManager>
     void Start()
     {
         levelDatabase = CommonReferent.Instance.levelDatabase;
-        player = CommonReferent.Instance.playerPrefab;
+        player = GameObject.FindWithTag("Player");
         LoadGame();
     }
 
@@ -64,7 +64,13 @@ public class LevelManager : Singleton<LevelManager>
 
     private void LoadLevel(int index , TravelDirection direction = TravelDirection.Default)
     {
-        screenFader.FadeIn(0.5f, () =>
+        if (screenFader == null)
+        {
+            Debug.LogError("ScreenFader NULL → load level trực tiếp");
+            // Không cần InternalLoadLevel
+        }
+
+
         {
             if (currentLevelInstance != null)
             {
@@ -105,7 +111,7 @@ public class LevelManager : Singleton<LevelManager>
             Debug.Log($"Đã load level {index}: {levelData.levelName}");
 
             screenFader.FadeOut(0.5f);
-        });
+        };
     }
     public void ResetLevel()
     {
@@ -160,7 +166,10 @@ public class LevelManager : Singleton<LevelManager>
     {
         if (!PlayerPrefs.HasKey("SAVE_DATA"))
         {
-            Debug.LogWarning("Chưa có save");
+            Debug.LogWarning("Chưa có save → load level mặc định");
+
+            isLoadingFromSave = false;
+            LoadSpecificLevel(0, TravelDirection.Default);
             return;
         }
 
@@ -172,6 +181,7 @@ public class LevelManager : Singleton<LevelManager>
 
         LoadSpecificLevel(data.levelIndex, TravelDirection.Default);
     }
+
     
 
 

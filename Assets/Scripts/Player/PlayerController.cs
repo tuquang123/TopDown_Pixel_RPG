@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerController : Singleton<PlayerController>, IGameEventListener , IGameEventListener<WeaponCategory> 
 {
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
+    protected static readonly int AttackBow = Animator.StringToHash("7_Shoot");
+
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
     private static readonly int AttackRange = Animator.StringToHash("AttackRange");
 
@@ -12,6 +14,8 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
    
     [SerializeField] private float meleeRange = 1f;
     [SerializeField] private float rangedRange = 5f;
+    [SerializeField] private float bowRange = 4f;
+
     [SerializeField] protected Transform attackPoint;
     [SerializeField] protected float attackRadius = 0.8f;
     [SerializeField] protected GameObject vfxDust;
@@ -41,7 +45,20 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         }
     }
     
-    float CurrentAttackRange => typeWeapon == WeaponCategory.Ranged ? rangedRange : meleeRange;
+    float CurrentAttackRange
+    {
+        get
+        {
+            if (typeWeapon == WeaponCategory.Bow)
+                return bowRange;
+
+            if (typeWeapon == WeaponCategory.Ranged)
+                return rangedRange;
+
+            return meleeRange;
+        }
+    }
+
     
     public WeaponCategory typeWeapon;
     
@@ -178,7 +195,29 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         float distance = Vector2.Distance(playerPos, targetPos);
         float moveSpeed = GetHeavyWeaponMoveSpeed();
 
-        // ===== RANGED WEAPON =====
+      
+        // ===== BOW WEAPON =====
+        if (typeWeapon == WeaponCategory.Bow)
+        {
+            if (distance > CurrentAttackRange)
+            {
+                Vector2 dir = (targetPos - playerPos).normalized;
+                rb.linearVelocity = dir * moveSpeed;
+                anim.SetBool(MoveBool, true);
+            }
+            else
+            {
+                rb.linearVelocity = Vector2.zero;
+                anim.SetBool(MoveBool, false);
+
+                RotateToTarget(target); // ✅ XOAY THEO HƯỚNG BẮN
+                TryAttack();
+            }
+            return;
+        }
+
+
+// ===== RANGED WEAPON (SHURIKEN, PHI TIÊU...) =====
         if (typeWeapon == WeaponCategory.Ranged)
         {
             if (distance > CurrentAttackRange)
@@ -196,9 +235,9 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
                 onFacing?.Invoke();
                 TryAttack();
             }
-
             return;
         }
+
 
         // ===== MELEE WEAPON (giữ logic cũ) =====
         float yDiff = Mathf.Abs(playerPos.y - targetPos.y);
@@ -260,10 +299,13 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
 
         lastAttackTime = Time.time;
         
-        if (typeWeapon == WeaponCategory.Ranged)
+        if (typeWeapon == WeaponCategory.Bow)
+            anim.SetTrigger(AttackBow);
+        else if (typeWeapon == WeaponCategory.Ranged)
             anim.SetTrigger(AttackRange);
         else
             anim.SetTrigger(AttackTrigger);
+
     }
 
     
@@ -509,6 +551,10 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
             case WeaponCategory.Melee:
             default:
                 break;
+            case WeaponCategory.Bow:
+                range += 4f;
+                break;
+
         }
 
         return range;
@@ -556,5 +602,42 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         GameEvents.OnUpdateAnimation.UnregisterListener(this);
         GameEvents.OnEquipItemRange.UnregisterListener(this);
     }
-    
+    public void FireArrow()
+    {
+        if (CommonReferent.Instance.ArrowProjectile == null) return;
+
+        Transform target = targetEnemy != null ? targetEnemy : targetDestructible;
+
+        Vector2 dir;
+        if (target != null)
+        {
+            dir = ((Vector2)target.position - (Vector2)attackPoint.position).normalized;
+            RotateCharacter(dir.x); // 🔥 ÉP XOAY LẠI 1 LẦN
+        }
+        else
+        {
+            dir = transform.localScale.x < 0 ? Vector2.right : Vector2.left;
+        }
+
+        var arrow = Instantiate(
+            CommonReferent.Instance.ArrowProjectile,
+            attackPoint.position,
+            Quaternion.identity
+        );
+
+        arrow.GetComponent<ArrowProjectile>().Init(
+            (int)stats.attack.Value,
+            dir,
+            stats.GetCritChance()
+        );
+    }
+
+    void RotateToTarget(Transform target)
+    {
+        if (target == null) return;
+
+        float dirX = target.position.x - transform.position.x;
+        RotateCharacter(dirX);
+    }
+
 }
