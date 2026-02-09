@@ -21,7 +21,7 @@ public class LevelManager : Singleton<LevelManager>
     void Start()
     {
         levelDatabase = CommonReferent.Instance.levelDatabase;
-        player = GameObject.FindWithTag("Player");
+        player = CommonReferent.Instance.playerPrefab;
         LoadGame();
     }
 
@@ -69,8 +69,6 @@ public class LevelManager : Singleton<LevelManager>
             Debug.LogError("ScreenFader NULL → load level trực tiếp");
             // Không cần InternalLoadLevel
         }
-
-
         {
             if (currentLevelInstance != null)
             {
