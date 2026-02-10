@@ -193,4 +193,5 @@ public class InventoryUI : BasePopup
     {
         UIManager.Instance.HidePopupByType(PopupType.Inventory);
     }
+    
 }

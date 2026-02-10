@@ -46,5 +46,6 @@ public class CommonReferent : Singleton<CommonReferent>
     private void Start()
     {
         CurrencyManager.Instance.AddGold(10000);
+        CurrencyManager.Instance.AddGems(100);
     }
 }

@@ -163,5 +163,10 @@ public class EquipmentUI : MonoBehaviour
         currentSelectedSlot = newSlot;
         currentSelectedSlot.SetSelected(true); // bật sáng slot mới
     }
+    public ItemInstance GetEquippedItem(ItemType type)
+    {
+        equipmentManager.equippedItems.TryGetValue(type, out var item);
+        return item;
+    }
 
 }

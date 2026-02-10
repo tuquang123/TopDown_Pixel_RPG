@@ -130,6 +130,8 @@ public class ItemDetailPanel : MonoBehaviour
     {
         ItemData data = currentItem.itemData;
         bool isEquipped = inventoryUI.equipmentUi.IsItemEquipped(currentItem);
+        ItemInstance equippedItem =
+            inventoryUI.equipmentUi.GetEquippedItem(currentItem.itemData.itemType);
 
         // Icon + Name
         icon.SetupIcons(currentItem);
@@ -174,7 +176,13 @@ public class ItemDetailPanel : MonoBehaviour
         }
 
         // Stats
-        statDisplayComponent.SetStats(currentItem);
+        var equipped =
+            inventoryUI.equipmentUi.GetEquippedItem(currentItem.itemData.itemType);
+
+        if (equipped != null)
+            statDisplayComponent.SetCompareStats(currentItem, equipped);
+        else
+            statDisplayComponent.SetStats(currentItem);
 
         // Buttons
         SetupButtons(currentItem, data, isEquipped);
