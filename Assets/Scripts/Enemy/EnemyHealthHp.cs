@@ -18,7 +18,6 @@ public class EnemyHealthUI : MonoBehaviour
 
     [Header("Colors")]
     [SerializeField] private Color enemyHpColor = Color.red;
-    [SerializeField] private Color allyHpColor = Color.green;
 
     private Camera mainCamera;
     private float hideTimer;
@@ -71,7 +70,7 @@ public class EnemyHealthUI : MonoBehaviour
         }
 
         // Enemy chết → xoá UI
-        if (currentTarget.isEnemy)
+        if (currentTarget.isEnemy || currentTarget.isAlly)
         {
             // TUYỆT ĐỐI không gọi TryGetComponent nếu target có thể chết
             if (!currentTarget.target)
@@ -81,6 +80,12 @@ public class EnemyHealthUI : MonoBehaviour
             }
 
             if (currentTarget.target.TryGetComponent(out EnemyAI enemy) && enemy.IsDead)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
+            if (currentTarget.target.TryGetComponent(out AllyBaseAI ally) && ally.IsDead)
             {
                 Destroy(gameObject);
                 return;
@@ -142,7 +147,7 @@ public class EnemyHealthUI : MonoBehaviour
             info.isAlly = true;
             info.maxHealth = ally.MaxHP;
             info.displayName = $"{ally.HeroName}";
-            info.sliderColor = allyHpColor;
+            info.sliderColor = enemyHpColor;
             autoHide = false;
         }
         else

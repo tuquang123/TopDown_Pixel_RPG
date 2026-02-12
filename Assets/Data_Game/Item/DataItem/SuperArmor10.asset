@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58a12a6a752f480985e6ada6da981401, type: 3}
   m_Name: SuperArmor10
   m_EditorClassIdentifier: 
-  itemID: dragon armor
-  itemName: Dragon Armor
+  itemID: dragongay
+  itemName: Dragon Armor vip
   icon: {fileID: -6702876299118751804, guid: 1416614edddf54e2bb98c61ab32dc586, type: 3}
+  weaponCategory: 0
   itemType: 6
   tier: 5
   price: 946
@@ -44,10 +45,8 @@ MonoBehaviour:
     flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 8032732682986528544, guid: 1416614edddf54e2bb98c61ab32dc586,
-    type: 3}
-  iconRight: {fileID: -3380439360112706912, guid: 1416614edddf54e2bb98c61ab32dc586,
-    type: 3}
+  iconLeft: {fileID: 8032732682986528544, guid: 1416614edddf54e2bb98c61ab32dc586, type: 3}
+  iconRight: {fileID: -3380439360112706912, guid: 1416614edddf54e2bb98c61ab32dc586, type: 3}
   horseData: {fileID: 0}
   baseUpgradeCost: 290
   restoresHealth: 0
@@ -65,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

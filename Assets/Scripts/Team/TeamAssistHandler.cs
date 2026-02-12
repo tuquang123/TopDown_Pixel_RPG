@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [System.Serializable]
 public class AllySlot
@@ -10,7 +12,11 @@ public class AllySlot
 public class TeamAssistHandler : MonoBehaviour, IGameEventListener<string>
 {
     [SerializeField] private AllySlot[] allySlots;
-    //[SerializeField] private HeroManager heroManager;
+
+    private void Start()
+    {
+        allySlots = CommonReferent.Instance.allySlots;
+    }
 
     private void OnEnable()
     {

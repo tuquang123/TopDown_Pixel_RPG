@@ -7,8 +7,10 @@ public class HeroManager : MonoBehaviour
 
     public Hero[] allHeroes;
 
-    void Start()
+    public void InitData()
     {
+        CommonReferent.Instance.heroManager = this;
+        
         battleTeam = new BattleTeam();
         battleTeam.ResetTeam();
 

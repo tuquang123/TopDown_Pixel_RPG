@@ -604,7 +604,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     }
     public void FireArrow()
     {
-        if (CommonReferent.Instance.ArrowProjectile == null) return;
+        if (CommonReferent.Instance.arrowProjectile == null) return;
 
         Transform target = targetEnemy != null ? targetEnemy : targetDestructible;
 
@@ -620,7 +620,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         }
 
         var arrow = Instantiate(
-            CommonReferent.Instance.ArrowProjectile,
+            CommonReferent.Instance.arrowProjectile,
             attackPoint.position,
             Quaternion.identity
         );

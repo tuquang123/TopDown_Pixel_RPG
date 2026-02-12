@@ -13,7 +13,8 @@ public class HeroUI : BasePopup
     public override void Show()
     {
         base.Show();
-        //heroManager.battleTeam.ResetTeam();
+       
+        heroManager.InitData();
         InitHeroListUI();
         InitTeamSlotUI();
         UpdateTeamSlotUI();

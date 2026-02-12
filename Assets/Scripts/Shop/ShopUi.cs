@@ -68,12 +68,7 @@ public class ShopUI : BasePopup
         currentFilter.SetSelected(true);
     }
 
-    public void OnFilterAll(FilterButtonUI btn)
-    {
-        SelectFilter(btn);
-        ApplyFilter(null);
-    }
-
+  
     public void OnFilterWeapon(FilterButtonUI btn)
     {
         SelectFilter(btn);

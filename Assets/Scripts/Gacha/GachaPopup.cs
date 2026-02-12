@@ -15,6 +15,9 @@ public class GachaPopup : BasePopup
     [Header("Result Grid")]
     public Transform resultContainer;        // GridLayoutGroup
     public GachaItemUI gachaItemPrefab;      // prefab item
+    [Header("Info Panel")]
+    public GameObject infoPanel;
+    public Transform infoContainer; // container RIÊNG cho info
 
     public void OnClickRollX1()
     {
@@ -101,7 +104,8 @@ public class GachaPopup : BasePopup
             return;
         }
 
-        ClearResult();
+        infoPanel.SetActive(false); // đóng info nếu đang mở
+        ClearRollResult();
 
         var item = RollOne();
         if (item == null) return;
@@ -109,6 +113,7 @@ public class GachaPopup : BasePopup
         Inventory.Instance.AddItem(item);
         ShowItem(item);
     }
+
 
     public void RollX5()
     {
@@ -120,7 +125,8 @@ public class GachaPopup : BasePopup
             return;
         }
 
-        ClearResult();
+        infoPanel.SetActive(false);
+        ClearRollResult();
 
         for (int i = 0; i < 5; i++)
         {
@@ -131,9 +137,41 @@ public class GachaPopup : BasePopup
             ShowItem(item);
         }
     }
+    public void OnClickInfo()
+    {
+        ClearInfo();
+        infoPanel.SetActive(true);
+
+        foreach (var g in gachaData.items)
+        {
+            var ui = Instantiate(gachaItemPrefab, infoContainer);
+            ui.Setup(new ItemInstance(g.item));
+        }
+    }
+    public void OnCloseInfo()
+    {
+        infoPanel.SetActive(false);
+        ClearInfo();
+    }
+
     public void OnConfirmClick()
     {
         ClearResult();
+    }
+    
+
+    void ClearRollResult()
+    {
+        foreach (Transform child in resultContainer)
+            Destroy(child.gameObject);
+
+        resultPanel.SetActive(false);
+    }
+
+    void ClearInfo()
+    {
+        foreach (Transform child in infoContainer)
+            Destroy(child.gameObject);
     }
 
 
