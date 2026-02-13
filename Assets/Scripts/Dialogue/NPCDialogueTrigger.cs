@@ -117,11 +117,11 @@ public class NPCDialogueTrigger : MonoBehaviour
 
         if (currentQuest == null)
         {
-            DialogueSystem.Instance.StartDialogueForQuest(dialogueID, "NV0", QuestState.Rewarded);
+            DialogueController.Instance.StartDialogue(dialogueID, "NV0", QuestState.Rewarded);
             return;
         }
 
-        DialogueSystem.Instance.StartDialogueForQuest(dialogueID, currentQuest.quest.questID, currentQuest.state, () =>
+        DialogueController.Instance.StartDialogue(dialogueID, currentQuest.quest.questID, currentQuest.state, () =>
         {
             if (currentQuest.state == QuestState.NotAccepted)
             {

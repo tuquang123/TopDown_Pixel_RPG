@@ -9,26 +9,23 @@ using DG.Tweening;
 
 public class DialogueSystem : Singleton<DialogueSystem>
 {
-    [Header("UI Components")]
-    public TextMeshProUGUI nameText;
+    [Header("UI Components")] public TextMeshProUGUI nameText;
     public TextMeshProUGUI dialogueText;
     public GameObject dialoguePanel;
     public Button nextButton;
     public Button skipButton;
-    public CanvasGroup canvasGroup; 
+    public CanvasGroup canvasGroup;
     private Tween openTween;
     private Tween closeTween;
-    [Header("Database")] 
-    public DialogueDatabase dialogueDatabase;
+    [Header("Database")] public DialogueDatabase dialogueDatabase;
 
     private Queue<DialogueLine> lines;
     private bool isTyping = false;
     private string currentFullSentence = "";
     private System.Action onComplete;
     private Coroutine typingCoroutine;
-[Header("Animation")]
-[SerializeField] private RectTransform dialogContent;
-[SerializeField] private CanvasGroup dialogCanvasGroup;
+    [Header("Animation")] [SerializeField] private RectTransform dialogContent;
+    [SerializeField] private CanvasGroup dialogCanvasGroup;
 
     private void Start()
     {
@@ -55,26 +52,26 @@ public class DialogueSystem : Singleton<DialogueSystem>
     }
 
 
-    
-  private void StartDialogue(Dialogue dialogue)
-  {
-      dialoguePanel.SetActive(true);
-  
-      openTween?.Kill();
-      closeTween?.Kill();
-  
-      dialogCanvasGroup.alpha = 0f;
-      dialogContent.localScale = Vector3.one * 0.9f;
-  
-      openTween = DOTween.Sequence()
-          .Append(dialogCanvasGroup.DOFade(1f, 0.2f))
-          .Join(dialogContent
-              .DOScale(1f, 0.25f)
-              .SetEase(Ease.OutBack));
-  
-      lines = new Queue<DialogueLine>(dialogue.lines);
-      DisplayNextLine();
-  }
+
+    private void StartDialogue(Dialogue dialogue)
+    {
+        dialoguePanel.SetActive(true);
+
+        openTween?.Kill();
+        closeTween?.Kill();
+
+        dialogCanvasGroup.alpha = 0f;
+        dialogContent.localScale = Vector3.one * 0.9f;
+
+        openTween = DOTween.Sequence()
+            .Append(dialogCanvasGroup.DOFade(1f, 0.2f))
+            .Join(dialogContent
+                .DOScale(1f, 0.25f)
+                .SetEase(Ease.OutBack));
+
+        lines = new Queue<DialogueLine>(dialogue.lines);
+        DisplayNextLine();
+    }
 
 
 
@@ -127,31 +124,19 @@ public class DialogueSystem : Singleton<DialogueSystem>
     }
 
 
-  private void EndDialogue()
-  {
-      openTween?.Kill();
-      closeTween?.Kill();
-  
-      closeTween = DOTween.Sequence()
-          .Append(dialogCanvasGroup.DOFade(0f, 0.15f))
-          .Join(dialogContent.DOScale(0.9f, 0.15f))
-          .OnComplete(() =>
-          {
-              dialoguePanel.SetActive(false);
-              onComplete?.Invoke();
-              onComplete = null;
-          });
-  }
+    private void EndDialogue()
+    {
+        openTween?.Kill();
+        closeTween?.Kill();
 
-
-
-}
-
-// ===== Thêm enum trạng thái quest =====
-public enum QuestState
-{
-    NotAccepted,  // chưa nhận
-    InProgress,   // đang làm
-    Completed,    // xong nhiệm vụ
-    Rewarded      // đã nhận thưởng
+        closeTween = DOTween.Sequence()
+            .Append(dialogCanvasGroup.DOFade(0f, 0.15f))
+            .Join(dialogContent.DOScale(0.9f, 0.15f))
+            .OnComplete(() =>
+            {
+                dialoguePanel.SetActive(false);
+                onComplete?.Invoke();
+                onComplete = null;
+            });
+    }
 }

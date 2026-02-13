@@ -15,7 +15,7 @@ public class QuickUseUI : MonoBehaviour
     public float potionCooldown = 3f; 
 
     private Inventory inventory;
-    [SerializeField] private InventoryUI inventoryUI;
+    //[SerializeField] private InventoryUI inventoryUI;
     private bool isHealthOnCooldown = false;
     private bool isManaOnCooldown = false;
     [SerializeField] private Image healthPotionIcon;
@@ -51,7 +51,7 @@ public class QuickUseUI : MonoBehaviour
         {
             PlayerStats.Instance.Consume(potion.itemData);
             inventory.RemoveItem(potion);
-            inventoryUI.UpdateInventoryUI();
+            //inventoryUI.UpdateInventoryUI();
 
             StartCoroutine(PotionCooldown(healthPotionButton, true));
         }
@@ -67,7 +67,7 @@ public class QuickUseUI : MonoBehaviour
         {
             PlayerStats.Instance.Consume(potion.itemData);
             inventory.RemoveItem(potion);
-            inventoryUI.UpdateInventoryUI();
+            //inventoryUI.UpdateInventoryUI();
 
             StartCoroutine(PotionCooldown(manaPotionButton, false));
         }

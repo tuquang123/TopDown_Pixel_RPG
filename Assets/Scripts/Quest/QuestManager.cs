@@ -2,6 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// ===== Thêm enum trạng thái quest =====
+public enum QuestState
+{
+    NotAccepted,  // chưa nhận
+    InProgress,   // đang làm
+    Completed,    // xong nhiệm vụ
+    Rewarded      // đã nhận thưởng
+}
+
 public class QuestManager : Singleton<QuestManager>
 {
     public QuestDatabase questDatabase;

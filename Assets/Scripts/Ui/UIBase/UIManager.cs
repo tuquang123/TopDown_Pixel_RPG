@@ -11,7 +11,8 @@ public enum PopupType
     Stats,
     Skill,
     ItemConfirm,
-    Gacha
+    Gacha,
+    Hero
 }
     
 [Serializable]
@@ -90,12 +91,7 @@ public class UIManager : Singleton<UIManager>
     {
         return activePopups.ContainsKey(type);
     }
-
-    public bool HasAnyPopupOpen()
-    {
-        return activePopups.Count > 0;
-    }
-
+    
     // ================== BLUR ==================
 
     public void UpdateBlurState()
@@ -138,9 +134,6 @@ public class UIManager : Singleton<UIManager>
 
         return instance;
     }
-
-
-
     
     public bool TryGetPopup(PopupType type, out BasePopup popup)
     {
@@ -148,22 +141,7 @@ public class UIManager : Singleton<UIManager>
     }
     // ================== GACHA ==================
 
-    public GachaPopup OpenGacha()
-    {
-        var popup = ShowPopupByType(PopupType.Gacha);
-
-        return popup as GachaPopup;
-    }
-
-    public void CloseGacha()
-    {
-        HidePopupByType(PopupType.Gacha);
-    }
-
-    public bool IsGachaOpen()
-    {
-        return IsPopupOpen(PopupType.Gacha);
-    }
+    
 
 
 }

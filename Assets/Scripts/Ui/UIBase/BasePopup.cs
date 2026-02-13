@@ -21,12 +21,14 @@ public class BasePopup : MonoBehaviour
         transform.localScale = Vector3.zero;
     }
 
+    protected virtual bool ShouldDestroyOnHide() => true;
+
     public virtual void Show()
     {
-        //Time.timeScale = 0f; // pause game
-
         fadeTween?.Kill();
         scaleTween?.Kill();
+
+        gameObject.SetActive(true);
 
         fadeTween = canvasGroup
             .DOFade(1f, 0.2f)
@@ -48,6 +50,9 @@ public class BasePopup : MonoBehaviour
         fadeTween?.Kill();
         scaleTween?.Kill();
 
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+
         fadeTween = canvasGroup
             .DOFade(0f, 0.15f)
             .SetUpdate(true);
@@ -58,9 +63,12 @@ public class BasePopup : MonoBehaviour
             .SetUpdate(true)
             .OnComplete(() =>
             {
-                //Time.timeScale = 1f; // resume game
                 UIManager.Instance?.UpdateBlurState();
-                Destroy(gameObject); // 🔥 destroy popup
+
+                if (ShouldDestroyOnHide())
+                    Destroy(gameObject);
+                else
+                    gameObject.SetActive(false);
             });
     }
 }
