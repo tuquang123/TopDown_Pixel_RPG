@@ -647,12 +647,6 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         OnEnemyDefeated?.Invoke(exp);
     }
-
-    protected virtual IEnumerator DelayDeactivate()
-    {
-        yield return new WaitForSeconds(timeDieDelay);
-        Destroy(gameObject);
-    }
     
     private void OnDrawGizmosSelected()
     {

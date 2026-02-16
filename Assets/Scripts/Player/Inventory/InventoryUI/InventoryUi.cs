@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
+
 
 public class InventoryUI : BasePopup
 {
@@ -10,6 +12,8 @@ public class InventoryUI : BasePopup
     public GameObject itemPrefab;
     public EquipmentUI equipmentUi;
     public ItemDetailPanel itemDetailPanel;
+    [Header("Auto Equip")]
+    public Button autoEquipButton;
 
     [Header("Filter Buttons")]
     public List<FilterButtonUI> filterButtons = new List<FilterButtonUI>();
@@ -153,6 +157,7 @@ public class InventoryUI : BasePopup
     public override void Show()
     {
         base.Show();
+        autoEquipButton.onClick.AddListener(AutoEquipBestItems);
 
         inventory = CommonReferent.Instance.playerPrefab.GetComponent<Inventory>();
 
@@ -193,5 +198,64 @@ public class InventoryUI : BasePopup
     {
         UIManager.Instance.HidePopupByType(PopupType.Inventory);
     }
-    
+    public void AutoEquipBestItems()
+    {
+        if (inventory == null) return;
+
+        // Bước 1: Tính trước best item cho từng loại
+        Dictionary<ItemType, ItemInstance> bestItems = new();
+
+        foreach (var item in inventory.items)
+        {
+            ItemType type = item.itemData.itemType;
+
+            if (!bestItems.ContainsKey(type))
+            {
+                bestItems[type] = item;
+            }
+            else
+            {
+                ItemInstance currentBest = bestItems[type];
+
+                bool isBetter =
+                    item.itemData.tier > currentBest.itemData.tier ||
+                    (item.itemData.tier == currentBest.itemData.tier &&
+                     item.itemData.price > currentBest.itemData.price);
+
+                if (isBetter)
+                    bestItems[type] = item;
+            }
+        }
+
+        // Bước 2: Equip sau khi đã chọn xong hết
+        foreach (var kvp in bestItems)
+        {
+            ItemType type = kvp.Key;
+            ItemInstance bestItem = kvp.Value;
+
+            ItemInstance currentEquipped = equipmentUi.GetEquippedItem(type);
+
+            if (currentEquipped == null)
+            {
+                equipmentUi.EquipItem(bestItem);
+            }
+            else
+            {
+                bool isBetter =
+                    bestItem.itemData.tier > currentEquipped.itemData.tier ||
+                    (bestItem.itemData.tier == currentEquipped.itemData.tier &&
+                     bestItem.itemData.price > currentEquipped.itemData.price);
+
+                if (isBetter)
+                {
+                    equipmentUi.EquipItem(bestItem);
+                }
+            }
+        }
+
+        equipmentUi.UpdateEquipmentUI();
+        UpdateInventoryUI();
+    }
+
+
 }
