@@ -17,6 +17,10 @@ public class EquipmentUI : MonoBehaviour
     public EquipmentSlotUI cloakSlot;
     public EquipmentSlotUI specialArmorSlot;
     public EquipmentSlotUI hairSlot;
+    public List<ItemType> GetAllEquippedTypes()
+    {
+        return new List<ItemType>(equipmentManager.equippedItems.Keys);
+    }
 
 
     private Dictionary<ItemType, EquipmentSlotUI> slotMapping;

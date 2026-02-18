@@ -18,6 +18,12 @@ public class InventoryUI : BasePopup
     [Header("Filter Buttons")]
     public List<FilterButtonUI> filterButtons = new List<FilterButtonUI>();
     private FilterButtonUI currentFilter;
+    [Header("Sell All")]
+    public Button sellAllButton;
+    [Header("Confirm Popup")]
+    public ConfirmPopup confirmPopup;
+    [Header("Unequip All")]
+    public Button unequipAllButton;
 
     private ItemUI currentSelectedItem;
     
@@ -157,8 +163,6 @@ public class InventoryUI : BasePopup
     public override void Show()
     {
         base.Show();
-        autoEquipButton.onClick.AddListener(AutoEquipBestItems);
-
         inventory = CommonReferent.Instance.playerPrefab.GetComponent<Inventory>();
 
         UpdateInventoryUI();
@@ -194,6 +198,18 @@ public class InventoryUI : BasePopup
     }
 
     #endregion
+    private void Start()
+    {
+        if (autoEquipButton != null)
+            autoEquipButton.onClick.AddListener(AutoEquipBestItems);
+
+        if (sellAllButton != null)
+            sellAllButton.onClick.AddListener(SellAllItems);
+
+        if (unequipAllButton != null)
+            unequipAllButton.onClick.AddListener(UnequipAllItems);
+    }
+
     public void Close()
     {
         UIManager.Instance.HidePopupByType(PopupType.Inventory);
@@ -251,6 +267,51 @@ public class InventoryUI : BasePopup
                     equipmentUi.EquipItem(bestItem);
                 }
             }
+        }
+
+        equipmentUi.UpdateEquipmentUI();
+        UpdateInventoryUI();
+    }
+    public void SellAllItems()
+    {
+        if (inventory == null) return;
+
+        int totalGold = 0;
+
+        // Copy list để tránh lỗi khi remove trong lúc duyệt
+        List<ItemInstance> itemsToSell = new List<ItemInstance>(inventory.items);
+
+        foreach (var item in itemsToSell)
+        {
+            // Bỏ qua nếu item đang được trang bị
+            if (equipmentUi.IsItemEquipped(item))
+                continue;
+
+            totalGold += item.itemData.price;
+
+            inventory.RemoveItem(item);
+        }
+
+        if (totalGold > 0)
+        {
+            CurrencyManager.Instance.AddGold(totalGold);
+            FloatingTextSpawner.Instance.SpawnText("+" + totalGold, Vector3.zero, Color.yellow);
+        }
+
+        equipmentUi.UpdateEquipmentUI();
+        UpdateInventoryUI();
+    }
+    public void UnequipAllItems()
+    {
+        if (inventory == null) return;
+
+        // Copy danh sách type để tránh modify dictionary khi đang duyệt
+        var equippedTypes = new List<ItemType>(equipmentUi
+            .GetAllEquippedTypes());
+
+        foreach (var type in equippedTypes)
+        {
+            equipmentUi.UnequipItem(type);
         }
 
         equipmentUi.UpdateEquipmentUI();

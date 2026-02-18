@@ -549,6 +549,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         isDead = true;
+        SetSelected(false);
 
         HandleDieAnimation();
         DisableComponents();
@@ -661,4 +662,13 @@ public class EnemyAI : MonoBehaviour, IDamageable
     private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
     protected static readonly int DieTrigger = Animator.StringToHash("4_Death");
     private static readonly int LongAttack = Animator.StringToHash("8_Attack");
+    [Header("Selection")]
+    [SerializeField] private GameObject selectionCircle;
+
+    public void SetSelected(bool value)
+    {
+        if (selectionCircle != null)
+            selectionCircle.SetActive(value);
+    }
+
 }

@@ -445,6 +445,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     {
         targetEnemy = null;
         float minDist = Mathf.Infinity;
+        EnemyAI bestEnemy = null;
 
         foreach (var enemy in EnemyTracker.Instance.GetEnemiesInRange(transform.position, GetDetectionRange()))
         {
@@ -455,9 +456,23 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
             {
                 minDist = dist;
                 targetEnemy = enemy.transform;
+                bestEnemy = enemy;
             }
         }
+
+        // Update selection
+        if (currentSelectedEnemy != bestEnemy)
+        {
+            if (currentSelectedEnemy != null)
+                currentSelectedEnemy.SetSelected(false);
+
+            currentSelectedEnemy = bestEnemy;
+
+            if (currentSelectedEnemy != null)
+                currentSelectedEnemy.SetSelected(true);
+        }
     }
+    
     
     protected void FindClosestDestructible()
     {
@@ -639,5 +654,6 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         float dirX = target.position.x - transform.position.x;
         RotateCharacter(dirX);
     }
+    private EnemyAI currentSelectedEnemy;
 
 }
