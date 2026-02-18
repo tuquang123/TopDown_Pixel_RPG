@@ -95,7 +95,7 @@ public static class SaveManager
             questData = QuestManager.Instance.ToData()
         };
 
-        string json = JsonUtility.ToJson(data, true);
+        string json = JsonUtility.ToJson(data, false);
 
         string path = GetSlotPath(slot);
         string backupPath = GetBackupPath(slot);

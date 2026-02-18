@@ -82,7 +82,8 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(autoSaveInterval);
+            //yield return new WaitForSeconds(autoSaveInterval);
+            yield return new WaitForSecondsRealtime(autoSaveInterval);
             SaveGame();
         }
     }
