@@ -1,17 +1,24 @@
 // ================= SaveManager.cs =================
+
+using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 [System.Serializable]
 public class SaveData
 {
+    public int version = 1;
+    public long lastSaveTime;
+
     public PlayerStatsData playerStats;
-    public List<ItemInstanceData> inventory;
-    public List<EquipmentData> equipment;
+    public List<ItemInstanceData> inventory = new();
+    public List<EquipmentData> equipment = new();
     public SkillSaveData skill;
-    public LevelData levelData; 
+    public LevelData levelData;
     public QuestSaveData questData;
 }
+
 
 [System.Serializable] 
 public class LevelData
@@ -44,13 +51,38 @@ public class ObjectiveProgressData
 
 public static class SaveManager
 {
-    private const string SaveKey = "GameSave";
+    private const int CurrentVersion = 1;
+    private static string SaveFolder => Application.persistentDataPath + "/Saves/";
 
-    public static void Save(PlayerStats playerStats, Inventory inventory, Equipment equipment,
-        SkillSystem skill, PlayerLevel playerLevel)
+    private static string GetSlotPath(int slot)
     {
+        return SaveFolder + $"save_{slot}.json";
+    }
+
+    private static string GetBackupPath(int slot)
+    {
+        return SaveFolder + $"save_{slot}_backup.json";
+    }
+
+    public static void Initialize()
+    {
+        if (!Directory.Exists(SaveFolder))
+            Directory.CreateDirectory(SaveFolder);
+    }
+
+    public static void Save(int slot,
+        PlayerStats playerStats,
+        Inventory inventory,
+        Equipment equipment,
+        SkillSystem skill,
+        PlayerLevel playerLevel)
+    {
+        Initialize();
+
         SaveData data = new SaveData
         {
+            version = CurrentVersion,
+            lastSaveTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             inventory = inventory.ToData(),
             equipment = equipment.ToData(),
             skill = skill.ToData(),
@@ -64,32 +96,75 @@ public static class SaveManager
         };
 
         string json = JsonUtility.ToJson(data, true);
-        PlayerPrefs.SetString(SaveKey, json);
-        PlayerPrefs.Save();
 
-        Debug.Log("[SaveManager] Saved to PlayerPrefs");
+        string path = GetSlotPath(slot);
+        string backupPath = GetBackupPath(slot);
+
+        // Backup trước khi ghi
+        if (File.Exists(path))
+            File.Copy(path, backupPath, true);
+
+        File.WriteAllText(path, json);
+
+        PlayerPrefs.Save(); // flush cho WebGL
+        Debug.Log($"[SaveManager] Saved slot {slot}");
     }
 
-    public static void Load(PlayerStats playerStats, Inventory inventory, Equipment equipment, ItemDatabase db,
-        SkillSystem skill, PlayerLevel playerLevel)
+    public static bool Load(int slot,
+        PlayerStats playerStats,
+        Inventory inventory,
+        Equipment equipment,
+        ItemDatabase db,
+        SkillSystem skill,
+        PlayerLevel playerLevel)
     {
-        if (!PlayerPrefs.HasKey(SaveKey))
+        Initialize();
+
+        string path = GetSlotPath(slot);
+        string backupPath = GetBackupPath(slot);
+
+        if (!File.Exists(path))
         {
-            Debug.LogWarning("[SaveManager] No save data found in PlayerPrefs!");
-            return;
+            Debug.LogWarning("Save file not found.");
+            return false;
         }
 
-        string json = PlayerPrefs.GetString(SaveKey);
-        SaveData data = JsonUtility.FromJson<SaveData>(json);
+        string json = File.ReadAllText(path);
+
+        SaveData data = null;
+
+        try
+        {
+            data = JsonUtility.FromJson<SaveData>(json);
+        }
+        catch
+        {
+            Debug.LogWarning("Save corrupted. Trying backup...");
+            if (File.Exists(backupPath))
+            {
+                json = File.ReadAllText(backupPath);
+                data = JsonUtility.FromJson<SaveData>(json);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        if (data.version != CurrentVersion)
+        {
+            Debug.Log("Upgrading save version...");
+            UpgradeSave(data);
+        }
 
         inventory.FromData(data.inventory, db);
         equipment.FromData(data.equipment, db, playerStats);
         skill.FromData(data.skill);
-        
+
         equipment.ReapplyEquipmentStats(playerStats);
         equipment.OnEventTypeWeapon();
         skill.ReapplyPassiveSkills(playerStats);
-        
+
         playerStats.Revive();
 
         if (data.levelData != null)
@@ -99,30 +174,59 @@ public static class SaveManager
                 data.levelData.exp,
                 data.levelData.skillPoints
             );
-
-            Debug.Log($"[SaveManager] Loaded Level {data.levelData.level}, EXP {data.levelData.exp}, SP {data.levelData.skillPoints}");
         }
 
         QuestManager.Instance.FromData(data.questData, QuestManager.Instance.questDatabase);
 
-        Debug.Log("[SaveManager] Save file loaded from PlayerPrefs.");
+        Debug.Log($"[SaveManager] Loaded slot {slot}");
+        return true;
     }
 
-    public static void Clear()
+    private static void UpgradeSave(SaveData data)
     {
-        if (PlayerPrefs.HasKey(SaveKey))
-        {
-            PlayerPrefs.DeleteKey(SaveKey);
-            Debug.Log("[SaveManager] Save data deleted from PlayerPrefs.");
-        }
-        else
-        {
-            Debug.Log("[SaveManager] No save data to delete.");
-        }
+        // Future proof upgrade logic
+        data.version = CurrentVersion;
     }
 
-    public static bool HasSave()
+    public static bool HasSave(int slot)
     {
-        return PlayerPrefs.HasKey(SaveKey);
+        return File.Exists(GetSlotPath(slot));
     }
+
+    public static void Delete(int slot)
+    {
+        string path = GetSlotPath(slot);
+        if (File.Exists(path))
+            File.Delete(path);
+    }
+    public static void ClearAll()
+    {
+        Initialize();
+
+        if (!Directory.Exists(SaveFolder))
+        {
+            Debug.Log("[SaveManager] No save folder found.");
+            return;
+        }
+
+        var files = Directory.GetFiles(SaveFolder);
+
+        foreach (var file in files)
+        {
+            try
+            {
+                File.Delete(file);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[SaveManager] Failed to delete file: {file} | {e.Message}");
+            }
+        }
+
+        PlayerPrefs.Save(); // flush WebGL
+
+        Debug.Log("[SaveManager] All save data cleared.");
+    }
+
 }
+

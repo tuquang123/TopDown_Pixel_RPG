@@ -9459,7 +9459,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9409400232c145b0bc885fbac121d93e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allAllItem: 0
+  saveSlot: 0
+  autoSave: 1
+  autoSaveInterval: 30
+  addAllItemCheat: 0
 --- !u!222 &6976210548447270378
 CanvasRenderer:
   m_ObjectHideFlags: 0

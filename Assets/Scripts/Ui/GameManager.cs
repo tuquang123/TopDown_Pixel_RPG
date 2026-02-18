@@ -1,105 +1,135 @@
-﻿using Sirenix.OdinInspector;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
+using Sirenix.OdinInspector;
 
 public class GameManager : MonoBehaviour
 {
-    public bool allAllItem;
-    
+    [Header("Save Setting")]
+    [SerializeField] private int saveSlot = 0;
+    [SerializeField] private bool autoSave = true;
+    [SerializeField] private float autoSaveInterval = 30f;
+
+    [Header("Debug")]
+    public bool addAllItemCheat;
+
     private bool hasLoaded = false;
-    
+    private Coroutine autoSaveRoutine;
+
+    private void Awake()
+    {
+        SaveManager.Initialize();
+    }
+
     private IEnumerator Start()
     {
-        yield return null;
+        yield return null; // đợi hệ thống khác Awake xong
 
         LoadGame();
         hasLoaded = true;
 
-        if (allAllItem)
+        if (addAllItemCheat)
             StartCheatIfNeeded();
-    }
-    
-    private void OnApplicationPause(bool pause)
-    {
-        if (pause) SaveGame(); // Auto save khi minimize hoặc thoát app
+
+        if (autoSave)
+            autoSaveRoutine = StartCoroutine(AutoSaveLoop());
     }
 
-    private void OnApplicationQuit()
-    {
-#if UNITY_EDITOR
-        SaveGame();
-        return;
-#endif
-        SaveGame();
-    }
-
+    #region SAVE / LOAD
 
     public void SaveGame()
     {
         if (!hasLoaded)
         {
-            Debug.LogWarning("[GameManager] Skip save: game not loaded yet");
+            Debug.LogWarning("Skip save: game not loaded yet.");
             return;
         }
 
+        var c = CommonReferent.Instance;
+
         SaveManager.Save(
-            CommonReferent.Instance.playerStats,
-            CommonReferent.Instance.inventory,
-            CommonReferent.Instance.equipment,
-            CommonReferent.Instance.skill,
-            CommonReferent.Instance.playerLevel
+            saveSlot,
+            c.playerStats,
+            c.inventory,
+            c.equipment,
+            c.skill,
+            c.playerLevel
         );
     }
 
-
     public void LoadGame()
     {
-        SaveManager.Load(CommonReferent.Instance.playerStats,
-            CommonReferent.Instance.inventory,
-            CommonReferent.Instance.equipment,
-            CommonReferent.Instance.itemDatabase,
-            CommonReferent.Instance.skill,
-            CommonReferent.Instance.playerLevel);
-        
-        CommonReferent.Instance.playerLevelUI.RefreshUI(); 
+        var c = CommonReferent.Instance;
 
+        bool loaded = SaveManager.Load(
+            saveSlot,
+            c.playerStats,
+            c.inventory,
+            c.equipment,
+            c.itemDatabase,
+            c.skill,
+            c.playerLevel
+        );
+
+        if (loaded)
+            c.playerLevelUI.RefreshUI();
     }
 
-    [Button("Clear Save Data")]
-    private void ClearSave()
-    {
-        SaveManager.Clear();
-    }
-    
+    #endregion
 
-    // Cheat
-    private void AddAllItemsToInventory()
+    #region AUTO SAVE
+
+    private IEnumerator AutoSaveLoop()
     {
-        foreach (var item in CommonReferent.Instance.itemDatabase.allItems)
+        while (true)
         {
-            if (item != null)
-            {
-                ItemInstance itemInstance = new ItemInstance(item);
-                CommonReferent.Instance.inventory.AddItem(itemInstance);
-            }
+            yield return new WaitForSeconds(autoSaveInterval);
+            SaveGame();
         }
     }
+
+    private void OnApplicationPause(bool pause)
+    {
+        if (pause)
+            SaveGame();
+    }
+
+    private void OnApplicationFocus(bool focus)
+    {
+        if (!focus)
+            SaveGame();
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveGame();
+    }
+
+    [Button]
+    public void ClearAllData()
+    {
+        SaveManager.ClearAll();
+    }
+
+    #endregion
+
+    #region CHEAT
+
     private void StartCheatIfNeeded()
     {
-        if (allAllItem)
-        {
-            // Chỉ cheat nếu inventory rỗng
-            if (CommonReferent.Instance.inventory.IsEmpty())
-            {
-                AddAllItemsToInventory();
-                Debug.Log("Cheat: Added all items to inventory (only once).");
-            }
-            else
-            {
-                Debug.Log("Inventory already has items, skip cheat.");
-            }
-        }
-    }
-    
+        var inv = CommonReferent.Instance.inventory;
 
+        if (!inv.IsEmpty())
+            return;
+
+        foreach (var item in CommonReferent.Instance.itemDatabase.allItems)
+        {
+            if (item == null) continue;
+
+            inv.AddItem(new ItemInstance(item));
+        }
+
+        Debug.Log("Cheat: Added all items (once).");
+    }
+
+    #endregion
 }
