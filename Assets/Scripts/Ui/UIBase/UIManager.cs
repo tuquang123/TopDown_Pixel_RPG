@@ -55,6 +55,22 @@ public class UIManager : Singleton<UIManager>
 
         UpdateBlurState();
     }
+    
+    private void UpdateTimeScale()
+    {
+        var invalidKeys = new List<PopupType>();
+
+        foreach (var pair in activePopups)
+        {
+            if (pair.Value == null)
+                invalidKeys.Add(pair.Key);
+        }
+
+        foreach (var key in invalidKeys)
+            activePopups.Remove(key);
+
+        Time.timeScale = activePopups.Count > 0 ? 0f : 1f;
+    }
 
     // ================== SHOW ==================
 
@@ -71,6 +87,7 @@ public class UIManager : Singleton<UIManager>
         activePopups.Remove(type);
 
         UpdateBlurState();
+        UpdateTimeScale();
     }
 
     public void HideAllPopups()
@@ -83,6 +100,7 @@ public class UIManager : Singleton<UIManager>
 
         activePopups.Clear();
         UpdateBlurState();
+        UpdateTimeScale();
     }
 
     // ================== CHECK ==================
@@ -131,6 +149,7 @@ public class UIManager : Singleton<UIManager>
 
         instance.Show();
         UpdateBlurState();
+        UpdateTimeScale();
 
         return instance;
     }
