@@ -10,16 +10,26 @@ public class ItemUI : MonoBehaviour
     public TMP_Text nameText;
     public TMP_Text lvText;
     public ItemIconHandler icon;
+    
+  
 
+// NEW
+    public GameObject lockIconLocked;   // icon khóa
+    public GameObject lockIconUnlocked; // icon mở khóa
     private ItemInstance itemData;
     private InventoryUI inventoryUI;
     public Button button;
-    
+    public void RefreshLockState()
+    {
+        lockIconLocked.SetActive(itemData.isLocked);
+        lockIconUnlocked.SetActive(!itemData.isLocked);
+    }
     public void Setup(ItemInstance data, InventoryUI ui)
     {
         itemData = data;
         inventoryUI = ui;
-
+        lockIconLocked.SetActive(data.isLocked);
+        lockIconUnlocked.SetActive(!data.isLocked);
         icon.SetupIcons(data);
 
         nameText.text = data.itemData.itemName;

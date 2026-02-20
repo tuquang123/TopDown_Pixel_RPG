@@ -6,27 +6,21 @@ using UnityEngine.UI;
 
 public class InventoryUI : BasePopup
 {
-    [Header("Inventory UI")]
-    public Transform itemContainer;
+    [Header("Inventory UI")] public Transform itemContainer;
     Inventory inventory;
     public GameObject itemPrefab;
     public EquipmentUI equipmentUi;
     public ItemDetailPanel itemDetailPanel;
-    [Header("Auto Equip")]
-    public Button autoEquipButton;
+    [Header("Auto Equip")] public Button autoEquipButton;
 
-    [Header("Filter Buttons")]
-    public List<FilterButtonUI> filterButtons = new List<FilterButtonUI>();
+    [Header("Filter Buttons")] public List<FilterButtonUI> filterButtons = new List<FilterButtonUI>();
     private FilterButtonUI currentFilter;
-    [Header("Sell All")]
-    public Button sellAllButton;
-    [Header("Confirm Popup")]
-    public ConfirmPopup confirmPopup;
-    [Header("Unequip All")]
-    public Button unequipAllButton;
+    [Header("Sell All")] public Button sellAllButton;
+    [Header("Confirm Popup")] public ConfirmPopup confirmPopup;
+    [Header("Unequip All")] public Button unequipAllButton;
 
     private ItemUI currentSelectedItem;
-    
+
     public Inventory Inventory => inventory;
 
     #region FILTER LOGIC
@@ -117,6 +111,7 @@ public class InventoryUI : BasePopup
             return items.Where(i => i.itemData.itemType == type).ToList();
         }
     }
+
     public void FilterInventory(ItemType? type)
     {
         foreach (Transform child in itemContainer)
@@ -124,8 +119,8 @@ public class InventoryUI : BasePopup
 
         var filteredItems = ItemFilter
             .FilterInventoryByType(inventory.items, type)
-            .OrderBy(i => i.itemData.tier)     // 🔥 cùi → vip
-            .ThenBy(i => i.itemData.price)     // cùng tier → rẻ trước
+            .OrderBy(i => i.itemData.tier) // 🔥 cùi → vip
+            .ThenBy(i => i.itemData.price) // cùng tier → rẻ trước
             .ToList();
 
         foreach (ItemInstance item in filteredItems)
@@ -137,7 +132,7 @@ public class InventoryUI : BasePopup
         itemDetailPanel.Hide();
         currentSelectedItem = null;
     }
-    
+
 
     #endregion
 
@@ -179,7 +174,7 @@ public class InventoryUI : BasePopup
     public override void Hide()
     {
         base.Hide();
-        itemDetailPanel.Hide(); 
+        itemDetailPanel.Hide();
     }
 
     public void UpdateInventoryUI()
@@ -198,6 +193,7 @@ public class InventoryUI : BasePopup
     }
 
     #endregion
+
     private void Start()
     {
         if (autoEquipButton != null)
@@ -214,15 +210,19 @@ public class InventoryUI : BasePopup
     {
         UIManager.Instance.HidePopupByType(PopupType.Inventory);
     }
+
     public void AutoEquipBestItems()
     {
         if (inventory == null) return;
 
-        // Bước 1: Tính trước best item cho từng loại
         Dictionary<ItemType, ItemInstance> bestItems = new();
 
+        // BƯỚC 1: Tìm best item mỗi loại (bỏ qua item lock)
         foreach (var item in inventory.items)
         {
+            if (item.isLocked)
+                continue;
+
             ItemType type = item.itemData.itemType;
 
             if (!bestItems.ContainsKey(type))
@@ -243,7 +243,7 @@ public class InventoryUI : BasePopup
             }
         }
 
-        // Bước 2: Equip sau khi đã chọn xong hết
+        // BƯỚC 2: Equip
         foreach (var kvp in bestItems)
         {
             ItemType type = kvp.Key;
@@ -278,36 +278,36 @@ public class InventoryUI : BasePopup
 
         int totalGold = 0;
 
-        // Copy list để tránh lỗi khi remove trong lúc duyệt
         List<ItemInstance> itemsToSell = new List<ItemInstance>(inventory.items);
 
         foreach (var item in itemsToSell)
         {
-            // Bỏ qua nếu item đang được trang bị
             if (equipmentUi.IsItemEquipped(item))
                 continue;
 
-            totalGold += item.itemData.price;
+            if (item.isLocked)
+                continue;
 
+            totalGold += item.itemData.price;
             inventory.RemoveItem(item);
         }
 
         if (totalGold > 0)
         {
             CurrencyManager.Instance.AddGold(totalGold);
-            FloatingTextSpawner.Instance.SpawnText("+" + totalGold, Vector3.zero, Color.yellow);
         }
 
         equipmentUi.UpdateEquipmentUI();
         UpdateInventoryUI();
     }
+
     public void UnequipAllItems()
     {
         if (inventory == null) return;
 
-        // Copy danh sách type để tránh modify dictionary khi đang duyệt
-        var equippedTypes = new List<ItemType>(equipmentUi
-            .GetAllEquippedTypes());
+        var equippedTypes = new List<ItemType>(
+            equipmentUi.GetAllEquippedTypes()
+        );
 
         foreach (var type in equippedTypes)
         {
@@ -318,5 +318,11 @@ public class InventoryUI : BasePopup
         UpdateInventoryUI();
     }
 
-
+    public void RefreshCurrentSelectedItemLock()
+    {
+        if (currentSelectedItem != null)
+        {
+            currentSelectedItem.RefreshLockState();
+        }
+    }
 }

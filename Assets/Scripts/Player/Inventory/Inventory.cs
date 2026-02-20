@@ -12,6 +12,7 @@ public class EquipmentData
 [System.Serializable]
 public class ItemInstanceData
 {
+    public bool isLocked;
     public string itemID;     
     public int upgradeLevel;
     public int instanceID;
@@ -28,7 +29,12 @@ public class Inventory : Singleton<Inventory>
         {
             ItemData refData = db.GetItemByID(itemData.itemID); 
             if (refData != null)
-                items.Add(new ItemInstance(refData, itemData.upgradeLevel, itemData.instanceID));
+                items.Add(new ItemInstance(
+                    refData,
+                    itemData.upgradeLevel,
+                    itemData.instanceID,
+                    itemData.isLocked   // thêm dòng này
+                ));
         }
         
         OnInventoryChanged?.Invoke();

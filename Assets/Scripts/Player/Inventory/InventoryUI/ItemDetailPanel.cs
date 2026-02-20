@@ -38,7 +38,11 @@ public class ItemDetailPanel : MonoBehaviour
     private ConfirmPopup currentPopup;
     private ItemInstance currentItem;
     private InventoryUI inventoryUI;
+    public Button lockButton;
 
+    [Header("Lock Icons")]
+    public Image lockIconLocked;
+    public Image lockIconUnlocked;
     // ================= UNITY =================
 
     private void Awake()
@@ -186,6 +190,7 @@ public class ItemDetailPanel : MonoBehaviour
 
         // Buttons
         SetupButtons(currentItem, data, isEquipped);
+        RefreshLockVisual();
     }
 
     // ================= BUTTONS =================
@@ -220,8 +225,16 @@ public class ItemDetailPanel : MonoBehaviour
         int sellPrice = CalculateSellPrice(item);
         sellPriceText.text = $"Bán ({sellPrice} <sprite name=\"gold_icon\">)";
         sellButton.onClick.AddListener(ShowSellConfirm);
-    }
+        lockButton.onClick.RemoveAllListeners();
+        lockButton.onClick.AddListener(ToggleLock);
 
+      
+    }
+  private void RefreshLockVisual()
+        {
+            lockIconLocked.gameObject.SetActive(currentItem.isLocked);
+            lockIconUnlocked.gameObject.SetActive(!currentItem.isLocked);
+        }
     // ================= ACTIONS =================
 
     private void EquipItem()
@@ -393,5 +406,18 @@ public class ItemDetailPanel : MonoBehaviour
         float multi = 0.6f + item.upgradeLevel * 0.2f;
         return Mathf.RoundToInt(baseValue * multi);
     }
-    
+    private void ToggleLock()
+    {
+        currentItem.isLocked = !currentItem.isLocked;
+
+        GameEvents.OnShowToast.Raise(
+            currentItem.isLocked ? "Đã khóa vật phẩm" : "Đã mở khóa vật phẩm"
+        );
+
+        RefreshLockVisual();
+
+        // Chỉ refresh item UI đang chọn
+        inventoryUI.RefreshCurrentSelectedItemLock();
+    }
+  
 }

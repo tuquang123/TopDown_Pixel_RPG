@@ -6,6 +6,7 @@ public class ItemInstance
 {
     public ItemData itemData;
 
+    public bool isLocked; 
     // ⚠️ QUY ƯỚC CHUẨN:
     // level 1 = item gốc, CHƯA nâng cấp
     [Min(1)]
@@ -23,7 +24,7 @@ public class ItemInstance
             Debug.LogError("ItemInstance: ItemData is null");
             return;
         }
-
+        isLocked = false;
         itemData = data;
         upgradeLevel = 1; // ✅ FIX: level gốc PHẢI là 1
         instanceID = GenerateUniqueID();
@@ -32,14 +33,14 @@ public class ItemInstance
     // =========================
     // CONSTRUCTOR – LOAD TỪ SAVE
     // =========================
-    public ItemInstance(ItemData data, int loadedUpgradeLevel, int loadedInstanceID = -1)
+    public ItemInstance(ItemData data, int loadedUpgradeLevel, int loadedInstanceID = -1, bool locked = false)
     {
         if (data == null)
         {
             Debug.LogError("ItemInstance: ItemData is null");
             return;
         }
-
+        isLocked = locked;
         itemData = data;
 
         // ✅ FIX: clamp tuyệt đối, không cho < 1
@@ -75,7 +76,8 @@ public class ItemInstance
         {
             itemID = itemData.itemID,
             upgradeLevel = Mathf.Max(1, upgradeLevel), // double safety
-            instanceID = instanceID
+            instanceID = instanceID,
+            isLocked = isLocked 
         };
     }
 
@@ -86,5 +88,6 @@ public class ItemInstance
     {
         return Guid.NewGuid().GetHashCode();
     }
+    
 }
 
