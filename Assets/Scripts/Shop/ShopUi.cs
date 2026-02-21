@@ -15,7 +15,7 @@ public class ShopUI : BasePopup
     [Header("Data")]
     Inventory playerInventory;
     public List<ItemData> allShopItems = new();
-
+  
     // ================= INTERNAL =================
     private readonly List<ShopItemUI> activeUIs = new();
     private readonly Queue<ShopItemUI> pool = new();
@@ -38,8 +38,8 @@ public class ShopUI : BasePopup
         if (!isBuilt)
         {
             isBuilt = true;
-            SelectFilter(filterButtons[0]);
-            ApplyFilter(null);
+            SelectFilter(filterButtons[1]);
+            ApplyFilter(ItemType.Weapon);
         }
         else
         {
@@ -55,7 +55,11 @@ public class ShopUI : BasePopup
     #endregion
 
     #region FILTER BUTTONS
-
+    public void OnFilterConsumable(FilterButtonUI btn)
+    {
+        SelectFilter(btn);
+        ApplyFilter(ItemType.Consumable);
+    }
     private void SelectFilter(FilterButtonUI btn)
     {
         if (currentFilter == btn)
@@ -128,7 +132,7 @@ public class ShopUI : BasePopup
         var filteredItems = ItemFilter.FilterByType(allShopItems, type)
             .OrderBy(i => i.tier)
             .ThenBy(i => i.price)
-            .Where(i => !IsItemOwned(i))
+            .Where(i => type == ItemType.Consumable || !IsItemOwned(i))
             .ToList();
 
         BuildShop(filteredItems);
@@ -193,10 +197,10 @@ public class ShopUI : BasePopup
             return;
 
         detailPopup.Hide();
-        
+
         var data = instance.itemData;
 
-        if (IsItemOwned(data))
+        if (data.itemType != ItemType.Consumable && IsItemOwned(data))
             return;
 
         if (!CurrencyManager.Instance.SpendGold(data.price))
@@ -207,12 +211,10 @@ public class ShopUI : BasePopup
 
         playerInventory.AddItem(new ItemInstance(data));
 
-        // 🔥 giữ filter hiện tại
         ApplyFilter(currentFilterType);
 
         GameEvents.OnShowToast.Raise("Success purchase Item!");
     }
-
     #endregion
 
     #region UTIL
@@ -223,4 +225,16 @@ public class ShopUI : BasePopup
     }
 
     #endregion
+    [System.Serializable]
+    public class ConsumableStack
+    {
+        public ItemData itemData;
+        public int amount;
+
+        public ConsumableStack(ItemData data, int amount)
+        {
+            itemData = data;
+            this.amount = amount;
+        }
+    }
 }

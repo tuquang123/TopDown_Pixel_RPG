@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4512981272153343570
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3213525867512781350}
+  - component: {fileID: 1554304516318374158}
+  m_Layer: 5
+  m_Name: ---Ui-Popup---
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &3213525867512781350
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4512981272153343570}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1554304516318374158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4512981272153343570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e5c2e4a235ff1542a87173ed42a89e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blurBG: {fileID: 0}
+  popupEntries:
+  - type: 0
+    prefab: {fileID: 252788048136814260, guid: dcbe1f8accf116d49aae4090c612a00b, type: 3}
+  - type: 1
+    prefab: {fileID: 2876455384403315936, guid: 24107bbd6b33a3948acfc8d2c17c5c13, type: 3}
+  - type: 2
+    prefab: {fileID: 527086979506232579, guid: 0fbc6fd4149348142986dd630889cfe9, type: 3}
+  - type: 3
+    prefab: {fileID: 8800684014221582372, guid: dfd6d00b1445b5a4e88156185c4fbf65, type: 3}
+  - type: 4
+    prefab: {fileID: 8787024274029201335, guid: 18a9cc049135c4344bb91fbd7d87f285, type: 3}
+  - type: 5
+    prefab: {fileID: 6123839258030252458, guid: 2c8565058df86604596927e0c23de87c, type: 3}
+  - type: 6
+    prefab: {fileID: 4177753390782611803, guid: 826d0fe248062534e9b30085179f99d2, type: 3}
+  - type: 7
+    prefab: {fileID: 4299288626426895908, guid: 59c6583c4e26de84c96df91a8b7d737d, type: 3}

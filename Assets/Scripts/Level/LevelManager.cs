@@ -17,6 +17,7 @@ public class LevelManager : Singleton<LevelManager>
     private GameObject currentLevelInstance;
     private bool isLoadingFromSave = false;
     private Vector3 savedPlayerPosition;
+    [SerializeField] private ScreenFader screenFader;
 
     void Start()
     {
@@ -59,58 +60,60 @@ public class LevelManager : Singleton<LevelManager>
 
         LoadLevel(currentLevel, TravelDirection.Backward);
     }
-    
-    [SerializeField] private ScreenFader screenFader;
 
-    private void LoadLevel(int index , TravelDirection direction = TravelDirection.Default)
+    private void LoadLevel(int index, TravelDirection direction = TravelDirection.Default)
     {
         if (screenFader == null)
         {
             Debug.LogError("ScreenFader NULL → load level trực tiếp");
-            // Không cần InternalLoadLevel
+            InternalLoadLevel(index, direction);
+            return;
         }
+
+        screenFader.FadeIn(0.5f, () =>
         {
-            if (currentLevelInstance != null)
-            {
-                EnemyTracker.Instance.ClearAllEnemies();
-                
-                ObjectPooler.Instance.ClearAllPools();
-
-                Destroy(currentLevelInstance); 
-            }
-            
-            var levelData = levelDatabase.GetLevel(index);
-            if (levelData == null) return;
-
-            currentLevelInstance = Instantiate(levelData.levelPrefab);
-
-            Vector3 targetPos = direction switch
-            {
-                TravelDirection.Forward => levelData.entryFromPreviousLevel,
-                TravelDirection.Backward => levelData.entryFromNextLevel,
-                _ => CommonReferent.Instance.defaultEntryPosition
-            };
-        
-            Vector3 finalPos = isLoadingFromSave ? savedPlayerPosition : targetPos;
-
-            player.transform.position = finalPos;
-            PositionAlliesAroundPlayer(finalPos);
-
-            isLoadingFromSave = false;
-
-
-            foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
-            {
-                var levelDB = CommonReferent.Instance.enemyLevelDatabase;
-                
-                sp.Spawn(levelDB);
-            }
-            
-            Debug.Log($"Đã load level {index}: {levelData.levelName}");
-
+            InternalLoadLevel(index, direction);
             screenFader.FadeOut(0.5f);
-        };
+        });
     }
+    
+    private void InternalLoadLevel(int index, TravelDirection direction)
+    {
+        if (currentLevelInstance != null)
+        {
+            EnemyTracker.Instance.ClearAllEnemies();
+            ObjectPooler.Instance.ClearAllPools();
+            Destroy(currentLevelInstance);
+        }
+
+        var levelData = levelDatabase.GetLevel(index);
+        if (levelData == null) return;
+
+        currentLevelInstance = Instantiate(levelData.levelPrefab);
+
+        Vector3 targetPos = direction switch
+        {
+            TravelDirection.Forward => levelData.entryFromPreviousLevel,
+            TravelDirection.Backward => levelData.entryFromNextLevel,
+            _ => CommonReferent.Instance.defaultEntryPosition
+        };
+
+        Vector3 finalPos = isLoadingFromSave ? savedPlayerPosition : targetPos;
+
+        player.transform.position = finalPos;
+        PositionAlliesAroundPlayer(finalPos);
+
+        isLoadingFromSave = false;
+
+        foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
+        {
+            var levelDB = CommonReferent.Instance.enemyLevelDatabase;
+            sp.Spawn(levelDB);
+        }
+
+        Debug.Log($"Đã load level {index}: {levelData.levelName}");
+    }
+    
     public void ResetLevel()
     {
         LoadLevel(currentLevel);

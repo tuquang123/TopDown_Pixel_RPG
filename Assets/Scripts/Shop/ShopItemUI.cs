@@ -1,7 +1,9 @@
-﻿using TMPro;
+﻿using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+using System.Linq;
 public class ShopItemUI : MonoBehaviour
 {
     public ItemIconHandler icon;
@@ -10,7 +12,7 @@ public class ShopItemUI : MonoBehaviour
     public TMP_Text priceText;
     public TMP_Text tierText;
     public Button buyButton;
-    
+   
     private ShopUI shopUI;
     private ItemInstance itemInstance;
     
@@ -56,12 +58,25 @@ public class ShopItemUI : MonoBehaviour
             return;
 
         var data = itemInstance.itemData;
+
+        // ===== CONSUMABLE =====
+        if (data.itemType == ItemType.Consumable)
+        {
+            buyButton.interactable = gold >= data.price;
+
+            int amount = shopUI.PlayerInventory.GetItemCount(data);
+
+            priceText.text = $"{data.price} <sprite name=\"gold_icon\"> (x{amount})";
+            return;
+        }
+
+        // ===== EQUIPMENT =====
         bool isPurchased = false;
 
-        // ✔ check trong inventory
         foreach (var invItem in shopUI.PlayerInventory.items)
         {
             if (invItem == null || invItem.itemData == null) continue;
+
             if (invItem.itemData.itemID == data.itemID)
             {
                 isPurchased = true;
@@ -69,7 +84,6 @@ public class ShopItemUI : MonoBehaviour
             }
         }
 
-        // ✔ check trong equipment
         if (!isPurchased)
         {
             var equipment = shopUI.PlayerInventory.GetComponent<Equipment>();
@@ -78,6 +92,7 @@ public class ShopItemUI : MonoBehaviour
                 foreach (var kvp in equipment.equippedItems)
                 {
                     if (kvp.Value == null || kvp.Value.itemData == null) continue;
+
                     if (kvp.Value.itemData.itemID == data.itemID)
                     {
                         isPurchased = true;
@@ -87,22 +102,21 @@ public class ShopItemUI : MonoBehaviour
             }
         }
 
-        // ✔ Update UI
         if (isPurchased)
         {
             buyButton.interactable = false;
             priceText.text = "Đã mua";
         }
-        else 
+        else
         {
             buyButton.interactable = gold >= data.price;
             priceText.text = $"{data.price} <sprite name=\"gold_icon\">";
         }
     }
-    
     private void OnDestroy()
     {
         if (CurrencyManager.Instance != null)
             CurrencyManager.Instance.OnGoldChanged -= UpdateButtonState;
     }
+    
 }

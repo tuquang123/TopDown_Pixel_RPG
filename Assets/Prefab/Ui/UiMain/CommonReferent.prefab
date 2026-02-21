@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5611303767138538094
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7029683084258753656}
+  - component: {fileID: 531634120735507722}
+  m_Layer: 0
+  m_Name: CommonReferent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7029683084258753656
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5611303767138538094}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &531634120735507722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5611303767138538094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de097d7db12a4224d805165fefdb405e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  goldPrefab: {fileID: 4356269681339680784, guid: 93d37029af8bbaf4aadb1753790fbef8, type: 3}
+  gemPrefab: {fileID: 4356269681339680784, guid: c47a4e2b6d485474aab6824a79f61287, type: 3}
+  playerPrefab: {fileID: 0}
+  bloodVfxPrefab: {fileID: 6484301405218222007, guid: 83907561ca565a94c905d1a42da3e8f8, type: 3}
+  destructionVFXPrefab: {fileID: 3533435376319919130, guid: ffe419f6459a3ec4093834ac1ccf0398, type: 3}
+  bossHealthUI: {fileID: 0}
+  canvasHp: {fileID: 0}
+  hpSliderUi: {fileID: 3982061194075342258, guid: b26bc2550fe227d42a0736ad99e709cf, type: 3}
+  itemDatabase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  inventory: {fileID: 0}
+  playerStats: {fileID: 0}
+  equipment: {fileID: 0}
+  skill: {fileID: 0}
+  playerLevel: {fileID: 0}
+  playerLevelUI: {fileID: 0}
+  enemyLevelDatabase: {fileID: 11400000, guid: 772ee1512c9cae04c94b3f8f8b705d05, type: 2}
+  levelDatabase: {fileID: 11400000, guid: ea2359d477d0db1428cb5f631accb517, type: 2}
+  arrowPrefab: {fileID: 3659391273684521209, guid: 74e8d529a7dc5bb4585e2f1db5be58a6, type: 3}
+  spellProjectilePrefab: {fileID: 6638424572933048018, guid: 0602b64ed1a36a142bf90dc82cd21280, type: 3}
+  dialogBtn: {fileID: 0}
+  dialogShopBtn: {fileID: 0}
+  iconGold: {fileID: 21300000, guid: b2c956cfb47c640ea80fb559ed2f55f7, type: 3}
+  iconExp: {fileID: 21300000, guid: 41f18770ca6a24345ae9f7fdf677ea74, type: 3}
+  itemDropPrefab: {fileID: 4356269681339680784, guid: 811219cbca279fe45a80c1b1a0a96c63, type: 3}
+  surikenPrefab: {fileID: 4242056843081411000, guid: 158815c996fcdd0489dab07574371741, type: 3}
+  itemTierColorConfig: {fileID: 11400000, guid: c4b2c61ac7e96614faf792b32e48dade, type: 2}
+  enemyRoot: {fileID: 0}
+  heroManager: {fileID: 0}
+  arrowProjectile: {fileID: 2432826354770444012, guid: 3c5c66dda78274c40abf3877fe3e0bf2, type: 3}
+  allySlots:
+  - heroId: h_virus
+    slotObject: {fileID: 0}
+  - heroId: h_jack
+    slotObject: {fileID: 0}
+  - heroId: h_kem
+    slotObject: {fileID: 0}
+  defaultEntryPosition: {x: -9, y: 0, z: 0}
+  spawnRange: 12
+  keepAliveRange: 20

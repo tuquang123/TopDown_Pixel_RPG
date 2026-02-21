@@ -42,15 +42,21 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
         toastText.text = message;
         toastCanvasGroup.gameObject.SetActive(true);
         toastCanvasGroup.alpha = 0;
-
-        // Fade in
-        toastCanvasGroup.DOFade(1f, fadeDuration);
-        yield return new WaitForSeconds(showDuration);
-
-        // Fade out
-        toastCanvasGroup.DOFade(0f, fadeDuration);
-        yield return new WaitForSeconds(fadeDuration);
-
+    
+        // Fade in (unscaled)
+        toastCanvasGroup
+            .DOFade(1f, fadeDuration)
+            .SetUpdate(true);
+    
+        yield return new WaitForSecondsRealtime(showDuration);
+    
+        // Fade out (unscaled)
+        toastCanvasGroup
+            .DOFade(0f, fadeDuration)
+            .SetUpdate(true);
+    
+        yield return new WaitForSecondsRealtime(fadeDuration);
+    
         toastCanvasGroup.gameObject.SetActive(false);
     }
 }

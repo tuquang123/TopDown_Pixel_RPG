@@ -410,13 +410,9 @@ public class ItemDetailPanel : MonoBehaviour
     {
         currentItem.isLocked = !currentItem.isLocked;
 
-        GameEvents.OnShowToast.Raise(
-            currentItem.isLocked ? "Đã khóa vật phẩm" : "Đã mở khóa vật phẩm"
-        );
+        GameEvents.OnShowToast.Raise(currentItem.isLocked ? "Đã khóa vật phẩm" : "Đã mở khóa vật phẩm");
 
         RefreshLockVisual();
-
-        // Chỉ refresh item UI đang chọn
         inventoryUI.RefreshCurrentSelectedItemLock();
     }
   
