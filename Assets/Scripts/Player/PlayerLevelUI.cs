@@ -46,4 +46,5 @@ public class PlayerLevelUI : MonoBehaviour
     {
         expText.text = $"EXP: {Mathf.FloorToInt(current)} / {Mathf.FloorToInt(required)}";
     }
+
 }

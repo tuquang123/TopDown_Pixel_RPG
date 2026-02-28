@@ -46,9 +46,17 @@ public class LevelSystem
         level++;
         skillPoints++;
         OnLevelUp?.Invoke(level);
-        //OnExpChanged?.Invoke(exp, ExpRequired);
+        OnExpChanged?.Invoke(exp, ExpRequired);
     }
-    
+    public void ResetLevel()
+    {
+        level = 1;
+        exp = 0;
+        skillPoints = 0;
+
+        OnLevelUp?.Invoke(level);
+        OnExpChanged?.Invoke(exp, ExpRequired);
+    }
     public void SetLevelDirectly(int newLevel, float newExp, int newSkillPoints)
     {
         level = newLevel;

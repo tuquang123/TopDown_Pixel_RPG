@@ -239,8 +239,26 @@ public class ItemDetailPanel : MonoBehaviour
 
     private void EquipItem()
     {
+        float beforePower = PlayerStats.Instance.CurrentPower;
+
         inventoryUI.equipmentUi.EquipItem(currentItem);
         inventoryUI.Inventory.RemoveItem(currentItem);
+
+        // đảm bảo stat đã update
+        PlayerStats.Instance.CalculatePower();
+
+        float afterPower = PlayerStats.Instance.CurrentPower;
+        float diff = afterPower - beforePower;
+
+        if (diff != 0)
+        {
+            string text = diff > 0 
+                ? $"+{diff:N0} Chiến lực"
+                : $"{diff:N0} Chiến lực";
+
+            GameEvents.OnShowToast.Raise(text);
+        }
+
         inventoryUI.UpdateInventoryUI();
         Hide();
     }

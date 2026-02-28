@@ -35,16 +35,14 @@ public class PlayerLevel : MonoBehaviour
     {
         skillPoints = levelSystem.skillPoints;
         playerStats.skillPoints = skillPoints;
-        Debug.Log($"[PlayerLevel] Lên cấp {newLevel}! Tổng điểm kỹ năng: {skillPoints}");
 
-        // Gọi floating text Level Up
-        FloatingTextSpawner.Instance.SpawnText(
-            $"<size=50>LEVEL UP!</size>\n<size=30>Lv Up {newLevel}</size>",
-            transform.position + Vector3.up,
-            new Color(1f, 0.85f, 0f)
-        );
+        playerStats.maxHealth.baseValue = 100 + newLevel * 20;
+        playerStats.attack.baseValue = 10 + newLevel * 3;
+        playerStats.defense.baseValue = 5 + newLevel * 2;
 
+        playerStats.CalculatePower(); // đã tự Invoke event bên trong
 
+        Debug.Log($"Level {newLevel} → Stat scaled");
     }
 
 

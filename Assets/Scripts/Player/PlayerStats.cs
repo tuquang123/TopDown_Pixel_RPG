@@ -57,7 +57,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     public bool isUsingSkill;
     [ReadOnly, ShowInInspector] public bool isDead { get; private set; }
     [SerializeField] private PlayerStatsSO baseStatsSO;
-
+    public float CurrentPower { get; private set; }
     public PlayerStatsData RuntimeStats { get; private set; }
     
     private void Awake()
@@ -77,6 +77,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
         LoadSkillLevels();
         OnHealthChanged?.Invoke();
         OnManaChanged?.Invoke();
+        CalculatePower();
     }
     
     private void OnApplicationQuit()
@@ -234,6 +235,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
             case StatType.AttackSpeed: attackSpeed.AddModifier(modifier); break;
         }
         OnStatsChanged?.Invoke();
+        CalculatePower();
     }
 
     public void RemoveStatModifier(StatModifier modifier)
@@ -250,6 +252,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
             case StatType.AttackSpeed: attackSpeed.RemoveModifier(modifier); break;
         }
         OnStatsChanged?.Invoke();
+        CalculatePower();
     }
     
     public float GetCurrentHealth() => currentHealth;
@@ -412,9 +415,27 @@ private IEnumerator RestoreManaOverTime(int totalAmount, float duration)
         OnManaChanged?.Invoke();
         yield return new WaitForSeconds(tickInterval);
     }
+    
 }
 
+public void CalculatePower()
+{
+    float atk = attack.Value;
+    float def = defense.Value;
+    float hp = maxHealth.Value;
 
+    float critRate = critChance.Value / 100f;   // vì bạn đang lưu dạng %
+    float critDamage = 1.5f;                    // tạm mặc định 150%
+    float atkSpeed = GetAttackSpeed();
+
+    float critMultiplier = 1 + (critRate * critDamage);
+    float dps = atk * critMultiplier * atkSpeed;
+
+    float effectiveHP = hp * (1 + def / 100f);
+
+    CurrentPower = dps + effectiveHP * 0.5f;
+    OnStatsChanged?.Invoke();
+}
 
  
     

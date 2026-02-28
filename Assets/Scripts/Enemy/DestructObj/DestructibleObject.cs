@@ -205,4 +205,16 @@ public class DestructibleObject : MonoBehaviour
         gameObject.SetActive(true);
         DestructibleTracker.Instance?.Register(this);
     }
+    [Header("Selection")]
+    [SerializeField] private GameObject selectionCircle;
+
+    public void SetSelected(bool value)
+    {
+        if (selectionCircle != null)
+            selectionCircle.SetActive(value);
+    }
+    private void OnMouseDown()
+    {
+        SetSelected(true);
+    }
 }
