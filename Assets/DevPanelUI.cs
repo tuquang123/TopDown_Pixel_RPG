@@ -75,4 +75,8 @@ public class DevPanelUI : MonoBehaviour
     {
         playerLevel = FindObjectOfType<PlayerLevel>();
     }
+    public void TogglePanel()
+    {
+        gameObject.SetActive(!gameObject.activeSelf);
+    }
 }
