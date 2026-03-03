@@ -213,8 +213,6 @@ public class DestructibleObject : MonoBehaviour
         if (selectionCircle != null)
             selectionCircle.SetActive(value);
     }
-    private void OnMouseDown()
-    {
-        SetSelected(true);
-    }
+  
+    
 }

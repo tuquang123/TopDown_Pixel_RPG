@@ -245,5 +245,64 @@ public class QuestManager : Singleton<QuestManager>
             questUI?.Clear();
         }
     }
+    public void ForceCompleteQuest(string questID, bool autoTurnIn = false)
+    {
+        var qp = activeQuests.Find(q => q.quest.questID == questID);
+        if (qp == null)
+        {
+            Debug.LogWarning("Quest không tồn tại hoặc chưa được nhận.");
+            return;
+        }
 
+        // Set full progress cho tất cả objective
+        foreach (var obj in qp.quest.objectives)
+        {
+            qp.progress[obj.objectiveName] = obj.requiredAmount;
+        }
+
+        qp.state = QuestState.Completed;
+
+        if (!readyToTurnInQuests.Contains(qp))
+            readyToTurnInQuests.Add(qp);
+
+        questUI?.UpdateQuestProgress(qp, true);
+
+        Debug.Log($"Force completed quest: {qp.quest.questName}");
+
+        if (autoTurnIn)
+        {
+            TurnInQuest(qp);
+        }
+    }
+   
+    public void ForceCompleteOneActiveQuest()
+    {
+        // Chỉ lấy quest đang InProgress
+        var qp = activeQuests.Find(q => q.state == QuestState.InProgress);
+
+        if (qp == null)
+        {
+            Debug.LogWarning("Không có quest nào đang làm.");
+            return;
+        }
+
+        // Không đụng vào quest khác
+        // Không tạo quest mới
+
+        // Set full progress
+        foreach (var obj in qp.quest.objectives)
+        {
+            qp.progress[obj.objectiveName] = obj.requiredAmount;
+        }
+
+        qp.state = QuestState.Completed;
+
+        if (!readyToTurnInQuests.Contains(qp))
+            readyToTurnInQuests.Add(qp);
+
+        // Nhận thưởng luôn
+        TurnInQuest(qp);
+
+        Debug.Log($"Cheat complete quest: {qp.quest.questName}");
+    }
 }

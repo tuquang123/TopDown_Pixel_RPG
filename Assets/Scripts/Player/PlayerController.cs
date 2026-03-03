@@ -110,6 +110,20 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
             MovePlayer();
             targetEnemy = null;
             targetDestructible = null;
+
+            if (currentSelectedEnemy != null)
+            {
+                currentSelectedEnemy.SetSelected(false);
+                currentSelectedEnemy = null;
+            }
+
+            if (currentSelectedDestructible != null)
+            {
+                currentSelectedDestructible.SetSelected(false);
+                currentSelectedDestructible = null;
+            }
+
+            return; // QUAN TRỌNG
         }
         else
         {
@@ -443,9 +457,8 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
     
     protected void FindClosestEnemy()
     {
-        targetEnemy = null;
-        float minDist = Mathf.Infinity;
         EnemyAI bestEnemy = null;
+        float minDist = Mathf.Infinity;
 
         foreach (var enemy in EnemyTracker.Instance.GetEnemiesInRange(transform.position, GetDetectionRange()))
         {
@@ -455,12 +468,24 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
             if (dist < minDist)
             {
                 minDist = dist;
-                targetEnemy = enemy.transform;
                 bestEnemy = enemy;
             }
         }
 
-        // Update selection
+        // Nếu vẫn còn target cũ và nó vẫn hợp lệ → giữ nguyên
+        if (currentSelectedEnemy != null)
+        {
+            float dist = Vector2.Distance(transform.position, currentSelectedEnemy.transform.position);
+
+            if (!currentSelectedEnemy.IsDead && dist <= GetDetectionRange())
+            {
+                targetEnemy = currentSelectedEnemy.transform;
+                return;
+            }
+        }
+
+        targetEnemy = bestEnemy != null ? bestEnemy.transform : null;
+
         if (currentSelectedEnemy != bestEnemy)
         {
             if (currentSelectedEnemy != null)
@@ -472,25 +497,6 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
                 currentSelectedEnemy.SetSelected(true);
         }
     }
-    
-    
-    protected void FindClosestDestructible()
-    {
-        var list = DestructibleTracker.Instance.GetInRange(transform.position, GetDetectionRange());
-        float minDist = GetDetectionRange();
-        targetDestructible = null;
-
-        foreach (var obj in list)
-        {
-            float dist = Vector2.Distance(transform.position, obj.transform.position);
-            if (dist < minDist)
-            {
-                minDist = dist;
-                targetDestructible = obj.transform;
-            }
-        }
-    }
-    
     public Vector2 GetMoveInput()
     {
         float joyX = UltimateJoystick.GetHorizontalAxis("Move");
@@ -655,5 +661,36 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener 
         RotateCharacter(dirX);
     }
     private EnemyAI currentSelectedEnemy;
+    private DestructibleObject currentSelectedDestructible;
+    protected void FindClosestDestructible()
+    {
+        targetDestructible = null;
+        float minDist = Mathf.Infinity;
+        DestructibleObject best = null;
 
+        foreach (var obj in DestructibleTracker.Instance.GetInRange(transform.position, GetDetectionRange()))
+        {
+            if (obj == null) continue;
+
+            float dist = Vector2.Distance(transform.position, obj.transform.position);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                targetDestructible = obj.transform;
+                best = obj;
+            }
+        }
+
+        // Update selection giống Enemy
+        if (currentSelectedDestructible != best)
+        {
+            if (currentSelectedDestructible != null)
+                currentSelectedDestructible.SetSelected(false);
+
+            currentSelectedDestructible = best;
+
+            if (currentSelectedDestructible != null)
+                currentSelectedDestructible.SetSelected(true);
+        }
+    }
 }

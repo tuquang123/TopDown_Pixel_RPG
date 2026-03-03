@@ -35,11 +35,6 @@ public class PlayerLevel : MonoBehaviour
     {
         skillPoints = levelSystem.skillPoints;
         playerStats.skillPoints = skillPoints;
-
-        playerStats.maxHealth.baseValue = 100 + newLevel * 20;
-        playerStats.attack.baseValue = 10 + newLevel * 3;
-        playerStats.defense.baseValue = 5 + newLevel * 2;
-
         playerStats.CalculatePower(); // đã tự Invoke event bên trong
 
         Debug.Log($"Level {newLevel} → Stat scaled");

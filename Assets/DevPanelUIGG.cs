@@ -1,26 +1,13 @@
 using UnityEngine;
 
-public class DevPanelSpawner : MonoBehaviour
+public class DevPanelToggleButton : MonoBehaviour
 {
-    [SerializeField] private GameObject devPanelPrefab;
-    [SerializeField] private Transform canvasParent;
+    [SerializeField] private GameObject devPanel;
 
-    private GameObject currentPanel;
-
-    public void OpenDevPanel()
+    public void ToggleDevPanel()
     {
-        if (currentPanel != null)
-            return; // tránh spawn nhiều cái
+        if (devPanel == null) return;
 
-        currentPanel = Instantiate(devPanelPrefab, canvasParent);
-    }
-
-    public void CloseDevPanel()
-    {
-        if (currentPanel != null)
-        {
-            Destroy(currentPanel);
-            currentPanel = null;
-        }
+        devPanel.SetActive(!devPanel.activeSelf);
     }
 }
