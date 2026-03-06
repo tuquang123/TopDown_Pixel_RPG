@@ -106,4 +106,28 @@ public class EnemyTracker : Singleton<EnemyTracker>
             }
         }
     }
-}
+    public EnemyAI GetClosestEnemy(Vector2 position, float range)
+    {
+        float sqrRange = range * range;
+        EnemyAI closest = null;
+        float minSqrDist = float.MaxValue;
+
+        foreach (var enemy in trackedEnemies)
+        {
+            if (enemy == null || enemy.IsDead || !enemy.gameObject.activeInHierarchy)
+                continue;
+
+            float sqrDist = ((Vector2)enemy.transform.position - position).sqrMagnitude;
+
+            if (sqrDist <= sqrRange && sqrDist < minSqrDist)
+            {
+                minSqrDist = sqrDist;
+                closest = enemy;
+            }
+        }
+
+        return closest;
+    }
+   
+    }
+

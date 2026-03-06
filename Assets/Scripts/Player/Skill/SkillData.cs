@@ -6,7 +6,9 @@ public enum SkillType { Passive, Active }
 public enum SkillID {
     DamageBoost, ShurikenThrow, Dash, Slash, None,
     HealthBoost, ManaBoost, AttackBoost, DefenseBoost,
-    SpeedBoost, CritChanceBoost, AttackSpeedBoost, Invincible
+    SpeedBoost, CritChanceBoost, AttackSpeedBoost, Invincible,
+    ManaRestore,
+    LifeDrain
 }
 
 [CreateAssetMenu(fileName = "New Skill", menuName = "Skill System/Skill Data")]

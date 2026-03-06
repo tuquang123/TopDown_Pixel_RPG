@@ -272,7 +272,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
 
     public int GetSkillLevel(SkillID skillID)
     {
-        return skillLevels.GetValueOrDefault(skillID, 1);
+        return skillLevels.GetValueOrDefault(skillID, 0);
     }
 
     public void SetSkillLevel(SkillID skillID, int level)
@@ -436,9 +436,30 @@ public void CalculatePower()
     CurrentPower = dps + effectiveHP * 0.5f;
     OnStatsChanged?.Invoke();
 }
+public DamageResult CalculateDamage()
+{
+    bool isCrit = UnityEngine.Random.value <= (critChance.Value / 100f);
+    float damage = attack.Value;
 
+    float critMultiplier = 1.5f; // sau này có thể là stat riêng
+
+    if (isCrit)
+        damage *= critMultiplier;
+
+    return new DamageResult(Mathf.RoundToInt(damage), isCrit);
+}
  
-    
+public struct DamageResult
+{
+    public int Damage;
+    public bool IsCrit;
+
+    public DamageResult(int damage, bool isCrit)
+    {
+        Damage = damage;
+        IsCrit = isCrit;
+    }
+}
 
     
 }

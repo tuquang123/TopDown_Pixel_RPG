@@ -14,6 +14,7 @@ public class SkillFactory
     {
         switch (skillID)
         {
+            
             case SkillID.ShurikenThrow:
                 return new ShurikenThrowSkill();
             case SkillID.DamageBoost:
@@ -23,9 +24,7 @@ public class SkillFactory
             case SkillID.Slash:
                 return new SlashSkill();
             case SkillID.Invincible:
-                return new InvincibleSkill();
-            
-                    // Boost stat skills
+                return new InvincibleSkill(); // Boost stat skills
             case SkillID.HealthBoost:
                 return new HealthBoost();
             case SkillID.ManaBoost:
@@ -40,7 +39,11 @@ public class SkillFactory
                 return new CriticalBoost();
             case SkillID.AttackSpeedBoost:
                 return new AttackSpeedBoost();
-            
+            case SkillID.ManaRestore:
+                return new SkillSystem.ManaRestoreSkill();
+
+            case SkillID.LifeDrain:
+                return new SkillSystem.LifeDrainSkill();
             default:
                 throw new ArgumentException("Không tìm thấy kỹ năng với ID này.");
         }
@@ -399,4 +402,63 @@ public class SkillSystem : MonoBehaviour
         }
         return null; 
     }
+    public class ManaRestoreSkill : ISkill
+    {
+        public void ExecuteSkill(PlayerStats playerStats, SkillData data)
+        {
+            int level = playerStats.GetSkillLevel(data.skillID);
+            SkillLevelStat stat = data.GetLevelStat(level);
+            if (stat == null) return;
+
+            int restoreAmount = Mathf.RoundToInt(stat.value);
+
+            playerStats.RestoreMana(restoreAmount);
+
+            FloatingTextSpawner.Instance.SpawnText(
+                $"+{restoreAmount} MP",
+                playerStats.transform.position + Vector3.up * 1.2f,
+                new Color(0.3f, 0.6f, 1f)
+            );
+        }
+
+        public bool CanUse(PlayerStats playerStats, SkillData data)
+        {
+            return playerStats.currentMana < playerStats.maxMana.Value;
+        }
+    }
+    public class LifeDrainSkill : ISkill
+    {
+        public void ExecuteSkill(PlayerStats playerStats, SkillData data)
+        {
+            int level = playerStats.GetSkillLevel(data.skillID);
+            SkillLevelStat stat = data.GetLevelStat(level);
+            if (stat == null) return;
+
+            float drainPercent = stat.value;
+            float duration = stat.duration;
+
+            // Tạo modifier hút máu
+            StatModifier lifeStealMod = new StatModifier(
+                StatType.LifeSteal,
+                drainPercent,
+                StatModType.Flat
+            );
+
+            // Áp dụng buff tạm thời
+            playerStats.ApplyTemporaryBuff(lifeStealMod, duration);
+
+            // Hiệu ứng feedback
+            FloatingTextSpawner.Instance.SpawnText(
+                "Life Drain!",
+                playerStats.transform.position + Vector3.up,
+                Color.red
+            );
+        }
+
+        public bool CanUse(PlayerStats playerStats, SkillData data)
+        {
+            return true; // Không cần check enemy nữa
+        }
+    }
+    
 }

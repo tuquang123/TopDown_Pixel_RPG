@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2747de31fde6094585c7a9e03383bcb, type: 3}
+  m_Name: ManaRestore
+  m_EditorClassIdentifier: 
+  skillID: 13
+  skillName: 
+  skillType: 1
+  requiredLevel: 1
+  icon: {fileID: 887299942285676482, guid: a8cfdf09107ff944a8028193dc457d61, type: 3}
+  levelStats:
+  - level: 1
+    manaCost: 0
+    cooldown: 20
+    duration: 5
+    value: 10
+    modType: 0
+    overridePrefab: {fileID: 0}
+  - level: 2
+    manaCost: 0
+    cooldown: 15
+    duration: 10
+    value: 20
+    modType: 0
+    overridePrefab: {fileID: 0}
+  - level: 3
+    manaCost: 0
+    cooldown: 10
+    duration: 15
+    value: 30
+    modType: 0
+    overridePrefab: {fileID: 0}
+  - level: 4
+    manaCost: 0
+    cooldown: 8
+    duration: 20
+    value: 50
+    modType: 0
+    overridePrefab: {fileID: 0}
+  - level: 5
+    manaCost: 0
+    cooldown: 5
+    duration: 525
+    value: 60
+    modType: 0
+    overridePrefab: {fileID: 0}
+  prefab: {fileID: 2798727997946858921, guid: 28a87fdb75676cc4e9c4424a195f1bc5, type: 3}
+  descriptionTemplate: "H\u1ED3i {value} mana.\r\nH\u1ED3i chi\xEAu {cooldown}s."
