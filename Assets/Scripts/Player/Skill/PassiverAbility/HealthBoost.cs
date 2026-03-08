@@ -22,6 +22,6 @@ public class HealthBoost : ISkill
 
     public bool CanUse(PlayerStats playerStats, SkillData skillData)
     {
-        return true;
+        return false;
     }
 }

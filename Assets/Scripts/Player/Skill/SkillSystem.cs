@@ -39,11 +39,9 @@ public class SkillFactory
                 return new CriticalBoost();
             case SkillID.AttackSpeedBoost:
                 return new AttackSpeedBoost();
-            case SkillID.ManaRestore:
-                return new SkillSystem.ManaRestoreSkill();
 
             case SkillID.LifeDrain:
-                return new SkillSystem.LifeDrainSkill();
+                return new LifeDrainSkill();
             default:
                 throw new ArgumentException("Không tìm thấy kỹ năng với ID này.");
         }
@@ -211,26 +209,45 @@ public class SkillSystem : MonoBehaviour
     {
         SkillData data = GetSkillData(skillID);
         if (data == null) return false;
-        
+
         if (!unlockedSkills.ContainsKey(skillID))
         {
             unlockedSkills[skillID] = new SkillState(skillID, data);
-            _playerStats.SetSkillLevel(skillID, 1); // Cập nhật cấp độ trong PlayerStats
+            _playerStats.SetSkillLevel(skillID, 1);
+
+            ApplyPassiveSkill(skillID);   // thêm dòng này
             return true;
         }
-
+        ApplyPassiveSkill(skillID);
         SkillState state = unlockedSkills[skillID];
+
         if (state.level < data.maxLevel)
         {
             state.level++;
-            _playerStats.SetSkillLevel(skillID, state.level); 
+
+            _playerStats.SetSkillLevel(skillID, state.level);
+
+            ApplyPassiveSkill(skillID);   // thêm dòng này
+
             OnSkillLevelChanged?.Invoke(skillID, state.level);
+
             return true;
         }
 
         return false;
     }
-    
+    private void ApplyPassiveSkill(SkillID skillID)
+    {
+        SkillData data = GetSkillData(skillID);
+
+        if (data == null) return;
+
+        if (data.skillType == SkillType.Passive)
+        {
+            ISkill skillInstance = SkillFactory.CreateSkill(skillID);
+            skillInstance.ExecuteSkill(_playerStats, data);
+        }
+    }
     public SkillData GetSkillData(SkillID skillID)
     {
         return skillList.Find(s => s.skillID == skillID);
@@ -402,63 +419,6 @@ public class SkillSystem : MonoBehaviour
         }
         return null; 
     }
-    public class ManaRestoreSkill : ISkill
-    {
-        public void ExecuteSkill(PlayerStats playerStats, SkillData data)
-        {
-            int level = playerStats.GetSkillLevel(data.skillID);
-            SkillLevelStat stat = data.GetLevelStat(level);
-            if (stat == null) return;
-
-            int restoreAmount = Mathf.RoundToInt(stat.value);
-
-            playerStats.RestoreMana(restoreAmount);
-
-            FloatingTextSpawner.Instance.SpawnText(
-                $"+{restoreAmount} MP",
-                playerStats.transform.position + Vector3.up * 1.2f,
-                new Color(0.3f, 0.6f, 1f)
-            );
-        }
-
-        public bool CanUse(PlayerStats playerStats, SkillData data)
-        {
-            return playerStats.currentMana < playerStats.maxMana.Value;
-        }
-    }
-    public class LifeDrainSkill : ISkill
-    {
-        public void ExecuteSkill(PlayerStats playerStats, SkillData data)
-        {
-            int level = playerStats.GetSkillLevel(data.skillID);
-            SkillLevelStat stat = data.GetLevelStat(level);
-            if (stat == null) return;
-
-            float drainPercent = stat.value;
-            float duration = stat.duration;
-
-            // Tạo modifier hút máu
-            StatModifier lifeStealMod = new StatModifier(
-                StatType.LifeSteal,
-                drainPercent,
-                StatModType.Flat
-            );
-
-            // Áp dụng buff tạm thời
-            playerStats.ApplyTemporaryBuff(lifeStealMod, duration);
-
-            // Hiệu ứng feedback
-            FloatingTextSpawner.Instance.SpawnText(
-                "Life Drain!",
-                playerStats.transform.position + Vector3.up,
-                Color.red
-            );
-        }
-
-        public bool CanUse(PlayerStats playerStats, SkillData data)
-        {
-            return true; // Không cần check enemy nữa
-        }
-    }
+  
     
 }

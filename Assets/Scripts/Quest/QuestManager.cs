@@ -305,4 +305,48 @@ public class QuestManager : Singleton<QuestManager>
 
         Debug.Log($"Cheat complete quest: {qp.quest.questName}");
     }
+    public void DevQuestStep()
+    {
+        // 1️⃣ Nếu có quest Completed → TurnIn trước
+        if (readyToTurnInQuests.Count > 0)
+        {
+            TurnInQuest(readyToTurnInQuests[0]);
+            Debug.Log("Dev Cheat: Turn In Quest");
+            return;
+        }
+
+        // 2️⃣ Nếu đang có quest InProgress → Complete
+        var inProgress = activeQuests.Find(q => q.state == QuestState.InProgress);
+
+        if (inProgress != null)
+        {
+            foreach (var obj in inProgress.quest.objectives)
+            {
+                inProgress.progress[obj.objectiveName] = obj.requiredAmount;
+            }
+
+            inProgress.state = QuestState.Completed;
+
+            if (!readyToTurnInQuests.Contains(inProgress))
+                readyToTurnInQuests.Add(inProgress);
+
+            questUI?.UpdateQuestProgress(inProgress, true);
+
+            Debug.Log("Dev Cheat: Complete Quest");
+            return;
+        }
+
+        // 3️⃣ Nếu không có quest → Start quest tiếp theo
+        foreach (var quest in questDatabase.allQuests)
+        {
+            if (GetQuestProgressByID(quest.questID) == null)
+            {
+                StartQuest(quest);
+                Debug.Log("Dev Cheat: Start Next Quest");
+                return;
+            }
+        }
+
+        Debug.Log("Dev Cheat: Không còn quest nào.");
+    }
 }

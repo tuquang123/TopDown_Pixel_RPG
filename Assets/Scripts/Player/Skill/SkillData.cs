@@ -7,7 +7,7 @@ public enum SkillID {
     DamageBoost, ShurikenThrow, Dash, Slash, None,
     HealthBoost, ManaBoost, AttackBoost, DefenseBoost,
     SpeedBoost, CritChanceBoost, AttackSpeedBoost, Invincible,
-    ManaRestore,
+   
     LifeDrain
 }
 

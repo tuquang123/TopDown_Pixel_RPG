@@ -460,6 +460,29 @@ public struct DamageResult
         IsCrit = isCrit;
     }
 }
+public PlayerStatsData ToData()
+{
+    return new PlayerStatsData
+    {
+        maxHealth = maxHealth.baseValue,
+        maxMana = maxMana.baseValue,
+        attack = attack.baseValue,
+        defense = defense.baseValue,
+        critChance = critChance.baseValue,
+        speed = speed.baseValue,
+        attackSpeed = attackSpeed.baseValue
+    };
+}
+public void FromData(PlayerStatsData data)
+{
+    maxHealth.baseValue = data.maxHealth;
+    maxMana.baseValue = data.maxMana;
+    attack.baseValue = data.attack;
+    defense.baseValue = data.defense;
+    critChance.baseValue = data.critChance;
+    speed.baseValue = data.speed;
+    attackSpeed.baseValue = data.attackSpeed;
 
-    
+    CalculatePower();
+}
 }

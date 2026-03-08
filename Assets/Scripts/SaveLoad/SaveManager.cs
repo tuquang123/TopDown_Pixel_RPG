@@ -81,6 +81,7 @@ public static class SaveManager
 
         SaveData data = new SaveData
         {
+            playerStats = playerStats.ToData(),
             version = CurrentVersion,
             lastSaveTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             inventory = inventory.ToData(),
@@ -158,9 +159,11 @@ public static class SaveManager
         }
 
         inventory.FromData(data.inventory, db);
+        playerStats.FromData(data.playerStats);
+
+        inventory.FromData(data.inventory, db);
         equipment.FromData(data.equipment, db, playerStats);
         skill.FromData(data.skill);
-
         equipment.ReapplyEquipmentStats(playerStats);
         equipment.OnEventTypeWeapon();
         skill.ReapplyPassiveSkills(playerStats);
@@ -227,6 +230,6 @@ public static class SaveManager
 
         Debug.Log("[SaveManager] All save data cleared.");
     }
-
+   
 }
 

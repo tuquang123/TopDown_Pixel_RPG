@@ -39,34 +39,34 @@ using System.Collections.Generic;
      {
          playerStats.defense.baseValue += cheatStatAmount;
          playerStats.CalculatePower();
-         RefreshUI();
+         RefreshUI(); SaveGame();
      }
  
      public void AddCrit()
      {
          playerStats.critChance.baseValue += cheatStatAmount;
          playerStats.CalculatePower();
-         RefreshUI();
+         RefreshUI(); SaveGame();
      }
  
      public void AddSpeed()
      {
          playerStats.speed.baseValue += 0.2f;// giảm từ 5 xuống 0.5
          playerStats.CalculatePower();
-         RefreshUI();
+         RefreshUI(); SaveGame();
      }
  
      public void AddAttackSpeed()
      {
          playerStats.attackSpeed.baseValue += 0.2f;
          playerStats.CalculatePower();
-         RefreshUI();
+         RefreshUI(); SaveGame();
      }
      public void AddMana()
      {
          playerStats.maxMana.baseValue += 20;
          playerStats.CalculatePower();
-         RefreshUI();
+         RefreshUI(); SaveGame();
      }
      public void AddLevel()
      {
@@ -81,7 +81,7 @@ using System.Collections.Generic;
      {
          playerStats.attack.baseValue += 5;
          playerStats.CalculatePower();
-         RefreshUI();
+         RefreshUI(); SaveGame();
      }
  
      public void AddHP()
@@ -89,6 +89,8 @@ using System.Collections.Generic;
          playerStats.maxHealth.baseValue += 2000;
          playerStats.CalculatePower();
          RefreshUI();
+
+         SaveGame();
      }
  
      public void RefreshUI()
@@ -165,7 +167,19 @@ using System.Collections.Generic;
      [SerializeField] private QuestDatabase questDatabase;
      public void CheatCompleteOneQuest()
      {
-         QuestManager.Instance.ForceCompleteOneActiveQuest();
+         QuestManager.Instance.DevQuestStep();
          RefreshUI();
+         SaveGame();
+     }
+     private void SaveGame()
+     {
+         SaveManager.Save(
+             0,
+             PlayerStats.Instance,
+             FindObjectOfType<Inventory>(),
+             FindObjectOfType<Equipment>(),
+             FindObjectOfType<SkillSystem>(),
+             FindObjectOfType<PlayerLevel>()
+         );
      }
  }

@@ -12,48 +12,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2747de31fde6094585c7a9e03383bcb, type: 3}
   m_Name: LifeDrain
   m_EditorClassIdentifier: 
-  skillID: 14
-  skillName: 
-  skillType: 1
+  skillID: 13
+  skillName: LifeSteal
+  skillType: 0
   requiredLevel: 1
-  icon: {fileID: 6932590606676213297, guid: af2cd729d35f2bd49b3fdcc95bfdf145, type: 3}
+  icon: {fileID: 5046650294453553075, guid: f0b1a975a1e06eb4399dd5241fa9be7a, type: 3}
   levelStats:
   - level: 1
-    manaCost: 5
-    cooldown: 20
-    duration: 5
-    value: 10
+    manaCost: 0
+    cooldown: 0
+    duration: 0
+    value: 0.5
     modType: 0
     overridePrefab: {fileID: 0}
   - level: 2
-    manaCost: 5
-    cooldown: 15
-    duration: 10
-    value: 20
+    manaCost: 0
+    cooldown: 0
+    duration: 0
+    value: 2
     modType: 0
     overridePrefab: {fileID: 0}
   - level: 3
-    manaCost: 5
-    cooldown: 10
-    duration: 15
-    value: 30
+    manaCost: 0
+    cooldown: 0
+    duration: 0
+    value: 4
     modType: 0
     overridePrefab: {fileID: 0}
   - level: 4
-    manaCost: 4
-    cooldown: 8
-    duration: 20
-    value: 50
+    manaCost: 0
+    cooldown: 0
+    duration: 0
+    value: 7
     modType: 0
     overridePrefab: {fileID: 0}
   - level: 5
-    manaCost: 3
-    cooldown: 5
-    duration: 525
-    value: 60
+    manaCost: 0
+    cooldown: 0
+    duration: 0
+    value: 10
     modType: 0
     overridePrefab: {fileID: 0}
-  prefab: {fileID: 7032899170727762454, guid: 06d5fab652e1a684f9638b5a3dd788d7, type: 3}
-  descriptionTemplate: "G\xE2y s\xE1t th\u01B0\u01A1ng v\xE0 h\xFAt {value}% l\u01B0\u1EE3ng
-    s\xE1t th\u01B0\u01A1ng g\xE2y ra th\xE0nh m\xE1u.\r\nTi\xEAu hao {mana} mana.\r\nH\u1ED3i
-    chi\xEAu {cooldown}s."
+  prefab: {fileID: 0}
+  descriptionTemplate: "T\u0103ng LifeSteal{value}% v\u0129nh vi\u1EC5n. "
