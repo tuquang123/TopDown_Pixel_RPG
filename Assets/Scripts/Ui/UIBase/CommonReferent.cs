@@ -43,10 +43,4 @@ public class CommonReferent : Singleton<CommonReferent>
     
     public float spawnRange = 12f;       
     public float keepAliveRange = 20f;
-
-    private void Start()
-    {
-        CurrencyManager.Instance.AddGold(10000);
-        CurrencyManager.Instance.AddGems(100);
-    }
 }
