@@ -197,13 +197,22 @@ public class InventoryUI : BasePopup
     private void Start()
     {
         if (autoEquipButton != null)
+        {
             autoEquipButton.onClick.AddListener(AutoEquipBestItems);
+            autoEquipText.text = "Auto Equip";
+        }
 
         if (sellAllButton != null)
+        {
             sellAllButton.onClick.AddListener(SellAllItems);
+            sellAllText.text = "Sell All";
+        }
 
         if (unequipAllButton != null)
+        {
             unequipAllButton.onClick.AddListener(UnequipAllItems);
+            unequipAllText.text = "Unequip All";
+        }
     }
 
     public void Close()
@@ -215,20 +224,18 @@ public class InventoryUI : BasePopup
     {
         if (inventory == null) return;
 
+        float beforePower = PlayerStats.Instance.CurrentPower;
+
         Dictionary<ItemType, ItemInstance> bestItems = new();
 
-        // BƯỚC 1: Tìm best item mỗi loại (bỏ qua item lock)
         foreach (var item in inventory.items)
         {
-            if (item.isLocked)
-                continue;
+            if (item.isLocked) continue;
 
             ItemType type = item.itemData.itemType;
 
             if (!bestItems.ContainsKey(type))
-            {
                 bestItems[type] = item;
-            }
             else
             {
                 ItemInstance currentBest = bestItems[type];
@@ -243,7 +250,6 @@ public class InventoryUI : BasePopup
             }
         }
 
-        // BƯỚC 2: Equip
         foreach (var kvp in bestItems)
         {
             ItemType type = kvp.Key;
@@ -263,10 +269,29 @@ public class InventoryUI : BasePopup
                      bestItem.itemData.price > currentEquipped.itemData.price);
 
                 if (isBetter)
-                {
                     equipmentUi.EquipItem(bestItem);
-                }
             }
+        }
+
+        PlayerStats.Instance.CalculatePower();
+
+        float afterPower = PlayerStats.Instance.CurrentPower;
+        float diff = afterPower - beforePower;
+
+        if (diff != 0)
+        {
+            string text;
+
+            if (diff > 0)
+            {
+                text = $"<color=#00FF00>+{diff:N0} Chiến lực</color>";
+            }
+            else
+            {
+                text = $"<color=#FF4D4D>{diff:N0} Chiến lực</color>";
+            }
+
+            GameEvents.OnShowToast.Raise(text);
         }
 
         equipmentUi.UpdateEquipmentUI();
@@ -295,6 +320,9 @@ public class InventoryUI : BasePopup
         if (totalGold > 0)
         {
             CurrencyManager.Instance.AddGold(totalGold);
+
+            string text = $"<color=#FFD700>+{totalGold:N0} vàng</color>";
+            GameEvents.OnShowToast.Raise(text);
         }
 
         equipmentUi.UpdateEquipmentUI();
@@ -325,4 +353,8 @@ public class InventoryUI : BasePopup
             currentSelectedItem.RefreshLockState();
         }
     }
+    [SerializeField] private TMPro.TMP_Text autoEquipText;
+    [SerializeField] private TMPro.TMP_Text sellAllText;
+    [SerializeField] private TMPro.TMP_Text unequipAllText;
+    
 }

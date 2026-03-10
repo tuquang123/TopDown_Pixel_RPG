@@ -7,18 +7,25 @@ public class PowerUI : MonoBehaviour
 
     private void OnEnable()
     {
+        if (CommonReferent.Instance == null) return;
+        if (CommonReferent.Instance.playerStats == null) return;
+
         CommonReferent.Instance.playerStats.OnStatsChanged += UpdatePower;
-        UpdatePower(); // cập nhật lần đầu
+        UpdatePower();
     }
 
     private void OnDisable()
     {
-        if ( CommonReferent.Instance.playerStats != null)
-            CommonReferent.Instance.playerStats.OnStatsChanged -= UpdatePower;
+        if (CommonReferent.Instance == null) return;
+        if (CommonReferent.Instance.playerStats == null) return;
+
+        CommonReferent.Instance.playerStats.OnStatsChanged -= UpdatePower;
     }
 
     private void UpdatePower()
     {
-        powerText.text = "Power: " +  CommonReferent.Instance.playerStats.CurrentPower.ToString("N0");
+        if (powerText == null) return;
+
+        powerText.text = "Power: " + CommonReferent.Instance.playerStats.CurrentPower.ToString("N0");
     }
 }

@@ -112,16 +112,17 @@ using System.Collections.Generic;
     
      private void Start()
      {
+         statsGroup.SetActive(false);
+
          var system = playerLevel.levelSystem;
          system.OnLevelUp += HandleLevelUp;
          system.OnExpChanged += HandleExpChanged;
- 
+
          CurrencyManager.Instance.OnGoldChanged += HandleGoldChanged;
          CurrencyManager.Instance.OnGemsChanged += HandleGemChanged;
- 
+
          RefreshUI();
      }
- 
      private void OnDestroy()
      {
          var system = playerLevel.levelSystem;
@@ -181,5 +182,10 @@ using System.Collections.Generic;
              FindObjectOfType<SkillSystem>(),
              FindObjectOfType<PlayerLevel>()
          );
+     }
+     [SerializeField] private GameObject statsGroup;
+     public void ToggleStats()
+     {
+         statsGroup.SetActive(!statsGroup.activeSelf);
      }
  }

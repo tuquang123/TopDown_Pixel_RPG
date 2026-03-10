@@ -120,10 +120,35 @@ public class EquipmentUI : MonoBehaviour
     
     public void UnequipItem(ItemType itemType)
     {
+        float beforePower = PlayerStats.Instance.CurrentPower;
+
         ItemInstance unequipped = equipmentManager.UnequipItem(itemType, playerStats);
         if (unequipped == null) return;
 
         inventoryUI.Inventory.AddItem(unequipped);
+
+        PlayerStats.Instance.CalculatePower();
+
+        float afterPower = PlayerStats.Instance.CurrentPower;
+        float diff = afterPower - beforePower;
+
+        if (diff != 0)
+        {
+            string text;
+
+            if (diff > 0)
+            {
+                text = $"<color=#00FF00>+{diff:N0} Chiến lực</color>";
+            }
+            else
+            {
+                text = $"<color=#FF4D4D>{diff:N0} Chiến lực</color>";
+            }
+
+            GameEvents.OnShowToast.Raise(text);
+            
+        }
+
         UpdateEquipmentUI();
         inventoryUI.UpdateInventoryUI();
     }

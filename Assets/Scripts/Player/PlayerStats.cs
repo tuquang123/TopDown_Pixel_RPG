@@ -485,4 +485,9 @@ public void FromData(PlayerStatsData data)
 
     CalculatePower();
 }
+public void ApplyStatModifier()
+{
+    OnStatsChanged?.Invoke();
+    CalculatePower();
+}
 }
