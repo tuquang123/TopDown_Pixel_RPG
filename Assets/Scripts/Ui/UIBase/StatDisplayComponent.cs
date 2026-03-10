@@ -203,4 +203,48 @@ public class StatDisplayComponent : MonoBehaviour
             ? value.ToString("0")
             : value.ToString("0.0");
     }
+
+    public void SetUnequipStats(ItemInstance item)
+    {
+        if (item == null || item.itemData == null) return;
+
+        int level = Mathf.Max(1, item.upgradeLevel);
+        var data = item.itemData;
+
+        SetUnequipStat(attackText, data.attack, level, "attack_icon", "#FF8C00", "Attack");
+        SetUnequipStat(defenseText, data.defense, level, "defense_icon", "#808080", "Defense");
+        SetUnequipStat(speedText, data.speed, level, "speed_icon", "#7CFF4D", "Speed");
+        SetUnequipStat(critText, data.critChance, level, "crit_icon", "#FFB84D", "Crit", true);
+        SetUnequipStat(lifestealText, data.lifeSteal, level, "lifesteal_icon", "#C44DFF", "LifeSteal", true);
+        SetUnequipStat(attackSpeedText, data.attackSpeed, level, "attackspeed_icon", "#4DFFE3", "Atk Speed");
+        SetUnequipStat(healText, data.health, level, "health_icon", "#FF3333", "HP");
+        SetUnequipStat(manaText, data.mana, level, "mana_icon", "#3399FF", "Mana");
+    }public void SetUnequipStat(
+        TextMeshProUGUI text,
+        ItemStatBonus stat,
+        int level,
+        string icon,
+        string color,
+        string label,
+        bool percent = false
+    )
+    {
+        float value = GetValue(stat, level);
+
+        if (value == 0)
+        {
+            text.gameObject.SetActive(false);
+            return;
+        }
+
+        text.gameObject.SetActive(true);
+
+        string suffix = percent ? "%" : "";
+
+        text.text =
+            $"<sprite name=\"{icon}\" color={color}> " +
+            $"<color=#FFD700>{label}:</color> " +
+            $"{Format(value)}{suffix} " +
+            $"<color=#FF5555>(-{Format(value)}{suffix})</color>";
+    }
 }

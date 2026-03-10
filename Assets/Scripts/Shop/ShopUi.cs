@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShopUI : BasePopup
 {
@@ -157,6 +158,7 @@ public class ShopUI : BasePopup
 
             var ui = GetUI();
             ui.transform.SetParent(contentParent, false);
+            ui.transform.SetAsLastSibling();   // FIX
             ui.gameObject.SetActive(true);
 
             var instance = new ItemInstance(data);
@@ -164,6 +166,8 @@ public class ShopUI : BasePopup
 
             activeUIs.Add(ui);
         }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)contentParent);
     }
 
     private void ReleaseAll()
@@ -172,6 +176,7 @@ public class ShopUI : BasePopup
         {
             var ui = activeUIs[i];
             ui.gameObject.SetActive(false);
+            ui.transform.SetParent(transform); // move ra ngoài content
             pool.Enqueue(ui);
         }
         activeUIs.Clear();
@@ -182,7 +187,7 @@ public class ShopUI : BasePopup
         if (pool.Count > 0)
             return pool.Dequeue();
 
-        var ui = Instantiate(itemUIPrefab, contentParent);
+        var ui = Instantiate(itemUIPrefab);
         ui.gameObject.SetActive(false);
         return ui;
     }
@@ -237,4 +242,5 @@ public class ShopUI : BasePopup
             this.amount = amount;
         }
     }
+   
 }

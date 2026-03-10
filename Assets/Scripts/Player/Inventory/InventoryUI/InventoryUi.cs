@@ -313,7 +313,9 @@ public class InventoryUI : BasePopup
             if (item.isLocked)
                 continue;
 
-            totalGold += item.itemData.price;
+            int sellPrice = CalculateSellPrice(item);   // 🔥 dùng đúng công thức
+
+            totalGold += sellPrice;
             inventory.RemoveItem(item);
         }
 
@@ -328,10 +330,17 @@ public class InventoryUI : BasePopup
         equipmentUi.UpdateEquipmentUI();
         UpdateInventoryUI();
     }
-
+    private int CalculateSellPrice(ItemInstance item)
+    {
+        int baseValue = item.itemData.baseUpgradeCost;
+        float multi = 0.6f + item.upgradeLevel * 0.2f;
+        return Mathf.RoundToInt(baseValue * multi);
+    }
     public void UnequipAllItems()
     {
         if (inventory == null) return;
+
+        float beforePower = PlayerStats.Instance.CurrentPower;
 
         var equippedTypes = new List<ItemType>(
             equipmentUi.GetAllEquippedTypes()
@@ -340,6 +349,20 @@ public class InventoryUI : BasePopup
         foreach (var type in equippedTypes)
         {
             equipmentUi.UnequipItem(type);
+        }
+
+        PlayerStats.Instance.CalculatePower();
+
+        float afterPower = PlayerStats.Instance.CurrentPower;
+        float diff = afterPower - beforePower;
+
+        if (diff != 0)
+        {
+            string text = diff > 0
+                ? $"<color=#00FF88>+{diff:N0} Chiến lực</color>"
+                : $"<color=#FF5555>{diff:N0} Chiến lực</color>";
+
+            GameEvents.OnShowToast.Raise(text);
         }
 
         equipmentUi.UpdateEquipmentUI();

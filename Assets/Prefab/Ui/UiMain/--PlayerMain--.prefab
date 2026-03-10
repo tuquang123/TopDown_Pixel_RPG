@@ -1318,6 +1318,7 @@ MonoBehaviour:
   baseDetectionRange: 1.5
   meleeRange: 1
   rangedRange: 4
+  bowRange: 4
   attackPoint: {fileID: 212721936305039982}
   attackRadius: 0.8
   vfxDust: {fileID: 2258320781521006159}
@@ -1415,10 +1416,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e1af16c0b4650694a8e20a6e31d0f11a, type: 2}
   - {fileID: 11400000, guid: aed00281a05f0fb4495c0431af344e08, type: 2}
   - {fileID: 11400000, guid: ead44a5e72d3ac14999f2fc65b8bc88b, type: 2}
-  - {fileID: 11400000, guid: 07e5931aa041ac448af5943611460b67, type: 2}
-  - {fileID: 11400000, guid: 44b5a5f347a9adf439ba2baa4c674d46, type: 2}
-  - {fileID: 11400000, guid: 6d966789c8247d045aaafe8ca9109750, type: 2}
-  - {fileID: 11400000, guid: 28dc6e10e8ec3f34b8243b947a707264, type: 2}
+  - {fileID: 11400000, guid: 51d3f0e9d891ed045813915ed5830e53, type: 2}
+  - {fileID: 11400000, guid: 83a2b33dfc16b62459b0621a0663f834, type: 2}
+  - {fileID: 11400000, guid: 51d3f0e9d891ed045813915ed5830e53, type: 2}
+  - {fileID: 11400000, guid: 83a2b33dfc16b62459b0621a0663f834, type: 2}
   _playerStats: {fileID: 6414742079472401658}
   autoCastEnabled: 0
 --- !u!114 &9046378061321873016
@@ -1469,7 +1470,6 @@ MonoBehaviour:
     slotObject: {fileID: 0}
   - heroId: h_kem
     slotObject: {fileID: 0}
-  heroManager: {fileID: 0}
 --- !u!114 &6414742079472401658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5334,15 +5334,15 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: -12
-  m_Sprite: {fileID: 7291716331337885905, guid: 605b42308b512ed48b423f1285f5a27a, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.51, y: 0.51}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &3264521758595087400

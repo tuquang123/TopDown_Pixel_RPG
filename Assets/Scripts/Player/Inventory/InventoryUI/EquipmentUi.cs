@@ -41,17 +41,7 @@ public class EquipmentUI : MonoBehaviour
             { ItemType.SpecialArmor, specialArmorSlot },
             { ItemType.Hair, hairSlot }
         };
-
-        foreach (var kvp in slotMapping)
-        {
-            ItemType type = kvp.Key;
-            EquipmentSlotUI slotUI = kvp.Value;
-
-            ItemType capturedType = type; // avoid closure issue
-            slotUI.button.onClick.AddListener(() => UnequipItem(capturedType));
-            slotUI.iconButton.onClick.AddListener(() => ShowEquippedItemDetail(capturedType));
-        }
-
+        
         UpdateEquipmentUI();
         foreach (var kvp in slotMapping)
         {
@@ -130,24 +120,7 @@ public class EquipmentUI : MonoBehaviour
         PlayerStats.Instance.CalculatePower();
 
         float afterPower = PlayerStats.Instance.CurrentPower;
-        float diff = afterPower - beforePower;
-
-        if (diff != 0)
-        {
-            string text;
-
-            if (diff > 0)
-            {
-                text = $"<color=#00FF00>+{diff:N0} Chiến lực</color>";
-            }
-            else
-            {
-                text = $"<color=#FF4D4D>{diff:N0} Chiến lực</color>";
-            }
-
-            GameEvents.OnShowToast.Raise(text);
-            
-        }
+        ShowPowerDiff(beforePower, afterPower);
 
         UpdateEquipmentUI();
         inventoryUI.UpdateInventoryUI();
@@ -197,5 +170,18 @@ public class EquipmentUI : MonoBehaviour
         equipmentManager.equippedItems.TryGetValue(type, out var item);
         return item;
     }
+    private void ShowPowerDiff(float before, float after)
+    {
+        float diff = after - before;
+        if (Mathf.Approximately(diff, 0)) return;
 
+        string text;
+
+        if (diff > 0)
+            text = $"<color=#00FF00>+{diff:N0} Chiến lực</color>";
+        else
+            text = $"<color=#FF4D4D>{diff:N0} Chiến lực</color>";
+
+        GameEvents.OnShowToast.Raise(text);
+    }
 }

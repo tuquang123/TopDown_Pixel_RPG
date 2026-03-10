@@ -183,10 +183,17 @@ public class ItemDetailPanel : MonoBehaviour
         var equipped =
             inventoryUI.equipmentUi.GetEquippedItem(currentItem.itemData.itemType);
 
-        if (equipped != null)
-            statDisplayComponent.SetCompareStats(currentItem, equipped);
+      
+
+        if (isEquipped)
+        {
+            // hiển thị stat sẽ mất khi tháo
+            statDisplayComponent.SetUnequipStats(currentItem);
+        }
         else
-            statDisplayComponent.SetStats(currentItem);
+        {
+            statDisplayComponent.SetCompareStats(currentItem, equipped);
+        }
 
         // Buttons
         SetupButtons(currentItem, data, isEquipped);
@@ -237,30 +244,36 @@ public class ItemDetailPanel : MonoBehaviour
         }
     // ================= ACTIONS =================
 
-    private void EquipItem()
+    public void EquipItem()
     {
+        if (currentItem == null) return;
+
         float beforePower = PlayerStats.Instance.CurrentPower;
 
         inventoryUI.equipmentUi.EquipItem(currentItem);
-        inventoryUI.Inventory.RemoveItem(currentItem);
 
-        // đảm bảo stat đã update
         PlayerStats.Instance.CalculatePower();
 
         float afterPower = PlayerStats.Instance.CurrentPower;
-        float diff = afterPower - beforePower;
+        ShowPowerDiff(beforePower, afterPower);
 
-        if (diff != 0)
-        {
-            string text = diff > 0 
-                ? $"+{diff:N0} Chiến lực"
-                : $"{diff:N0} Chiến lực";
-
-            GameEvents.OnShowToast.Raise(text);
-        }
-
+        inventoryUI.equipmentUi.UpdateEquipmentUI();
         inventoryUI.UpdateInventoryUI();
-        Hide();
+    }
+
+    private void ShowPowerDiff(float before, float after)
+    {
+        float diff = after - before;
+        if (Mathf.Approximately(diff, 0)) return;
+
+        string text;
+
+        if (diff > 0)
+            text = $"<color=#00FF00>+{diff:N0} Chiến lực</color>";
+        else
+            text = $"<color=#FF4D4D>{diff:N0} Chiến lực</color>";
+
+        GameEvents.OnShowToast.Raise(text);
     }
 
     private void ConsumeItem()
