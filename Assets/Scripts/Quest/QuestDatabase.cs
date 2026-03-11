@@ -35,6 +35,7 @@ public class QuestReward
 {
     public int experienceReward;
     public int goldReward;
+    public int gemReward;
     public List<string> itemIDs;
 }
 

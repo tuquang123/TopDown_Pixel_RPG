@@ -204,7 +204,7 @@ public class InventoryUI : BasePopup
 
         if (sellAllButton != null)
         {
-            sellAllButton.onClick.AddListener(SellAllItems);
+            sellAllButton.onClick.AddListener(OnClickSellAll);
             sellAllText.text = "Sell All";
         }
 
@@ -297,15 +297,15 @@ public class InventoryUI : BasePopup
         equipmentUi.UpdateEquipmentUI();
         UpdateInventoryUI();
     }
-    public void SellAllItems()
+    
+    public void OnClickSellAll()
     {
         if (inventory == null) return;
 
         int totalGold = 0;
+        int itemCount = 0;
 
-        List<ItemInstance> itemsToSell = new List<ItemInstance>(inventory.items);
-
-        foreach (var item in itemsToSell)
+        foreach (var item in inventory.items)
         {
             if (equipmentUi.IsItemEquipped(item))
                 continue;
@@ -313,23 +313,64 @@ public class InventoryUI : BasePopup
             if (item.isLocked)
                 continue;
 
-            int sellPrice = CalculateSellPrice(item);   // 🔥 dùng đúng công thức
-
-            totalGold += sellPrice;
-            inventory.RemoveItem(item);
+            itemCount++;
+            totalGold += CalculateSellPrice(item);
         }
-
-        if (totalGold > 0)
+        if (itemCount == 0)
         {
-            CurrencyManager.Instance.AddGold(totalGold);
+            GameEvents.OnShowToast.Raise("Không có đồ để bán");
+            return;
+        }
+        UIManager.Instance.ShowPopupByType(PopupType.ItemConfirm);
 
-            string text = $"<color=#FFD700>+{totalGold:N0} vàng</color>";
-            GameEvents.OnShowToast.Raise(text);
+        if (UIManager.Instance.TryGetPopup(PopupType.ItemConfirm, out var popup)
+            && popup is ConfirmPopup confirm)
+        {
+            confirm.Show(
+                "Sell All",
+                $"Bán {itemCount} món đồ\nNhận <color=#FFD700>{totalGold:N0} vàng</color>?",
+                SellAllItems
+            );
+        }
+    }
+
+    private void SellAllItems()
+    {
+        if (inventory == null) return;
+
+        int totalGold = 0;
+        List<ItemInstance> itemsToRemove = new List<ItemInstance>();
+
+        foreach (var item in inventory.items)
+        {
+            if (equipmentUi.IsItemEquipped(item))
+                continue;
+
+            if (item.isLocked)
+                continue;
+
+            totalGold += CalculateSellPrice(item);
+            itemsToRemove.Add(item);
         }
 
-        equipmentUi.UpdateEquipmentUI();
+        if (itemsToRemove.Count == 0)
+        {
+            GameEvents.OnShowToast.Raise("Không có đồ để bán");
+            return;
+        }
+
+        foreach (var item in itemsToRemove)
+        {
+            inventory.items.Remove(item);
+        }
+
+        CurrencyManager.Instance.AddGold(totalGold);
+
+        GameEvents.OnShowToast.Raise($"Bán thành công\n+{totalGold:N0} vàng");
+
         UpdateInventoryUI();
     }
+
     private int CalculateSellPrice(ItemInstance item)
     {
         int baseValue = item.itemData.baseUpgradeCost;
