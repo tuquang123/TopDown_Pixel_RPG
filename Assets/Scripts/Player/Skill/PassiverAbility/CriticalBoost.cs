@@ -4,20 +4,28 @@ public class CriticalBoost : ISkill
 {
     public void ExecuteSkill(PlayerStats playerStats, SkillData skillData)
     {
-        int currentLevel = playerStats.GetSkillLevel(skillData.skillID); 
-        SkillLevelStat currentLevelStat = skillData.GetLevelStat(currentLevel);
+        int level = playerStats.GetSkillLevel(skillData.skillID);
+        SkillLevelStat stat = skillData.GetLevelStat(level);
 
-        if (currentLevelStat == null)
+        if (stat == null)
         {
-            Debug.LogError($"Không tìm thấy dữ liệu cấp độ {currentLevel} cho kỹ năng {skillData.skillName}");
-            return; 
+            Debug.LogError($"Không tìm thấy dữ liệu cấp {level} cho {skillData.skillName}");
+            return;
         }
-        var mod = new StatModifier(StatType.CritChance, (int)currentLevelStat.value);
+
+        var mod = new StatModifier(
+            StatType.CritChance,
+            stat.value,
+            stat.modType
+        );
+
         playerStats.ApplyOrReplaceModifier(skillData.skillID, mod);
+
+        Debug.Log($"CritChance mới: {playerStats.critChance.Value}%");
     }
 
     public bool CanUse(PlayerStats playerStats, SkillData skillData)
     {
-        return true; 
+        return true;
     }
 }

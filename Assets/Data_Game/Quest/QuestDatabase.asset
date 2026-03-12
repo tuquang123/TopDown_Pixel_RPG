@@ -23,6 +23,7 @@ MonoBehaviour:
     reward:
       experienceReward: 100
       goldReward: 50000
+      gemReward: 0
       itemIDs: []
   - questID: NV2
     questName: barrier
@@ -34,6 +35,7 @@ MonoBehaviour:
     reward:
       experienceReward: 100
       goldReward: 100
+      gemReward: 0
       itemIDs:
       - sword
   - questID: NV0
@@ -46,6 +48,7 @@ MonoBehaviour:
     reward:
       experienceReward: 100
       goldReward: 1000
+      gemReward: 0
       itemIDs: []
   - questID: NV3
     questName: gold 1000
@@ -57,5 +60,17 @@ MonoBehaviour:
     reward:
       experienceReward: 100
       goldReward: 300
-      itemIDs:
-      - hair1
+      gemReward: 0
+      itemIDs: []
+  - questID: NV4
+    questName: Gem
+    description: earn 10 gem
+    objectives:
+    - objectiveName: Gem
+      type: 1
+      requiredAmount: 10
+    reward:
+      experienceReward: 200
+      goldReward: 500
+      gemReward: 5
+      itemIDs: []
