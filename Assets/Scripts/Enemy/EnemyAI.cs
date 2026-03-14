@@ -600,6 +600,11 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         OnDeath?.Invoke();
         QuestManager.Instance.ReportProgress("NV1", enemyName, 1);
+        QuestManager.Instance.ReportProgress("NV5", enemyName, 1); 
+        QuestManager.Instance.ReportProgress("NV6", enemyName, 1);
+        QuestManager.Instance.ReportProgress("NV7", enemyName, 1);
+        QuestManager.Instance.ReportProgress("NV8", enemyName, 1);
+        QuestManager.Instance.ReportProgress("NV9", enemyName, 1);
     }
 
     protected virtual void HandleDrops()

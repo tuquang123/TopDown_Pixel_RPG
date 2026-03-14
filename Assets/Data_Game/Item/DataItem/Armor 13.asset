@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: armor2
   itemName: Inferno Warplate
   icon: {fileID: -7650184365866704765, guid: d1bc3ad920b0d41c5b5d8aff14f0dee9, type: 3}
+  weaponCategory: 0
   itemType: 1
-  tier: 3
-  price: 306
+  tier: 4
+  price: 846
   description: The armor was made from volcanic rock
   attack:
-    flat: 73
+    flat: 47
     percent: 0
   defense:
-    flat: 7
+    flat: 47
     percent: 0
   health:
-    flat: 849
+    flat: 361
     percent: 0
   mana:
-    flat: 291
+    flat: 434
     percent: 0
   critChance:
-    flat: 13
+    flat: 21
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 0
+    flat: 25
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 1941588151021849806, guid: d1bc3ad920b0d41c5b5d8aff14f0dee9, type: 3}
   iconRight: {fileID: 3832911645102586382, guid: d1bc3ad920b0d41c5b5d8aff14f0dee9, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 160
+  baseUpgradeCost: 195
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

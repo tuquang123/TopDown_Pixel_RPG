@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: armor1
   itemName: Iron Plate Armor
   icon: {fileID: -2733704329670916693, guid: 0aba1c3d9e6814991b93ff6a9540656b, type: 3}
+  weaponCategory: 0
   itemType: 1
-  tier: 0
-  price: 171
+  tier: 4
+  price: 1080
   description: Lightweight and flexible
   attack:
-    flat: 26
+    flat: 151
     percent: 0
   defense:
-    flat: 17
+    flat: 20
     percent: 0
   health:
-    flat: 589
+    flat: 1626
     percent: 0
   mana:
-    flat: 150
+    flat: 243
     percent: 0
   critChance:
-    flat: 6
+    flat: 16
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 9
+    flat: 23
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: -3283878981979326925, guid: 0aba1c3d9e6814991b93ff6a9540656b, type: 3}
   iconRight: {fileID: -1496476315439836622, guid: 0aba1c3d9e6814991b93ff6a9540656b, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 212
+  baseUpgradeCost: 700
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

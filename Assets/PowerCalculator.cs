@@ -5,27 +5,29 @@ public class PowerUI : MonoBehaviour
 {
     [SerializeField] private TMP_Text powerText;
 
-    private void OnEnable()
+    private PlayerStats stats;
+
+    private void Start()
     {
         if (CommonReferent.Instance == null) return;
-        if (CommonReferent.Instance.playerStats == null) return;
 
-        CommonReferent.Instance.playerStats.OnStatsChanged += UpdatePower;
+        stats = CommonReferent.Instance.playerStats;
+        if (stats == null) return;
+
+        stats.OnStatsChanged += UpdatePower;
         UpdatePower();
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
-        if (CommonReferent.Instance == null) return;
-        if (CommonReferent.Instance.playerStats == null) return;
-
-        CommonReferent.Instance.playerStats.OnStatsChanged -= UpdatePower;
+        if (stats != null)
+            stats.OnStatsChanged -= UpdatePower;
     }
 
     private void UpdatePower()
     {
-        if (powerText == null) return;
+        if (powerText == null || stats == null) return;
 
-        powerText.text = "Power: " + CommonReferent.Instance.playerStats.CurrentPower.ToString("N0");
+        powerText.text = "Power: " + stats.CurrentPower.ToString("N0");
     }
 }

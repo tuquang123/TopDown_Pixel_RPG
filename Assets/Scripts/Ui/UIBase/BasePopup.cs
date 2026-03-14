@@ -53,7 +53,7 @@ public class BasePopup : MonoBehaviour
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
 
-        Time.timeScale = 1;
+        //Time.timeScale = 1;
 
         fadeTween = canvasGroup
             .DOFade(0f, 0.15f)

@@ -22,7 +22,7 @@ MonoBehaviour:
       requiredAmount: 1
     reward:
       experienceReward: 100
-      goldReward: 50000
+      goldReward: 15
       gemReward: 0
       itemIDs: []
   - questID: NV2
@@ -34,7 +34,7 @@ MonoBehaviour:
       requiredAmount: 1
     reward:
       experienceReward: 100
-      goldReward: 100
+      goldReward: 20
       gemReward: 0
       itemIDs:
       - sword
@@ -42,12 +42,12 @@ MonoBehaviour:
     questName: talk
     description: talk with NPC
     objectives:
-    - objectiveName: NPC_0
+    - objectiveName: NPC_1
       type: 2
       requiredAmount: 1
     reward:
       experienceReward: 100
-      goldReward: 1000
+      goldReward: 20
       gemReward: 0
       itemIDs: []
   - questID: NV3
@@ -59,7 +59,7 @@ MonoBehaviour:
       requiredAmount: 5
     reward:
       experienceReward: 100
-      goldReward: 300
+      goldReward: 30
       gemReward: 0
       itemIDs: []
   - questID: NV4
@@ -71,6 +71,66 @@ MonoBehaviour:
       requiredAmount: 10
     reward:
       experienceReward: 200
-      goldReward: 500
+      goldReward: 50
       gemReward: 5
+      itemIDs: []
+  - questID: NV5
+    questName: Gravok
+    description: destroy 5 Gravok
+    objectives:
+    - objectiveName: Gravok
+      type: 0
+      requiredAmount: 5
+    reward:
+      experienceReward: 300
+      goldReward: 50
+      gemReward: 2
+      itemIDs: []
+  - questID: NV6
+    questName: Ravageron
+    description: destroy 5 Ravageron
+    objectives:
+    - objectiveName: Ravageron
+      type: 0
+      requiredAmount: 2
+    reward:
+      experienceReward: 200
+      goldReward: 30
+      gemReward: 0
+      itemIDs: []
+  - questID: NV7
+    questName: Fangrider
+    description: destroy 5 Fangrider
+    objectives:
+    - objectiveName: Fangrider
+      type: 0
+      requiredAmount: 1
+    reward:
+      experienceReward: 500
+      goldReward: 70
+      gemReward: 0
+      itemIDs: []
+  - questID: NV8
+    questName: Silentmaw
+    description: destroy 5 Silentmaw
+    objectives:
+    - objectiveName: Silentmaw
+      type: 0
+      requiredAmount: 3
+    reward:
+      experienceReward: 400
+      goldReward: 50
+      gemReward: 0
+      itemIDs: []
+  - questID: NV9
+    questName: Skeleton
+    description: destroy 5 Skeleton
+    objectives:
+    - objectiveName: Skeleton
+      type: 0
+      requiredAmount: 3
+    reward:
+      experienceReward: 400
+      goldReward: 50
+      gemReward: 0
       itemIDs: []

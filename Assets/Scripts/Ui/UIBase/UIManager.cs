@@ -69,7 +69,7 @@ public class UIManager : Singleton<UIManager>
         foreach (var key in invalidKeys)
             activePopups.Remove(key);
 
-        Time.timeScale = activePopups.Count > 0 ? 0f : 1f;
+        //Time.timeScale = activePopups.Count > 0 ? 0f : 1f;
     }
 
     // ================== SHOW ==================

@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: armor3
   itemName: Ocean Armor
   icon: {fileID: -5059617106600631265, guid: 20826ee5fbaa8418b93e6ece5f885b00, type: 3}
+  weaponCategory: 0
   itemType: 1
-  tier: 3
-  price: 973
+  tier: 4
+  price: 1000
   description: Lightweight and flexible
   attack:
-    flat: 137
+    flat: 97
     percent: 0
   defense:
-    flat: 7
+    flat: 35
     percent: 0
   health:
-    flat: 1245
+    flat: 1718
     percent: 0
   mana:
-    flat: 352
+    flat: 497
     percent: 0
   critChance:
-    flat: 37
+    flat: 43
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 16
+    flat: 11
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: -4433046098323040821, guid: 20826ee5fbaa8418b93e6ece5f885b00, type: 3}
   iconRight: {fileID: -8220607459341252921, guid: 20826ee5fbaa8418b93e6ece5f885b00, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 416
+  baseUpgradeCost: 262
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

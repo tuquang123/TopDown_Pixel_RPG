@@ -15,12 +15,13 @@ MonoBehaviour:
   itemID: dagger
   itemName: Dagger
   icon: {fileID: 21300000, guid: 69a11d8cb1f7e46718b2f15d0878ae0e, type: 3}
+  weaponCategory: 0
   itemType: 0
   tier: 4
-  price: 1047
+  price: 572
   description: close range, high speed
   attack:
-    flat: 49
+    flat: 224
     percent: 0
   defense:
     flat: 0
@@ -32,13 +33,13 @@ MonoBehaviour:
     flat: 0
     percent: 0
   critChance:
-    flat: 31
+    flat: 21
     percent: 0
   attackSpeed:
-    flat: 0.1
+    flat: 1.2
     percent: 0
   lifeSteal:
-    flat: 13
+    flat: 16
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 377
+  baseUpgradeCost: 241
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
