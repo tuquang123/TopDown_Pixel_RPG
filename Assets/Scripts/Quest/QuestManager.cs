@@ -35,7 +35,7 @@ public class QuestManager : Singleton<QuestManager>
         QuestProgress qpNew = new QuestProgress(quest);
         qpNew.state = QuestState.InProgress;
         activeQuests.Add(qpNew);
-
+        OnQuestChanged?.Invoke();
         questUI?.UpdateQuestProgress(qpNew);
         Debug.Log($"Started Quest: {quest.questName}");
     }
@@ -46,16 +46,21 @@ public class QuestManager : Singleton<QuestManager>
         if (existing != null) return existing;
 
         var progress = new QuestProgress(questSO);
-        activeQuests.Add(progress); 
+        progress.state = QuestState.NotAccepted;
+
         return progress;
     }
-    
+
+    public bool NoQuest()
+    {
+        return activeQuests.Count == 0;
+    }
     // Report tiến độ
     public void ReportProgress(string questID, string objectiveName, int amount = 1)
     {
         var qp = activeQuests.Find(q => q.quest.questID == questID);
         if (qp == null) return;
-
+        
         if (!qp.progress.ContainsKey(objectiveName))
             qp.progress[objectiveName] = 0;
 
@@ -70,7 +75,7 @@ public class QuestManager : Singleton<QuestManager>
                 Debug.Log($"Quest {qp.quest.questName} completed!");
             }
         }
-
+        OnQuestChanged?.Invoke();
         questUI?.UpdateQuestProgress(qp, qp.state == QuestState.Completed);
     }
 
@@ -86,7 +91,7 @@ public class QuestManager : Singleton<QuestManager>
         qp.state = QuestState.Rewarded;
 
         AwardQuestReward(qp);
-
+        OnQuestChanged?.Invoke();
         questUI?.Clear();
         Debug.Log($"Quest Turned In: {qp.quest.questName}");
     }
@@ -349,4 +354,5 @@ public class QuestManager : Singleton<QuestManager>
 
         Debug.Log("Dev Cheat: Không còn quest nào.");
     }
+    public System.Action OnQuestChanged;
 }

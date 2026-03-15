@@ -21,6 +21,8 @@ public class NPCDialogueTrigger : MonoBehaviour
     private QuestProgress currentQuest;
     private bool isPlayerInRange;
 
+    public GameObject questAvailableIcon;
+    public GameObject questTurnInIcon;
     private void Awake()
     {
         mainCam = Camera.main;
@@ -37,12 +39,12 @@ public class NPCDialogueTrigger : MonoBehaviour
         UpdateCurrentQuest();
 
         // start first quest (nếu cần)
+        // start first quest (nếu cần)
         if (currentQuest != null)
         {
             QuestManager.Instance.StartQuest(currentQuest.quest);
             currentQuest.state = QuestState.InProgress;
             QuestManager.Instance.questUI.UpdateQuestProgress(currentQuest);
-            Debug.Log("startQuest " + currentQuest.quest.questName);
         }
     }
 
@@ -79,11 +81,17 @@ public class NPCDialogueTrigger : MonoBehaviour
 
     private void UpdateCurrentQuest()
     {
-        if (questIDs == null || questIDs.Count == 0) return;
+        if (questIDs == null || questIDs.Count == 0)
+        {
+            questAvailableIcon.SetActive(false);
+            questTurnInIcon.SetActive(false);
+            return;
+        }
 
         foreach (var id in questIDs)
         {
             var qp = QuestManager.Instance.GetQuestProgressByID(id);
+
             if (qp == null)
             {
                 var questSO = QuestManager.Instance.questDatabase.GetQuestByID(id);
@@ -91,16 +99,21 @@ public class NPCDialogueTrigger : MonoBehaviour
                     qp = QuestManager.Instance.CreateQuestProgress(questSO);
             }
 
-            if (qp.state != QuestState.Rewarded)
+            if (qp != null && qp.state != QuestState.Rewarded)
             {
                 currentQuest = qp;
+                questAvailableIcon.SetActive(qp.state == QuestState.NotAccepted);
+                questTurnInIcon.SetActive(qp.state == QuestState.Completed);
+                
+
                 return;
             }
         }
 
         currentQuest = null;
+        questAvailableIcon.SetActive(false);
+        questTurnInIcon.SetActive(false);
     }
-
     private void StartDialogue()
     {
         if (currentQuest != null && currentQuest.state == QuestState.InProgress)
@@ -148,7 +161,15 @@ public class NPCDialogueTrigger : MonoBehaviour
             interactButton.onClick.AddListener(StartDialogue);
         }
     }
+    private void OnEnable()
+    {
+        QuestManager.Instance.OnQuestChanged += UpdateCurrentQuest;
+    }
 
+    private void OnDisable()
+    {
+        QuestManager.Instance.OnQuestChanged -= UpdateCurrentQuest;
+    }
     private void ShowUI() => interactButton?.gameObject.SetActive(true);
     private void HideUI() => interactButton?.gameObject.SetActive(false);
 }

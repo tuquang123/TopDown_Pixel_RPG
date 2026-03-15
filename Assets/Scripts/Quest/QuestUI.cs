@@ -49,5 +49,5 @@ public class QuestUI : MonoBehaviour
 
         questProgressText.text = progress;
     }
-    public void Clear() => questProgressText.text = "khong co nhiem vu";
+    public void Clear() => questProgressText.text = "khong co nhiem vu\nhay di tim npc";
 }
