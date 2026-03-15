@@ -3741,10 +3741,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dialogueID: npc_0
-  questIDs: []
+  questIDs:
+  - NV0
+  - NV1
+  - NV2
+  - NV3
+  - NV4
+  - NV7
+  - NV6
+  - NV5
+  - NV8
+  - NV9
   nameObj: NPC_0
   interactRange: 2.5
-  offset: {x: 0, y: 0.9, z: 0}
+  offset: {x: 0, y: 1, z: 0}
   questAvailableIcon: {fileID: 6575363529452830501}
   questTurnInIcon: {fileID: 4845617810766278619}
 --- !u!1 &1544140443647928821
@@ -3792,7 +3802,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 15
   m_SortAtRoot: 0
 --- !u!95 &1640547789494355734
 Animator:
@@ -5571,7 +5581,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4845617810766278619}
   m_LocalRotation: {x: -0, y: -0.008726558, z: -0, w: 0.999962}
-  m_LocalPosition: {x: 0, y: 0, z: -0.00067710865}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5579,7 +5589,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.030029297, y: 1.1099854}
+  m_AnchoredPosition: {x: 0.01, y: 1.4}
   m_SizeDelta: {x: 0.4455, y: 0.4455}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &3724983079299486994
@@ -6800,7 +6810,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.030029297, y: 1.0999756}
+  m_AnchoredPosition: {x: -0.02, y: 1.41}
   m_SizeDelta: {x: 0.1469, y: 0.4455}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &309069347416505940
