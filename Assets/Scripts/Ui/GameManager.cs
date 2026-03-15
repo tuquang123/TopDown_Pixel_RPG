@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Sirenix.OdinInspector;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour
 {
@@ -133,4 +134,20 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
+    
+#if UNITY_EDITOR
+    
+    [MenuItem("Tools/Game/Clear All Save Data")]
+    private static void ClearAllGameData()
+    {
+        // Xóa save system của game
+        SaveManager.ClearAll();
+    
+        // Xóa toàn bộ PlayerPrefs
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+    
+        Debug.Log("All Save Data + PlayerPrefs Cleared!");
+    }
+#endif
 }
