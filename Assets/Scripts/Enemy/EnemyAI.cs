@@ -227,6 +227,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         if (target == null)
         {
             anim.SetBool(MoveBool, false);
+            SetAggroIcon(false);
             return;
         }
 
@@ -246,6 +247,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         {
             anim.SetBool(MoveBool, false);
         }
+        HandleAggroState();
     }
     
     protected void Patrol()
@@ -504,7 +506,13 @@ public class EnemyAI : MonoBehaviour, IDamageable
         else
         {
             Invoke(nameof(EndDamageStun), damagedStunTime);
+            
         }
+        RegisterRangedPressure();
+
+        isAggro = true;
+        lastAggroTime = Time.time;
+        SetAggroIcon(true);
     }
 
     public void SpawnBloodVFX()
@@ -527,22 +535,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
     }
 
     void EndDamageStun() => isTakingDamage = false;
-
-    public void ResetEnemy()
-    {
-        spawnPosition = transform.position;
-        ChooseNewPatrolPoint();
-        patrolWaitTimer = 0f;
-
-        currentHealth = maxHealth;
-        isDead = false;
-        isTakingDamage = false;
-        enabled = true;
-        isAggro = false;
-        GetComponent<Collider2D>().enabled = true;
-        enemyHealthUI?.UpdateHealth(currentHealth);
-    }
-
+    
     public event Action OnDeath;
 
     protected virtual void Die()
@@ -675,5 +668,53 @@ public class EnemyAI : MonoBehaviour, IDamageable
         if (selectionCircle != null)
             selectionCircle.SetActive(value);
     }
+    [Header("Aggro Icon")]
+    [SerializeField] private GameObject aggroIcon;
+    [SerializeField] private float aggroLoseTime = 5f;
 
+    private float lastAggroTime;
+    void HandleAggroState()
+    {
+        if (target != null)
+        {
+            float dist = Vector2.Distance(transform.position, target.position);
+
+            if (dist <= detectionRange)
+            {
+                isAggro = true;
+                lastAggroTime = Time.time;
+                SetAggroIcon(true);
+                return;
+            }
+        }
+
+        if (Time.time - lastAggroTime > aggroLoseTime)
+        {
+            isAggro = false;
+            target = null;
+            SetAggroIcon(false);
+        }
+    }
+    public void ResetEnemy()
+    {
+        spawnPosition = transform.position;
+        ChooseNewPatrolPoint();
+        patrolWaitTimer = 0f;
+
+        currentHealth = maxHealth;
+        isDead = false;
+        isTakingDamage = false;
+        enabled = true;
+        isAggro = false;
+
+        SetAggroIcon(false);   // THÊM DÒNG NÀY
+
+        GetComponent<Collider2D>().enabled = true;
+        enemyHealthUI?.UpdateHealth(currentHealth);
+    }
+    void SetAggroIcon(bool value)
+    {
+        if (aggroIcon != null)
+            aggroIcon.SetActive(value);
+    }
 }
