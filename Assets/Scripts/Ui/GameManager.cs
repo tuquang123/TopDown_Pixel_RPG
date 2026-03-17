@@ -137,7 +137,7 @@ public class GameManager : MonoBehaviour
     
 #if UNITY_EDITOR
     
-    [MenuItem("Tools/Game/Clear All Save Data")]
+    [MenuItem("Tools/Clear All Save Data")]
     private static void ClearAllGameData()
     {
         // Xóa save system của game
