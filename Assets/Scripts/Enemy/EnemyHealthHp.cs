@@ -118,8 +118,8 @@ public class EnemyHealthUI : MonoBehaviour
     public void HideUI()
     {
         if (!this) return;
-        //if (gameObject != null && gameObject.activeSelf)
-            //gameObject.SetActive(false);
+        if (gameObject != null && gameObject.activeSelf)
+            gameObject.SetActive(false);
     }
 
     public void SetTarget(GameObject target)

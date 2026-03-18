@@ -10,14 +10,15 @@ public class LevelManager : Singleton<LevelManager>
         Default
     }
 
-    LevelDatabase levelDatabase;
+    public LevelDatabase levelDatabase;
     GameObject player;
 
     private int currentLevel = 0;
-    private GameObject currentLevelInstance;
+    public GameObject currentLevelInstance;
     private bool isLoadingFromSave = false;
     private Vector3 savedPlayerPosition;
     [SerializeField] private ScreenFader screenFader;
+    public int CurrentLevel => currentLevel;
 
     void Start()
     {

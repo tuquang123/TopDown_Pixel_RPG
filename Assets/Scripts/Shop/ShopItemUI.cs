@@ -62,7 +62,7 @@ public class ShopItemUI : MonoBehaviour
         // ===== CONSUMABLE =====
         if (data.itemType == ItemType.Consumable)
         {
-            buyButton.interactable = gold >= data.price;
+            buyButton.interactable = true;
 
             int amount = shopUI.PlayerInventory.GetItemCount(data);
 
@@ -109,7 +109,7 @@ public class ShopItemUI : MonoBehaviour
         }
         else
         {
-            buyButton.interactable = gold >= data.price;
+            buyButton.interactable = true; // luôn cho xem item
             priceText.text = $"{data.price} <sprite name=\"gold_icon\">";
         }
     }
