@@ -2,13 +2,16 @@
 using UnityEngine.UI;
 using TMPro;
 
-public class LevelEndTrigger : MonoBehaviour
+public class LevelTrigger : MonoBehaviour
 {
+    public enum TriggerType { Next, Back }
+
+    [Header("Trigger Settings")]
+    [SerializeField] private TriggerType triggerType = TriggerType.Next;
     [SerializeField] private float delay = 1.5f;
     [SerializeField] private Slider loadingBar;
 
     [Header("Map UI")]
-    [SerializeField] private GameObject mapNameBG;
     [SerializeField] private TMP_Text mapNameText;
 
     private float timer;
@@ -17,14 +20,15 @@ public class LevelEndTrigger : MonoBehaviour
 
     void Start()
     {
+        // Reset loading bar
         if (loadingBar != null)
         {
             loadingBar.value = 0f;
             loadingBar.gameObject.SetActive(false);
         }
 
-        if (mapNameBG != null)
-            mapNameBG.SetActive(false);
+        // Khi start scene, update text dựa trên trigger
+        UpdateMapNameForTrigger();
     }
 
     void Update()
@@ -43,8 +47,12 @@ public class LevelEndTrigger : MonoBehaviour
         {
             triggered = true;
 
-            if (LevelManager.Instance != null)
+            if (LevelManager.Instance == null) return;
+
+            if (triggerType == TriggerType.Next)
                 LevelManager.Instance.NextLevel();
+            else
+                LevelManager.Instance.PreviousLevel();
         }
     }
 
@@ -53,18 +61,17 @@ public class LevelEndTrigger : MonoBehaviour
         if (!other.CompareTag("Player")) return;
 
         playerInside = true;
+        timer = 0f;
+        triggered = false;
 
-        if (LevelManager.Instance == null || mapNameText == null) return;
+        if (loadingBar != null)
+        {
+            loadingBar.value = 0f;
+            loadingBar.gameObject.SetActive(true);
+        }
 
-        var db = LevelManager.Instance.levelDatabase;
-        int nextIndex = LevelManager.Instance.CurrentLevel + 1;
-
-        if (nextIndex >= db.TotalLevels) return;
-
-        var level = db.GetLevel(nextIndex);
-
-        mapNameText.text = level.levelName;   // chỉ hiển thị tên map
-        mapNameBG.SetActive(true);
+        // Cập nhật text ngay khi vào trigger dựa theo loại Next/Back
+        UpdateMapNameForTrigger();
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -80,8 +87,31 @@ public class LevelEndTrigger : MonoBehaviour
             loadingBar.value = 0f;
             loadingBar.gameObject.SetActive(false);
         }
+    }
 
-        if (mapNameBG != null)
-            mapNameBG.SetActive(false);
+    /// <summary>
+    /// Cập nhật tên map dựa trên trigger type
+    /// </summary>
+    private void UpdateMapNameForTrigger()
+    {
+        if (mapNameText == null || LevelManager.Instance == null) return;
+
+        var db = LevelManager.Instance.levelDatabase;
+        int index = LevelManager.Instance.CurrentLevel;
+
+        if (triggerType == TriggerType.Next)
+            index += 1; // hiển thị map tiếp theo
+        else
+            index -= 1; // hiển thị map trước
+
+        // Chống vượt quá bounds
+        if (index < 0) index = 0;
+        if (index >= db.TotalLevels) index = db.TotalLevels - 1;
+
+        var level = db.GetLevel(index);
+        if (level == null) return;
+
+        mapNameText.text = level.levelName;
+        Canvas.ForceUpdateCanvases(); // đảm bảo TMP update ngay
     }
 }
