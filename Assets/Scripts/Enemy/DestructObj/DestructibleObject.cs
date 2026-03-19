@@ -4,8 +4,11 @@ using System.Collections;
 public class DestructibleObject : MonoBehaviour
 {
     [Header("Stats")]
-    [SerializeField] private int maxHits = 3;
-    private int currentHits;
+    [SerializeField] private int maxHealth = 3;
+    private int currentHealth;
+
+    public int MaxHealth => maxHealth;
+    private EnemyHealthUI healthUI;
 
     [Header("Drop Settings")]
     [SerializeField] private int minGold = 1;
@@ -44,10 +47,12 @@ public class DestructibleObject : MonoBehaviour
 
     private void OnEnable()
     {
-        currentHits = 0;
+        currentHealth = 0;
         spriteRenderer.color = Color.white;
         transform.localPosition = originalPos;
         DestructibleTracker.Instance?.Register(this);
+        currentHealth = maxHealth;
+        healthUI?.UpdateHealth(currentHealth);
     }
 
     private void OnDisable()
@@ -57,13 +62,16 @@ public class DestructibleObject : MonoBehaviour
 
     public void Hit()
     {
-        currentHits++;
-        
+        currentHealth--;
+
         FloatingTextSpawner.Instance.SpawnText("-1", transform.position + Vector3.up * 1.2f, Color.white);
+
+        healthUI?.UpdateHealth(currentHealth);
+
         PlayHitFlash();
         StartCoroutine(Shake());
 
-        if (currentHits >= maxHits)
+        if (currentHealth <= 0)
             HandleDestruction();
     }
 
@@ -148,7 +156,7 @@ public class DestructibleObject : MonoBehaviour
         {
             SpawnEnemyLogic();
         }
-
+        healthUI?.HideUI(); 
         // BÁO NHIỆM VỤ
         QuestManager.Instance.ReportProgress("NV2", nameOBJ, 1);
 
@@ -198,7 +206,7 @@ public class DestructibleObject : MonoBehaviour
     {
         yield return new WaitForSeconds(respawnTime);
 
-        currentHits = 0;
+        currentHealth = 0;
         spriteRenderer.color = Color.white;
         transform.localPosition = originalPos;
 
@@ -208,11 +216,31 @@ public class DestructibleObject : MonoBehaviour
     [Header("Selection")]
     [SerializeField] private GameObject selectionCircle;
 
+    [SerializeField] public string displayName = "Barrier"; // default tên
+
     public void SetSelected(bool value)
     {
         if (selectionCircle != null)
             selectionCircle.SetActive(value);
     }
-  
-    
+    private void Start()
+    {
+        CreateHealthUI();
+    }
+
+    private void CreateHealthUI()
+    {
+        GameObject uiObj = Instantiate(
+            CommonReferent.Instance.hpSliderUi,
+            transform.position,
+            Quaternion.identity
+        );
+
+        uiObj.transform.SetParent(CommonReferent.Instance.canvasHp.transform, false);
+        uiObj.transform.localScale = Vector3.one;
+
+        healthUI = uiObj.GetComponent<EnemyHealthUI>();
+        healthUI.SetTarget(gameObject);
+    }
+   
 }

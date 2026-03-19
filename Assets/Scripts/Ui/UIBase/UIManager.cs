@@ -12,6 +12,7 @@ public enum PopupType
     Skill,
     ItemConfirm,
     Gacha,
+    Map,
     Hero
 }
     

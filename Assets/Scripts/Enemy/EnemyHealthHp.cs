@@ -18,7 +18,7 @@ public class EnemyHealthUI : MonoBehaviour
 
     [Header("Colors")]
     [SerializeField] private Color enemyHpColor = Color.red;
-
+   
     private Camera mainCamera;
     private float hideTimer;
     private int maxHealth;
@@ -150,6 +150,14 @@ public class EnemyHealthUI : MonoBehaviour
             info.sliderColor = enemyHpColor;
             autoHide = false;
         }
+        else if (target.TryGetComponent(out DestructibleObject destruct))
+        {
+            info.isEnemy = true;
+            info.maxHealth = destruct.MaxHealth;
+            info.displayName = destruct.displayName;
+            info.sliderColor = Color.yellow;
+            autoHide = false;
+        }
         else
         {
             info.isEnemy = true;
@@ -215,4 +223,6 @@ public class EnemyHealthUI : MonoBehaviour
     }
 
     #endregion
+
+   
 }

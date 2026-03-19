@@ -10,6 +10,9 @@ public class LevelDatabase : ScriptableObject
         public GameObject levelPrefab;
         public Vector3 entryFromNextLevel;   
         public Vector3 entryFromPreviousLevel;
+        
+        [Header("Map Position")]
+        public Vector2 mapPosition; 
     }
 
     public LevelEntry[] levels;
