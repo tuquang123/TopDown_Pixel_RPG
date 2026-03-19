@@ -13,7 +13,7 @@ public class ExportPlayerStatsTest : MonoBehaviour
 
         for (int i = 0; i < allPlayerStatsSO.Length; i++)
         {
-            allStats[i] = new PlayerStatsData(allPlayerStatsSO[i]);
+            //allStats[i] = new PlayerStatsData(allPlayerStatsSO[i]);
         }
 
         // Gọi hàm xuất CSV
