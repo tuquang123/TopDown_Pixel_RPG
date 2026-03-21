@@ -10,7 +10,7 @@ public class LevelDatabase : ScriptableObject
         public GameObject levelPrefab;
         public Vector3 entryFromNextLevel;   
         public Vector3 entryFromPreviousLevel;
-        
+       
         [Header("Map Position")]
         public Vector2 mapPosition; 
     }
@@ -29,4 +29,15 @@ public class LevelDatabase : ScriptableObject
     }
 
     public int TotalLevels => levels.Length;
+    public LevelEntry GetLevelByName(string name)
+    {
+        foreach (var level in levels)
+        {
+            if (level.levelName == name)
+                return level;
+        }
+
+        Debug.LogWarning("Không tìm thấy level: " + name);
+        return null;
+    }
 }

@@ -154,7 +154,7 @@ public class EnemyHealthUI : MonoBehaviour
         {
             info.isEnemy = true;
             info.maxHealth = destruct.MaxHealth;
-            info.displayName = destruct.displayName;
+            info.displayName = destruct.displayName; // FIX CHUẨN
             info.sliderColor = Color.yellow;
             autoHide = false;
         }

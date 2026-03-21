@@ -134,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0bf142f7e2147f18069120f9e4248db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHits: 30
+  maxHealth: 50
   minGold: 1
   maxGold: 2
   gemDropChance: 0.3
@@ -143,8 +143,7 @@ MonoBehaviour:
   spawnEnemyOnBreak: 0
   enemySpawnChance: 0
   useSpawnPoint: 0
-  enemyPrefabs:
-  - {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
+  enemyPrefabs: []
   spriteRenderer: {fileID: 7183990723135987594}
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   flashDuration: 0.1
@@ -152,6 +151,7 @@ MonoBehaviour:
   shakeMagnitude: 0.05
   respawnTime: 10
   selectionCircle: {fileID: 0}
+  displayName: Rock
 --- !u!61 &5930329737273603238
 BoxCollider2D:
   m_ObjectHideFlags: 0

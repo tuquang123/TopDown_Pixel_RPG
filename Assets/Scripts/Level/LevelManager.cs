@@ -103,7 +103,7 @@ public class LevelManager : Singleton<LevelManager>
 
         player.transform.position = finalPos;
         PositionAlliesAroundPlayer(finalPos);
-
+        UpdateMapUI();
         isLoadingFromSave = false;
 
         foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
@@ -183,7 +183,15 @@ public class LevelManager : Singleton<LevelManager>
 
         LoadSpecificLevel(data.levelIndex, TravelDirection.Default);
     }
+    void UpdateMapUI()
+    {
+        MapPopup popup = FindObjectOfType<MapPopup>();
 
+        if (popup != null)
+        {
+            popup.RefreshMap();
+        }
+    }
     
 
 
