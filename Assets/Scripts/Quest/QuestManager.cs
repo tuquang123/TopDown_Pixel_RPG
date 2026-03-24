@@ -38,6 +38,7 @@ public class QuestManager : Singleton<QuestManager>
         OnQuestChanged?.Invoke();
         questUI?.UpdateQuestProgress(qpNew);
         Debug.Log($"Started Quest: {quest.questName}");
+        UpdateArrow();
     }
     
     public QuestProgress CreateQuestProgress(Quest questSO)
@@ -76,6 +77,7 @@ public class QuestManager : Singleton<QuestManager>
             }
         }
         OnQuestChanged?.Invoke();
+        UpdateArrow();
         questUI?.UpdateQuestProgress(qp, qp.state == QuestState.Completed);
     }
 
@@ -89,7 +91,7 @@ public class QuestManager : Singleton<QuestManager>
         completedQuests.Add(qp);
 
         qp.state = QuestState.Rewarded;
-
+        UpdateArrow();
         AwardQuestReward(qp);
         OnQuestChanged?.Invoke();
         questUI?.Clear();
@@ -249,6 +251,7 @@ public class QuestManager : Singleton<QuestManager>
         {
             questUI?.Clear();
         }
+        UpdateArrow();
     }
     public void ForceCompleteQuest(string questID, bool autoTurnIn = false)
     {
@@ -271,7 +274,7 @@ public class QuestManager : Singleton<QuestManager>
             readyToTurnInQuests.Add(qp);
 
         questUI?.UpdateQuestProgress(qp, true);
-
+        UpdateArrow();
         Debug.Log($"Force completed quest: {qp.quest.questName}");
 
         if (autoTurnIn)
@@ -307,7 +310,7 @@ public class QuestManager : Singleton<QuestManager>
 
         // Nhận thưởng luôn
         TurnInQuest(qp);
-
+        UpdateArrow();
         Debug.Log($"Cheat complete quest: {qp.quest.questName}");
     }
     public void DevQuestStep()
@@ -351,8 +354,108 @@ public class QuestManager : Singleton<QuestManager>
                 return;
             }
         }
-
+        UpdateArrow();
         Debug.Log("Dev Cheat: Không còn quest nào.");
     }
     public System.Action OnQuestChanged;
+    public QuestArrow questArrow;
+    private Transform FindNPCByName(string name)
+    {
+        var npcs = FindObjectsOfType<NPCDialogueTrigger>();
+
+        foreach (var npc in npcs)
+        {
+            if (npc.nameObj == name)
+            {
+                return npc.transform;
+            }
+        }
+
+        return null;
+    }
+
+    public void UpdateArrow()
+    {
+        if (questArrow == null) return;
+
+        QuestProgress qp = null;
+
+        // Ưu tiên 1: Quest completed → chỉ NPC nhận thưởng
+        if (readyToTurnInQuests.Count > 0)
+        {
+            qp = readyToTurnInQuests[0];
+
+            // Ưu tiên turnInNPCName nếu có
+            if (!string.IsNullOrEmpty(qp.quest.turnInNPCName))
+            {
+                Transform npc = FindNPCByName(qp.quest.turnInNPCName);
+                if (npc != null && npc.gameObject.activeInHierarchy)
+                {
+                    questArrow.SetTarget(npc);
+                    return;
+                }
+            }
+
+            // Fallback objective đầu tiên
+            if (qp.quest.objectives != null && qp.quest.objectives.Length > 0)
+            {
+                var npc = FindNPCByName(qp.quest.objectives[0].objectiveName);
+                if (npc != null && npc.gameObject.activeInHierarchy)
+                {
+                    questArrow.SetTarget(npc);
+                    return;
+                }
+            }
+
+            // Fallback cũ
+            Transform fallback = FindNPCByQuest(qp.quest);
+            if (fallback != null && fallback.gameObject.activeInHierarchy)
+            {
+                questArrow.SetTarget(fallback);
+                return;
+            }
+        }
+
+        // Ưu tiên 2: Quest in progress
+        else if (activeQuests.Count > 0)
+        {
+            qp = activeQuests.Find(q => q.state == QuestState.InProgress);
+            if (qp != null)
+            {
+                foreach (var obj in qp.quest.objectives)
+                {
+                    var target = FindNPCByName(obj.objectiveName);
+                    if (target != null && target.gameObject.activeInHierarchy)
+                    {
+                        questArrow.SetTarget(target);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Không tìm thấy → tắt
+        questArrow.SetTarget(null);
+    }
+    private Transform FindNPCByQuest(Quest quest)
+    {
+       
+        string possibleName1 = quest.questName;                  // ví dụ: "Tìm kho báu"
+        string possibleName2 = "NPC_" + quest.questID;           // ví dụ: "NPC_Q001"
+        string possibleName3 = quest.questName.Replace(" ", ""); // "TimKhoBau"
+
+        var candidates = new[] { possibleName1, possibleName2, possibleName3 };
+
+        foreach (var name in candidates)
+        {
+            var npc = FindNPCByName(name);
+            if (npc != null) return npc;
+        }
+
+        // Cách C: Tìm NPC gần nhất (fallback) - không khuyến khích
+        // hoặc trả về null → tắt mũi tên
+
+        Debug.LogWarning($"Không tìm thấy NPC nhận thưởng cho quest: {quest.questName}");
+        return null;
+    }
 }

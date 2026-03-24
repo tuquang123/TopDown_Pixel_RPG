@@ -7,7 +7,7 @@ public class NPCDialogueTrigger : MonoBehaviour
     [Header("Dialogue & Quest")]
     [SerializeField] string dialogueID;
     [SerializeField] List<string> questIDs;
-    [SerializeField] string nameObj = "NPC_0";
+    [SerializeField] public string nameObj = "NPC_0";
 
     [Header("Interaction Settings")]
     [SerializeField] float interactRange = 2.5f; // phạm vi nói chuyện
@@ -28,42 +28,62 @@ public class NPCDialogueTrigger : MonoBehaviour
         mainCam = Camera.main;
     }
 
-    private void Start()
+    public void Start()
     {
-        player = CommonReferent.Instance.playerPrefab.transform;
+        // Tìm player instance thực tế (KHÔNG dùng prefab)
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
+        {
+            player = playerObj.transform;
+            Debug.Log($"[NPCDialogueTrigger] Player found: {player.name} at {player.position}");
+        }
+        else
+        {
+            Debug.LogError("[NPCDialogueTrigger] Không tìm thấy Player trong scene! Kiểm tra tag 'Player'.");
+            return; // thoát sớm nếu không có player
+        }
+
+        // Lấy interact button
         interactButton = CommonReferent.Instance.dialogBtn.GetComponent<Button>();
         if (interactButton != null)
+        {
             interactButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning("[NPCDialogueTrigger] Không tìm thấy dialogBtn trong CommonReferent!");
+        }
 
         SetTarget(gameObject, dialogueID);
         UpdateCurrentQuest();
 
-        // start first quest (nếu cần)
-        // start first quest (nếu cần)
-        if (currentQuest != null)
-        {
-            QuestManager.Instance.StartQuest(currentQuest.quest);
-            currentQuest.state = QuestState.InProgress;
-            QuestManager.Instance.questUI.UpdateQuestProgress(currentQuest);
-        }
+        // Nếu NPC này có quest cần start tự động khi gặp lần đầu (thường không cần ở đây nữa)
+        // Ví dụ: chỉ start nếu quest NotAccepted và player lần đầu gặp
+        // Nhưng tốt nhất để player tự tương tác → không auto start ở đây
     }
 
     private void Update()
     {
-        if (player == null) return;
+        if (player == null)
+        {
+            GameObject playerObj = GameObject.FindWithTag("Player");
+            if (playerObj != null)
+            {
+                player = playerObj.transform;
+            }
+            if (player == null) return;
+        }
 
         float distance = Vector2.Distance(transform.position, player.position);
         bool inRange = distance <= interactRange;
 
         if (inRange && !isPlayerInRange)
         {
-            // Player vừa vào phạm vi
             ShowUI();
             isPlayerInRange = true;
         }
         else if (!inRange && isPlayerInRange)
         {
-            // Player vừa rời phạm vi
             HideUI();
             isPlayerInRange = false;
         }
@@ -79,7 +99,7 @@ public class NPCDialogueTrigger : MonoBehaviour
         interactButton.transform.position = screenPos;
     }
 
-    private void UpdateCurrentQuest()
+    public void UpdateCurrentQuest()
     {
         if (questIDs == null || questIDs.Count == 0)
         {

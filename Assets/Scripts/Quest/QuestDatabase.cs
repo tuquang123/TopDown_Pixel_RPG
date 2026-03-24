@@ -20,6 +20,7 @@ public class Quest
     public string description;
     public QuestObjective[] objectives;
     public QuestReward reward;
+    public string turnInNPCName;
 }
 
 [System.Serializable]
