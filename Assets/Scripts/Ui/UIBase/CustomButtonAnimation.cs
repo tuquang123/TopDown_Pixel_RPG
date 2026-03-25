@@ -40,7 +40,7 @@ public class CustomButtonAnimation : Button
 
         if (!muteDueToTriggeredWithOtherSfx)
         {
-            //CBGAudioManager.Instance.PlaySoundEffect(soundClick);
+            AudioManager.Instance.PlaySFX("Click");
         }
         
         base.OnPointerClick(eventData);
