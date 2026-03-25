@@ -451,9 +451,9 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
     public void DealDamageToTarget()
     {
+        if (isDead) return; // ✅ CHẶN CỨNG
         if (target == null) return;
-        if (isDead) return;
-        
+
         float distance = Vector2.Distance(transform.position, target.position);
         if (distance > attackRange) return;
 
@@ -542,29 +542,36 @@ public class EnemyAI : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         isDead = true;
+        target = null; // ✅ cắt target ngay
         SetSelected(false);
+        HandleDieAnimation(); // trigger anim
 
-        HandleDieAnimation();
-        DisableComponents();
+        DisableComponents(); // tắt collider + AI thôi (OK)
+
         HandleHealthUI();
         NotifySystemsBeforeDrop();
         HandleDrops();
         NotifySystemsAfterDrop();
-        Destroy(gameObject);
-        if (CommonReferent.Instance.destructionVFXPrefab != null)
-        {
-            ObjectPooler.Instance.Get(
-                "BreakVFX",
-                CommonReferent.Instance.destructionVFXPrefab,
-                transform.position,
-                Quaternion.identity
-            );
-        }
-        //StartCoroutine(DelayDeactivate());
-    }
 
+        // ❗ KHÔNG destroy ngay
+        StartCoroutine(DelayDestroy());
+    }
+    private IEnumerator DelayDestroy()
+    {
+        yield return new WaitForSeconds(timeDieDelay);
+
+        if (anim != null)
+            anim.enabled = false; // ✅ khóa animation
+
+        Destroy(gameObject);
+    }
     protected virtual void HandleDieAnimation()
     {
+        anim.ResetTrigger(AttackTrigger);
+        anim.ResetTrigger(LongAttack);
+        anim.ResetTrigger(DamagedTrigger);
+
+        anim.SetBool(MoveBool, false);
         anim.SetTrigger(DieTrigger);
     }
 

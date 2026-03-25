@@ -26,6 +26,11 @@ public class DestructibleObject : MonoBehaviour
     //[SerializeField] private SpawnPoint spawnPoint;      // nếu muốn dùng SpawnPoint
     [SerializeField] private GameObject[] enemyPrefabs;  // spawn trực tiếp
 
+    [Header("HP Display Type")]
+    [Tooltip("true = Luôn hiển thị HP\nfalse = Chỉ hiển thị khi bị đánh")]
+    [SerializeField] private bool alwaysShowHP = false;
+  
+  
     [Header("Visual Feedback")]
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Color flashColor = Color.white;
@@ -47,12 +52,30 @@ public class DestructibleObject : MonoBehaviour
 
     private void OnEnable()
     {
-        currentHealth = 0;
         spriteRenderer.color = Color.white;
         transform.localPosition = originalPos;
         DestructibleTracker.Instance?.Register(this);
-        currentHealth = maxHealth;
+
+        currentHealth = maxHealth;                    // ← Di chuyển xuống đây
+
+        if (healthUI == null)
+            CreateHealthUI();
+
         healthUI?.UpdateHealth(currentHealth);
+
+        // Ẩn hoặc hiện tùy theo loại
+        if (alwaysShowHP)
+            healthUI?.ShowUI();
+        else
+            healthUI?.HideUI();
+    }
+    public void ShowUIOnHit()
+    {
+        if (healthUI != null && !alwaysShowHP)
+        {
+            healthUI.ShowUI();
+            healthUI.UpdateHealth(currentHealth);
+        }
     }
 
     private void OnDisable()
@@ -63,8 +86,10 @@ public class DestructibleObject : MonoBehaviour
     public void Hit()
     {
         currentHealth--;
-
         FloatingTextSpawner.Instance.SpawnText("-1", transform.position + Vector3.up * 1.2f, Color.white);
+
+        // Hiển thị HP khi bị đánh (nếu là loại chỉ hiện khi hit)
+        ShowUIOnHit();
 
         healthUI?.UpdateHealth(currentHealth);
 
@@ -74,6 +99,7 @@ public class DestructibleObject : MonoBehaviour
         if (currentHealth <= 0)
             HandleDestruction();
     }
+    
 
     private void PlayHitFlash()
     {
@@ -230,6 +256,8 @@ public class DestructibleObject : MonoBehaviour
 
     private void CreateHealthUI()
     {
+        if (healthUI != null) return;
+
         GameObject uiObj = Instantiate(
             CommonReferent.Instance.hpSliderUi,
             transform.position,

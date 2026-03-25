@@ -51,6 +51,13 @@ public class EnemyHealthUI : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (gameObject == null || !gameObject.activeInHierarchy) return;
+        if (currentTarget == null || currentTarget.target == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
         // UI hoặc script đã bị destroy → thoát
         if (gameObject == null) return;
 
@@ -115,17 +122,11 @@ public class EnemyHealthUI : MonoBehaviour
 
     #region Public API
 
-    public void HideUI()
-    {
-        if (!this) return;
-        if (gameObject != null && gameObject.activeSelf)
-            gameObject.SetActive(false);
-    }
+  
 
     public void SetTarget(GameObject target)
     {
         if (!this) return;
-
         HideUI();
         hideTimer = hideDelay;
         currentTarget = default;
@@ -140,7 +141,10 @@ public class EnemyHealthUI : MonoBehaviour
             info.maxHealth = enemy.MaxHealth;
             info.displayName = $"{enemy.EnemyName} (Lv {enemy.EnemyLevel})";
             info.sliderColor = enemyHpColor;
-            autoHide = true;
+        
+            // === SỬA Ở ĐÂY ===
+            autoHide = false;           // ← Tắt auto hide cho Enemy
+            // =================
         }
         else if (target.TryGetComponent(out AllyStats ally))
         {
@@ -154,7 +158,7 @@ public class EnemyHealthUI : MonoBehaviour
         {
             info.isEnemy = true;
             info.maxHealth = destruct.MaxHealth;
-            info.displayName = destruct.displayName; // FIX CHUẨN
+            info.displayName = destruct.displayName;
             info.sliderColor = Color.yellow;
             autoHide = false;
         }
@@ -169,7 +173,6 @@ public class EnemyHealthUI : MonoBehaviour
 
         currentTarget = info;
         maxHealth = info.maxHealth;
-
         healthSlider.maxValue = maxHealth;
         healthSlider.value = maxHealth;
 
@@ -181,32 +184,30 @@ public class EnemyHealthUI : MonoBehaviour
 
         SetSliderColor(info.sliderColor);
 
-        if (!autoHide)
-            gameObject.SetActive(true);
+        // Luôn hiển thị UI khi có target
+        gameObject.SetActive(true);
     }
 
     public void UpdateHealth(int currentHealth)
     {
-        // ===== FIX CỐT LÕI MissingReferenceException =====
         if (!this) return;
         if (currentTarget.target == null) return;
 
-        if (PlayerController.Instance != null &&
-            PlayerController.Instance.IsPlayerDie())
+        if (PlayerController.Instance != null && PlayerController.Instance.IsPlayerDie())
         {
             HideUI();
             return;
         }
 
         healthSlider.value = currentHealth;
-
         if (hpText != null)
             hpText.text = $"{currentHealth}/{maxHealth}";
 
+        // Luôn hiển thị khi đang cập nhật HP
         if (!gameObject.activeSelf)
             gameObject.SetActive(true);
 
-        hideTimer = hideDelay;
+        // Không cần reset hideTimer nữa vì autoHide = false
     }
 
     #endregion
@@ -224,5 +225,18 @@ public class EnemyHealthUI : MonoBehaviour
 
     #endregion
 
+    public void ShowUI()
+    {
+        if (!this || gameObject == null) return;
+        gameObject.SetActive(true);
+        hideTimer = hideDelay;   // reset timer nếu có auto hide
+    }
+
+    public void HideUI()
+    {
+        if (!this) return;
+        if (gameObject != null && gameObject.activeSelf)
+            gameObject.SetActive(false);
+    }
    
 }

@@ -1,34 +1,31 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections;
 
 public class LevelManager : Singleton<LevelManager>
 {
-    public enum TravelDirection
-    {
-        Forward,
-        Backward,
-        Default
-    }
+    public enum TravelDirection { Forward, Backward, Default }
 
     public LevelDatabase levelDatabase;
-    GameObject player;
+    private GameObject player;
 
     private int currentLevel = 0;
     public GameObject currentLevelInstance;
     private bool isLoadingFromSave = false;
     private Vector3 savedPlayerPosition;
     [SerializeField] private ScreenFader screenFader;
+
     public int CurrentLevel => currentLevel;
 
     void Start()
     {
         levelDatabase = CommonReferent.Instance.levelDatabase;
-    
-        // Nếu player chưa tồn tại trong scene
+
+        // Instantiate player nếu chưa có
         if (GameObject.FindWithTag("Player") == null)
         {
             player = Instantiate(CommonReferent.Instance.playerPrefab);
-            player.tag = "Player";  // Đảm bảo tag
+            player.tag = "Player";
         }
         else
         {
@@ -52,170 +49,142 @@ public class LevelManager : Singleton<LevelManager>
         }
 
         currentLevel = index;
-        LoadLevel(currentLevel, direction);
+        StartCoroutine(LoadLevelCoroutine(index, direction));
     }
-    
+
     public void NextLevel()
     {
         currentLevel++;
-        if (currentLevel >= levelDatabase.TotalLevels)
-            currentLevel = 0;
-
-        LoadLevel(currentLevel, TravelDirection.Forward);
+        if (currentLevel >= levelDatabase.TotalLevels) currentLevel = 0;
+        StartCoroutine(LoadLevelCoroutine(currentLevel, TravelDirection.Forward));
     }
 
     public void PreviousLevel()
     {
         currentLevel--;
-        if (currentLevel < 0)
-            currentLevel = levelDatabase.TotalLevels - 1;
-
-        LoadLevel(currentLevel, TravelDirection.Backward);
+        if (currentLevel < 0) currentLevel = levelDatabase.TotalLevels - 1;
+        StartCoroutine(LoadLevelCoroutine(currentLevel, TravelDirection.Backward));
     }
 
-    private void LoadLevel(int index, TravelDirection direction = TravelDirection.Default)
+    private IEnumerator LoadLevelCoroutine(int index, TravelDirection direction)
     {
-        if (screenFader == null)
+        Debug.Log($"[LevelManager] Bắt đầu load level {index}");
+
+        // === 1. XÓA LEVEL CŨ ===
+        if (currentLevelInstance != null)
         {
-            Debug.LogError("ScreenFader NULL → load level trực tiếp");
-            InternalLoadLevel(index, direction);
-            return;
+            Debug.Log("[LevelManager] Destroying old level...");
+            EnemyTracker.Instance.ClearAllEnemies();
+            ObjectPooler.Instance.ClearAllPools();
+            Destroy(currentLevelInstance);
+            currentLevelInstance = null;
+            yield return null;                    // Quan trọng trên WebGL
         }
 
-        screenFader.FadeIn(0.5f, () =>
+        // === 2. TẢI LEVEL MỚI ===
+        var levelData = levelDatabase.GetLevel(index);
+        if (levelData == null)
         {
-            InternalLoadLevel(index, direction);
-            screenFader.FadeOut(0.5f);
-        });
-    }
-    
-   private void InternalLoadLevel(int index, TravelDirection direction)
-{
-    if (currentLevelInstance != null)
-    {
-        EnemyTracker.Instance.ClearAllEnemies();
-        ObjectPooler.Instance.ClearAllPools();
-        Destroy(currentLevelInstance);
-    }
+            Debug.LogError($"[LevelManager] LevelData {index} không tìm thấy!");
+            yield break;
+        }
 
-    var levelData = levelDatabase.GetLevel(index);
-    if (levelData == null) return;
+        Debug.Log($"[LevelManager] Instantiating level: {levelData.levelName}");
+        currentLevelInstance = Instantiate(levelData.levelPrefab);
 
-    currentLevelInstance = Instantiate(levelData.levelPrefab);
+        // === 3. SET VỊ TRÍ PLAYER ===
+        Vector3 targetPos = direction switch
+        {
+            TravelDirection.Forward => levelData.entryFromPreviousLevel,
+            TravelDirection.Backward => levelData.entryFromNextLevel,
+            _ => CommonReferent.Instance.defaultEntryPosition
+        };
 
-    Vector3 targetPos = direction switch
-    {
-        TravelDirection.Forward => levelData.entryFromPreviousLevel,
-        TravelDirection.Backward => levelData.entryFromNextLevel,
-        _ => CommonReferent.Instance.defaultEntryPosition
-    };
+        Vector3 finalPos = isLoadingFromSave ? savedPlayerPosition : targetPos;
 
-    Vector3 finalPos = isLoadingFromSave ? savedPlayerPosition : targetPos;
-
-    // Đảm bảo player tồn tại và set vị trí
-    if (player == null)
-    {
-        player = GameObject.FindWithTag("Player");
         if (player == null)
+            player = GameObject.FindWithTag("Player");
+
+        if (player != null)
+            player.transform.position = finalPos;
+        else
+            Debug.LogError("[LevelManager] Player không tồn tại!");
+
+        PositionAlliesAroundPlayer(finalPos);
+        UpdateMapUI();
+        isLoadingFromSave = false;
+
+        // === 4. SPAWN ENEMY / NPC ===
+        Debug.Log("[LevelManager] Spawning enemies & NPCs...");
+        foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
         {
-            Debug.LogError("Player không tồn tại trong scene khi load level!");
-            return;
+            sp.Spawn(CommonReferent.Instance.enemyLevelDatabase);
         }
-    }
-    player.transform.position = finalPos;
 
-    PositionAlliesAroundPlayer(finalPos);
-
-    UpdateMapUI();
-    isLoadingFromSave = false;
-
-    // Spawn enemies/NPC (tạo ra các NPC mới trong level)
-    foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
-    {
-        var levelDB = CommonReferent.Instance.enemyLevelDatabase;
-        sp.Spawn(levelDB);
+        Debug.Log($"[LevelManager] ĐÃ LOAD XONG LEVEL {index}: {levelData.levelName}");
+        
+        // Nếu bạn muốn dùng ScreenFader sau này thì uncomment phần dưới
+        /*
+        if (screenFader != null)
+            screenFader.FadeOut(0.5f);
+        */
     }
 
-    Debug.Log($"Đã load level {index}: {levelData.levelName}");
-
-    // ★★★ CÁC BƯỚC FIX SAU KHI LOAD LEVEL MỚI ★★★
-    
-    // 1. Buộc update Quest Arrow (mũi tên chỉ NPC)
-    QuestManager.Instance?.UpdateArrow();
-
-    // 2. Buộc update tất cả NPCDialogueTrigger (icon quest, currentQuest, tương tác)
-    var allNpcs = FindObjectsOfType<NPCDialogueTrigger>();
-    foreach (var npc in allNpcs)
-    {
-        npc.UpdateCurrentQuest();           // cập nhật icon available/turn-in
-        npc.Start();                        // gọi lại Start() để refresh player reference + các thứ khác nếu cần
-    }
-
-    // Optional: Nếu bạn có quest UI cần refresh toàn bộ
-    if (QuestManager.Instance.questUI != null && QuestManager.Instance.activeQuests.Count > 0)
-    {
-        foreach (var qp in QuestManager.Instance.activeQuests)
-        {
-            QuestManager.Instance.questUI.UpdateQuestProgress(qp, qp.state == QuestState.Completed);
-        }
-    }
-}
-    
     public void ResetLevel()
     {
-        LoadLevel(currentLevel);
+        StartCoroutine(LoadLevelCoroutine(currentLevel, TravelDirection.Default));
     }
-    
-    private void ClearAllEnemyPools()
-    {
-        if (currentLevelInstance == null) return;
-        
-        var enemyPrefabs = currentLevelInstance.GetComponentsInChildren<SpawnPoint>();
-        foreach (var sp in enemyPrefabs)
-        {
-            if (sp.enemyPrefab != null)
-            {
-                ObjectPooler.Instance.ClearAllPools();
-            }
-        }
-    }
+
     private void PositionAlliesAroundPlayer(Vector3 center)
     {
+        if (AllyManager.Instance == null) return;
+
         foreach (var ally in AllyManager.Instance.GetAllies())
         {
             if (ally == null) continue;
-
             Vector2 offset = AllyManager.Instance.GetOffsetPosition(ally);
             ally.transform.position = center + (Vector3)offset;
         }
     }
+
+    void UpdateMapUI()
+    {
+        MapPopup popup = FindObjectOfType<MapPopup>();
+        if (popup != null)
+            popup.RefreshMap();
+    }
+
+    // ====================== SAVE & LOAD ======================
     [System.Serializable]
     private class SaveData
     {
         public int levelIndex;
         public Vector3 playerPosition;
-        public string questSaveJson;
     }
+
     public void SaveGame()
     {
+        if (player == null) return;
+
         SaveData data = new SaveData
         {
             levelIndex = currentLevel,
-            playerPosition = player.transform.position,
-            questSaveJson = JsonUtility.ToJson(QuestManager.Instance.ToData())  // lưu quest
+            playerPosition = player.transform.position
         };
 
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString("SAVE_DATA", json);
         PlayerPrefs.Save();
-        Debug.Log("Save game thành công (bao gồm quest)");
+        Debug.Log("Save game thành công");
     }
-    
+
     public void LoadGame()
     {
         if (!PlayerPrefs.HasKey("SAVE_DATA"))
         {
-            // ... load mặc định
+            Debug.LogWarning("Chưa có save → load level 0");
+            isLoadingFromSave = false;
+            LoadSpecificLevel(0, TravelDirection.Default);
             return;
         }
 
@@ -225,25 +194,7 @@ public class LevelManager : Singleton<LevelManager>
         isLoadingFromSave = true;
         savedPlayerPosition = data.playerPosition;
 
-        // Load quest trước khi load level
-        if (!string.IsNullOrEmpty(data.questSaveJson))
-        {
-            QuestSaveData questData = JsonUtility.FromJson<QuestSaveData>(data.questSaveJson);
-            QuestManager.Instance.FromData(questData, QuestManager.Instance.questDatabase);
-        }
-
+        Debug.Log($"Load save: level {data.levelIndex}");
         LoadSpecificLevel(data.levelIndex, TravelDirection.Default);
     }
-    void UpdateMapUI()
-    {
-        MapPopup popup = FindObjectOfType<MapPopup>();
-
-        if (popup != null)
-        {
-            popup.RefreshMap();
-        }
-    }
-    
-
-
 }
