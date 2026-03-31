@@ -5943,6 +5943,7 @@ MonoBehaviour:
   rangedHitThreshold: 3
   rangedHitWindow: 2
   requireHitToAggro: 0
+  alwaysShowHP: 0
   isBoss: 0
   goldRange: {x: 0, y: 1}
   dropItems:
@@ -5961,6 +5962,7 @@ MonoBehaviour:
   selectionCircle: {fileID: 3422807913869622860}
   aggroIcon: {fileID: 6354001461357607983}
   aggroLoseTime: 5
+  killObjectiveID: 
   projectilePrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9, type: 3}
   firePoint: {fileID: 323753475188547145}
   projectileSpeed: 3

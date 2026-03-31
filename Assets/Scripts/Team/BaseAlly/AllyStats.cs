@@ -47,7 +47,8 @@ public class AllyStats : MonoBehaviour , IDamageable , IBuffableStats
         moveSpeed = data.speed;
         this.nameHero = nameHero;
 
-        healthUI?.UpdateHealth(currentHP);
+        if (healthUI != null)
+            healthUI.SetTarget(gameObject);
     }
 
     public void TakeDamage(int damage , bool isCrit = false)

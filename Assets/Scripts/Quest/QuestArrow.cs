@@ -8,10 +8,7 @@ public class QuestArrow : MonoBehaviour
     [Header("Optional")]
     [SerializeField] private float minDistanceToShow = 0.5f;  // Không hiển thị nếu quá gần (tùy chọn)
 
-    void Awake()
-    {
-        FindPlayer();  // Tìm ngay khi khởi tạo
-    }
+  
 
     void OnEnable()
     {
@@ -35,6 +32,7 @@ public class QuestArrow : MonoBehaviour
         if (playerObj != null)
         {
             player = playerObj.transform;
+            cachedPlayer = player;
             Debug.Log("[QuestArrow] Found Player by tag: " + player.name);
             return;
         }
@@ -95,4 +93,22 @@ public class QuestArrow : MonoBehaviour
             // gameObject.SetActive(false);
         }
     }
+    private Transform cachedPlayer;
+
+    private Transform PlayerTransform
+    {
+        get
+        {
+            if (cachedPlayer == null || !cachedPlayer.gameObject.activeInHierarchy)
+                FindPlayer();
+            return cachedPlayer ?? player;
+        }
+    }
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+        FindPlayer();
+    }
+ 
+    
 }

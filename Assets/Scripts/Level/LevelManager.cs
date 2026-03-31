@@ -10,7 +10,7 @@ public class LevelManager : Singleton<LevelManager>
     private GameObject player;
 
     private int currentLevel = 0;
-    public GameObject currentLevelInstance;
+    private GameObject currentLevelInstance;
     private bool isLoadingFromSave = false;
     private Vector3 savedPlayerPosition;
     [SerializeField] private ScreenFader screenFader;

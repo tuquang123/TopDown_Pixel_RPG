@@ -8,6 +8,8 @@ public class DestructibleObject : MonoBehaviour
     private int currentHealth;
 
     public int MaxHealth => maxHealth;
+    public int CurrentHealth { get; set; }
+
     private EnemyHealthUI healthUI;
 
     [Header("Drop Settings")]
@@ -50,25 +52,7 @@ public class DestructibleObject : MonoBehaviour
         originalPos = transform.localPosition;
     }
 
-    private void OnEnable()
-    {
-        spriteRenderer.color = Color.white;
-        transform.localPosition = originalPos;
-        DestructibleTracker.Instance?.Register(this);
-
-        currentHealth = maxHealth;                    // ← Di chuyển xuống đây
-
-        if (healthUI == null)
-            CreateHealthUI();
-
-        healthUI?.UpdateHealth(currentHealth);
-
-        // Ẩn hoặc hiện tùy theo loại
-        if (alwaysShowHP)
-            healthUI?.ShowUI();
-        else
-            healthUI?.HideUI();
-    }
+  
     public void ShowUIOnHit()
     {
         if (healthUI != null && !alwaysShowHP)
@@ -129,105 +113,6 @@ public class DestructibleObject : MonoBehaviour
         }
         transform.localPosition = originalPos;
     }
-
-    // =====================================================
-    // PHÁ HỦY
-    // =====================================================
-    private void HandleDestruction()
-    {
-        // VFX phá
-        if (CommonReferent.Instance.destructionVFXPrefab != null)
-        {
-            ObjectPooler.Instance.Get(
-                "BreakVFX",
-                CommonReferent.Instance.destructionVFXPrefab,
-                transform.position,
-                Quaternion.identity
-            );
-        }
-
-        // DROP VÀNG
-        int totalGold = Random.Range(minGold, maxGold + 1);
-        for (int i = 0; i < totalGold; i++)
-        {
-            Vector3 offset = Random.insideUnitCircle * 0.5f;
-            ObjectPooler.Instance.Get(
-                "Gold",
-                CommonReferent.Instance.goldPrefab,
-                transform.position + offset,
-                Quaternion.identity
-            );
-        }
-
-        // DROP GEM
-        if (Random.value < gemDropChance)
-        {
-            int totalGem = Random.Range(minGem, maxGem + 1);
-            for (int i = 0; i < totalGem; i++)
-            {
-                Vector3 offset = Random.insideUnitCircle * 0.5f;
-                ObjectPooler.Instance.Get(
-                    "Gem",
-                    CommonReferent.Instance.gemPrefab,
-                    transform.position + offset,
-                    Quaternion.identity
-                );
-            }
-        }
-
-        // =====================================================
-        // SPAWN QUÁI (THEO TÙY CHỌN)
-        // =====================================================
-        if (spawnEnemyOnBreak && Random.value <= enemySpawnChance)
-        {
-            SpawnEnemyLogic();
-        }
-        healthUI?.HideUI(); 
-        // BÁO NHIỆM VỤ
-        QuestManager.Instance.ReportProgress("NV2", nameOBJ, 1);
-
-        // ẨN VẬT THỂ
-        gameObject.SetActive(false);
-
-        // HỒI SINH
-        DestructibleTracker.Instance.StartCoroutine(RespawnAfterDelay());
-    }
-
-    private void SpawnEnemyLogic()
-    {
-        if (enemyPrefabs.Length == 0) return;
-
-        var pick = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-        
-        var enemy = Instantiate(pick, transform.position, Quaternion.identity ,CommonReferent.Instance.enemyRoot.transform);
-
-        if (enemy == null) return;
-
-        // ================================
-        // 1. Setup level nếu cần
-        // ================================
-        var ai = enemy.GetComponent<EnemyAI>();
-        if (ai == null) return;
-
-        ai.ResetEnemy();
-
-        // ================================
-        // 2. Tạo HP UI
-        // ================================
-        GameObject uiObj = Instantiate(
-            CommonReferent.Instance.hpSliderUi,
-            transform.position,
-            Quaternion.identity
-        );
-
-        uiObj.transform.SetParent(CommonReferent.Instance.canvasHp.transform, false);
-        uiObj.transform.localScale = Vector3.one;
-
-        ai.EnemyHealthUI = uiObj.GetComponent<EnemyHealthUI>();
-        ai.EnemyHealthUI.SetTarget(enemy);
-    }
-
-
     private IEnumerator RespawnAfterDelay()
     {
         yield return new WaitForSeconds(respawnTime);
@@ -271,4 +156,111 @@ public class DestructibleObject : MonoBehaviour
         healthUI.SetTarget(gameObject);
     }
    
+    
+        private bool hasSpawnedEnemy = false;
+
+    private void OnEnable()
+    {
+        spriteRenderer.color = Color.white;
+        transform.localPosition = originalPos;
+        DestructibleTracker.Instance?.Register(this);
+
+        currentHealth = maxHealth;
+        hasSpawnedEnemy = false;                    // Reset mỗi lần bật lại
+
+        if (healthUI == null)
+            CreateHealthUI();
+
+        healthUI?.UpdateHealth(currentHealth);
+
+        if (alwaysShowHP)
+            healthUI?.ShowUI();
+        else
+            healthUI?.HideUI();
+    }
+
+    private void HandleDestruction()
+    {
+        // VFX phá
+        if (CommonReferent.Instance.destructionVFXPrefab != null)
+        {
+            ObjectPooler.Instance.Get(
+                "BreakVFX",
+                CommonReferent.Instance.destructionVFXPrefab,
+                transform.position,
+                Quaternion.identity
+            );
+        }
+
+        // DROP VÀNG + GEM (giữ nguyên code của bạn)
+
+        // DROP VÀNG
+        int totalGold = Random.Range(minGold, maxGold + 1);
+        for (int i = 0; i < totalGold; i++)
+        {
+            Vector3 offset = Random.insideUnitCircle * 0.5f;
+            ObjectPooler.Instance.Get("Gold", CommonReferent.Instance.goldPrefab, transform.position + offset, Quaternion.identity);
+        }
+
+        // DROP GEM
+        if (Random.value < gemDropChance)
+        {
+            int totalGem = Random.Range(minGem, maxGem + 1);
+            for (int i = 0; i < totalGem; i++)
+            {
+                Vector3 offset = Random.insideUnitCircle * 0.5f;
+                ObjectPooler.Instance.Get("Gem", CommonReferent.Instance.gemPrefab, transform.position + offset, Quaternion.identity);
+            }
+        }
+
+        // ==================== SPAWN ENEMY ====================
+        if (spawnEnemyOnBreak && !hasSpawnedEnemy && Random.value <= enemySpawnChance)
+        {
+            hasSpawnedEnemy = true;
+            SpawnEnemyLogic();
+        }
+
+        healthUI?.HideUI();
+        QuestManager.Instance.ReportProgress("NV2", nameOBJ, 1);
+
+        gameObject.SetActive(false);
+
+        // Hồi sinh
+        DestructibleTracker.Instance.StartCoroutine(RespawnAfterDelay());
+    }
+
+    private void SpawnEnemyLogic()
+    {
+        if (enemyPrefabs.Length == 0) return;
+
+        GameObject pick = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+        if (pick == null) return;
+
+        // Spawn enemy
+        GameObject enemyObj = Instantiate(pick, transform.position, Quaternion.identity,
+            CommonReferent.Instance.enemyRoot.transform);
+
+        var ai = enemyObj.GetComponent<EnemyAI>();
+        if (ai == null) return;
+
+        // Tạo Health UI mới
+        GameObject uiObj = Instantiate(
+            CommonReferent.Instance.hpSliderUi,
+            transform.position,
+            Quaternion.identity
+        );
+
+        uiObj.transform.SetParent(CommonReferent.Instance.canvasHp.transform, false);
+        uiObj.transform.localScale = Vector3.one;
+
+        EnemyHealthUI newHealthUI = uiObj.GetComponent<EnemyHealthUI>();
+        if (newHealthUI == null) return;
+
+        // GÁN ĐÚNG CÁCH
+        ai.EnemyHealthUI = newHealthUI;
+        ai.AssignHealthUI(newHealthUI);   // hàm này đã có ForceSetTarget
+
+        // Reset enemy (quan trọng để set HP, alwaysShowHP, v.v.)
+        ai.ResetEnemy();
+    }
 }

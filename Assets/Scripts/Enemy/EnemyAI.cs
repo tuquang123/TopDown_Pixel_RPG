@@ -123,8 +123,14 @@ public class EnemyAI : MonoBehaviour, IDamageable
     [Header("Aggro")]
     [SerializeField] protected bool requireHitToAggro = true;
     protected bool isAggro = false;
+    [Header("Enemy Type")]
+ 
 
-    
+    [Header("HP Display Type")]
+    [Tooltip("true = Luôn hiển thị HP\nfalse = Chỉ hiển thị khi bị đánh")]
+    [SerializeField] private bool alwaysShowHP = false;
+
+   
     public static event Action<float> OnEnemyDefeated;
 
     public int CurrentHealth => currentHealth;
@@ -184,21 +190,8 @@ public class EnemyAI : MonoBehaviour, IDamageable
         EnemyInfoPopupUI.Instance.Show(this);
     }
     
-    protected virtual void Start()
-    {
-        anim = GetComponentInChildren<Animator>();
-        currentHealth = maxHealth;
-        
-        enemyHealthUI?.UpdateHealth(currentHealth);
-    }
-    private void OnEnable()
-    {
-        EnemyTracker.Instance?.Register(this);
-        isDead = false; 
-        spawnPosition = transform.position;
-        ChooseNewPatrolPoint();
-        ResetEnemy(); 
-    }
+   
+  
 
     private void OnDisable()
     {
@@ -475,45 +468,8 @@ public class EnemyAI : MonoBehaviour, IDamageable
             isUnderRangedPressure = true;
     }
 
-    public virtual void TakeDamage(int damage, bool isCrit = false)
-    {
-        if (isDead) return;
-        
-        // 🔥 UPDATE POPUP
-        if (EnemyInfoPopupUI.Instance != null)
-            EnemyInfoPopupUI.Instance.Refresh();
-        
-        currentHealth -= damage;
-        enemyHealthUI?.UpdateHealth(currentHealth);
-        
-        RegisterRangedPressure();
-        isAggro = true;
-
-        if (!skipHurtAnimation) anim.SetTrigger(DamagedTrigger);
-
-        isTakingDamage = true;
-
-        string damageText = isCrit ? $"CRIT -{damage}" : $"-{damage}";
-        Color damageColor = isCrit ? new Color(1f, 0.84f, 0.2f) : Color.white;
-
-        FloatingTextSpawner.Instance.SpawnText(damageText, transform.position + Vector3.up * 1.2f, damageColor);
-        SpawnBloodVFX();
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-        else
-        {
-            Invoke(nameof(EndDamageStun), damagedStunTime);
-            
-        }
-        RegisterRangedPressure();
-
-        isAggro = true;
-        lastAggroTime = Time.time;
-        SetAggroIcon(true);
-    }
+  
+    
 
     public void SpawnBloodVFX()
     {
@@ -702,26 +658,128 @@ public class EnemyAI : MonoBehaviour, IDamageable
             SetAggroIcon(false);
         }
     }
-    public void ResetEnemy()
-    {
-        spawnPosition = transform.position;
-        ChooseNewPatrolPoint();
-        patrolWaitTimer = 0f;
-
-        currentHealth = maxHealth;
-        isDead = false;
-        isTakingDamage = false;
-        enabled = true;
-        isAggro = false;
-
-        SetAggroIcon(false);   // THÊM DÒNG NÀY
-
-        GetComponent<Collider2D>().enabled = true;
-        enemyHealthUI?.UpdateHealth(currentHealth);
-    }
+   
     void SetAggroIcon(bool value)
     {
         if (aggroIcon != null)
             aggroIcon.SetActive(value);
     }
-}
+   
+    // Thay thế hàm AssignHealthUI hiện tại bằng hàm này
+    public void AssignHealthUI(EnemyHealthUI ui)
+    {
+        if (enemyHealthUI != null && enemyHealthUI != ui)
+        {
+            Destroy(enemyHealthUI.gameObject);
+            enemyHealthUI = null;
+        }
+
+        enemyHealthUI = ui;
+
+        if (enemyHealthUI != null)
+        {
+            enemyHealthUI.ForceSetTarget(gameObject);   // Dùng ForceSetTarget
+        }
+    }
+    [SerializeField] private string killObjectiveID = ""; // Ví dụ: "Goblin", "Slime",...
+ 
+       public virtual void TakeDamage(int damage, bool isCrit = false)
+    {
+        if (isDead) return;
+        
+        // UPDATE POPUP
+        if (EnemyInfoPopupUI.Instance != null)
+            EnemyInfoPopupUI.Instance.Refresh();
+        
+        currentHealth -= damage;
+
+        // Cập nhật HP UI
+        enemyHealthUI?.UpdateHealth(currentHealth);
+
+        // Hiển thị HP khi bị đánh (nếu không phải alwaysShowHP)
+        ShowUIOnHit();
+
+        RegisterRangedPressure();
+        isAggro = true;
+
+        if (!skipHurtAnimation) 
+            anim.SetTrigger(DamagedTrigger);
+
+        isTakingDamage = true;
+
+        // Floating Text
+        string damageText = isCrit ? $"CRIT -{damage}" : $"-{damage}";
+        Color damageColor = isCrit ? new Color(1f, 0.84f, 0.2f) : Color.white;
+        FloatingTextSpawner.Instance.SpawnText(damageText, transform.position + Vector3.up * 1.2f, damageColor);
+
+        SpawnBloodVFX();
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            Invoke(nameof(EndDamageStun), damagedStunTime);
+        }
+
+        // Aggro logic
+        lastAggroTime = Time.time;
+        SetAggroIcon(true);
+    }
+
+    // =============== HP DISPLAY ===============
+    public void ShowUIOnHit()
+    {
+        if (enemyHealthUI != null && !alwaysShowHP)
+        {
+            enemyHealthUI.ShowUI();
+        }
+    }
+
+    public void ResetEnemy()
+    {
+        spawnPosition = transform.position;
+        ChooseNewPatrolPoint();
+        patrolWaitTimer = 0f;
+        currentHealth = maxHealth;
+        isDead = false;
+        isTakingDamage = false;
+        enabled = true;
+        isAggro = false;
+        SetAggroIcon(false);
+        GetComponent<Collider2D>().enabled = true;
+
+        RefreshHealthUI();   // ← gọi refresh
+    }
+
+    private void RefreshHealthUI()
+    {
+        if (enemyHealthUI == null) return;
+
+        enemyHealthUI.ForceSetTarget(gameObject);
+
+        // === LUÔN HIỂN THỊ HP CHO ENEMY ===
+        if (alwaysShowHP)
+            enemyHealthUI.ShowUI();      // luôn hiện
+        else
+            enemyHealthUI.HideUI();      // chỉ hiện khi hit
+    }
+
+    protected virtual void Start()
+    {
+        anim = GetComponentInChildren<Animator>();
+        currentHealth = maxHealth;
+        RefreshHealthUI();   // quan trọng
+    }
+
+    private void OnEnable()
+    {
+        EnemyTracker.Instance?.Register(this);
+        isDead = false;
+        spawnPosition = transform.position;
+        ChooseNewPatrolPoint();
+        ResetEnemy();        // ← đã gọi RefreshHealthUI bên trong
+    }
+} 
+

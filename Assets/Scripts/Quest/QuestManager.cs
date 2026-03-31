@@ -374,69 +374,84 @@ public class QuestManager : Singleton<QuestManager>
         return null;
     }
 
-    public void UpdateArrow()
+  public void UpdateArrow()
+{
+    if (questArrow == null) return;
+
+    Transform arrowTarget = null;
+
+    // Ưu tiên 1: Quest đã hoàn thành → chỉ vào NPC nhận thưởng
+    if (readyToTurnInQuests.Count > 0)
     {
-        if (questArrow == null) return;
-
-        QuestProgress qp = null;
-
-        // Ưu tiên 1: Quest completed → chỉ NPC nhận thưởng
-        if (readyToTurnInQuests.Count > 0)
-        {
-            qp = readyToTurnInQuests[0];
-
-            // Ưu tiên turnInNPCName nếu có
-            if (!string.IsNullOrEmpty(qp.quest.turnInNPCName))
-            {
-                Transform npc = FindNPCByName(qp.quest.turnInNPCName);
-                if (npc != null && npc.gameObject.activeInHierarchy)
-                {
-                    questArrow.SetTarget(npc);
-                    return;
-                }
-            }
-
-            // Fallback objective đầu tiên
-            if (qp.quest.objectives != null && qp.quest.objectives.Length > 0)
-            {
-                var npc = FindNPCByName(qp.quest.objectives[0].objectiveName);
-                if (npc != null && npc.gameObject.activeInHierarchy)
-                {
-                    questArrow.SetTarget(npc);
-                    return;
-                }
-            }
-
-            // Fallback cũ
-            Transform fallback = FindNPCByQuest(qp.quest);
-            if (fallback != null && fallback.gameObject.activeInHierarchy)
-            {
-                questArrow.SetTarget(fallback);
-                return;
-            }
-        }
-
-        // Ưu tiên 2: Quest in progress
-        else if (activeQuests.Count > 0)
-        {
-            qp = activeQuests.Find(q => q.state == QuestState.InProgress);
-            if (qp != null)
-            {
-                foreach (var obj in qp.quest.objectives)
-                {
-                    var target = FindNPCByName(obj.objectiveName);
-                    if (target != null && target.gameObject.activeInHierarchy)
-                    {
-                        questArrow.SetTarget(target);
-                        return;
-                    }
-                }
-            }
-        }
-
-        // Không tìm thấy → tắt
-        questArrow.SetTarget(null);
+        QuestProgress qp = readyToTurnInQuests[0];
+        arrowTarget = FindTurnInTarget(qp);
     }
+    // Ưu tiên 2: Quest đang tiến hành
+    else if (activeQuests.Count > 0)
+    {
+        QuestProgress qp = activeQuests.Find(q => q.state == QuestState.InProgress);
+        if (qp != null)
+        {
+            arrowTarget = FindQuestObjectiveTarget(qp);
+        }
+    }
+
+    // Set target cho mũi tên
+    questArrow.SetTarget(arrowTarget);
+}
+
+// Tìm NPC nhận thưởng
+private Transform FindTurnInTarget(QuestProgress qp)
+{
+    if (qp == null || qp.quest == null) return null;
+
+    // Ưu tiên turnInNPCName
+    if (!string.IsNullOrEmpty(qp.quest.turnInNPCName))
+    {
+        Transform npc = FindNPCByName(qp.quest.turnInNPCName);
+        if (npc != null && npc.gameObject.activeInHierarchy) 
+            return npc;
+    }
+
+    // Fallback objective đầu tiên
+    if (qp.quest.objectives != null && qp.quest.objectives.Length > 0)
+    {
+        var npc = FindNPCByName(qp.quest.objectives[0].objectiveName);
+        if (npc != null && npc.gameObject.activeInHierarchy) 
+            return npc;
+    }
+
+    return FindNPCByQuest(qp.quest);
+}
+
+// Tìm mục tiêu cho quest đang làm
+private Transform FindQuestObjectiveTarget(QuestProgress qp)
+{
+    if (qp == null || qp.quest == null || qp.quest.objectives == null) 
+        return null;
+
+    foreach (var obj in qp.quest.objectives)
+    {
+        if (obj.type == ObjectiveType.KillEnemies)
+        {
+            // Tìm enemy gần nhất cần giết
+            Transform closestEnemy = FindClosestEnemyByName(obj.objectiveName);
+            if (closestEnemy != null)
+                return closestEnemy;
+        }
+        else
+        {
+            // Các objective khác (TalkToNPC, CollectItems...)
+            Transform target = FindNPCByName(obj.objectiveName);
+            if (target != null && target.gameObject.activeInHierarchy)
+                return target;
+        }
+    }
+    return null;
+}
+
+
+
     private Transform FindNPCByQuest(Quest quest)
     {
        
@@ -457,5 +472,88 @@ public class QuestManager : Singleton<QuestManager>
 
         Debug.LogWarning($"Không tìm thấy NPC nhận thưởng cho quest: {quest.questName}");
         return null;
+    }
+    // ====================== HÀM TÌM ENEMY GẦN NHẤT ======================
+    private Transform FindClosestEnemyByName(string enemyName)
+    {
+        if (string.IsNullOrEmpty(enemyName)) return null;
+
+        // Lấy vị trí player một cách an toàn
+        Vector3 playerPosition = GetPlayerPosition();
+        if (playerPosition == Vector3.zero) return null;
+
+        EnemyAI[] allEnemies = FindObjectsOfType<EnemyAI>(true);
+
+        Transform closest = null;
+        float minDistance = Mathf.Infinity;
+
+        foreach (var enemy in allEnemies)
+        {
+            if (enemy == null || enemy.IsDead || !enemy.gameObject.activeInHierarchy)
+                continue;
+
+            // So sánh tên (không phân biệt hoa thường)
+            if (string.Equals(enemy.EnemyName, enemyName, System.StringComparison.OrdinalIgnoreCase))
+            {
+                float dist = Vector3.Distance(enemy.transform.position, playerPosition);
+            
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    closest = enemy.transform;
+                }
+            }
+        }
+
+        return closest;
+    }
+
+// Hàm hỗ trợ lấy vị trí Player an toàn
+    private Vector3 GetPlayerPosition()
+    {
+        // Cách 1: Từ PlayerController (khuyến nghị)
+        if (PlayerController.Instance != null && PlayerController.Instance.transform != null)
+        {
+            return PlayerController.Instance.transform.position;
+        }
+
+        // Cách 2: Từ CommonReferent (nếu bạn có)
+        if (CommonReferent.Instance != null && CommonReferent.Instance.playerPrefab != null)
+        {
+            return CommonReferent.Instance.playerPrefab.transform.position;
+        }
+
+        // Cách 3: Tìm bằng Tag (fallback)
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
+        {
+            return playerObj.transform.position;
+        }
+
+        Debug.LogWarning("[QuestManager] Cannot find Player position for Quest Arrow!");
+        return Vector3.zero;
+    }
+    public void StartFirstQuestIfNone()
+    {
+        // Nếu đã có quest hoặc đã hoàn thành rồi → bỏ qua
+        if (activeQuests.Count > 0 || completedQuests.Count > 0)
+            return;
+
+        if (questDatabase == null || questDatabase.allQuests == null || questDatabase.allQuests.Count == 0)
+        {
+            Debug.LogWarning("Không có quest trong database!");
+            return;
+        }
+
+        // Lấy quest đầu tiên
+        Quest firstQuest = questDatabase.allQuests[0];
+
+        StartQuest(firstQuest);
+
+        Debug.Log("Auto start quest đầu tiên");
+    }
+    private void Start()
+    {
+        StartFirstQuestIfNone();
     }
 }

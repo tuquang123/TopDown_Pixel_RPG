@@ -3550,6 +3550,7 @@ MonoBehaviour:
   rangedHitThreshold: 3
   rangedHitWindow: 2
   requireHitToAggro: 1
+  alwaysShowHP: 1
   isBoss: 0
   goldRange: {x: 0, y: 1}
   dropItems:
@@ -3568,6 +3569,7 @@ MonoBehaviour:
   selectionCircle: {fileID: 8358680059953053126}
   aggroIcon: {fileID: 7347679633920796000}
   aggroLoseTime: 5
+  killObjectiveID: 
 --- !u!50 &3601980688408329975
 Rigidbody2D:
   serializedVersion: 5

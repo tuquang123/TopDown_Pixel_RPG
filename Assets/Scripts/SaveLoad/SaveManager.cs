@@ -180,7 +180,7 @@ public static class SaveManager
         }
 
         QuestManager.Instance.FromData(data.questData, QuestManager.Instance.questDatabase);
-
+        QuestManager.Instance.StartFirstQuestIfNone();
         Debug.Log($"[SaveManager] Loaded slot {slot}");
         return true;
     }
