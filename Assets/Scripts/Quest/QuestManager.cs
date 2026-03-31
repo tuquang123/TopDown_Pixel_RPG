@@ -79,7 +79,8 @@ public class QuestManager : Singleton<QuestManager>
                 Debug.Log($"Quest {qp.quest.questName} completed!");
             }
 
-            if (autoTurnInOnComplete)
+            bool canAutoTurnIn = qp.quest == null || qp.quest.autoTurnIn;
+            if (autoTurnInOnComplete && canAutoTurnIn)
             {
                 TurnInQuest(qp);
                 return;
@@ -103,7 +104,7 @@ public class QuestManager : Singleton<QuestManager>
         UpdateArrow();
         AwardQuestReward(qp);
         OnQuestChanged?.Invoke();
-        bool hasStartedNextQuest = TryStartNextQuest(qp.quest.questID);
+        bool hasStartedNextQuest = TryStartNextQuest(qp.quest);
         if (!hasStartedNextQuest)
         {
             questUI?.Clear();
@@ -581,16 +582,30 @@ private Transform FindQuestObjectiveTarget(QuestProgress qp)
         StartFirstQuestIfNone();
     }
 
-    private bool TryStartNextQuest(string completedQuestID = null)
+    private bool TryStartNextQuest(Quest completedQuest = null)
     {
         if (!autoAcceptNextQuest) return false;
         if (questDatabase == null || questDatabase.allQuests == null || questDatabase.allQuests.Count == 0) return false;
         if (activeQuests.Count > 0) return false;
 
+        if (completedQuest != null && !completedQuest.autoAcceptNext)
+            return false;
+
         int completedQuestIndex = -1;
-        if (!string.IsNullOrEmpty(completedQuestID))
+        if (completedQuest != null)
         {
-            completedQuestIndex = questDatabase.allQuests.FindIndex(q => q.questID == completedQuestID);
+            if (!string.IsNullOrEmpty(completedQuest.nextQuestID))
+            {
+                Quest linkedQuest = questDatabase.GetQuestByID(completedQuest.nextQuestID);
+                if (linkedQuest != null && GetQuestProgressByID(linkedQuest.questID) == null)
+                {
+                    StartQuest(linkedQuest);
+                    Debug.Log($"Auto accepted linked quest: {linkedQuest.questName}");
+                    return true;
+                }
+            }
+
+            completedQuestIndex = questDatabase.allQuests.FindIndex(q => q.questID == completedQuest.questID);
         }
 
         int startIndex = completedQuestIndex >= 0 ? completedQuestIndex + 1 : 0;
