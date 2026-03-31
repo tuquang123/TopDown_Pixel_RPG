@@ -62,13 +62,39 @@ public class QuestManager : Singleton<QuestManager>
     // Report tiến độ
     public void ReportProgress(string questID, string objectiveName, int amount = 1)
     {
-        var qp = activeQuests.Find(q => q.quest.questID == questID);
-        if (qp == null) return;
-        
-        if (!qp.progress.ContainsKey(objectiveName))
-            qp.progress[objectiveName] = 0;
+        var qp = activeQuests.Find(q => string.Equals(q.quest.questID, questID, System.StringComparison.OrdinalIgnoreCase));
 
-        qp.progress[objectiveName] += amount;
+        // Fallback: nếu questID hardcode không khớp quest đang active,
+        // vẫn cho phép cộng tiến độ theo objectiveName để tránh bị kẹt quest.
+        if (qp == null && !string.IsNullOrEmpty(objectiveName))
+        {
+            qp = activeQuests.Find(q =>
+                q.state == QuestState.InProgress &&
+                q.quest != null &&
+                q.quest.objectives != null &&
+                System.Array.Exists(q.quest.objectives, obj =>
+                    string.Equals(obj.objectiveName, objectiveName, System.StringComparison.OrdinalIgnoreCase)));
+        }
+
+        if (qp == null) return;
+
+        string objectiveKey = objectiveName;
+        if (qp.quest != null && qp.quest.objectives != null)
+        {
+            foreach (var obj in qp.quest.objectives)
+            {
+                if (string.Equals(obj.objectiveName, objectiveName, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    objectiveKey = obj.objectiveName; // chuẩn hóa key theo data quest
+                    break;
+                }
+            }
+        }
+
+        if (!qp.progress.ContainsKey(objectiveKey))
+            qp.progress[objectiveKey] = 0;
+
+        qp.progress[objectiveKey] += amount;
 
         if (qp.IsCompleted())
         {
