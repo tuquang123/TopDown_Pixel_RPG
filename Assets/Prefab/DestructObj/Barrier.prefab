@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 5930329737273603238}
   - component: {fileID: 92814293034727061}
   m_Layer: 23
-  m_Name: Barrel
+  m_Name: Barrier
   m_TagString: Destructible
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -155,6 +155,7 @@ MonoBehaviour:
   respawnTime: 10
   selectionCircle: {fileID: 1718920102286543427}
   displayName: Barrier
+  objectiveID: Barrier
 --- !u!61 &5930329737273603238
 BoxCollider2D:
   m_ObjectHideFlags: 0

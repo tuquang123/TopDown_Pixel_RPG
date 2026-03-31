@@ -206,7 +206,7 @@ public class QuestManager : Singleton<QuestManager>
             return;
         }
 
-        // Load active quests
+        // ===== LOAD ACTIVE =====
         foreach (var aq in data.activeQuests)
         {
             Quest quest = questDatabase.GetQuestByID(aq.questID);
@@ -220,37 +220,40 @@ public class QuestManager : Singleton<QuestManager>
                 qp.progress[obj.objectiveName] = obj.currentAmount;
             }
 
-            activeQuests.Add(qp);
-
             if (qp.IsCompleted())
             {
                 qp.state = QuestState.Completed;
                 readyToTurnInQuests.Add(qp);
             }
+
+            activeQuests.Add(qp);
         }
 
-        // Load completed quests
+        // ===== LOAD COMPLETED =====
         foreach (var id in data.completedQuestIDs)
         {
             Quest quest = questDatabase.GetQuestByID(id);
-            if (quest != null)
-            {
-                QuestProgress qp = new QuestProgress(quest);
-                qp.state = QuestState.Rewarded;
-                completedQuests.Add(qp);
-            }
+            if (quest == null) continue;
+
+            QuestProgress qp = new QuestProgress(quest);
+            qp.state = QuestState.Rewarded;
+
+            completedQuests.Add(qp);
         }
 
-        // Update UI
-        if (activeQuests.Count > 0)
-        {
-            foreach (var qp in activeQuests)
-                questUI?.UpdateQuestProgress(qp, qp.state == QuestState.Completed);
-        }
+        // ===== UPDATE UI CHỈ 1 QUEST =====
+        QuestProgress mainQuest = null;
+
+        if (readyToTurnInQuests.Count > 0)
+            mainQuest = readyToTurnInQuests[0];
+        else if (activeQuests.Count > 0)
+            mainQuest = activeQuests[0];
+
+        if (mainQuest != null)
+            questUI?.UpdateQuestProgress(mainQuest, mainQuest.state == QuestState.Completed);
         else
-        {
             questUI?.Clear();
-        }
+
         UpdateArrow();
     }
     public void ForceCompleteQuest(string questID, bool autoTurnIn = false)
@@ -374,33 +377,30 @@ public class QuestManager : Singleton<QuestManager>
         return null;
     }
 
-  public void UpdateArrow()
-{
-    if (questArrow == null) return;
-
-    Transform arrowTarget = null;
-
-    // Ưu tiên 1: Quest đã hoàn thành → chỉ vào NPC nhận thưởng
-    if (readyToTurnInQuests.Count > 0)
+    public void UpdateArrow()
     {
-        QuestProgress qp = readyToTurnInQuests[0];
-        arrowTarget = FindTurnInTarget(qp);
-    }
-    // Ưu tiên 2: Quest đang tiến hành
-    else if (activeQuests.Count > 0)
-    {
-        QuestProgress qp = activeQuests.Find(q => q.state == QuestState.InProgress);
-        if (qp != null)
+        if (questArrow == null) return;
+
+        Transform arrowTarget = null;
+
+        if (readyToTurnInQuests.Count > 0)
         {
-            arrowTarget = FindQuestObjectiveTarget(qp);
+            arrowTarget = FindTurnInTarget(readyToTurnInQuests[0]);
         }
+        else if (activeQuests.Count > 0)
+        {
+            var qp = activeQuests.Find(q => q.state == QuestState.InProgress);
+            if (qp != null)
+                arrowTarget = FindQuestObjectiveTarget(qp);
+        }
+
+        if (arrowTarget == null)
+        {
+            Debug.Log("[QuestArrow] Không tìm thấy target trong map này");
+        }
+
+        questArrow.SetTarget(arrowTarget);
     }
-
-    // Set target cho mũi tên
-    questArrow.SetTarget(arrowTarget);
-}
-
-// Tìm NPC nhận thưởng
 private Transform FindTurnInTarget(QuestProgress qp)
 {
     if (qp == null || qp.quest == null) return null;
@@ -423,35 +423,6 @@ private Transform FindTurnInTarget(QuestProgress qp)
 
     return FindNPCByQuest(qp.quest);
 }
-
-// Tìm mục tiêu cho quest đang làm
-private Transform FindQuestObjectiveTarget(QuestProgress qp)
-{
-    if (qp == null || qp.quest == null || qp.quest.objectives == null) 
-        return null;
-
-    foreach (var obj in qp.quest.objectives)
-    {
-        if (obj.type == ObjectiveType.KillEnemies)
-        {
-            // Tìm enemy gần nhất cần giết
-            Transform closestEnemy = FindClosestEnemyByName(obj.objectiveName);
-            if (closestEnemy != null)
-                return closestEnemy;
-        }
-        else
-        {
-            // Các objective khác (TalkToNPC, CollectItems...)
-            Transform target = FindNPCByName(obj.objectiveName);
-            if (target != null && target.gameObject.activeInHierarchy)
-                return target;
-        }
-    }
-    return null;
-}
-
-
-
     private Transform FindNPCByQuest(Quest quest)
     {
        
@@ -533,27 +504,69 @@ private Transform FindQuestObjectiveTarget(QuestProgress qp)
         Debug.LogWarning("[QuestManager] Cannot find Player position for Quest Arrow!");
         return Vector3.zero;
     }
-    public void StartFirstQuestIfNone()
+    Transform FindQuestObjectiveTarget(QuestProgress qp)
     {
-        // Nếu đã có quest hoặc đã hoàn thành rồi → bỏ qua
-        if (activeQuests.Count > 0 || completedQuests.Count > 0)
-            return;
+        if (qp == null || qp.quest.objectives == null) return null;
 
-        if (questDatabase == null || questDatabase.allQuests == null || questDatabase.allQuests.Count == 0)
+        foreach (var obj in qp.quest.objectives)
         {
-            Debug.LogWarning("Không có quest trong database!");
-            return;
+            // 🔥 KILL ENEMY
+            if (obj.type == ObjectiveType.KillEnemies)
+            {
+                string targetID = obj.objectiveName;
+
+                EnemyAI[] enemies = GameObject.FindObjectsOfType<EnemyAI>();
+
+                Transform best = null;
+                float minDist = Mathf.Infinity;
+
+                foreach (var e in enemies)
+                {
+                    if (e == null || e.IsDead) continue;
+                    if (e.KillID != targetID) continue;
+
+                    float dist = Vector2.Distance(PlayerController.Instance.transform.position, e.transform.position);
+
+                    if (dist < minDist)
+                    {
+                        best = e.transform;
+                        minDist = dist;
+                    }
+                }
+
+                if (best != null)
+                    return best;
+            }
+
+            // 🔥 DESTROY OBJECT
+            if (obj.type == ObjectiveType.ExploreArea || obj.type == ObjectiveType.Custom)
+            {
+                string targetID = obj.objectiveName;
+
+                DestructibleObject[] objs = GameObject.FindObjectsOfType<DestructibleObject>();
+
+                Transform best = null;
+                float minDist = Mathf.Infinity;
+
+                foreach (var d in objs)
+                {
+                    if (d == null || !d.gameObject.activeInHierarchy) continue;
+                    if (d.ObjectiveID != targetID) continue;
+
+                    float dist = Vector2.Distance(PlayerController.Instance.transform.position, d.transform.position);
+
+                    if (dist < minDist)
+                    {
+                        best = d.transform;
+                        minDist = dist;
+                    }
+                }
+
+                if (best != null)
+                    return best;
+            }
         }
 
-        // Lấy quest đầu tiên
-        Quest firstQuest = questDatabase.allQuests[0];
-
-        StartQuest(firstQuest);
-
-        Debug.Log("Auto start quest đầu tiên");
-    }
-    private void Start()
-    {
-        StartFirstQuestIfNone();
+        return null;
     }
 }

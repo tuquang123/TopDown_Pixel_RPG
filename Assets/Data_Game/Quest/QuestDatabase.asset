@@ -27,18 +27,17 @@ MonoBehaviour:
       itemIDs: []
     turnInNPCName: NPC_0
   - questID: NV2
-    questName: barrier
-    description: destroy 10 barrier
+    questName: Barrier
+    description: destroy 10 Barrier
     objectives:
-    - objectiveName: barrier
+    - objectiveName: Barrier
       type: 0
       requiredAmount: 1
     reward:
       experienceReward: 100
       goldReward: 20
       gemReward: 0
-      itemIDs:
-      - sword
+      itemIDs: []
     turnInNPCName: NPC_0
   - questID: NV0
     questName: talk

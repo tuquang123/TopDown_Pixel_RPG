@@ -3,26 +3,28 @@
 [System.Serializable]
 public class QuestProgress
 {
-    public Quest quest;                    
-    public QuestState state = QuestState.NotAccepted;
-    public Dictionary<string,int> progress = new Dictionary<string,int>();
+    public Quest quest;
+    public QuestState state;
+    public Dictionary<string, int> progress;
 
     public QuestProgress(Quest quest)
     {
         this.quest = quest;
-        foreach (var obj in quest.objectives)
-            progress[obj.objectiveName] = 0;
+        this.state = QuestState.NotAccepted;
+        this.progress = new Dictionary<string, int>();
     }
 
     public bool IsCompleted()
     {
+        if (quest == null || quest.objectives == null) return false;
+
         foreach (var obj in quest.objectives)
         {
-            if (!progress.ContainsKey(obj.objectiveName) || progress[obj.objectiveName] < obj.requiredAmount)
+            int current = progress.ContainsKey(obj.objectiveName) ? progress[obj.objectiveName] : 0;
+            if (current < obj.requiredAmount)
                 return false;
         }
+
         return true;
     }
 }
-
-

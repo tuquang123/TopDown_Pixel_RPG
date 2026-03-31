@@ -65,71 +65,7 @@ public class LevelManager : Singleton<LevelManager>
         if (currentLevel < 0) currentLevel = levelDatabase.TotalLevels - 1;
         StartCoroutine(LoadLevelCoroutine(currentLevel, TravelDirection.Backward));
     }
-
-    private IEnumerator LoadLevelCoroutine(int index, TravelDirection direction)
-    {
-        Debug.Log($"[LevelManager] Bắt đầu load level {index}");
-
-        // === 1. XÓA LEVEL CŨ ===
-        if (currentLevelInstance != null)
-        {
-            Debug.Log("[LevelManager] Destroying old level...");
-            EnemyTracker.Instance.ClearAllEnemies();
-            ObjectPooler.Instance.ClearAllPools();
-            Destroy(currentLevelInstance);
-            currentLevelInstance = null;
-            yield return null;                    // Quan trọng trên WebGL
-        }
-
-        // === 2. TẢI LEVEL MỚI ===
-        var levelData = levelDatabase.GetLevel(index);
-        if (levelData == null)
-        {
-            Debug.LogError($"[LevelManager] LevelData {index} không tìm thấy!");
-            yield break;
-        }
-
-        Debug.Log($"[LevelManager] Instantiating level: {levelData.levelName}");
-        currentLevelInstance = Instantiate(levelData.levelPrefab);
-
-        // === 3. SET VỊ TRÍ PLAYER ===
-        Vector3 targetPos = direction switch
-        {
-            TravelDirection.Forward => levelData.entryFromPreviousLevel,
-            TravelDirection.Backward => levelData.entryFromNextLevel,
-            _ => CommonReferent.Instance.defaultEntryPosition
-        };
-
-        Vector3 finalPos = isLoadingFromSave ? savedPlayerPosition : targetPos;
-
-        if (player == null)
-            player = GameObject.FindWithTag("Player");
-
-        if (player != null)
-            player.transform.position = finalPos;
-        else
-            Debug.LogError("[LevelManager] Player không tồn tại!");
-
-        PositionAlliesAroundPlayer(finalPos);
-        UpdateMapUI();
-        isLoadingFromSave = false;
-
-        // === 4. SPAWN ENEMY / NPC ===
-        Debug.Log("[LevelManager] Spawning enemies & NPCs...");
-        foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
-        {
-            sp.Spawn(CommonReferent.Instance.enemyLevelDatabase);
-        }
-
-        Debug.Log($"[LevelManager] ĐÃ LOAD XONG LEVEL {index}: {levelData.levelName}");
-        
-        // Nếu bạn muốn dùng ScreenFader sau này thì uncomment phần dưới
-        /*
-        if (screenFader != null)
-            screenFader.FadeOut(0.5f);
-        */
-    }
-
+    
     public void ResetLevel()
     {
         StartCoroutine(LoadLevelCoroutine(currentLevel, TravelDirection.Default));
@@ -197,4 +133,86 @@ public class LevelManager : Singleton<LevelManager>
         Debug.Log($"Load save: level {data.levelIndex}");
         LoadSpecificLevel(data.levelIndex, TravelDirection.Default);
     }
+    
+    private IEnumerator LoadLevelCoroutine(int index, TravelDirection direction)
+{
+    Debug.Log($"[LevelManager] Bắt đầu load level {index}");
+    
+    // === 0. FADE IN ===
+    bool fadeDone = false;
+    if (screenFader != null)
+    {
+        screenFader.FadeIn(0.3f, () => fadeDone = true);
+        yield return new WaitUntil(() => fadeDone);
+    }
+
+    // === 1. DESTROY LEVEL CŨ ===
+    if (currentLevelInstance != null)
+    {
+        Debug.Log("[LevelManager] Destroying old level...");
+        EnemyTracker.Instance.ClearAllEnemies();
+        ObjectPooler.Instance.ClearAllPools();
+        Destroy(currentLevelInstance);
+        currentLevelInstance = null;
+
+        yield return null; // 🔥 QUAN TRỌNG
+    }
+
+    // === 2. LOAD LEVEL MỚI ===
+    var levelData = levelDatabase.GetLevel(index);
+    if (levelData == null)
+    {
+        Debug.LogError($"[LevelManager] LevelData {index} không tìm thấy!");
+        yield break;
+    }
+
+    Debug.Log($"[LevelManager] Instantiating level: {levelData.levelName}");
+    currentLevelInstance = Instantiate(levelData.levelPrefab);
+
+    // === 3. SET PLAYER POSITION ===
+    Vector3 targetPos = direction switch
+    {
+        TravelDirection.Forward => levelData.entryFromPreviousLevel,
+        TravelDirection.Backward => levelData.entryFromNextLevel,
+        _ => CommonReferent.Instance.defaultEntryPosition
+    };
+
+    Vector3 finalPos = isLoadingFromSave ? savedPlayerPosition : targetPos;
+
+    if (player == null)
+        player = GameObject.FindWithTag("Player");
+
+    if (player != null)
+        player.transform.position = finalPos;
+    else
+        Debug.LogError("[LevelManager] Player không tồn tại!");
+
+    PositionAlliesAroundPlayer(finalPos);
+    UpdateMapUI();
+    isLoadingFromSave = false;
+
+    // === 4. SPAWN ENEMY / NPC ===
+    Debug.Log("[LevelManager] Spawning enemies & NPCs...");
+    foreach (var sp in currentLevelInstance.GetComponentsInChildren<SpawnPoint>())
+    {
+        sp.Spawn(CommonReferent.Instance.enemyLevelDatabase);
+    }
+
+    // 🔥 QUAN TRỌNG: đợi 1 frame để tất cả object init xong
+    yield return null;
+
+    // 🔥 FIX CHÍNH: update lại arrow
+    if (QuestManager.Instance != null)
+    {
+        QuestManager.Instance.UpdateArrow();
+    }
+
+    Debug.Log($"[LevelManager] ĐÃ LOAD XONG LEVEL {index}: {levelData.levelName}");
+
+    // === 5. FADE OUT ===
+    if (screenFader != null)
+    {
+        screenFader.FadeOut(0.3f);
+    }
+}
 }

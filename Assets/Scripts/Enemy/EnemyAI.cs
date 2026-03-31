@@ -636,6 +636,8 @@ public class EnemyAI : MonoBehaviour, IDamageable
     [SerializeField] private float aggroLoseTime = 5f;
 
     private float lastAggroTime;
+  
+
     void HandleAggroState()
     {
         if (target != null)
@@ -681,7 +683,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
             enemyHealthUI.ForceSetTarget(gameObject);   // Dùng ForceSetTarget
         }
     }
-    [SerializeField] private string killObjectiveID = ""; // Ví dụ: "Goblin", "Slime",...
+  
  
        public virtual void TakeDamage(int damage, bool isCrit = false)
     {
@@ -781,5 +783,9 @@ public class EnemyAI : MonoBehaviour, IDamageable
         ChooseNewPatrolPoint();
         ResetEnemy();        // ← đã gọi RefreshHealthUI bên trong
     }
+    
+    [SerializeField] private string killObjectiveID = "";
+    public string KillID => killObjectiveID;
+    
 } 
 

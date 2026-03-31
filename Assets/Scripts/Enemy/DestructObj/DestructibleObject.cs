@@ -45,7 +45,7 @@ public class DestructibleObject : MonoBehaviour
 
     private Vector3 originalPos;
     private Coroutine flashCoroutine;
-    private string nameOBJ = "barrier";
+   
 
     private void Awake()
     {
@@ -263,4 +263,9 @@ public class DestructibleObject : MonoBehaviour
         // Reset enemy (quan trọng để set HP, alwaysShowHP, v.v.)
         ai.ResetEnemy();
     }
+   
+    private string nameOBJ = "Barrier";
+    [SerializeField] private string objectiveID = "Barrier";
+
+    public string ObjectiveID => objectiveID;
 }
