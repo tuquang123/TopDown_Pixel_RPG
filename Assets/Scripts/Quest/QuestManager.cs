@@ -16,6 +16,9 @@ public class QuestManager : Singleton<QuestManager>
 {
     public QuestDatabase questDatabase;
     public QuestUI questUI;
+    [Header("Auto Quest Flow")]
+    public bool autoAcceptNextQuest = true;
+    public bool autoTurnInOnComplete = true;
 
     public List<QuestProgress> activeQuests = new List<QuestProgress>();
     public List<QuestProgress> completedQuests = new List<QuestProgress>();
@@ -59,13 +62,39 @@ public class QuestManager : Singleton<QuestManager>
     // Report tiến độ
     public void ReportProgress(string questID, string objectiveName, int amount = 1)
     {
-        var qp = activeQuests.Find(q => q.quest.questID == questID);
-        if (qp == null) return;
-        
-        if (!qp.progress.ContainsKey(objectiveName))
-            qp.progress[objectiveName] = 0;
+        var qp = activeQuests.Find(q => string.Equals(q.quest.questID, questID, System.StringComparison.OrdinalIgnoreCase));
 
-        qp.progress[objectiveName] += amount;
+        // Fallback: nếu questID hardcode không khớp quest đang active,
+        // vẫn cho phép cộng tiến độ theo objectiveName để tránh bị kẹt quest.
+        if (qp == null && !string.IsNullOrEmpty(objectiveName))
+        {
+            qp = activeQuests.Find(q =>
+                q.state == QuestState.InProgress &&
+                q.quest != null &&
+                q.quest.objectives != null &&
+                System.Array.Exists(q.quest.objectives, obj =>
+                    string.Equals(obj.objectiveName, objectiveName, System.StringComparison.OrdinalIgnoreCase)));
+        }
+
+        if (qp == null) return;
+
+        string objectiveKey = objectiveName;
+        if (qp.quest != null && qp.quest.objectives != null)
+        {
+            foreach (var obj in qp.quest.objectives)
+            {
+                if (string.Equals(obj.objectiveName, objectiveName, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    objectiveKey = obj.objectiveName; // chuẩn hóa key theo data quest
+                    break;
+                }
+            }
+        }
+
+        if (!qp.progress.ContainsKey(objectiveKey))
+            qp.progress[objectiveKey] = 0;
+
+        qp.progress[objectiveKey] += amount;
 
         if (qp.IsCompleted())
         {
@@ -74,6 +103,13 @@ public class QuestManager : Singleton<QuestManager>
                 readyToTurnInQuests.Add(qp);
                 qp.state = QuestState.Completed;
                 Debug.Log($"Quest {qp.quest.questName} completed!");
+            }
+
+            bool canAutoTurnIn = qp.quest == null || qp.quest.autoTurnIn;
+            if (autoTurnInOnComplete && canAutoTurnIn)
+            {
+                TurnInQuest(qp);
+                return;
             }
         }
         OnQuestChanged?.Invoke();
@@ -94,7 +130,11 @@ public class QuestManager : Singleton<QuestManager>
         UpdateArrow();
         AwardQuestReward(qp);
         OnQuestChanged?.Invoke();
-        questUI?.Clear();
+        bool hasStartedNextQuest = TryStartNextQuest(qp.quest);
+        if (!hasStartedNextQuest)
+        {
+            questUI?.Clear();
+        }
         Debug.Log($"Quest Turned In: {qp.quest.questName}");
     }
 
@@ -250,6 +290,19 @@ public class QuestManager : Singleton<QuestManager>
         else
         {
             questUI?.Clear();
+        }
+
+        if (autoTurnInOnComplete && readyToTurnInQuests.Count > 0)
+        {
+            var readyQuests = new List<QuestProgress>(readyToTurnInQuests);
+            foreach (var readyQuest in readyQuests)
+            {
+                TurnInQuest(readyQuest);
+            }
+        }
+        else if (activeQuests.Count == 0)
+        {
+            TryStartNextQuest();
         }
         UpdateArrow();
     }
@@ -545,15 +598,54 @@ private Transform FindQuestObjectiveTarget(QuestProgress qp)
             return;
         }
 
-        // Lấy quest đầu tiên
-        Quest firstQuest = questDatabase.allQuests[0];
-
-        StartQuest(firstQuest);
-
-        Debug.Log("Auto start quest đầu tiên");
+        if (!TryStartNextQuest())
+        {
+            Debug.LogWarning("Không còn quest nào để tự nhận.");
+        }
     }
     private void Start()
     {
         StartFirstQuestIfNone();
+    }
+
+    private bool TryStartNextQuest(Quest completedQuest = null)
+    {
+        if (!autoAcceptNextQuest) return false;
+        if (questDatabase == null || questDatabase.allQuests == null || questDatabase.allQuests.Count == 0) return false;
+        if (activeQuests.Count > 0) return false;
+
+        if (completedQuest != null && !completedQuest.autoAcceptNext)
+            return false;
+
+        int completedQuestIndex = -1;
+        if (completedQuest != null)
+        {
+            if (!string.IsNullOrEmpty(completedQuest.nextQuestID))
+            {
+                Quest linkedQuest = questDatabase.GetQuestByID(completedQuest.nextQuestID);
+                if (linkedQuest != null && GetQuestProgressByID(linkedQuest.questID) == null)
+                {
+                    StartQuest(linkedQuest);
+                    Debug.Log($"Auto accepted linked quest: {linkedQuest.questName}");
+                    return true;
+                }
+            }
+
+            completedQuestIndex = questDatabase.allQuests.FindIndex(q => q.questID == completedQuest.questID);
+        }
+
+        int startIndex = completedQuestIndex >= 0 ? completedQuestIndex + 1 : 0;
+
+        for (int i = startIndex; i < questDatabase.allQuests.Count; i++)
+        {
+            Quest nextQuest = questDatabase.allQuests[i];
+            if (GetQuestProgressByID(nextQuest.questID) != null) continue;
+
+            StartQuest(nextQuest);
+            Debug.Log($"Auto accepted next quest: {nextQuest.questName}");
+            return true;
+        }
+
+        return false;
     }
 }

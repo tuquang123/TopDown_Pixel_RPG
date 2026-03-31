@@ -13,134 +13,418 @@ MonoBehaviour:
   m_Name: QuestDatabase
   m_EditorClassIdentifier: 
   allQuests:
-  - questID: NV1
-    questName: Goblin
-    description: destroy 5 goblin
-    objectives:
-    - objectiveName: Goblin
-      type: 0
-      requiredAmount: 1
-    reward:
-      experienceReward: 100
-      goldReward: 15
-      gemReward: 0
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV2
-    questName: barrier
-    description: destroy 10 barrier
-    objectives:
-    - objectiveName: barrier
-      type: 0
-      requiredAmount: 1
-    reward:
-      experienceReward: 100
-      goldReward: 20
-      gemReward: 0
-      itemIDs:
-      - sword
-    turnInNPCName: NPC_0
   - questID: NV0
-    questName: talk
-    description: talk with NPC
+    questName: Talk to Elder
+    description: Nói chuyện với trưởng làng để bắt đầu hành trình
     objectives:
-    - objectiveName: NPC_0
+    - objectiveName: NPC
       type: 2
       requiredAmount: 1
     reward:
-      experienceReward: 100
-      goldReward: 20
+      experienceReward: 0
+      goldReward: 50
       gemReward: 0
       itemIDs: []
-    turnInNPCName: NPC_0
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV1
+  - questID: NV1
+    questName: Chop Tree
+    description: Chặt 3 cây để thu thập tài nguyên
+    objectives:
+    - objectiveName: Tree
+      type: 1
+      requiredAmount: 3
+    reward:
+      experienceReward: 0
+      goldReward: 100
+      gemReward: 0
+      itemIDs: []
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV2
+  - questID: NV2
+    questName: Kill Goblin
+    description: Tiêu diệt Goblin đang quấy phá khu rừng
+    objectives:
+    - objectiveName: Goblin
+      type: 0
+      requiredAmount: 5
+    reward:
+      experienceReward: 0
+      goldReward: 120
+      gemReward: 0
+      itemIDs: []
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV3
   - questID: NV3
-    questName: gold 1000
-    description: earn 1000 gold
+    questName: Heal at Arena
+    description: Hồi máu tại Healing Arena
     objectives:
-    - objectiveName: Gold
-      type: 1
-      requiredAmount: 5
-    reward:
-      experienceReward: 100
-      goldReward: 30
-      gemReward: 0
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV4
-    questName: Gem
-    description: earn 10 gem
-    objectives:
-    - objectiveName: Gem
-      type: 1
-      requiredAmount: 10
-    reward:
-      experienceReward: 200
-      goldReward: 50
-      gemReward: 5
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV5
-    questName: Gravok
-    description: destroy 5 Gravok
-    objectives:
-    - objectiveName: Gravok
-      type: 0
-      requiredAmount: 5
-    reward:
-      experienceReward: 300
-      goldReward: 50
-      gemReward: 2
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV6
-    questName: Ravageron
-    description: destroy 5 Ravageron
-    objectives:
-    - objectiveName: Ravageron
-      type: 0
-      requiredAmount: 2
-    reward:
-      experienceReward: 200
-      goldReward: 30
-      gemReward: 0
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV7
-    questName: Fangrider
-    description: destroy 5 Fangrider
-    objectives:
-    - objectiveName: Fangrider
-      type: 0
+    - objectiveName: HealingArena
+      type: 4
       requiredAmount: 1
     reward:
-      experienceReward: 500
-      goldReward: 70
+      experienceReward: 0
+      goldReward: 0
       gemReward: 0
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV8
-    questName: Silentmaw
-    description: destroy 5 Silentmaw
+      itemIDs:
+      - potion
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV4
+  - questID: NV4
+    questName: Kill Silentmaw
+    description: Tiêu diệt Silentmaw – quái ẩn thân nguy hiểm
     objectives:
     - objectiveName: Silentmaw
       type: 0
       requiredAmount: 3
     reward:
-      experienceReward: 400
-      goldReward: 50
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - rare_gear
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV5
+  - questID: NV5
+    questName: Use Potion
+    description: Sử dụng potion để hồi máu
+    objectives:
+    - objectiveName: Player
+      type: 4
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - potion
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV6
+  - questID: NV6
+    questName: Level Up
+    description: Lên cấp 5 mà không chết
+    objectives:
+    - objectiveName: Player
+      type: 4
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 150
       gemReward: 0
       itemIDs: []
-    turnInNPCName: NPC_0
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV7
+  - questID: NV7
+    questName: Collect Gold
+    description: Thu thập 200 vàng từ quái hoặc nhiệm vụ
+    objectives:
+    - objectiveName: Gold
+      type: 1
+      requiredAmount: 200
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - potion
+      - potion
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV8
+  - questID: NV8
+    questName: Buy Item
+    description: Mua 1 vật phẩm trong shop
+    objectives:
+    - objectiveName: Shop
+      type: 4
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - random_gear
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV9
   - questID: NV9
-    questName: Skeleton
-    description: destroy 5 Skeleton
+    questName: Equip Item
+    description: Trang bị vật phẩm vừa mua
+    objectives:
+    - objectiveName: Player
+      type: 4
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 100
+      gemReward: 0
+      itemIDs: []
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV10
+  - questID: NV10
+    questName: Upgrade Item +5
+    description: Nâng cấp 1 trang bị lên +5
+    objectives:
+    - objectiveName: Item
+      type: 4
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 200
+      gemReward: 0
+      itemIDs: []
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV11
+  - questID: NV11
+    questName: Find Rare Item
+    description: Tìm hoặc nhận 1 trang bị Rare
+    objectives:
+    - objectiveName: RareItem
+      type: 1
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - potion
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV12
+  - questID: NV12
+    questName: Sell Item
+    description: Bán 1 vật phẩm không cần thiết
+    objectives:
+    - objectiveName: Shop
+      type: 4
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 150
+      gemReward: 0
+      itemIDs: []
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV13
+  - questID: NV13
+    questName: Kill Skeleton
+    description: Tiêu diệt Skeleton trong hầm mộ
     objectives:
     - objectiveName: Skeleton
       type: 0
-      requiredAmount: 3
+      requiredAmount: 10
     reward:
-      experienceReward: 400
-      goldReward: 50
+      experienceReward: 0
+      goldReward: 300
       gemReward: 0
       itemIDs: []
-    turnInNPCName: NPC_0
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV14
+  - questID: NV14
+    questName: Upgrade Item +10
+    description: Nâng cấp 1 trang bị lên +10
+    objectives:
+    - objectiveName: Item
+      type: 4
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - rare_gear
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV15
+  - questID: NV15
+    questName: Find Epic Item
+    description: Sở hữu 1 trang bị Epic
+    objectives:
+    - objectiveName: EpicItem
+      type: 1
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 300
+      gemReward: 0
+      itemIDs: []
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV16
+  - questID: NV16
+    questName: Kill Gravok
+    description: Tiêu diệt Gravok – quái tank khó chịu
+    objectives:
+    - objectiveName: Gravok
+      type: 0
+      requiredAmount: 5
+    reward:
+      experienceReward: 0
+      goldReward: 350
+      gemReward: 0
+      itemIDs: []
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV17
+  - questID: NV17
+    questName: Gacha x1
+    description: Quay gacha 1 lần
+    objectives:
+    - objectiveName: Gacha
+      type: 4
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - free_roll
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV18
+  - questID: NV18
+    questName: Combo Attack
+    description: Thực hiện combo attack 10 lần
+    objectives:
+    - objectiveName: Player
+      type: 4
+      requiredAmount: 10
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - potion
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV19
+  - questID: NV19
+    questName: Upgrade Item +15
+    description: Nâng cấp 1 trang bị lên +15
+    objectives:
+    - objectiveName: Item
+      type: 4
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - epic_gear
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV20
+  - questID: NV20
+    questName: Find Legendary Item
+    description: Sở hữu 1 trang bị Legendary
+    objectives:
+    - objectiveName: LegendaryItem
+      type: 1
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - legendary_chest
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV21
+  - questID: NV21
+    questName: Kill Ravageron
+    description: Tiêu diệt Ravageron – quái tấn công mạnh
+    objectives:
+    - objectiveName: Ravageron
+      type: 0
+      requiredAmount: 5
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - rare_item
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV22
+  - questID: NV22
+    questName: Kill Fangrider
+    description: Tiêu diệt Fangrider – sinh vật nhanh nhẹn nguy hiểm
+    objectives:
+    - objectiveName: Fangrider
+      type: 0
+      requiredAmount: 3
+    reward:
+      experienceReward: 0
+      goldReward: 150
+      gemReward: 0
+      itemIDs: []
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV23
+  - questID: NV23
+    questName: Gacha x5
+    description: Quay gacha 5 lần
+    objectives:
+    - objectiveName: Gacha
+      type: 4
+      requiredAmount: 5
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - rare_gear
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 1
+    nextQuestID: NV24
+  - questID: NV24
+    questName: Kill Boss
+    description: Đánh bại boss đầu tiên
+    objectives:
+    - objectiveName: Boss
+      type: 0
+      requiredAmount: 1
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs:
+      - epic_weapon
+    turnInNPCName: NPC
+    autoTurnIn: 1
+    autoAcceptNext: 0
+    nextQuestID: 

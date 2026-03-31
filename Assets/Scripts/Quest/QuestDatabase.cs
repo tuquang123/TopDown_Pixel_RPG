@@ -21,6 +21,11 @@ public class Quest
     public QuestObjective[] objectives;
     public QuestReward reward;
     public string turnInNPCName;
+    [Header("Auto Flow")]
+    public bool autoTurnIn = true;
+    public bool autoAcceptNext = true;
+    [Tooltip("Nếu để trống, hệ thống sẽ lấy quest kế tiếp theo thứ tự trong QuestDatabase.")]
+    public string nextQuestID;
 }
 
 [System.Serializable]
@@ -48,4 +53,3 @@ public enum ObjectiveType
     ExploreArea,
     Custom
 }
-
