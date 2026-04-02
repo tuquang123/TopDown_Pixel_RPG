@@ -114,4 +114,6 @@ public class LevelTrigger : MonoBehaviour
         mapNameText.text = level.levelName;
         Canvas.ForceUpdateCanvases(); // đảm bảo TMP update ngay
     }
+    public TriggerType Type => triggerType;
+    
 }

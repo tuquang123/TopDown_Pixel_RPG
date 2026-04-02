@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class QuestArrow : MonoBehaviour
 {
@@ -11,8 +12,15 @@ public class QuestArrow : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
         FindPlayer();
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log("Scene loaded: " + scene.name);
 
+       
+    }
+    
     void OnEnable()
     {
         if (cachedPlayer == null)
@@ -21,18 +29,7 @@ public class QuestArrow : MonoBehaviour
         if (target != null)
             UpdateDirection();
     }
-
-    private void FindPlayer()
-    {
-        GameObject playerObj = GameObject.FindWithTag("Player");
-        if (playerObj != null)
-        {
-            cachedPlayer = playerObj.transform;
-            return;
-        }
-
-        Debug.LogError("[QuestArrow] Không tìm thấy Player!");
-    }
+    
 
     private Transform PlayerTransform
     {
@@ -64,9 +61,15 @@ public class QuestArrow : MonoBehaviour
     {
         var player = PlayerTransform;
 
-        if (player == null || target == null || !target.gameObject.activeInHierarchy)
+        if (player == null)
         {
             gameObject.SetActive(false);
+            return;
+        }
+
+        if (target == null || !target.gameObject.activeInHierarchy)
+        {
+            // 🔥 không tắt ngay → đợi QuestManager set lại
             return;
         }
 
@@ -88,5 +91,22 @@ public class QuestArrow : MonoBehaviour
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
         }
+    }
+    private void FindPlayer()
+    {
+        if (PlayerController.Instance != null)
+        {
+            cachedPlayer = PlayerController.Instance.transform;
+            return;
+        }
+
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
+        {
+            cachedPlayer = playerObj.transform;
+            return;
+        }
+
+        Debug.LogWarning("[QuestArrow] Không tìm thấy Player!");
     }
 }

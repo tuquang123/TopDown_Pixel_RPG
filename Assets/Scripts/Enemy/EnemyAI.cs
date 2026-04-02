@@ -1,22 +1,15 @@
-// ================= EnemyAI.cs =================
-
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
 
-[System.Serializable]
+[Serializable]
 public class EnemyDropItem
 {
-    public ItemData item; // Item có thể rơi
-    //[Range(0f, 1f)] public float dropChance = 0.02f; // 20% rơi
+    public ItemData item;
 }
 
-public class EnemyAI : MonoBehaviour, IDamageable
+public partial class EnemyAI : MonoBehaviour, IDamageable
 {
     #region Base Info
 
@@ -50,7 +43,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
     protected float attackCooldown = 1f;
 
     [BoxGroup("Combat"), LabelText("Skip Hurt Animation")] [SerializeField]
-    protected bool skipHurtAnimation = false;
+    protected bool skipHurtAnimation;
 
     #endregion
 
@@ -81,7 +74,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
     #region VFX
 
     [BoxGroup("VFX"), LabelText("Blood VFX Offset")] [SerializeField]
-    private Vector3 bloodVFXOffset = new Vector3(0, 0.5f, 0);
+    private Vector3 bloodVFXOffset = new Vector3(0f, 0.5f, 0f);
 
     [BoxGroup("VFX"), LabelText("Die Delay")] [SerializeField]
     private float timeDieDelay = 0.65f;
@@ -103,34 +96,31 @@ public class EnemyAI : MonoBehaviour, IDamageable
     protected int currentHealth;
 
     [FoldoutGroup("Runtime Debug"), ReadOnly]
-    protected bool isDead = false;
+    protected bool isDead;
 
     [FoldoutGroup("Runtime Debug"), ReadOnly]
-    protected bool isTakingDamage = false;
+    protected bool isTakingDamage;
 
-    private bool isKnockbacked = false;
+    private bool isKnockbacked;
 
     #endregion
-    
+
     [Header("Anti Ranged Pressure")]
     [SerializeField] protected int rangedHitThreshold = 3;
     [SerializeField] protected float rangedHitWindow = 2f;
 
-    protected int rangedHitCount = 0;
+    protected int rangedHitCount;
     protected float lastRangedHitTime = -999f;
-    protected bool isUnderRangedPressure = false;
-    
+    protected bool isUnderRangedPressure;
+
     [Header("Aggro")]
     [SerializeField] protected bool requireHitToAggro = true;
-    protected bool isAggro = false;
-    [Header("Enemy Type")]
- 
+    protected bool isAggro;
 
     [Header("HP Display Type")]
-    [Tooltip("true = Luôn hiển thị HP\nfalse = Chỉ hiển thị khi bị đánh")]
-    [SerializeField] private bool alwaysShowHP = false;
+    [Tooltip("true = always show HP, false = show only when hit")]
+    [SerializeField] private bool alwaysShowHP;
 
-   
     public static event Action<float> OnEnemyDefeated;
 
     public int CurrentHealth => currentHealth;
@@ -138,12 +128,12 @@ public class EnemyAI : MonoBehaviour, IDamageable
     public int MaxHealth => maxHealth;
     public string EnemyName => enemyName;
     public int EnemyLevel => enemyLevel;
-    
+
     protected EnemyHealthUI enemyHealthUI;
-    
+
     [Header("Enemy Type")]
-    public bool isBoss = false;
-    
+    public bool isBoss;
+
     public EnemyHealthUI EnemyHealthUI
     {
         get => enemyHealthUI;
@@ -154,17 +144,17 @@ public class EnemyAI : MonoBehaviour, IDamageable
     public Vector2Int goldRange = new Vector2Int(1, 5);
 
     [BoxGroup("Drops"), LabelText("Item Drops")]
-    public List<EnemyDropItem> dropItems = new List<EnemyDropItem>();
-    
+    public List<EnemyDropItem> dropItems = new();
+
     [Header("Attack Type")]
-    public bool isHoldingSpear = false;
+    public bool isHoldingSpear;
+
     [Header("Enemy Info On Select")]
-    
     [SerializeField] private float infoYOffset = 1.8f;
-    
-    [BoxGroup("Drops"), LabelText("Drop Rate %")] 
-    [Range(0f,1f)] public float dropRate = 0.1f; 
-    
+
+    [BoxGroup("Drops"), LabelText("Drop Rate %")]
+    [Range(0f, 1f)] public float dropRate = 0.1f;
+
     #region Patrol
 
     [Header("Patrol")]
@@ -174,41 +164,106 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
     protected Vector3 spawnPosition;
     protected Vector3 patrolTarget;
-    protected bool isPatrolling = false;
-    protected float patrolWaitTimer = 0f;
-	
-	public int exp = 3;
+    protected bool isPatrolling;
+    protected float patrolWaitTimer;
+
+    public int exp = 3;
 
     #endregion
 
-
     private EnemyInfoPopupUI infoUIInstance;
+    private Collider2D cachedCollider;
+    protected Rigidbody2D cachedRigidbody;
+    private bool isOptimizedActive = true;
+
+    protected static readonly int MoveBool = Animator.StringToHash("1_Move");
+    protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
+    private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
+    protected static readonly int DieTrigger = Animator.StringToHash("4_Death");
+    private static readonly int LongAttack = Animator.StringToHash("8_Attack");
+
+    [Header("Selection")]
+    [SerializeField] private GameObject selectionCircle;
+
+    [Header("Aggro Icon")]
+    [SerializeField] private GameObject aggroIcon;
+    [SerializeField] private float aggroLoseTime = 5f;
+
+    private float lastAggroTime;
+
+    [SerializeField] private string killObjectiveID = "";
+    public string KillID => killObjectiveID;
+
+    public event Action OnDeath;
+
+    protected virtual void Awake()
+    {
+        EnsureCachedComponents();
+    }
+
     private void OnMouseDown()
     {
-        if (isDead) return;
+        if (isDead)
+            return;
 
-        EnemyInfoPopupUI.Instance.Show(this);
+        EnemyInfoPopupUI.Instance?.Show(this);
     }
-    
-   
-  
+
+    private void OnEnable()
+    {
+        EnsureCachedComponents();
+        EnemyTracker.Instance?.Register(this);
+        isDead = false;
+        spawnPosition = transform.position;
+        ChooseNewPatrolPoint();
+        ResetEnemy();
+        QuestManager.Instance?.UpdateArrow();
+    }
 
     private void OnDisable()
     {
         EnemyTracker.Instance?.Unregister(this);
-        ResetEnemy(); 
+
+        if (!gameObject.scene.isLoaded)
+            return;
+
+        ResetEnemy();
     }
-    
+
+    protected virtual void Start()
+    {
+        EnsureCachedComponents();
+        currentHealth = maxHealth;
+        RefreshHealthUI();
+    }
+
     private void Update()
     {
-        if (isDead || isTakingDamage || isKnockbacked) return;
-        
+        TickAI(true);
+    }
+
+    public void OptimizedUpdate()
+    {
+        TickAI(false);
+    }
+
+    private void TickAI(bool allowPatrolWhenIdle)
+    {
+        if ((!allowPatrolWhenIdle && !isOptimizedActive) || isDead || isTakingDamage || isKnockbacked)
+            return;
+
+        EnsureCachedComponents();
+
         if (requireHitToAggro && !isAggro)
         {
-            Patrol();
+            if (allowPatrolWhenIdle)
+                Patrol();
+            else
+                StopMotion();
+
             return;
         }
-        
+
         if (isUnderRangedPressure && Time.time - lastRangedHitTime > rangedHitWindow)
         {
             isUnderRangedPressure = false;
@@ -217,68 +272,60 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
         FindClosestTarget();
 
-        if (target == null)
+        if (!IsValidTarget(target, detectionRange * detectionRange))
         {
-            anim.SetBool(MoveBool, false);
-            SetAggroIcon(false);
+            target = null;
+            StopMotion();
+            HandleAggroState();
             return;
         }
 
-        if (target.TryGetComponent(out PlayerStats playerStats) && playerStats.isDead)
-        {
-            anim.SetBool(MoveBool, false);
-            return;
-        }
-
-        float distanceToTarget = Vector2.Distance(transform.position, target.position);
-        if (distanceToTarget <= detectionRange)
+        float sqrDistanceToTarget = ((Vector2)target.position - (Vector2)transform.position).sqrMagnitude;
+        if (sqrDistanceToTarget <= detectionRange * detectionRange)
         {
             MoveToAttackPosition();
             RotateEnemy(target.position.x - transform.position.x);
         }
         else
         {
-            anim.SetBool(MoveBool, false);
+            StopMotion();
         }
+
         HandleAggroState();
     }
-    
+
     protected void Patrol()
     {
-        if (!enablePatrol || isDead) return;
+        if (!enablePatrol || isDead)
+            return;
 
         if (patrolWaitTimer > 0f)
         {
             patrolWaitTimer -= Time.deltaTime;
-            anim.SetBool(MoveBool, false);
+            StopMotion();
             return;
         }
 
-        float dist = Vector2.Distance(transform.position, patrolTarget);
-
-        if (dist <= 0.1f)
+        if (Vector2.Distance(transform.position, patrolTarget) <= 0.1f)
         {
             patrolWaitTimer = patrolWaitTime;
+            StopMotion();
             ChooseNewPatrolPoint();
             return;
         }
 
         Vector2 dir = (patrolTarget - transform.position).normalized;
-        transform.position += (Vector3)(dir * moveSpeed * Time.deltaTime);
-
+        MoveInDirection(dir);
         RotateEnemy(dir.x);
-        anim.SetBool(MoveBool, true);
     }
 
-    
     protected void ChooseNewPatrolPoint()
     {
-        Vector2 randomOffset = Random.insideUnitCircle * patrolRadius;
-        patrolTarget = spawnPosition + new Vector3(randomOffset.x, randomOffset.y, 0);
+        Vector2 randomOffset = UnityEngine.Random.insideUnitCircle * patrolRadius;
+        patrolTarget = spawnPosition + new Vector3(randomOffset.x, randomOffset.y, 0f);
         isPatrolling = true;
     }
 
-    
     public void ApplyLevelData(EnemyLevelData data)
     {
         if (data == null)
@@ -294,322 +341,90 @@ public class EnemyAI : MonoBehaviour, IDamageable
         enemyLevel = data.level;
     }
 
-    private bool isOptimizedActive = true;
-
     public void SetActiveForOptimization(bool active)
     {
         isOptimizedActive = active;
 
+        if (!active)
+            StopMotion();
+
         if (anim != null)
             anim.enabled = active;
 
-        Collider2D col = GetComponent<Collider2D>();
-        if (col != null)
-            col.enabled = active && !IsDead;
+        if (cachedCollider != null)
+            cachedCollider.enabled = active && !IsDead;
     }
-    
-    public void OptimizedUpdate()
-    {
-        if (!isOptimizedActive || isDead || isTakingDamage || isKnockbacked)
-            return;
-        
-        if (requireHitToAggro && !isAggro)
-        {
-            anim.SetBool(MoveBool, false);
-            return;
-        }
 
-        // --- Logic di chuyển, tấn công ---
-        FindClosestTarget();
-
-        if (target == null)
-        {
-            anim.SetBool(MoveBool, false);
-            return;
-        }
-        
-
-        if (target.TryGetComponent(out PlayerStats playerStats) && playerStats.isDead)
-        {
-            anim.SetBool(MoveBool, false);
-            return;
-        }
-
-        float distanceToTarget = Vector2.Distance(transform.position, target.position);
-        if (distanceToTarget <= detectionRange)
-        {
-            MoveToAttackPosition();
-            RotateEnemy(target.position.x - transform.position.x);
-        }
-        else
-        {
-            anim.SetBool(MoveBool, false);
-        }
-    }
     protected void FindClosestTarget()
     {
-        Transform bestTarget = null;
-        float minDist = Mathf.Infinity;
+        float sqrDetectionRange = detectionRange * detectionRange;
+        if (IsValidTarget(target, sqrDetectionRange))
+            return;
 
-        // Ưu tiên Player nếu trong range
-        if (PlayerController.Instance != null && !PlayerController.Instance.IsPlayerDie())
+        Transform bestTarget = null;
+        float minSqrDist = float.MaxValue;
+
+        PlayerController playerController = PlayerController.Instance;
+        if (playerController != null && !playerController.IsPlayerDie())
         {
-            float dist = Vector2.Distance(transform.position, PlayerController.Instance.transform.position);
-            if (dist <= detectionRange)
+            float playerSqrDist = ((Vector2)playerController.transform.position - (Vector2)transform.position).sqrMagnitude;
+            if (playerSqrDist <= sqrDetectionRange)
             {
-                bestTarget = PlayerController.Instance.transform;
-                minDist = dist;
+                bestTarget = playerController.transform;
+                minSqrDist = playerSqrDist;
             }
         }
 
-        // Tìm Ally gần nhất
-        foreach (var ally in AllyManager.Instance.GetAllies())
+        if (AllyManager.Instance != null)
         {
-            if (ally == null || ally.IsDead) continue;
-
-            float dist = Vector2.Distance(transform.position, ally.transform.position);
-            if (dist < minDist && dist <= detectionRange)
+            foreach (AllyBaseAI ally in AllyManager.Instance.GetAllies())
             {
-                bestTarget = ally.transform;
-                minDist = dist;
+                if (ally == null || ally.IsDead)
+                    continue;
+
+                float allySqrDist = ((Vector2)ally.transform.position - (Vector2)transform.position).sqrMagnitude;
+                if (allySqrDist <= sqrDetectionRange && allySqrDist < minSqrDist)
+                {
+                    bestTarget = ally.transform;
+                    minSqrDist = allySqrDist;
+                }
             }
         }
 
         target = bestTarget;
     }
 
-
-    protected virtual void MoveToAttackPosition()
+    protected void EnsureCachedComponents()
     {
-        Vector2 enemyPos = transform.position;
-        Vector2 targetPos = target.position;
+        anim ??= GetComponentInChildren<Animator>();
+        cachedCollider ??= GetComponent<Collider2D>();
+        cachedRigidbody ??= GetComponent<Rigidbody2D>();
+    }
 
-        float yDiff = Mathf.Abs(enemyPos.y - targetPos.y);
-        float xDiff = Mathf.Abs(enemyPos.x - targetPos.x);
-        float yTolerance = 0.1f;
-
-        if (yDiff > yTolerance)
+    protected void MoveInDirection(Vector2 direction)
+    {
+        if (direction.sqrMagnitude <= 0.0001f)
         {
-            Vector2 directionY = new Vector2(0, targetPos.y - enemyPos.y).normalized;
-            transform.position += (Vector3)(directionY * moveSpeed * Time.deltaTime);
-            anim.SetBool(MoveBool, true);
-        }
-        else if (xDiff > attackRange * 0.8f)
-        {
-            Vector2 directionX = new Vector2(targetPos.x - enemyPos.x, 0).normalized;
-            transform.position += (Vector3)(directionX * moveSpeed * Time.deltaTime);
-            anim.SetBool(MoveBool, true);
-            RotateEnemy(directionX.x);
-        }
-        else
-        {
-            anim.SetBool(MoveBool, false);
-            if (Time.time - lastAttackTime >= attackCooldown)
-            {
-                AttackTarget();
-            }
-        }
-    }
-
-    protected void RotateEnemy(float direction)
-    {
-        transform.localScale = new Vector3(Mathf.Sign(direction) * -1, 1, 1);
-    }
-
-    protected virtual void AttackTarget()
-    {
-        if (target == null || isTakingDamage) return;
-        if (isDead) return;
-
-        RotateEnemy(target.position.x - transform.position.x);
-
-        if (Time.time - lastAttackTime >= attackCooldown)
-        {
-            anim.SetBool(MoveBool, false);
-
-            // Kiểm tra cầm thương
-            if (isHoldingSpear)
-            {
-                anim.SetTrigger(LongAttack); // đây là attack mới
-            }
-            else
-            {
-                anim.SetTrigger(AttackTrigger); // attack mặc định
-            }
-
-            lastAttackTime = Time.time;
-        }
-    }
-
-
-    public void DealDamageToTarget()
-    {
-        if (isDead) return; // ✅ CHẶN CỨNG
-        if (target == null) return;
-
-        float distance = Vector2.Distance(transform.position, target.position);
-        if (distance > attackRange) return;
-
-        if (target.TryGetComponent(out IDamageable damageable))
-        {
-            damageable.TakeDamage(attackDamage);
-        }
-    }
-
-    protected void RegisterRangedPressure()
-    {
-        if (Time.time - lastRangedHitTime > rangedHitWindow)
-            rangedHitCount = 0;
-
-        rangedHitCount++;
-        lastRangedHitTime = Time.time;
-
-        if (rangedHitCount >= rangedHitThreshold)
-            isUnderRangedPressure = true;
-    }
-
-  
-    
-
-    public void SpawnBloodVFX()
-    {
-        Vector3 basePosition = GetComponent<Collider2D>().bounds.center;
-        Vector3 flippedOffset = bloodVFXOffset;
-        flippedOffset.x *= Mathf.Sign(transform.localScale.x);
-        Vector3 vfxSpawnPos = basePosition + flippedOffset;
-
-        GameObject vfx = ObjectPooler.Instance.Get(
-            CommonReferent.Instance.bloodVfxPrefab.name,
-            CommonReferent.Instance.bloodVfxPrefab,
-            vfxSpawnPos,
-            Quaternion.identity
-        );
-
-        Vector3 scale = vfx.transform.localScale;
-        scale.x = Mathf.Sign(transform.localScale.x) * Mathf.Abs(scale.x);
-        vfx.transform.localScale = scale;
-    }
-
-    void EndDamageStun() => isTakingDamage = false;
-    
-    public event Action OnDeath;
-
-    protected virtual void Die()
-    {
-        if (isDead) return;
-        isDead = true;
-        target = null; // ✅ cắt target ngay
-        SetSelected(false);
-        HandleDieAnimation(); // trigger anim
-
-        DisableComponents(); // tắt collider + AI thôi (OK)
-
-        HandleHealthUI();
-        NotifySystemsBeforeDrop();
-        HandleDrops();
-        NotifySystemsAfterDrop();
-
-        // ❗ KHÔNG destroy ngay
-        StartCoroutine(DelayDestroy());
-    }
-    private IEnumerator DelayDestroy()
-    {
-        yield return new WaitForSeconds(timeDieDelay);
-
-        if (anim != null)
-            anim.enabled = false; // ✅ khóa animation
-
-        Destroy(gameObject);
-    }
-    protected virtual void HandleDieAnimation()
-    {
-        anim.ResetTrigger(AttackTrigger);
-        anim.ResetTrigger(LongAttack);
-        anim.ResetTrigger(DamagedTrigger);
-
-        anim.SetBool(MoveBool, false);
-        anim.SetTrigger(DieTrigger);
-    }
-
-    protected virtual void DisableComponents()
-    {
-        GetComponent<Collider2D>().enabled = false;
-        enabled = false;
-    }
-
-    protected virtual void HandleHealthUI()
-    {
-        if (enemyHealthUI != null)
-        {
-            Destroy(enemyHealthUI.gameObject);
-            enemyHealthUI = null;
-        }
-        if (infoUIInstance != null)
-        {
-            Destroy(infoUIInstance.gameObject);
-            infoUIInstance = null;
-        }
-
-    }
-
-    protected virtual void NotifySystemsBeforeDrop()
-    {
-        OnDeath?.Invoke();
-        QuestManager.Instance.ReportProgress("NV1", enemyName, 1);
-        QuestManager.Instance.ReportProgress("NV5", enemyName, 1); 
-        QuestManager.Instance.ReportProgress("NV6", enemyName, 1);
-        QuestManager.Instance.ReportProgress("NV7", enemyName, 1);
-        QuestManager.Instance.ReportProgress("NV8", enemyName, 1);
-        QuestManager.Instance.ReportProgress("NV9", enemyName, 1);
-    }
-
-    protected virtual void HandleDrops()
-    {
-        DropGold();
-        DropItems();
-    }
-
-    protected virtual void DropGold()
-    {
-        int goldAmount = Random.Range(goldRange.x, goldRange.y + 1);
-        if (goldAmount > 0)
-        {
-            GoldDropHelper.SpawnGoldBurst(transform.position, goldAmount, CommonReferent.Instance.goldPrefab);
-        }
-    }
-    
-    protected virtual void DropItems()
-    {
-        if (Random.value > dropRate)
-        {
+            StopMotion();
             return;
         }
-        
-        if (dropItems.Count == 0) return;
 
-        int index = Random.Range(0, dropItems.Count);
-        EnemyDropItem chosen = dropItems[index];
-
-        if (chosen.item == null) return;
-
-        GameObject prefab = CommonReferent.Instance.itemDropPrefab;
-
-        GameObject dropObj = ObjectPooler.Instance.Get(
-            prefab.name,
-            prefab,
-            transform.position,
-            Quaternion.identity
-        );
-
-        ItemDrop itemDrop = dropObj.GetComponent<ItemDrop>();
-        itemDrop.Setup(new ItemInstance(chosen.item, 0), 1);
+        transform.position += (Vector3)(direction.normalized * moveSpeed * Time.deltaTime);
+        anim?.SetBool(MoveBool, true);
     }
 
-    protected virtual void NotifySystemsAfterDrop()
+    protected void StopMotion(bool disablePhysics = false)
     {
-        OnEnemyDefeated?.Invoke(exp);
+        if (cachedRigidbody != null)
+        {
+            cachedRigidbody.linearVelocity = Vector2.zero;
+            cachedRigidbody.angularVelocity = 0f;
+            cachedRigidbody.simulated = !disablePhysics;
+        }
+
+        anim?.SetBool(MoveBool, false);
     }
-    
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
@@ -617,34 +432,19 @@ public class EnemyAI : MonoBehaviour, IDamageable
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
     }
-    
-    protected static readonly int MoveBool = Animator.StringToHash("1_Move");
-    protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
-    private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
-    protected static readonly int DieTrigger = Animator.StringToHash("4_Death");
-    private static readonly int LongAttack = Animator.StringToHash("8_Attack");
-    [Header("Selection")]
-    [SerializeField] private GameObject selectionCircle;
 
     public void SetSelected(bool value)
     {
         if (selectionCircle != null)
             selectionCircle.SetActive(value);
     }
-    [Header("Aggro Icon")]
-    [SerializeField] private GameObject aggroIcon;
-    [SerializeField] private float aggroLoseTime = 5f;
 
-    private float lastAggroTime;
-  
-
-    void HandleAggroState()
+    private void HandleAggroState()
     {
-        if (target != null)
+        if (target != null && target.gameObject.activeInHierarchy)
         {
-            float dist = Vector2.Distance(transform.position, target.position);
-
-            if (dist <= detectionRange)
+            float sqrDist = ((Vector2)target.position - (Vector2)transform.position).sqrMagnitude;
+            if (sqrDist <= detectionRange * detectionRange)
             {
                 isAggro = true;
                 lastAggroTime = Time.time;
@@ -660,14 +460,13 @@ public class EnemyAI : MonoBehaviour, IDamageable
             SetAggroIcon(false);
         }
     }
-   
-    void SetAggroIcon(bool value)
+
+    private void SetAggroIcon(bool value)
     {
         if (aggroIcon != null)
             aggroIcon.SetActive(value);
     }
-   
-    // Thay thế hàm AssignHealthUI hiện tại bằng hàm này
+
     public void AssignHealthUI(EnemyHealthUI ui)
     {
         if (enemyHealthUI != null && enemyHealthUI != ui)
@@ -677,115 +476,43 @@ public class EnemyAI : MonoBehaviour, IDamageable
         }
 
         enemyHealthUI = ui;
-
-        if (enemyHealthUI != null)
-        {
-            enemyHealthUI.ForceSetTarget(gameObject);   // Dùng ForceSetTarget
-        }
-    }
-  
- 
-       public virtual void TakeDamage(int damage, bool isCrit = false)
-    {
-        if (isDead) return;
-        
-        // UPDATE POPUP
-        if (EnemyInfoPopupUI.Instance != null)
-            EnemyInfoPopupUI.Instance.Refresh();
-        
-        currentHealth -= damage;
-
-        // Cập nhật HP UI
-        enemyHealthUI?.UpdateHealth(currentHealth);
-
-        // Hiển thị HP khi bị đánh (nếu không phải alwaysShowHP)
-        ShowUIOnHit();
-
-        RegisterRangedPressure();
-        isAggro = true;
-
-        if (!skipHurtAnimation) 
-            anim.SetTrigger(DamagedTrigger);
-
-        isTakingDamage = true;
-
-        // Floating Text
-        string damageText = isCrit ? $"CRIT -{damage}" : $"-{damage}";
-        Color damageColor = isCrit ? new Color(1f, 0.84f, 0.2f) : Color.white;
-        FloatingTextSpawner.Instance.SpawnText(damageText, transform.position + Vector3.up * 1.2f, damageColor);
-
-        SpawnBloodVFX();
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-        else
-        {
-            Invoke(nameof(EndDamageStun), damagedStunTime);
-        }
-
-        // Aggro logic
-        lastAggroTime = Time.time;
-        SetAggroIcon(true);
+        enemyHealthUI?.ForceSetTarget(gameObject);
     }
 
-    // =============== HP DISPLAY ===============
     public void ShowUIOnHit()
     {
         if (enemyHealthUI != null && !alwaysShowHP)
-        {
             enemyHealthUI.ShowUI();
-        }
-    }
-
-    public void ResetEnemy()
-    {
-        spawnPosition = transform.position;
-        ChooseNewPatrolPoint();
-        patrolWaitTimer = 0f;
-        currentHealth = maxHealth;
-        isDead = false;
-        isTakingDamage = false;
-        enabled = true;
-        isAggro = false;
-        SetAggroIcon(false);
-        GetComponent<Collider2D>().enabled = true;
-
-        RefreshHealthUI();   // ← gọi refresh
     }
 
     private void RefreshHealthUI()
     {
-        if (enemyHealthUI == null) return;
+        if (enemyHealthUI == null)
+            return;
 
         enemyHealthUI.ForceSetTarget(gameObject);
 
-        // === LUÔN HIỂN THỊ HP CHO ENEMY ===
         if (alwaysShowHP)
-            enemyHealthUI.ShowUI();      // luôn hiện
+            enemyHealthUI.ShowUI();
         else
-            enemyHealthUI.HideUI();      // chỉ hiện khi hit
+            enemyHealthUI.HideUI();
     }
 
-    protected virtual void Start()
+    private bool IsValidTarget(Transform candidate, float sqrDetectionRange)
     {
-        anim = GetComponentInChildren<Animator>();
-        currentHealth = maxHealth;
-        RefreshHealthUI();   // quan trọng
-    }
+        if (candidate == null || !candidate.gameObject.activeInHierarchy)
+            return false;
 
-    private void OnEnable()
-    {
-        EnemyTracker.Instance?.Register(this);
-        isDead = false;
-        spawnPosition = transform.position;
-        ChooseNewPatrolPoint();
-        ResetEnemy();        // ← đã gọi RefreshHealthUI bên trong
-    }
-    
-    [SerializeField] private string killObjectiveID = "";
-    public string KillID => killObjectiveID;
-    
-} 
+        float sqrDist = ((Vector2)candidate.position - (Vector2)transform.position).sqrMagnitude;
+        if (sqrDist > sqrDetectionRange)
+            return false;
 
+        if (candidate.TryGetComponent(out PlayerStats playerStats))
+            return !playerStats.isDead;
+
+        if (candidate.TryGetComponent(out AllyBaseAI allyAi))
+            return !allyAi.IsDead;
+
+        return true;
+    }
+}

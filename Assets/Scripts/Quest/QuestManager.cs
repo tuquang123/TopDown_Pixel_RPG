@@ -1,7 +1,9 @@
 ﻿// ================= QuestManager.cs =================
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 // ===== Thêm enum trạng thái quest =====
 public enum QuestState
@@ -401,28 +403,7 @@ public class QuestManager : Singleton<QuestManager>
 
         questArrow.SetTarget(arrowTarget);
     }
-private Transform FindTurnInTarget(QuestProgress qp)
-{
-    if (qp == null || qp.quest == null) return null;
 
-    // Ưu tiên turnInNPCName
-    if (!string.IsNullOrEmpty(qp.quest.turnInNPCName))
-    {
-        Transform npc = FindNPCByName(qp.quest.turnInNPCName);
-        if (npc != null && npc.gameObject.activeInHierarchy) 
-            return npc;
-    }
-
-    // Fallback objective đầu tiên
-    if (qp.quest.objectives != null && qp.quest.objectives.Length > 0)
-    {
-        var npc = FindNPCByName(qp.quest.objectives[0].objectiveName);
-        if (npc != null && npc.gameObject.activeInHierarchy) 
-            return npc;
-    }
-
-    return FindNPCByQuest(qp.quest);
-}
     private Transform FindNPCByQuest(Quest quest)
     {
        
@@ -508,65 +489,149 @@ private Transform FindTurnInTarget(QuestProgress qp)
     {
         if (qp == null || qp.quest.objectives == null) return null;
 
+        Vector3 playerPos = GetPlayerPosition();
+        if (playerPos == Vector3.zero) return null;
+
+        Transform best = null;
+        float minDist = Mathf.Infinity;
+
         foreach (var obj in qp.quest.objectives)
         {
-            // 🔥 KILL ENEMY
-            if (obj.type == ObjectiveType.KillEnemies)
+            string targetID = obj.objectiveName;
+
+            // ===== 1. CHECK ENEMY =====
+            EnemyAI[] enemies = GameObject.FindObjectsOfType<EnemyAI>(true);
+
+            foreach (var e in enemies)
             {
-                string targetID = obj.objectiveName;
+                if (e == null || e.IsDead || !e.gameObject.activeInHierarchy)
+                    continue;
 
-                EnemyAI[] enemies = GameObject.FindObjectsOfType<EnemyAI>();
+                if (!string.Equals(e.KillID, targetID, System.StringComparison.OrdinalIgnoreCase))
+                    continue;
 
-                Transform best = null;
-                float minDist = Mathf.Infinity;
+                float dist = Vector2.Distance(playerPos, e.transform.position);
 
-                foreach (var e in enemies)
+                if (dist < minDist)
                 {
-                    if (e == null || e.IsDead) continue;
-                    if (e.KillID != targetID) continue;
-
-                    float dist = Vector2.Distance(PlayerController.Instance.transform.position, e.transform.position);
-
-                    if (dist < minDist)
-                    {
-                        best = e.transform;
-                        minDist = dist;
-                    }
+                    minDist = dist;
+                    best = e.transform;
                 }
-
-                if (best != null)
-                    return best;
             }
 
-            // 🔥 DESTROY OBJECT
-            if (obj.type == ObjectiveType.ExploreArea || obj.type == ObjectiveType.Custom)
+            // ===== 2. CHECK DESTRUCTIBLE =====
+            DestructibleObject[] objs = GameObject.FindObjectsOfType<DestructibleObject>(true);
+
+            foreach (var d in objs)
             {
-                string targetID = obj.objectiveName;
+                if (d == null || !d.gameObject.activeInHierarchy)
+                    continue;
 
-                DestructibleObject[] objs = GameObject.FindObjectsOfType<DestructibleObject>();
+                if (!string.Equals(d.ObjectiveID, targetID, System.StringComparison.OrdinalIgnoreCase))
+                    continue;
 
-                Transform best = null;
-                float minDist = Mathf.Infinity;
+                float dist = Vector2.Distance(playerPos, d.transform.position);
 
-                foreach (var d in objs)
+                if (dist < minDist)
                 {
-                    if (d == null || !d.gameObject.activeInHierarchy) continue;
-                    if (d.ObjectiveID != targetID) continue;
-
-                    float dist = Vector2.Distance(PlayerController.Instance.transform.position, d.transform.position);
-
-                    if (dist < minDist)
-                    {
-                        best = d.transform;
-                        minDist = dist;
-                    }
+                    minDist = dist;
+                    best = d.transform;
                 }
-
-                if (best != null)
-                    return best;
             }
         }
 
-        return null;
+        return best;
     }
+  
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+   
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log("[QuestManager] Scene Loaded → Delay Update Arrow");
+        StartCoroutine(DelayUpdateArrow());
+    }
+
+    // ReSharper disable Unity.PerformanceAnalysis
+    IEnumerator DelayUpdateArrow()
+    {
+        yield return new WaitForSeconds(0.2f); // 🔥 cho enemy spawn
+
+        UpdateArrow();
+    }
+    Transform FindLevelExit(bool goNext)
+    {
+        LevelTrigger[] triggers = FindObjectsOfType<LevelTrigger>(true);
+
+        if (triggers == null || triggers.Length == 0)
+        {
+            Debug.LogWarning("[Quest] Không tìm thấy LevelTrigger trong scene!");
+            return null;
+        }
+
+        Vector3 playerPos = GetPlayerPosition();
+        if (playerPos == Vector3.zero)
+            return null;
+
+        Transform best = null;
+        float minDist = Mathf.Infinity;
+
+        foreach (var t in triggers)
+        {
+            if (t == null || !t.gameObject.activeInHierarchy)
+                continue;
+
+            // 🔥 check đúng loại trigger
+            if (goNext && t.Type != LevelTrigger.TriggerType.Next)
+                continue;
+
+            if (!goNext && t.Type != LevelTrigger.TriggerType.Back)
+                continue;
+
+            float dist = Vector2.Distance(playerPos, t.transform.position);
+
+            if (dist < minDist)
+            {
+                minDist = dist;
+                best = t.transform;
+            }
+        }
+
+        if (best == null)
+        {
+            Debug.LogWarning("[Quest] Không tìm được trigger phù hợp!");
+        }
+
+        return best;
+    }
+    private Transform FindTurnInTarget(QuestProgress qp)
+    {
+        if (qp == null || qp.quest == null) return null;
+
+        // ===== 1. Tìm NPC trong scene =====
+        if (!string.IsNullOrEmpty(qp.quest.turnInNPCName))
+        {
+            Transform npc = FindNPCByName(qp.quest.turnInNPCName);
+            if (npc != null && npc.gameObject.activeInHierarchy)
+                return npc;
+        }
+
+        // ===== 2. Không có NPC → tìm EXIT =====
+        Debug.Log("[Quest] NPC không có trong map → tìm đường");
+
+        // 🔥 tạm logic: NPC nằm ở map trước
+        Transform exit = FindLevelExit(goNext: false);
+
+        return exit;
+    }
+    public int turnInLevelIndex;
 }

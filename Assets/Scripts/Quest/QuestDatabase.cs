@@ -46,6 +46,7 @@ public enum ObjectiveType
     CollectItems,
     TalkToNPC,
     ExploreArea,
-    Custom
+    Custom,
+    DestroyObject
 }
 

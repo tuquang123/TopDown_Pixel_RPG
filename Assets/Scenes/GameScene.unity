@@ -776,7 +776,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 569
+      value: 842
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
@@ -852,7 +852,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 215.4695
+      value: 351.96948
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1194,7 +1194,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3317ebb364834352a9912f23dec7ddd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 3305325761844304037, guid: b3e92ba011773bd428fcb58e5023a6f2, type: 3}
   minDistanceToShow: 0.5
 --- !u!212 &1318983350
 SpriteRenderer:
@@ -2289,8 +2288,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questDatabase: {fileID: 11400000, guid: 264f0ed58e6149f4da323d9d377dbdd5, type: 2}
   questUI: {fileID: 6181995488236582368}
-  autoAcceptNextQuest: 1
-  autoTurnInOnComplete: 1
   activeQuests: []
   completedQuests: []
   readyToTurnInQuests: []

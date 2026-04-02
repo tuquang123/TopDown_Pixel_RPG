@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public enum AllyState
 {
@@ -11,7 +11,6 @@ public enum AllyState
 
 public abstract class AllyBaseAI : MonoBehaviour
 {
-    
     protected static readonly int MoveBool = Animator.StringToHash("1_Move");
 
     protected float followDistance = 1.5f;
@@ -31,9 +30,10 @@ public abstract class AllyBaseAI : MonoBehaviour
     protected float stateCheckDelay = 0.2f;
 
     protected AllyState currentState = AllyState.Idle;
-
     protected Hero hero;
     public bool IsDead { get; set; }
+
+    private readonly float[] skillTimers = new float[2];
 
     public virtual void Setup(Hero hero)
     {
@@ -41,13 +41,12 @@ public abstract class AllyBaseAI : MonoBehaviour
         name = hero.data.name;
         stats = GetComponent<AllyStats>();
         stats.Initialize(hero.currentStats, hero.data.name);
-        
+
         if (hero.data.passiveSkill != null)
         {
             ISkillAlly passive = AllySkillFactory.GetSkillImplementation(hero.data.passiveSkill);
             passive?.Execute(this, hero.data.passiveSkill);
         }
-
     }
 
     protected virtual void Start()
@@ -55,15 +54,19 @@ public abstract class AllyBaseAI : MonoBehaviour
         stats = GetComponent<AllyStats>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
-        player = CommonReferent.Instance.playerPrefab.transform;
-        playerController = player?.GetComponent<PlayerController>();
+        RefreshPlayerReference();
     }
 
     protected virtual void Update()
     {
-        if (player == null || playerController == null || stats.IsDead)
+        RefreshPlayerReference();
+
+        if (player == null || playerController == null || stats == null || stats.IsDead)
         {
             currentState = AllyState.Dead;
+            if (rb != null)
+                rb.linearVelocity = Vector2.zero;
+            anim?.SetBool(MoveBool, false);
             return;
         }
 
@@ -76,28 +79,29 @@ public abstract class AllyBaseAI : MonoBehaviour
         HandleState();
         HandleSkills();
     }
-    
-    private float[] skillTimers = new float[2];
 
     protected virtual void HandleSkills()
     {
-        TryCastSkill(hero.data.activeSkill1, 0);
-        TryCastSkill(hero.data.activeSkill2, 1);
+        TryCastSkill(hero?.data.activeSkill1, 0);
+        TryCastSkill(hero?.data.activeSkill2, 1);
     }
-    
+
     public Transform GetTarget()
     {
         return target;
     }
 
-
     private void TryCastSkill(AllySkillData data, int index)
     {
-        if (data == null) return;
-        if (Time.time < skillTimers[index] + data.cooldown) return;
+        if (data == null || target == null)
+            return;
 
-        float distanceToTarget = target != null ? Vector2.Distance(transform.position, target.position) : Mathf.Infinity;
-        if (distanceToTarget > attackRange) return;
+        if (Time.time < skillTimers[index] + data.cooldown)
+            return;
+
+        float distanceToTarget = Vector2.Distance(transform.position, target.position);
+        if (distanceToTarget > attackRange)
+            return;
 
         ISkillAlly skill = AllySkillFactory.GetSkillImplementation(data);
         if (skill != null && skill.CanExecute(this, data))
@@ -106,39 +110,32 @@ public abstract class AllyBaseAI : MonoBehaviour
             skillTimers[index] = Time.time;
         }
     }
-    
+
     protected virtual void EvaluateState()
     {
-        if (stats.IsDead)
+        if (stats == null || stats.IsDead)
         {
             currentState = AllyState.Dead;
             return;
         }
-        
-        if (playerController.IsMoving() && !playerController.IsAttacking && !IsPlayerUnderThreat())
-        {
-            currentState = AllyState.Follow;
-            return;
-        }
-        
+
         FindTarget();
 
         if (target != null)
         {
-            float distance = Vector2.Distance(transform.position, target.position);
-            if (distance <= attackRange)
-            {
-                currentState = AllyState.Attack;
-            }
-            else
-            {
-                currentState = AllyState.Chase;
-            }
+            float sqrAttackRange = attackRange * attackRange;
+            float targetSqrDist = ((Vector2)target.position - (Vector2)transform.position).sqrMagnitude;
+            currentState = targetSqrDist <= sqrAttackRange ? AllyState.Attack : AllyState.Chase;
+            return;
         }
-        else
+
+        if (ShouldFollowPlayer())
         {
-            currentState = AllyState.Idle;
+            currentState = AllyState.Follow;
+            return;
         }
+
+        currentState = AllyState.Idle;
     }
 
     protected virtual void HandleState()
@@ -147,7 +144,7 @@ public abstract class AllyBaseAI : MonoBehaviour
         {
             case AllyState.Idle:
                 rb.linearVelocity = Vector2.zero;
-                anim.SetBool(MoveBool, false);
+                anim?.SetBool(MoveBool, false);
                 break;
 
             case AllyState.Follow:
@@ -159,87 +156,93 @@ public abstract class AllyBaseAI : MonoBehaviour
                 break;
 
             case AllyState.Attack:
-                rb.linearVelocity = Vector2.zero;
-                anim.SetBool(MoveBool, false);
-                RotateCharacter(target.position.x - transform.position.x);
-                if (Time.time - lastAttackTime >= Mathf.Max(attackCooldown, 1f / stats.AttackSpeed))
+                if (!IsValidCombatTarget(target))
                 {
-                    AttackTarget();
+                    target = null;
+                    currentState = AllyState.Follow;
+                    rb.linearVelocity = Vector2.zero;
+                    anim?.SetBool(MoveBool, false);
+                    break;
                 }
+
+                rb.linearVelocity = Vector2.zero;
+                anim?.SetBool(MoveBool, false);
+                RotateCharacter(target.position.x - transform.position.x);
+
+                float cooldown = Mathf.Max(attackCooldown, 1f / Mathf.Max(0.01f, stats.AttackSpeed));
+                if (Time.time - lastAttackTime >= cooldown)
+                    AttackTarget();
                 break;
 
             case AllyState.Dead:
                 rb.linearVelocity = Vector2.zero;
-                anim.SetBool(MoveBool, false);
+                anim?.SetBool(MoveBool, false);
                 break;
         }
     }
-    
+
     protected virtual bool IsPlayerUnderThreat()
     {
-        return playerController.GetTargetEnemy() != null;
-    }
+        Transform playerTarget = playerController.GetTargetEnemy();
+        if (playerTarget == null)
+            return false;
 
+        return IsValidCombatTarget(playerTarget);
+    }
 
     protected virtual void FollowPlayer()
     {
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-        bool isPlayerMoving = playerController.MoveInput.magnitude > 0.1f;
+        Vector2 targetPos = GetFormationAnchor();
+        Vector2 toTarget = targetPos - (Vector2)transform.position;
+        float sqrDistance = toTarget.sqrMagnitude;
+        float stopDistance = 0.15f;
 
-        bool shouldMove = distanceToPlayer > followDistance || isPlayerMoving;
-        if (!shouldMove)
+        if (sqrDistance <= stopDistance * stopDistance)
         {
             rb.linearVelocity = Vector2.zero;
-            anim.SetBool(MoveBool, false);
+            anim?.SetBool(MoveBool, false);
             return;
         }
-        
-        Vector2 offset = AllyManager.Instance.GetOffsetPosition(this);
-        Vector2 targetPos = (Vector2)player.position + offset;
-        Vector2 toTarget = targetPos - (Vector2)transform.position;
-        float distance = toTarget.magnitude;
 
-        if (distance > 0.15f) 
-        {
-            Vector2 direction = toTarget.normalized;
-            rb.linearVelocity = direction * stats.MoveSpeed;
-            RotateCharacter(direction.x);
-            anim.SetBool(MoveBool, true);
-        }
-        else
-        {
-            rb.linearVelocity = Vector2.zero;
-            anim.SetBool(MoveBool, false);
-        }
-
+        Vector2 direction = toTarget.normalized;
+        rb.linearVelocity = direction * stats.MoveSpeed;
+        RotateCharacter(direction.x);
+        anim?.SetBool(MoveBool, true);
     }
-    
+
     protected virtual void MoveToAttackPosition()
     {
+        if (!IsValidCombatTarget(target))
+        {
+            target = null;
+            rb.linearVelocity = Vector2.zero;
+            anim?.SetBool(MoveBool, false);
+            return;
+        }
+
         Vector2 myPos = transform.position;
         Vector2 targetPos = target.position;
 
         float yDiff = Mathf.Abs(myPos.y - targetPos.y);
         float xDiff = Mathf.Abs(myPos.x - targetPos.x);
-        float yTolerance = 0.1f;
 
-        if (yDiff > yTolerance)
+        if (yDiff > 0.1f)
         {
-            Vector2 dirY = new Vector2(0, targetPos.y - myPos.y).normalized;
+            Vector2 dirY = new Vector2(0f, targetPos.y - myPos.y).normalized;
             rb.linearVelocity = dirY * stats.MoveSpeed;
-            anim.SetBool(MoveBool, true);
+            anim?.SetBool(MoveBool, true);
         }
         else if (xDiff > attackRange * 0.8f)
         {
-            Vector2 dirX = new Vector2(targetPos.x - myPos.x, 0).normalized;
+            Vector2 dirX = new Vector2(targetPos.x - myPos.x, 0f).normalized;
             rb.linearVelocity = dirX * stats.MoveSpeed;
             RotateCharacter(dirX.x);
-            anim.SetBool(MoveBool, true);
+            anim?.SetBool(MoveBool, true);
         }
         else
         {
             rb.linearVelocity = Vector2.zero;
-            anim.SetBool(MoveBool, false);
+            anim?.SetBool(MoveBool, false);
         }
     }
 
@@ -247,54 +250,58 @@ public abstract class AllyBaseAI : MonoBehaviour
 
     protected virtual void RotateCharacter(float direction)
     {
-        transform.rotation = Quaternion.Euler(0, direction < 0 ? 180 : 0, 0);
+        if (Mathf.Approximately(direction, 0f))
+            return;
+
+        transform.rotation = Quaternion.Euler(0f, direction < 0f ? 180f : 0f, 0f);
     }
 
     protected virtual void FindTarget()
     {
-        if (playerController.GetTargetEnemy() != null)
+        Transform playerTarget = playerController.GetTargetEnemy();
+        if (IsPreferredPlayerTarget(playerTarget))
         {
-            target = playerController.GetTargetEnemy();
+            target = playerTarget;
             return;
         }
 
-        // Ưu tiên enemy sống
-        target = FindNearestEnemy();
+        target = FindEnemyThreatNearPlayer();
+        if (target != null)
+            return;
 
-        if (target == null)
-        {
-            target = FindNearestDestructible();
-        }
+        target = FindNearestEnemy();
+        if (target != null)
+            return;
+
+        target = FindNearestDestructible();
     }
+
     protected Transform FindNearestEnemy()
     {
-        float minDist = detectionRange;
-        Transform nearest = null;
+        if (EnemyTracker.Instance == null)
+            return null;
 
-        foreach (var enemy in EnemyTracker.Instance.GetEnemiesInRange(transform.position, detectionRange))
-        {
-            float dist = Vector2.Distance(transform.position, enemy.transform.position);
-            if (dist < minDist)
-            {
-                minDist = dist;
-                nearest = enemy.transform;
-            }
-        }
-
-        return nearest;
+        EnemyAI nearest = EnemyTracker.Instance.GetClosestEnemy(transform.position, detectionRange);
+        return nearest != null ? nearest.transform : null;
     }
 
     protected Transform FindNearestDestructible()
     {
-        float minDist = detectionRange;
+        if (DestructibleTracker.Instance == null)
+            return null;
+
+        float minSqrDist = detectionRange * detectionRange;
         Transform nearest = null;
 
         foreach (var obj in DestructibleTracker.Instance.GetInRange(transform.position, detectionRange))
         {
-            float dist = Vector2.Distance(transform.position, obj.transform.position);
-            if (dist < minDist)
+            if (obj == null)
+                continue;
+
+            float sqrDist = ((Vector2)obj.transform.position - (Vector2)transform.position).sqrMagnitude;
+            if (sqrDist < minSqrDist)
             {
-                minDist = dist;
+                minSqrDist = sqrDist;
                 nearest = obj.transform;
             }
         }
@@ -306,16 +313,19 @@ public abstract class AllyBaseAI : MonoBehaviour
     {
         return stats;
     }
+
     public AllyStats FindNearestAlly()
     {
-        AllyStats self = this.GetStats();
+        AllyStats self = GetStats();
         float minDistance = Mathf.Infinity;
         AllyStats nearest = null;
 
-        var allies = AllyManager.Instance.GetAllies();
-        foreach (var ally in allies)
+        if (AllyManager.Instance == null)
+            return null;
+
+        foreach (AllyBaseAI ally in AllyManager.Instance.GetAllies())
         {
-            if (ally == this || ally.GetStats().IsDead)
+            if (ally == null || ally == this || ally.GetStats().IsDead)
                 continue;
 
             float dist = Vector2.Distance(transform.position, ally.transform.position);
@@ -328,24 +338,112 @@ public abstract class AllyBaseAI : MonoBehaviour
 
         return nearest;
     }
-    
+
     public PlayerStats FindPlayerStats()
     {
-        if (player == null)
-            return null;
-
-        return player.GetComponent<PlayerStats>();
+        return player != null ? player.GetComponent<PlayerStats>() : null;
     }
-    
+
     protected virtual void OnEnable()
     {
-        AllyManager.Instance.RegisterAlly(this);
+        AllyManager.Instance?.RegisterAlly(this);
     }
 
     protected virtual void OnDisable()
     {
-        AllyManager.Instance.UnregisterAlly(this);
+        AllyManager.Instance?.UnregisterAlly(this);
     }
 
+    private void RefreshPlayerReference()
+    {
+        if (PlayerController.Instance == null)
+            return;
 
+        playerController = PlayerController.Instance;
+        player = playerController.transform;
+    }
+
+    private bool ShouldFollowPlayer()
+    {
+        if (player == null || playerController == null)
+            return false;
+
+        float desiredDistance = followDistance + GetFormationDistanceBias();
+        float sqrDistanceToFormation = (GetFormationAnchor() - (Vector2)transform.position).sqrMagnitude;
+        bool tooFarFromFormation = sqrDistanceToFormation > desiredDistance * desiredDistance;
+
+        return tooFarFromFormation || playerController.IsMoving() || playerController.IsAttacking || IsPlayerUnderThreat();
+    }
+
+    private Vector2 GetFormationAnchor()
+    {
+        Vector2 baseOffset = AllyManager.Instance != null ? AllyManager.Instance.GetOffsetPosition(this) : Vector2.zero;
+        Vector2 movementLead = playerController != null && playerController.MoveInput.sqrMagnitude > 0.01f
+            ? playerController.MoveInput.normalized * 0.5f
+            : Vector2.zero;
+
+        return (Vector2)player.position + baseOffset + movementLead;
+    }
+
+    private float GetFormationDistanceBias()
+    {
+        Vector2 offset = AllyManager.Instance != null ? AllyManager.Instance.GetOffsetPosition(this) : Vector2.zero;
+        return offset.magnitude * 0.25f;
+    }
+
+    private Transform FindEnemyThreatNearPlayer()
+    {
+        if (EnemyTracker.Instance == null || player == null)
+            return null;
+
+        float searchRange = Mathf.Max(detectionRange, Vector2.Distance(transform.position, player.position) + attackRange);
+        float sqrBestScore = float.MaxValue;
+        Transform best = null;
+
+        foreach (EnemyAI enemy in EnemyTracker.Instance.GetEnemiesInRange(player.position, searchRange))
+        {
+            if (enemy == null || enemy.IsDead)
+                continue;
+
+            float playerSqrDist = ((Vector2)enemy.transform.position - (Vector2)player.position).sqrMagnitude;
+            float allySqrDist = ((Vector2)enemy.transform.position - (Vector2)transform.position).sqrMagnitude;
+            if (allySqrDist > detectionRange * detectionRange)
+                continue;
+
+            float score = playerSqrDist * 0.7f + allySqrDist * 0.3f;
+            if (score < sqrBestScore)
+            {
+                sqrBestScore = score;
+                best = enemy.transform;
+            }
+        }
+
+        return best;
+    }
+
+    private bool IsPreferredPlayerTarget(Transform playerTarget)
+    {
+        if (!IsValidCombatTarget(playerTarget))
+            return false;
+
+        float playerThreatSqrDist = ((Vector2)playerTarget.position - (Vector2)player.position).sqrMagnitude;
+        return playerThreatSqrDist <= detectionRange * detectionRange;
+    }
+
+    private bool IsValidCombatTarget(Transform candidate)
+    {
+        if (candidate == null || !candidate.gameObject.activeInHierarchy)
+            return false;
+
+        float sqrDist = ((Vector2)candidate.position - (Vector2)transform.position).sqrMagnitude;
+        if (sqrDist > detectionRange * detectionRange)
+            return false;
+
+        EnemyAI enemy = candidate.GetComponent<EnemyAI>();
+        if (enemy != null)
+            return !enemy.IsDead;
+
+        DestructibleObject destructible = candidate.GetComponent<DestructibleObject>();
+        return destructible != null;
+    }
 }

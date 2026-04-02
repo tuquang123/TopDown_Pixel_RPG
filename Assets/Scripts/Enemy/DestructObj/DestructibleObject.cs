@@ -221,7 +221,7 @@ public class DestructibleObject : MonoBehaviour
         }
 
         healthUI?.HideUI();
-        QuestManager.Instance.ReportProgress("NV2", nameOBJ, 1);
+        QuestManager.Instance.ReportProgress("NV2", ObjectiveID, 1);
 
         gameObject.SetActive(false);
 
@@ -264,7 +264,7 @@ public class DestructibleObject : MonoBehaviour
         ai.ResetEnemy();
     }
    
-    private string nameOBJ = "Barrier";
+ 
     [SerializeField] private string objectiveID = "Barrier";
 
     public string ObjectiveID => objectiveID;
