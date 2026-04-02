@@ -499,6 +499,21 @@ public class QuestManager : Singleton<QuestManager>
         {
             string targetID = obj.objectiveName;
 
+            // ===== 0. CHECK NPC/TALK OBJECTIVE =====
+            if (obj.type == ObjectiveType.TalkToNPC)
+            {
+                Transform npcTarget = FindNPCByName(targetID);
+                if (npcTarget != null && npcTarget.gameObject.activeInHierarchy)
+                {
+                    float dist = Vector2.Distance(playerPos, npcTarget.position);
+                    if (dist < minDist)
+                    {
+                        minDist = dist;
+                        best = npcTarget;
+                    }
+                }
+            }
+
             // ===== 1. CHECK ENEMY =====
             EnemyAI[] enemies = GameObject.FindObjectsOfType<EnemyAI>(true);
 
@@ -507,7 +522,10 @@ public class QuestManager : Singleton<QuestManager>
                 if (e == null || e.IsDead || !e.gameObject.activeInHierarchy)
                     continue;
 
-                if (!string.Equals(e.KillID, targetID, System.StringComparison.OrdinalIgnoreCase))
+                bool idMatched = string.Equals(e.KillID, targetID, System.StringComparison.OrdinalIgnoreCase);
+                bool nameMatched = string.Equals(e.EnemyName, targetID, System.StringComparison.OrdinalIgnoreCase);
+
+                if (!idMatched && !nameMatched)
                     continue;
 
                 float dist = Vector2.Distance(playerPos, e.transform.position);
@@ -538,6 +556,12 @@ public class QuestManager : Singleton<QuestManager>
                     best = d.transform;
                 }
             }
+        }
+
+        if (best == null)
+        {
+            // Không có target trong map hiện tại => trỏ lối đi sang map kế tiếp
+            best = FindLevelExit(goNext: true);
         }
 
         return best;

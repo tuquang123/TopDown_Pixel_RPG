@@ -47,7 +47,6 @@ public class QuestArrow : MonoBehaviour
 
         if (target == null)
         {
-            gameObject.SetActive(false);
             return;
         }
 
@@ -63,7 +62,6 @@ public class QuestArrow : MonoBehaviour
 
         if (player == null)
         {
-            gameObject.SetActive(false);
             return;
         }
 
