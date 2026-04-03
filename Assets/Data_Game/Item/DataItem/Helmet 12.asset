@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: helmet6
   itemName: Wizard hat
   icon: {fileID: 21300000, guid: 7dfd9fba81e474004986cd7f812dbe38, type: 3}
+  weaponCategory: 0
   itemType: 3
   tier: 2
-  price: 587
+  price: 452
   description: Made by a special sorcerer
   attack:
-    flat: 18
+    flat: 129
     percent: 0
   defense:
-    flat: 23
+    flat: 9
     percent: 0
   health:
-    flat: 236
+    flat: 587
     percent: 0
   mana:
-    flat: 177
+    flat: 443
     percent: 0
   critChance:
-    flat: 14
+    flat: 2
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 8
+    flat: 14
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 339
+  baseUpgradeCost: 348
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

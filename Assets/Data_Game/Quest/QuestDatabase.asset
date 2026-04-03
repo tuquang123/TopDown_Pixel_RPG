@@ -20,6 +20,7 @@ MonoBehaviour:
     - objectiveName: Goblin
       type: 0
       requiredAmount: 1
+      targetID: Goblin
     reward:
       experienceReward: 100
       goldReward: 15
@@ -33,22 +34,7 @@ MonoBehaviour:
     - objectiveName: Barrier
       type: 0
       requiredAmount: 1
-    - objectiveName: Barrier
-      type: 0
-      requiredAmount: 1
-    reward:
-      experienceReward: 100
-      goldReward: 20
-      gemReward: 0
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV0
-    questName: talk
-    description: talk with NPC
-    objectives:
-    - objectiveName: NPC_0
-      type: 2
-      requiredAmount: 1
+      targetID: Barrier
     reward:
       experienceReward: 100
       goldReward: 20
@@ -62,6 +48,7 @@ MonoBehaviour:
     - objectiveName: Gold
       type: 1
       requiredAmount: 5
+      targetID: 
     reward:
       experienceReward: 100
       goldReward: 30
@@ -75,6 +62,7 @@ MonoBehaviour:
     - objectiveName: Gem
       type: 1
       requiredAmount: 10
+      targetID: 
     reward:
       experienceReward: 200
       goldReward: 50
@@ -88,6 +76,7 @@ MonoBehaviour:
     - objectiveName: Gravok
       type: 0
       requiredAmount: 5
+      targetID: 
     reward:
       experienceReward: 300
       goldReward: 50
@@ -101,6 +90,7 @@ MonoBehaviour:
     - objectiveName: Ravageron
       type: 0
       requiredAmount: 2
+      targetID: 
     reward:
       experienceReward: 200
       goldReward: 30
@@ -114,6 +104,7 @@ MonoBehaviour:
     - objectiveName: Fangrider
       type: 0
       requiredAmount: 1
+      targetID: 
     reward:
       experienceReward: 500
       goldReward: 70
@@ -127,6 +118,7 @@ MonoBehaviour:
     - objectiveName: Silentmaw
       type: 0
       requiredAmount: 3
+      targetID: 
     reward:
       experienceReward: 400
       goldReward: 50
@@ -140,6 +132,7 @@ MonoBehaviour:
     - objectiveName: Skeleton
       type: 0
       requiredAmount: 3
+      targetID: 
     reward:
       experienceReward: 400
       goldReward: 50

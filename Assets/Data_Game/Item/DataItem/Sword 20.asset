@@ -15,12 +15,13 @@ MonoBehaviour:
   itemID: sword4
   itemName: Broken sword
   icon: {fileID: 21300000, guid: 01c22b6d497e0484db647e3d384dfe67, type: 3}
+  weaponCategory: 0
   itemType: 0
   tier: 2
-  price: 466
+  price: 577
   description: a broken sword
   attack:
-    flat: 140
+    flat: 149
     percent: 0
   defense:
     flat: 0
@@ -32,13 +33,13 @@ MonoBehaviour:
     flat: 0
     percent: 0
   critChance:
-    flat: 5
+    flat: 18
     percent: 0
   attackSpeed:
-    flat: 0.5
+    flat: 0.4
     percent: 0
   lifeSteal:
-    flat: 10
+    flat: 1
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 88
+  baseUpgradeCost: 166
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

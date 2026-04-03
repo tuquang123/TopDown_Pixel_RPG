@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: cape3
   itemName: Leather shawl
   icon: {fileID: 21300000, guid: 55bcacee5fd41654190caeb4abc46562, type: 3}
+  weaponCategory: 0
   itemType: 7
   tier: 2
-  price: 277
+  price: 640
   description: a cloak made by a leather craftsman
   attack:
-    flat: 59
+    flat: 114
     percent: 0
   defense:
-    flat: 20
+    flat: 18
     percent: 0
   health:
-    flat: 1393
+    flat: 351
     percent: 0
   mana:
-    flat: 89
+    flat: 111
     percent: 0
   critChance:
-    flat: 10
+    flat: 2
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 10
+    flat: 9
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 118
+  baseUpgradeCost: 150
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

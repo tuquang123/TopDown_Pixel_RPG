@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: robber's cap
   itemName: Robber's Cap
   icon: {fileID: 21300000, guid: b1873796bc6a04d0e851a8b13585448b, type: 3}
+  weaponCategory: 0
   itemType: 3
   tier: 0
-  price: 323
+  price: 233
   description: Helping the thief blend into the shadows
   attack:
-    flat: 64
+    flat: 78
     percent: 0
   defense:
-    flat: 3
+    flat: 5
     percent: 0
   health:
-    flat: 488
+    flat: 247
     percent: 0
   mana:
-    flat: 299
+    flat: 266
     percent: 0
   critChance:
-    flat: 20
+    flat: 18
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 1
+    flat: 9
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 266
+  baseUpgradeCost: 208
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -63,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

@@ -15,12 +15,13 @@ MonoBehaviour:
   itemID: swordshort1
   itemName: Sword Short
   icon: {fileID: 21300000, guid: dd6402512f85d4ca2a6e3b4944b5e6b5, type: 3}
+  weaponCategory: 0
   itemType: 0
   tier: 2
-  price: 173
+  price: 460
   description: The Sword Short
   attack:
-    flat: 50
+    flat: 65
     percent: 0
   defense:
     flat: 0
@@ -32,13 +33,13 @@ MonoBehaviour:
     flat: 0
     percent: 0
   critChance:
-    flat: 28
+    flat: 30
     percent: 0
   attackSpeed:
-    flat: 0.3
+    flat: 0.4
     percent: 0
   lifeSteal:
-    flat: 1
+    flat: 8
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 261
+  baseUpgradeCost: 288
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -63,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

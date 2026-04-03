@@ -15,24 +15,25 @@ MonoBehaviour:
   itemID: armor4
   itemName: Copper armor
   icon: {fileID: 3018618961690428772, guid: dacd5b318f89e48bd97879d660685938, type: 3}
+  weaponCategory: 0
   itemType: 1
   tier: 3
-  price: 677
+  price: 465
   description: Lightweight and flexible
   attack:
-    flat: 48
+    flat: 33
     percent: 0
   defense:
-    flat: 6
+    flat: 23
     percent: 0
   health:
-    flat: 650
+    flat: 1756
     percent: 0
   mana:
-    flat: 265
+    flat: 244
     percent: 0
   critChance:
-    flat: 30
+    flat: 27
     percent: 0
   attackSpeed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: -4371727071997471992, guid: dacd5b318f89e48bd97879d660685938, type: 3}
   iconRight: {fileID: 2263474349454975077, guid: dacd5b318f89e48bd97879d660685938, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 582
+  baseUpgradeCost: 351
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

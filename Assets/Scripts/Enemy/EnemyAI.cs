@@ -190,12 +190,10 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     [SerializeField] private float aggroLoseTime = 5f;
 
     private float lastAggroTime;
-
-    [SerializeField] private string killObjectiveID = "";
-    public string KillID => killObjectiveID;
-
+    
     public event Action OnDeath;
-
+    [SerializeField] private string killObjectiveID;
+    public string KillID => killObjectiveID;
     protected virtual void Awake()
     {
         EnsureCachedComponents();
@@ -218,6 +216,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         ChooseNewPatrolPoint();
         ResetEnemy();
         QuestManager.Instance?.UpdateArrow();
+        EnemyTracker.Instance?.Register(this);
     }
 
     private void OnDisable()
@@ -226,7 +225,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
         if (!gameObject.scene.isLoaded)
             return;
-
+        EnemyTracker.Instance?.Unregister(this);
         ResetEnemy();
     }
 
@@ -515,4 +514,5 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
         return true;
     }
+    
 }

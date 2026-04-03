@@ -15,41 +15,42 @@ MonoBehaviour:
   itemID: hourse
   itemName: Hourse
   icon: {fileID: -7786538801905712091, guid: fea53425b09f2aa4b8888109780b0de5, type: 3}
+  weaponCategory: 0
   itemType: 5
   tier: 1
-  price: 506
+  price: 411
   description: '
 
 '
   attack:
-    flat: 81
+    flat: 32
     percent: 0
   defense:
-    flat: 23
+    flat: 5
     percent: 0
   health:
-    flat: 230
+    flat: 449
     percent: 0
   mana:
-    flat: 90
+    flat: 268
     percent: 0
   critChance:
-    flat: 19
+    flat: 16
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 9
+    flat: 2
     percent: 0
   speed:
-    flat: 0.5
+    flat: 0.8
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 11400000, guid: 2214e70bcc9aafe4d845357093b6cbcb, type: 2}
-  baseUpgradeCost: 266
+  baseUpgradeCost: 231
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

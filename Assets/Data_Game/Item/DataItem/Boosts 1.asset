@@ -15,41 +15,40 @@ MonoBehaviour:
   itemID: iron boosts
   itemName: Iron Boosts
   icon: {fileID: 2852722183679507330, guid: 50595133ffa7f47f984a134594aedcab, type: 3}
+  weaponCategory: 0
   itemType: 4
   tier: 3
-  price: 762
+  price: 905
   description: A symbol of brute strength and resilience
   attack:
-    flat: 164
+    flat: 21
     percent: 0
   defense:
-    flat: 31
+    flat: 26
     percent: 0
   health:
-    flat: 612
+    flat: 1684
     percent: 0
   mana:
-    flat: 173
+    flat: 518
     percent: 0
   critChance:
-    flat: 18
+    flat: 34
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 4
+    flat: 1
     percent: 0
   speed:
-    flat: 1.8
+    flat: 1.4
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 2852722183679507330, guid: 50595133ffa7f47f984a134594aedcab,
-    type: 3}
-  iconRight: {fileID: -7210306655108607268, guid: 50595133ffa7f47f984a134594aedcab,
-    type: 3}
+  iconLeft: {fileID: 2852722183679507330, guid: 50595133ffa7f47f984a134594aedcab, type: 3}
+  iconRight: {fileID: -7210306655108607268, guid: 50595133ffa7f47f984a134594aedcab, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 399
+  baseUpgradeCost: 147
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -65,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

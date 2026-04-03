@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: helmet
   itemName: Helmet
   icon: {fileID: 21300000, guid: a79f145e10eea4e999334e278812b365, type: 3}
+  weaponCategory: 0
   itemType: 3
   tier: 0
-  price: 331
+  price: 263
   description: 'up armor '
   attack:
-    flat: 50
+    flat: 29
     percent: 0
   defense:
-    flat: 19
+    flat: 4
     percent: 0
   health:
-    flat: 690
+    flat: 802
     percent: 0
   mana:
-    flat: 273
+    flat: 223
     percent: 0
   critChance:
-    flat: 10
+    flat: 5
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 1
+    flat: 7
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 76
+  baseUpgradeCost: 83
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -63,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

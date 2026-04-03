@@ -59,7 +59,7 @@ public class SODataManager : MonoBehaviour
                         if (e.isSpecial)
                             row.Add(Escape(obj.name));
                         else
-                            row.Add(Escape(ValueToString(e.GetValue(obj))));
+                            row.Add(Escape(ValueToString(e.GetValue(obj), e.isList)));
                     }
 
                     writer.WriteLine(string.Join(",", row));
@@ -127,7 +127,7 @@ public class SODataManager : MonoBehaviour
                     {
                         if (headerMap.TryGetValue(e.fullName, out int col))
                         {
-                            var val = Parse(values[col], e.fieldInfo.FieldType);
+                            var val = Parse(values[col], e.fieldInfo.FieldType, e.isList);
                             if (val != null)
                                 e.SetValue(target, val);
                         }
@@ -210,7 +210,47 @@ public class SODataManager : MonoBehaviour
     }
 
     // =========================================================
-    // HELPER
+    // DEBUG
+    // =========================================================
+    [Button("🔍 Debug Fields", ButtonSizes.Medium)]
+    private void DebugFields()
+    {
+#if UNITY_EDITOR
+        if (allScriptableObjects.Count == 0)
+        {
+            Debug.Log("No objects");
+            return;
+        }
+
+        var obj = allScriptableObjects[0];
+        var type = obj.GetType();
+
+        Debug.Log($"=== Debugging: {type.Name} ===");
+
+        var allFields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        Debug.Log($"Total fields found: {allFields.Length}");
+
+        foreach (var f in allFields)
+        {
+            bool isPublic = f.IsPublic;
+            bool hasSerializeField = f.GetCustomAttribute<SerializeField>() != null;
+            bool isSimple = IsSimple(f.FieldType);
+            bool isList = IsListOrArray(f.FieldType);
+
+            Debug.Log($"  • {f.Name} ({f.FieldType.Name}) - Public:{isPublic} Serialize:{hasSerializeField} Simple:{isSimple} List:{isList}");
+        }
+
+        var detected = GetFields(type);
+        Debug.Log($"\nDetected by GetFields: {detected.Count}");
+        foreach (var e in detected)
+        {
+            Debug.Log($"  ✓ {e.fullName} (List:{e.isList})");
+        }
+#endif
+    }
+
+    // =========================================================
+    // HELPER CLASSES
     // =========================================================
 
     private class FieldEntry
@@ -218,6 +258,7 @@ public class SODataManager : MonoBehaviour
         public string fullName;
         public FieldInfo fieldInfo;
         public bool isSpecial;
+        public bool isList;
 
         public object GetValue(object obj) => isSpecial ? null : fieldInfo?.GetValue(obj);
         public void SetValue(object obj, object val)
@@ -225,6 +266,22 @@ public class SODataManager : MonoBehaviour
             if (!isSpecial) fieldInfo?.SetValue(obj, val);
         }
     }
+
+    [Serializable]
+    private class ListWrapper<T>
+    {
+        public List<T> items;
+    }
+
+    [Serializable]
+    private class ArrayWrapper<T>
+    {
+        public T[] items;
+    }
+
+    // =========================================================
+    // FIELD DETECTION
+    // =========================================================
 
     private List<FieldEntry> GetFields(Type type, string prefix = "")
     {
@@ -237,21 +294,41 @@ public class SODataManager : MonoBehaviour
         {
             Type t = f.FieldType;
 
-            if (IsSimple(t))
+            // Check if List<T> or Array
+            if (IsListOrArray(t))
             {
                 list.Add(new FieldEntry
                 {
                     fullName = prefix + f.Name,
-                    fieldInfo = f
+                    fieldInfo = f,
+                    isList = true
                 });
             }
-            else if (t.IsClass && !t.IsArray)
+            // Simple types
+            else if (IsSimple(t))
+            {
+                list.Add(new FieldEntry
+                {
+                    fullName = prefix + f.Name,
+                    fieldInfo = f,
+                    isList = false
+                });
+            }
+            // Nested serializable class
+            else if (t.IsClass && !t.IsArray && t.GetCustomAttribute<SerializableAttribute>() != null)
             {
                 list.AddRange(GetFields(t, prefix + f.Name + "_"));
             }
         }
 
         return list;
+    }
+
+    private bool IsListOrArray(Type t)
+    {
+        if (t.IsArray) return true;
+        if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(List<>)) return true;
+        return false;
     }
 
     private bool IsSimple(Type t)
@@ -263,10 +340,26 @@ public class SODataManager : MonoBehaviour
                typeof(UnityEngine.Object).IsAssignableFrom(t);
     }
 
-    private string ValueToString(object val)
+    // =========================================================
+    // VALUE CONVERSION
+    // =========================================================
+
+    private string ValueToString(object val, bool isList)
     {
 #if UNITY_EDITOR
         if (val == null) return "";
+
+        // Handle List/Array as JSON
+        if (isList)
+        {
+            string json = JsonUtility.ToJson(new { items = val }, false);
+            // Remove wrapper: {"items":[...]} -> [...]
+            int start = json.IndexOf('[');
+            int end = json.LastIndexOf(']');
+            if (start >= 0 && end > start)
+                return json.Substring(start, end - start + 1);
+            return json;
+        }
 
         if (val is UnityEngine.Object obj)
         {
@@ -284,11 +377,44 @@ public class SODataManager : MonoBehaviour
 #endif
     }
 
-    private object Parse(string str, Type t)
+    private object Parse(string str, Type t, bool isList)
     {
 #if UNITY_EDITOR
         if (string.IsNullOrEmpty(str)) return null;
 
+        // Handle List/Array from JSON
+        if (isList)
+        {
+            try
+            {
+                // Wrap: [...] -> {"items":[...]}
+                string wrapped = $"{{\"items\":{str}}}";
+                
+                if (t.IsArray)
+                {
+                    Type elemType = t.GetElementType();
+                    Type wrapperType = typeof(ArrayWrapper<>).MakeGenericType(elemType);
+                    var wrapper = JsonUtility.FromJson(wrapped, wrapperType);
+                    var itemsField = wrapperType.GetField("items");
+                    return itemsField.GetValue(wrapper);
+                }
+                else if (t.IsGenericType)
+                {
+                    Type elemType = t.GetGenericArguments()[0];
+                    Type wrapperType = typeof(ListWrapper<>).MakeGenericType(elemType);
+                    var wrapper = JsonUtility.FromJson(wrapped, wrapperType);
+                    var itemsField = wrapperType.GetField("items");
+                    return itemsField.GetValue(wrapper);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Parse List/Array failed: {e.Message}");
+                return null;
+            }
+        }
+
+        // Simple types
         if (t == typeof(string)) return str;
         if (t == typeof(int)) return int.Parse(str);
         if (t == typeof(float)) return float.Parse(str);
@@ -301,6 +427,12 @@ public class SODataManager : MonoBehaviour
             return new Vector3(float.Parse(p[0]), float.Parse(p[1]), float.Parse(p[2]));
         }
 
+        if (t == typeof(Vector2))
+        {
+            var p = str.Split(',');
+            return new Vector2(float.Parse(p[0]), float.Parse(p[1]));
+        }
+
         if (typeof(UnityEngine.Object).IsAssignableFrom(t))
         {
             string path = AssetDatabase.GUIDToAssetPath(str);
@@ -310,10 +442,14 @@ public class SODataManager : MonoBehaviour
         return null;
     }
 
+    // =========================================================
+    // CSV PARSING
+    // =========================================================
+
     private string Escape(string v)
     {
         if (string.IsNullOrEmpty(v)) return "";
-        if (v.Contains(",") || v.Contains("\""))
+        if (v.Contains(",") || v.Contains("\"") || v.Contains("\n"))
         {
             v = v.Replace("\"", "\"\"");
             return $"\"{v}\"";
@@ -327,15 +463,32 @@ public class SODataManager : MonoBehaviour
         bool inQuote = false;
         StringBuilder cur = new StringBuilder();
 
-        foreach (char c in line)
+        for (int i = 0; i < line.Length; i++)
         {
-            if (c == '"') inQuote = !inQuote;
+            char c = line[i];
+
+            if (c == '"')
+            {
+                // Check for escaped quote ""
+                if (inQuote && i + 1 < line.Length && line[i + 1] == '"')
+                {
+                    cur.Append('"');
+                    i++; // Skip next quote
+                }
+                else
+                {
+                    inQuote = !inQuote;
+                }
+            }
             else if (c == ',' && !inQuote)
             {
                 result.Add(cur.ToString());
                 cur.Clear();
             }
-            else cur.Append(c);
+            else
+            {
+                cur.Append(c);
+            }
         }
 
         result.Add(cur.ToString());

@@ -15,41 +15,40 @@ MonoBehaviour:
   itemID: cloth armor
   itemName: Cloth Armor
   icon: {fileID: -5138849381010601345, guid: da6895bd4082d441cbe5911031d0f43b, type: 3}
+  weaponCategory: 0
   itemType: 1
   tier: 0
-  price: 496
+  price: 120
   description: Lightweight and flexible
   attack:
-    flat: 52
+    flat: 49
     percent: 0
   defense:
-    flat: 15
+    flat: 10
     percent: 0
   health:
-    flat: 993
+    flat: 328
     percent: 0
   mana:
-    flat: 104
+    flat: 217
     percent: 0
   critChance:
-    flat: 6
+    flat: 2
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 5
+    flat: 9
     percent: 0
   speed:
     flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: -9059333892809613461, guid: da6895bd4082d441cbe5911031d0f43b,
-    type: 3}
-  iconRight: {fileID: 5974945691945990517, guid: da6895bd4082d441cbe5911031d0f43b,
-    type: 3}
+  iconLeft: {fileID: -9059333892809613461, guid: da6895bd4082d441cbe5911031d0f43b, type: 3}
+  iconRight: {fileID: 5974945691945990517, guid: da6895bd4082d441cbe5911031d0f43b, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 223
+  baseUpgradeCost: 105
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -65,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

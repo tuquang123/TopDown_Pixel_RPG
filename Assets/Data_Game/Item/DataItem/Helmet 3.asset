@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: knight's helmet
   itemName: Knight's Helmet
   icon: {fileID: 21300000, guid: 2904f6c2d794c458e898120e51a66cd9, type: 3}
+  weaponCategory: 0
   itemType: 3
   tier: 4
-  price: 762
+  price: 1001
   description: A sturdy stell helmet worn by noble knights
   attack:
-    flat: 249
+    flat: 211
     percent: 0
   defense:
-    flat: 26
+    flat: 46
     percent: 0
   health:
-    flat: 2211
+    flat: 553
     percent: 0
   mana:
-    flat: 235
+    flat: 462
     percent: 0
   critChance:
-    flat: 25
+    flat: 17
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 15
+    flat: 6
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 438
+  baseUpgradeCost: 284
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -63,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

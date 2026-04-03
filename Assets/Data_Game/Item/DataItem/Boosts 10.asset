@@ -15,24 +15,25 @@ MonoBehaviour:
   itemID: boosts2
   itemName: Gray shoes
   icon: {fileID: -62334307996113135, guid: a4b630b105c514614b9ba9d9937fef5d, type: 3}
+  weaponCategory: 0
   itemType: 4
   tier: 3
-  price: 831
+  price: 625
   description: up speed
   attack:
-    flat: 83
+    flat: 25
     percent: 0
   defense:
-    flat: 39
+    flat: 11
     percent: 0
   health:
-    flat: 426
+    flat: 480
     percent: 0
   mana:
-    flat: 168
+    flat: 131
     percent: 0
   critChance:
-    flat: 25
+    flat: 39
     percent: 0
   attackSpeed:
     flat: 0
@@ -41,13 +42,13 @@ MonoBehaviour:
     flat: 9
     percent: 0
   speed:
-    flat: 1.2
+    flat: 0.6
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
   iconLeft: {fileID: -62334307996113135, guid: a4b630b105c514614b9ba9d9937fef5d, type: 3}
   iconRight: {fileID: -5346438201911016785, guid: a4b630b105c514614b9ba9d9937fef5d, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 155
+  baseUpgradeCost: 401
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

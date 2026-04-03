@@ -15,21 +15,22 @@ MonoBehaviour:
   itemID: dragon boosts
   itemName: Dragon Boosts
   icon: {fileID: 8616813021583795274, guid: 4f4d6264408da453a8511876ebec8ae3, type: 3}
+  weaponCategory: 0
   itemType: 4
   tier: 5
-  price: 1217
+  price: 995
   description: Forged from the scales of a mighty dragon
   attack:
-    flat: 290
+    flat: 206
     percent: 0
   defense:
-    flat: 36
+    flat: 34
     percent: 0
   health:
-    flat: 2340
+    flat: 1047
     percent: 0
   mana:
-    flat: 250
+    flat: 615
     percent: 0
   critChance:
     flat: 54
@@ -38,18 +39,16 @@ MonoBehaviour:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 27
+    flat: 28
     percent: 0
   speed:
-    flat: 1.8
+    flat: 2.6
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 8616813021583795274, guid: 4f4d6264408da453a8511876ebec8ae3,
-    type: 3}
-  iconRight: {fileID: 6436355157659965594, guid: 4f4d6264408da453a8511876ebec8ae3,
-    type: 3}
+  iconLeft: {fileID: 8616813021583795274, guid: 4f4d6264408da453a8511876ebec8ae3, type: 3}
+  iconRight: {fileID: 6436355157659965594, guid: 4f4d6264408da453a8511876ebec8ae3, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 508
+  baseUpgradeCost: 524
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -65,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

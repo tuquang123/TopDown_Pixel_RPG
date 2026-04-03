@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: armor5
   itemName: Silver armor
   icon: {fileID: -7736556782503057505, guid: 119a166f9da694dd4834e556f1c65f76, type: 3}
+  weaponCategory: 0
   itemType: 1
   tier: 2
-  price: 530
+  price: 302
   description: Lightweight and flexible
   attack:
-    flat: 28
+    flat: 130
     percent: 0
   defense:
-    flat: 7
+    flat: 14
     percent: 0
   health:
-    flat: 1331
+    flat: 435
     percent: 0
   mana:
-    flat: 78
+    flat: 412
     percent: 0
   critChance:
-    flat: 18
+    flat: 12
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 10
+    flat: 1
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 1468843896871262044, guid: 119a166f9da694dd4834e556f1c65f76, type: 3}
   iconRight: {fileID: 6707769398717036949, guid: 119a166f9da694dd4834e556f1c65f76, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 96
+  baseUpgradeCost: 193
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

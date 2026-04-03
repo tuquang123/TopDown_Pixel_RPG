@@ -24961,9 +24961,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1509088440638764804, guid: 9030f8c689d005b43b770e5767dc267d, type: 3}
+      propertyPath: m_fontSize
+      value: 0.24
+      objectReference: {fileID: 0}
+    - target: {fileID: 1509088440638764804, guid: 9030f8c689d005b43b770e5767dc267d, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 0.24
+      objectReference: {fileID: 0}
     - target: {fileID: 2384746708753092779, guid: 9030f8c689d005b43b770e5767dc267d, type: 3}
       propertyPath: m_Name
       value: HpZone
+      objectReference: {fileID: 0}
+    - target: {fileID: 5455014867939397813, guid: 9030f8c689d005b43b770e5767dc267d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 1.67
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -25976,7 +25988,32 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 4731964172884810729, guid: b3e92ba011773bd428fcb58e5023a6f2, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6387307400237436663, guid: b3e92ba011773bd428fcb58e5023a6f2, type: 3}
+      propertyPath: m_Color.b
+      value: 0.043396115
+      objectReference: {fileID: 0}
+    - target: {fileID: 6387307400237436663, guid: b3e92ba011773bd428fcb58e5023a6f2, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6387307400237436663, guid: b3e92ba011773bd428fcb58e5023a6f2, type: 3}
+      propertyPath: m_Color.r
+      value: 0.9595546
+      objectReference: {fileID: 0}
+    - target: {fileID: 6387307400237436663, guid: b3e92ba011773bd428fcb58e5023a6f2, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6575363529452830501, guid: b3e92ba011773bd428fcb58e5023a6f2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 4731964172884810729, guid: b3e92ba011773bd428fcb58e5023a6f2, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

@@ -15,41 +15,40 @@ MonoBehaviour:
   itemID: slippers
   itemName: Slippers
   icon: {fileID: 2710371681560268619, guid: c8a4db297c0ce4a38abd3c1d2da37e98, type: 3}
+  weaponCategory: 0
   itemType: 4
   tier: 4
-  price: 939
+  price: 680
   description: up speed
   attack:
-    flat: 177
+    flat: 123
     percent: 0
   defense:
-    flat: 23
+    flat: 6
     percent: 0
   health:
-    flat: 541
+    flat: 1595
     percent: 0
   mana:
-    flat: 543
+    flat: 665
     percent: 0
   critChance:
-    flat: 50
+    flat: 43
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 4
-    percent: 0
-  speed:
     flat: 2
     percent: 0
+  speed:
+    flat: 2.4
+    percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 2710371681560268619, guid: c8a4db297c0ce4a38abd3c1d2da37e98,
-    type: 3}
-  iconRight: {fileID: 4488402338830534301, guid: c8a4db297c0ce4a38abd3c1d2da37e98,
-    type: 3}
+  iconLeft: {fileID: 2710371681560268619, guid: c8a4db297c0ce4a38abd3c1d2da37e98, type: 3}
+  iconRight: {fileID: 4488402338830534301, guid: c8a4db297c0ce4a38abd3c1d2da37e98, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 688
+  baseUpgradeCost: 530
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -65,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

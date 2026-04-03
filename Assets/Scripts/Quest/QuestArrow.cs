@@ -14,22 +14,16 @@ public class QuestArrow : MonoBehaviour
         FindPlayer();
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log("Scene loaded: " + scene.name);
-
-       
+        FindPlayer(); // 🔥 load scene phải tìm lại player
     }
-    
-    void OnEnable()
-    {
-        if (cachedPlayer == null)
-            FindPlayer();
-
-        if (target != null)
-            UpdateDirection();
-    }
-    
 
     private Transform PlayerTransform
     {
@@ -47,6 +41,7 @@ public class QuestArrow : MonoBehaviour
 
         if (target == null)
         {
+            gameObject.SetActive(false); // 🔥 QUAN TRỌNG
             return;
         }
 
@@ -62,14 +57,18 @@ public class QuestArrow : MonoBehaviour
 
         if (player == null)
         {
+            gameObject.SetActive(false);
             return;
         }
 
         if (target == null || !target.gameObject.activeInHierarchy)
         {
-            // 🔥 không tắt ngay → đợi QuestManager set lại
+            gameObject.SetActive(false); // 🔥 ẨN LUÔN
             return;
         }
+
+        if (!gameObject.activeSelf)
+            gameObject.SetActive(true);
 
         UpdateDirection();
     }
@@ -90,6 +89,7 @@ public class QuestArrow : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 0, angle + 90f);
         }
     }
+
     private void FindPlayer()
     {
         if (PlayerController.Instance != null)

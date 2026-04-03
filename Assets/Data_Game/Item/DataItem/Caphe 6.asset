@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: cape5
   itemName: holding a arrow
   icon: {fileID: 21300000, guid: 81a931fa55f8a5541bf6d1f957a38926, type: 3}
+  weaponCategory: 0
   itemType: 7
   tier: 3
-  price: 613
+  price: 462
   description: a arrow holder made by the hunter
   attack:
-    flat: 72
+    flat: 71
     percent: 0
   defense:
-    flat: 15
+    flat: 18
     percent: 0
   health:
-    flat: 1324
+    flat: 685
     percent: 0
   mana:
-    flat: 179
+    flat: 105
     percent: 0
   critChance:
-    flat: 31
+    flat: 39
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 3
+    flat: 11
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 202
+  baseUpgradeCost: 462
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

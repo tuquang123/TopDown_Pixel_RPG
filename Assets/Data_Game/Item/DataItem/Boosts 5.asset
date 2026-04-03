@@ -15,41 +15,40 @@ MonoBehaviour:
   itemID: boostsWhite
   itemName: Boosts White
   icon: {fileID: 7352201148904788605, guid: 2367f636a80334d659849604908ab07b, type: 3}
+  weaponCategory: 0
   itemType: 4
   tier: 3
-  price: 747
+  price: 334
   description: up speed
   attack:
-    flat: 68
+    flat: 54
     percent: 0
   defense:
-    flat: 31
+    flat: 29
     percent: 0
   health:
-    flat: 634
+    flat: 1486
     percent: 0
   mana:
-    flat: 381
+    flat: 365
     percent: 0
   critChance:
-    flat: 22
+    flat: 8
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 8
+    flat: 7
     percent: 0
   speed:
-    flat: 0.9
+    flat: 0.6
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: 7352201148904788605, guid: 2367f636a80334d659849604908ab07b,
-    type: 3}
-  iconRight: {fileID: 4139686232721902399, guid: 2367f636a80334d659849604908ab07b,
-    type: 3}
+  iconLeft: {fileID: 7352201148904788605, guid: 2367f636a80334d659849604908ab07b, type: 3}
+  iconRight: {fileID: 4139686232721902399, guid: 2367f636a80334d659849604908ab07b, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 495
+  baseUpgradeCost: 221
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -65,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DestructibleTracker : Singleton<DestructibleTracker>
@@ -31,4 +32,9 @@ public class DestructibleTracker : Singleton<DestructibleTracker>
 
         return result;
     }
+    public List<DestructibleObject> GetAll()
+    {
+        return destructibles;
+    }
+   
 }

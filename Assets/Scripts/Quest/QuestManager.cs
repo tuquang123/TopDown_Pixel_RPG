@@ -381,29 +381,33 @@ public class QuestManager : Singleton<QuestManager>
 
     public void UpdateArrow()
     {
-        if (questArrow == null) return;
-
-        Transform arrowTarget = null;
-
-        if (readyToTurnInQuests.Count > 0)
-        {
-            arrowTarget = FindTurnInTarget(readyToTurnInQuests[0]);
-        }
-        else if (activeQuests.Count > 0)
-        {
-            var qp = activeQuests.Find(q => q.state == QuestState.InProgress);
-            if (qp != null)
-                arrowTarget = FindQuestObjectiveTarget(qp);
-        }
-
-        if (arrowTarget == null)
-        {
-            Debug.Log("[QuestArrow] Không tìm thấy target trong map này");
-        }
-
-        questArrow.SetTarget(arrowTarget);
+        StopAllCoroutines();
+        StartCoroutine(UpdateArrowRoutine());
     }
 
+    private IEnumerator UpdateArrowRoutine()
+    {
+        float timeout = 2f; // thử trong 2 giây
+        float timer = 0f;
+
+        while (timer < timeout)
+        {
+            Transform target = GetCurrentQuestTarget();
+
+            if (target != null)
+            {
+                questArrow.SetTarget(target);
+                yield break;
+            }
+
+            timer += 0.2f;
+            yield return new WaitForSeconds(0.2f);
+        }
+
+        // ❌ không tìm được thì tắt arrow
+        questArrow.SetTarget(null);
+        Debug.LogWarning("Không tìm thấy target cho quest!");
+    }
     private Transform FindNPCByQuest(Quest quest)
     {
        
@@ -423,6 +427,22 @@ public class QuestManager : Singleton<QuestManager>
         // hoặc trả về null → tắt mũi tên
 
         Debug.LogWarning($"Không tìm thấy NPC nhận thưởng cho quest: {quest.questName}");
+        return null;
+    }
+    private Transform GetCurrentQuestTarget()
+    {
+        // 1. Ưu tiên quest đã hoàn thành → đi trả
+        if (readyToTurnInQuests.Count > 0)
+        {
+            return FindTurnInTarget(readyToTurnInQuests[0]);
+        }
+
+        // 2. Quest đang làm
+        if (activeQuests.Count > 0)
+        {
+            return FindQuestObjectiveTarget(activeQuests[0]);
+        }
+
         return null;
     }
     // ====================== HÀM TÌM ENEMY GẦN NHẤT ======================
@@ -485,60 +505,56 @@ public class QuestManager : Singleton<QuestManager>
         Debug.LogWarning("[QuestManager] Cannot find Player position for Quest Arrow!");
         return Vector3.zero;
     }
-    Transform FindQuestObjectiveTarget(QuestProgress qp)
+ private Transform FindQuestObjectiveTarget(QuestProgress qp)
+{
+    if (qp == null || qp.quest == null)
+        return null;
+
+    Vector3 playerPos = GetPlayerPosition();
+    if (playerPos == Vector3.zero)
+        return null;
+
+    Transform bestTarget = null;
+    float minDist = Mathf.Infinity;
+
+    foreach (var obj in qp.quest.objectives)
     {
-        if (qp == null || qp.quest.objectives == null) return null;
+        if (obj.type != ObjectiveType.KillEnemies)
+            continue;
 
-        Vector3 playerPos = GetPlayerPosition();
-        if (playerPos == Vector3.zero) return null;
+        int currentAmount = qp.progress.ContainsKey(obj.objectiveName) ? qp.progress[obj.objectiveName] : 0;
+        if (currentAmount >= obj.requiredAmount)
+            continue;
 
-        Transform best = null;
-        float minDist = Mathf.Infinity;
+        string targetID = obj.targetID;
+        if (string.IsNullOrEmpty(targetID))
+            continue;
 
-        foreach (var obj in qp.quest.objectives)
+        // ================= ENEMY =================
+        if (EnemyTracker.Instance != null)
         {
-            string targetID = obj.objectiveName;
-
-            // ===== 0. CHECK NPC/TALK OBJECTIVE =====
-            if (obj.type == ObjectiveType.TalkToNPC)
-            {
-                Transform npcTarget = FindNPCByName(targetID);
-                if (npcTarget != null && npcTarget.gameObject.activeInHierarchy)
-                {
-                    float dist = Vector2.Distance(playerPos, npcTarget.position);
-                    if (dist < minDist)
-                    {
-                        minDist = dist;
-                        best = npcTarget;
-                    }
-                }
-            }
-
-            // ===== 1. CHECK ENEMY =====
-            EnemyAI[] enemies = GameObject.FindObjectsOfType<EnemyAI>(true);
-
+            var enemies = EnemyTracker.Instance.GetAllEnemies();
             foreach (var e in enemies)
             {
                 if (e == null || e.IsDead || !e.gameObject.activeInHierarchy)
                     continue;
 
-                bool idMatched = string.Equals(e.KillID, targetID, System.StringComparison.OrdinalIgnoreCase);
-                bool nameMatched = string.Equals(e.EnemyName, targetID, System.StringComparison.OrdinalIgnoreCase);
-
-                if (!idMatched && !nameMatched)
+                if (!string.Equals(e.KillID, targetID, System.StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                float dist = Vector2.Distance(playerPos, e.transform.position);
-
+                float dist = Vector3.Distance(playerPos, e.transform.position);
                 if (dist < minDist)
                 {
                     minDist = dist;
-                    best = e.transform;
+                    bestTarget = e.transform;
                 }
             }
+        }
 
-            // ===== 2. CHECK DESTRUCTIBLE =====
-            DestructibleObject[] objs = GameObject.FindObjectsOfType<DestructibleObject>(true);
+        // ================= DESTRUCTIBLE =================
+        if (DestructibleTracker.Instance != null)
+        {
+            var objs = DestructibleTracker.Instance.GetAll();
 
             foreach (var d in objs)
             {
@@ -548,26 +564,42 @@ public class QuestManager : Singleton<QuestManager>
                 if (!string.Equals(d.ObjectiveID, targetID, System.StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                float dist = Vector2.Distance(playerPos, d.transform.position);
-
+                float dist = Vector3.Distance(playerPos, d.transform.position);
                 if (dist < minDist)
                 {
                     minDist = dist;
-                    best = d.transform;
+                    bestTarget = d.transform;
                 }
             }
         }
-
-        if (best == null)
-        {
-            // Không có target trong map hiện tại => trỏ lối đi sang map kế tiếp
-            best = FindLevelExit(goNext: true);
-        }
-
-        return best;
     }
-  
 
+    // ===== fallback qua map =====
+    if (bestTarget == null)
+    {
+        LevelTrigger[] triggers = FindObjectsOfType<LevelTrigger>(true);
+
+        float closestDist = Mathf.Infinity;
+
+        foreach (var t in triggers)
+        {
+            if (t == null || !t.gameObject.activeInHierarchy)
+                continue;
+
+            if (t.Type != LevelTrigger.TriggerType.Next)
+                continue;
+
+            float dist = Vector3.Distance(playerPos, t.transform.position);
+            if (dist < closestDist)
+            {
+                closestDist = dist;
+                bestTarget = t.transform;
+            }
+        }
+    }
+
+    return bestTarget;
+}
     void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -658,4 +690,9 @@ public class QuestManager : Singleton<QuestManager>
         return exit;
     }
     public int turnInLevelIndex;
+    public void ForceClearArrow()
+    {
+        if (questArrow != null)
+            questArrow.SetTarget(null);
+    }
 }

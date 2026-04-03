@@ -15,41 +15,40 @@ MonoBehaviour:
   itemID: dressshoes
   itemName: DressShoes
   icon: {fileID: -3490681349583411707, guid: c8b0805f6931f4f7f90aea6bd3b08f57, type: 3}
+  weaponCategory: 0
   itemType: 4
   tier: 3
-  price: 391
+  price: 563
   description: up speed
   attack:
-    flat: 167
+    flat: 69
     percent: 0
   defense:
-    flat: 12
+    flat: 4
     percent: 0
   health:
-    flat: 1197
+    flat: 1387
     percent: 0
   mana:
-    flat: 336
+    flat: 550
     percent: 0
   critChance:
-    flat: 6
+    flat: 38
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 6
+    flat: 14
     percent: 0
   speed:
-    flat: 0.7
+    flat: 1.2
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: -3490681349583411707, guid: c8b0805f6931f4f7f90aea6bd3b08f57,
-    type: 3}
-  iconRight: {fileID: 4718681636040477543, guid: c8b0805f6931f4f7f90aea6bd3b08f57,
-    type: 3}
+  iconLeft: {fileID: -3490681349583411707, guid: c8b0805f6931f4f7f90aea6bd3b08f57, type: 3}
+  iconRight: {fileID: 4718681636040477543, guid: c8b0805f6931f4f7f90aea6bd3b08f57, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 154
+  baseUpgradeCost: 210
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -65,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

@@ -15,12 +15,13 @@ MonoBehaviour:
   itemID: dark sword 2
   itemName: Dark Sword
   icon: {fileID: 21300000, guid: 9794293e4605a44d0826e3814ddc8431, type: 3}
+  weaponCategory: 0
   itemType: 0
   tier: 5
-  price: 1382
+  price: 1207
   description: The Sword of Darkness was forget in the shadows
   attack:
-    flat: 213
+    flat: 131
     percent: 0
   defense:
     flat: 0
@@ -32,13 +33,13 @@ MonoBehaviour:
     flat: 0
     percent: 0
   critChance:
-    flat: 37
+    flat: 56
     percent: 0
   attackSpeed:
-    flat: 1.1
+    flat: 0.8
     percent: 0
   lifeSteal:
-    flat: 29
+    flat: 15
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 150
+  baseUpgradeCost: 633
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -63,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

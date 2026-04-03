@@ -15,41 +15,40 @@ MonoBehaviour:
   itemID: frostarmor
   itemName: FrostArmor
   icon: {fileID: 9071153741043795472, guid: 4f75ae73445284b5393c219fadb2dc65, type: 3}
+  weaponCategory: 0
   itemType: 1
   tier: 3
-  price: 301
+  price: 987
   description: 
   attack:
-    flat: 22
+    flat: 35
     percent: 0
   defense:
-    flat: 39
+    flat: 7
     percent: 0
   health:
-    flat: 887
+    flat: 1346
     percent: 0
   mana:
-    flat: 313
+    flat: 363
     percent: 0
   critChance:
-    flat: 38
+    flat: 11
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 15
+    flat: 19
     percent: 0
   speed:
     flat: 0
     percent: 0
   color: {r: 1, g: 1, b: 1, a: 1}
-  iconLeft: {fileID: -3137994370387717294, guid: 4f75ae73445284b5393c219fadb2dc65,
-    type: 3}
-  iconRight: {fileID: -4607344544876785824, guid: 4f75ae73445284b5393c219fadb2dc65,
-    type: 3}
+  iconLeft: {fileID: -3137994370387717294, guid: 4f75ae73445284b5393c219fadb2dc65, type: 3}
+  iconRight: {fileID: -4607344544876785824, guid: 4f75ae73445284b5393c219fadb2dc65, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 566
+  baseUpgradeCost: 308
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
@@ -65,3 +64,4 @@ MonoBehaviour:
   lockLifeSteal: 0
   lockSpeed: 0
   itemDataBase: {fileID: 11400000, guid: f2d18d41348aa414d806c4f13e322cee, type: 2}
+  prefab: {fileID: 0}

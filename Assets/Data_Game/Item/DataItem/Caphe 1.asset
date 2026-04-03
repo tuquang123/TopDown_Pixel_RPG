@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: cape1
   itemName: Red shawl
   icon: {fileID: 21300000, guid: 28e59b8a1aa61e543bdb55515a957a9d, type: 3}
+  weaponCategory: 0
   itemType: 7
   tier: 2
-  price: 489
+  price: 570
   description: A sturdy stell helmet worn by noble knights
   attack:
-    flat: 21
+    flat: 127
     percent: 0
   defense:
-    flat: 15
+    flat: 17
     percent: 0
   health:
-    flat: 576
+    flat: 637
     percent: 0
   mana:
-    flat: 287
+    flat: 224
     percent: 0
   critChance:
-    flat: 13
+    flat: 16
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 10
+    flat: 8
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 438
+  baseUpgradeCost: 386
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

@@ -15,12 +15,13 @@ MonoBehaviour:
   itemID: sword
   itemName: iron sword
   icon: {fileID: 21300000, guid: df96032537d4c482e9b20c674c73dc45, type: 3}
+  weaponCategory: 0
   itemType: 0
   tier: 0
-  price: 363
+  price: 221
   description: an ordinary sword
   attack:
-    flat: 97
+    flat: 31
     percent: 0
   defense:
     flat: 0
@@ -32,13 +33,13 @@ MonoBehaviour:
     flat: 0
     percent: 0
   critChance:
-    flat: 17
+    flat: 13
     percent: 0
   attackSpeed:
-    flat: 0.4
+    flat: 0.3
     percent: 0
   lifeSteal:
-    flat: 2
+    flat: 8
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 110
+  baseUpgradeCost: 195
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

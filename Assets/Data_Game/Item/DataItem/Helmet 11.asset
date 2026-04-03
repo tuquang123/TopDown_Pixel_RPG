@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: helmet5
   itemName: Bronze helmet
   icon: {fileID: 21300000, guid: 84f507f509f5547a2904b830b2e98874, type: 3}
+  weaponCategory: 0
   itemType: 3
   tier: 2
-  price: 182
+  price: 594
   description: 'up armor '
   attack:
-    flat: 73
+    flat: 15
     percent: 0
   defense:
-    flat: 8
+    flat: 28
     percent: 0
   health:
-    flat: 1167
+    flat: 1059
     percent: 0
   mana:
-    flat: 124
+    flat: 255
     percent: 0
   critChance:
-    flat: 23
+    flat: 12
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 13
+    flat: 0
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 351
+  baseUpgradeCost: 342
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

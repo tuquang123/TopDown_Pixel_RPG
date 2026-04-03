@@ -134,7 +134,7 @@ public class LevelManager : Singleton<LevelManager>
         LoadSpecificLevel(data.levelIndex, TravelDirection.Default);
     }
     
-    private IEnumerator LoadLevelCoroutine(int index, TravelDirection direction)
+   private IEnumerator LoadLevelCoroutine(int index, TravelDirection direction)
 {
     Debug.Log($"[LevelManager] Bắt đầu load level {index}");
     
@@ -146,12 +146,18 @@ public class LevelManager : Singleton<LevelManager>
         yield return new WaitUntil(() => fadeDone);
     }
 
+    // 🔥 CLEAR ARROW TRƯỚC KHI LOAD (TRÁNH GIỮ TARGET CŨ)
+    if (QuestManager.Instance != null)
+    {
+        QuestManager.Instance.ForceClearArrow();
+    }
+
     // === 1. DESTROY LEVEL CŨ ===
     if (currentLevelInstance != null)
     {
         Debug.Log("[LevelManager] Destroying old level...");
-        EnemyTracker.Instance.ClearAllEnemies();
-        ObjectPooler.Instance.ClearAllPools();
+        EnemyTracker.Instance?.ClearAllEnemies();
+        ObjectPooler.Instance?.ClearAllPools();
         Destroy(currentLevelInstance);
         currentLevelInstance = null;
 
@@ -198,10 +204,10 @@ public class LevelManager : Singleton<LevelManager>
         sp.Spawn(CommonReferent.Instance.enemyLevelDatabase);
     }
 
-    // 🔥 QUAN TRỌNG: đợi 1 frame để tất cả object init xong
-    yield return null;
+    // 🔥 ĐỢI ENEMY REGISTER XONG (CỰC QUAN TRỌNG)
+    yield return new WaitForSeconds(0.1f);
 
-    // 🔥 FIX CHÍNH: update lại arrow
+    // 🔥 UPDATE ARROW SAU KHI ENEMY SẴN SÀNG
     if (QuestManager.Instance != null)
     {
         QuestManager.Instance.UpdateArrow();

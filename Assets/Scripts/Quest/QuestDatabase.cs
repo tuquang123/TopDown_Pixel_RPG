@@ -29,6 +29,8 @@ public class QuestObjective
     public string objectiveName;
     public ObjectiveType type;
     public int requiredAmount;
+    [SerializeField] public string targetID;
+    public string TargetID => targetID;
 }
 
 [System.Serializable]

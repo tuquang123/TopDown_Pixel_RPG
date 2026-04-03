@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: armorsuper5
   itemName: leather armor
   icon: {fileID: 3972871922154001853, guid: 303412e2e31364d52aa2381383ffc211, type: 3}
+  weaponCategory: 0
   itemType: 6
   tier: 2
-  price: 236
+  price: 401
   description: The armor was made from ordinary materials by a craftsman in the village
   attack:
-    flat: 24
+    flat: 56
     percent: 0
   defense:
-    flat: 14
+    flat: 5
     percent: 0
   health:
-    flat: 1148
+    flat: 778
     percent: 0
   mana:
-    flat: 99
+    flat: 253
     percent: 0
   critChance:
-    flat: 3
+    flat: 28
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 6
+    flat: 4
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 8522194497926649313, guid: 303412e2e31364d52aa2381383ffc211, type: 3}
   iconRight: {fileID: 5530570116592791311, guid: 303412e2e31364d52aa2381383ffc211, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 121
+  baseUpgradeCost: 370
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

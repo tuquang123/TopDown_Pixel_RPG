@@ -15,12 +15,13 @@ MonoBehaviour:
   itemID: sword a
   itemName: sword common
   icon: {fileID: 21300000, guid: f9cdd1844b02d4c81989b265d121a78a, type: 3}
+  weaponCategory: 0
   itemType: 0
   tier: 2
-  price: 189
+  price: 196
   description: long-range sword
   attack:
-    flat: 82
+    flat: 98
     percent: 0
   defense:
     flat: 0
@@ -32,13 +33,13 @@ MonoBehaviour:
     flat: 0
     percent: 0
   critChance:
-    flat: 18
+    flat: 16
     percent: 0
   attackSpeed:
-    flat: 0.6
+    flat: 0.7
     percent: 0
   lifeSteal:
-    flat: 13
+    flat: 1
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 0}
   iconRight: {fileID: 0}
   horseData: {fileID: 0}
-  baseUpgradeCost: 228
+  baseUpgradeCost: 248
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

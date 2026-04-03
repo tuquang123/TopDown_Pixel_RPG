@@ -15,30 +15,31 @@ MonoBehaviour:
   itemID: armor6
   itemName: Emerald Green Armor
   icon: {fileID: 8352707068772722909, guid: 7e3224cd6fc3145d691ec45fdc8265fb, type: 3}
+  weaponCategory: 0
   itemType: 1
   tier: 2
-  price: 336
+  price: 335
   description: Lightweight and flexible
   attack:
-    flat: 58
+    flat: 100
     percent: 0
   defense:
-    flat: 16
+    flat: 22
     percent: 0
   health:
-    flat: 974
+    flat: 906
     percent: 0
   mana:
-    flat: 424
+    flat: 377
     percent: 0
   critChance:
-    flat: 18
+    flat: 2
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 7
+    flat: 1
     percent: 0
   speed:
     flat: 0
@@ -47,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: 3994166490129663576, guid: 7e3224cd6fc3145d691ec45fdc8265fb, type: 3}
   iconRight: {fileID: 5580356496309759987, guid: 7e3224cd6fc3145d691ec45fdc8265fb, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 345
+  baseUpgradeCost: 135
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0
