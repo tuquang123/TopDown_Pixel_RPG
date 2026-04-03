@@ -116,7 +116,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
 
     private void OnEnable() => GameEvents.OnUpdateAnimation.RegisterListener(this);
     private void OnDisable() => GameEvents.OnUpdateAnimation.UnregisterListener(this);
-    
+    public event Action<int> OnHealed;
     // Trong PlayerStats:
     private Dictionary<SkillID, StatModifier> activeSkillModifiers = new();
 
@@ -183,8 +183,21 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     
     public void Heal(int amount)
     {
+        if (isDead) return;
+
+        int before = currentHealth;
+
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, (int)maxHealth.Value);
-        Debug.Log($"Hồi {amount} HP, HP hiện tại: {currentHealth}");
+
+        int actualHealed = currentHealth - before;
+
+        if (actualHealed > 0)
+        {
+            Debug.Log($"Hồi {actualHealed} HP, HP hiện tại: {currentHealth}");
+
+            OnHealed?.Invoke(actualHealed); // 🔥 bắn event
+        }
+
         OnHealthChanged?.Invoke();
     }
     

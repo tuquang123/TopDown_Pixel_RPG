@@ -13,129 +13,162 @@ MonoBehaviour:
   m_Name: QuestDatabase
   m_EditorClassIdentifier: 
   allQuests:
-  - questID: NV1
-    questName: Goblin
-    description: destroy 5 goblin
+  - questID: NV0
+    questName: Talk to Elder
+    description: "N\xF3i chuy\u1EC7n v\u1EDBi tr\u01B0\u1EDFng l\xE0ng \u0111\u1EC3
+      b\u1EAFt \u0111\u1EA7u h\xE0nh tr\xECnh"
     objectives:
-    - objectiveName: Goblin
-      type: 0
+    - objectiveName: NPC
+      type: 2
       requiredAmount: 1
-      targetID: Goblin
+      targetID: NPC_0
     reward:
-      experienceReward: 100
-      goldReward: 15
+      experienceReward: 20
+      goldReward: 50
       gemReward: 0
       itemIDs: []
     turnInNPCName: NPC_0
-  - questID: NV2
-    questName: Barrier
-    description: destroy 10 Barrier
+  - questID: NV1
+    questName: Chop Tree
+    description: "Ch\u1EB7t 3 c\xE2y \u0111\u1EC3 thu th\u1EADp t\xE0i nguy\xEAn"
     objectives:
-    - objectiveName: Barrier
+    - objectiveName: Tree
       type: 0
-      requiredAmount: 1
-      targetID: Barrier
+      requiredAmount: 3
+      targetID: Tree
     reward:
-      experienceReward: 100
+      experienceReward: 30
       goldReward: 20
       gemReward: 0
       itemIDs: []
     turnInNPCName: NPC_0
+  - questID: NV2
+    questName: Kill Goblin
+    description: "Ti\xEAu di\u1EC7t Goblin \u0111ang qu\u1EA5y ph\xE1 khu r\u1EEBng"
+    objectives:
+    - objectiveName: Goblin
+      type: 0
+      requiredAmount: 5
+      targetID: Goblin
+    reward:
+      experienceReward: 50
+      goldReward: 30
+      gemReward: 0
+      itemIDs: []
+    turnInNPCName: NPC_0
   - questID: NV3
-    questName: gold 1000
-    description: earn 1000 gold
+    questName: Heal at Arena
+    description: "H\u1ED3i m\xE1u t\u1EA1i Healing Arena"
     objectives:
-    - objectiveName: Gold
-      type: 1
-      requiredAmount: 5
-      targetID: 
-    reward:
-      experienceReward: 100
-      goldReward: 30
-      gemReward: 0
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV4
-    questName: Gem
-    description: earn 10 gem
-    objectives:
-    - objectiveName: Gem
-      type: 1
-      requiredAmount: 10
-      targetID: 
-    reward:
-      experienceReward: 200
-      goldReward: 50
-      gemReward: 5
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV5
-    questName: Gravok
-    description: destroy 5 Gravok
-    objectives:
-    - objectiveName: Gravok
-      type: 0
-      requiredAmount: 5
-      targetID: 
-    reward:
-      experienceReward: 300
-      goldReward: 50
-      gemReward: 2
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV6
-    questName: Ravageron
-    description: destroy 5 Ravageron
-    objectives:
-    - objectiveName: Ravageron
-      type: 0
-      requiredAmount: 2
-      targetID: 
-    reward:
-      experienceReward: 200
-      goldReward: 30
-      gemReward: 0
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV7
-    questName: Fangrider
-    description: destroy 5 Fangrider
-    objectives:
-    - objectiveName: Fangrider
-      type: 0
+    - objectiveName: Heal
+      type: 4
       requiredAmount: 1
       targetID: 
     reward:
-      experienceReward: 500
-      goldReward: 70
-      gemReward: 0
+      experienceReward: 30
+      goldReward: 10
+      gemReward: 1
       itemIDs: []
     turnInNPCName: NPC_0
-  - questID: NV8
-    questName: Silentmaw
-    description: destroy 5 Silentmaw
+  - questID: NV4
+    questName: Kill Silentmaw
+    description: "Ti\xEAu di\u1EC7t Silentmaw \u2013 qu\xE1i \u1EA9n th\xE2n nguy
+      hi\u1EC3m"
     objectives:
     - objectiveName: Silentmaw
       type: 0
       requiredAmount: 3
+      targetID: Silentmaw
+    reward:
+      experienceReward: 70
+      goldReward: 50
+      gemReward: 2
+      itemIDs:
+      - 
+    turnInNPCName: NPC_0
+  - questID: NV5
+    questName: Use Potion
+    description: "S\u1EED d\u1EE5ng potion \u0111\u1EC3 h\u1ED3i m\xE1u"
+    objectives:
+    - objectiveName: 
+      type: 4
+      requiredAmount: 1
       targetID: 
     reward:
-      experienceReward: 400
-      goldReward: 50
+      experienceReward: 30
+      goldReward: 20
       gemReward: 0
       itemIDs: []
     turnInNPCName: NPC_0
-  - questID: NV9
-    questName: Skeleton
-    description: destroy 5 Skeleton
+  - questID: NV6
+    questName: Level Up
+    description: "L\xEAn c\u1EA5p 5 m\xE0 kh\xF4ng ch\u1EBFt"
     objectives:
-    - objectiveName: Skeleton
-      type: 0
-      requiredAmount: 3
+    - objectiveName: 
+      type: 4
+      requiredAmount: 1
       targetID: 
     reward:
-      experienceReward: 400
+      experienceReward: 50
       goldReward: 50
+      gemReward: 1
+      itemIDs: []
+    turnInNPCName: NPC_0
+  - questID: NV7
+    questName: Collect Gold
+    description: "Thu th\u1EADp 200 v\xE0ng t\u1EEB qu\xE1i ho\u1EB7c nhi\u1EC7m
+      v\u1EE5"
+    objectives:
+    - objectiveName: 
+      type: 1
+      requiredAmount: 100
+      targetID: 
+    reward:
+      experienceReward: 50
+      goldReward: 30
+      gemReward: 0
+      itemIDs: []
+    turnInNPCName: NPC_0
+  - questID: NV8
+    questName: Buy Item
+    description: "Mua 1 v\u1EADt ph\u1EA9m trong shop"
+    objectives:
+    - objectiveName: 
+      type: 1
+      requiredAmount: 1
+      targetID: NPC_Shop
+    reward:
+      experienceReward: 50
+      goldReward: 50
+      gemReward: 0
+      itemIDs:
+      - 
+    turnInNPCName: NPC_0
+  - questID: NV9
+    questName: Equip Item
+    description: "Trang b\u1ECB v\u1EADt ph\u1EA9m v\u1EEBa mua"
+    objectives:
+    - objectiveName: 
+      type: 5
+      requiredAmount: 1
+      targetID: 
+    reward:
+      experienceReward: 10
+      goldReward: 20
+      gemReward: 0
+      itemIDs: []
+    turnInNPCName: NPC_0
+  - questID: NV10
+    questName: Upgrade Item +5
+    description: "N\xE2ng c\u1EA5p 1 trang b\u1ECB l\xEAn +5"
+    objectives:
+    - objectiveName: 
+      type: 1
+      requiredAmount: 0
+      targetID: 
+    reward:
+      experienceReward: 20
+      goldReward: 30
       gemReward: 0
       itemIDs: []
     turnInNPCName: NPC_0

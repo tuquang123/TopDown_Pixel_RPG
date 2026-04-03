@@ -412,7 +412,7 @@ public class QuestManager : Singleton<QuestManager>
     {
        
         string possibleName1 = quest.questName;                  // ví dụ: "Tìm kho báu"
-        string possibleName2 = "NPC_" + quest.questID;           // ví dụ: "NPC_Q001"
+        string possibleName2 = "NPC_0" + quest.questID;           // ví dụ: "NPC_Q001"
         string possibleName3 = quest.questName.Replace(" ", ""); // "TimKhoBau"
 
         var candidates = new[] { possibleName1, possibleName2, possibleName3 };
@@ -505,101 +505,7 @@ public class QuestManager : Singleton<QuestManager>
         Debug.LogWarning("[QuestManager] Cannot find Player position for Quest Arrow!");
         return Vector3.zero;
     }
- private Transform FindQuestObjectiveTarget(QuestProgress qp)
-{
-    if (qp == null || qp.quest == null)
-        return null;
 
-    Vector3 playerPos = GetPlayerPosition();
-    if (playerPos == Vector3.zero)
-        return null;
-
-    Transform bestTarget = null;
-    float minDist = Mathf.Infinity;
-
-    foreach (var obj in qp.quest.objectives)
-    {
-        if (obj.type != ObjectiveType.KillEnemies)
-            continue;
-
-        int currentAmount = qp.progress.ContainsKey(obj.objectiveName) ? qp.progress[obj.objectiveName] : 0;
-        if (currentAmount >= obj.requiredAmount)
-            continue;
-
-        string targetID = obj.targetID;
-        if (string.IsNullOrEmpty(targetID))
-            continue;
-
-        // ================= ENEMY =================
-        if (EnemyTracker.Instance != null)
-        {
-            var enemies = EnemyTracker.Instance.GetAllEnemies();
-            foreach (var e in enemies)
-            {
-                if (e == null || e.IsDead || !e.gameObject.activeInHierarchy)
-                    continue;
-
-                if (!string.Equals(e.KillID, targetID, System.StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                float dist = Vector3.Distance(playerPos, e.transform.position);
-                if (dist < minDist)
-                {
-                    minDist = dist;
-                    bestTarget = e.transform;
-                }
-            }
-        }
-
-        // ================= DESTRUCTIBLE =================
-        if (DestructibleTracker.Instance != null)
-        {
-            var objs = DestructibleTracker.Instance.GetAll();
-
-            foreach (var d in objs)
-            {
-                if (d == null || !d.gameObject.activeInHierarchy)
-                    continue;
-
-                if (!string.Equals(d.ObjectiveID, targetID, System.StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                float dist = Vector3.Distance(playerPos, d.transform.position);
-                if (dist < minDist)
-                {
-                    minDist = dist;
-                    bestTarget = d.transform;
-                }
-            }
-        }
-    }
-
-    // ===== fallback qua map =====
-    if (bestTarget == null)
-    {
-        LevelTrigger[] triggers = FindObjectsOfType<LevelTrigger>(true);
-
-        float closestDist = Mathf.Infinity;
-
-        foreach (var t in triggers)
-        {
-            if (t == null || !t.gameObject.activeInHierarchy)
-                continue;
-
-            if (t.Type != LevelTrigger.TriggerType.Next)
-                continue;
-
-            float dist = Vector3.Distance(playerPos, t.transform.position);
-            if (dist < closestDist)
-            {
-                closestDist = dist;
-                bestTarget = t.transform;
-            }
-        }
-    }
-
-    return bestTarget;
-}
     void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -669,11 +575,132 @@ public class QuestManager : Singleton<QuestManager>
 
         return best;
     }
+  
+    public int turnInLevelIndex;
+    public void ForceClearArrow()
+    {
+        if (questArrow != null)
+            questArrow.SetTarget(null);
+    }
+    private Transform FindQuestObjectiveTarget(QuestProgress qp)
+    {
+        if (qp == null || qp.quest == null)
+            return null;
+
+        Vector3 playerPos = GetPlayerPosition();
+        if (playerPos == Vector3.zero)
+            return null;
+
+        Transform bestTarget = null;
+        float minDist = Mathf.Infinity;
+
+        foreach (var obj in qp.quest.objectives)
+        {
+            int currentAmount = qp.progress.ContainsKey(obj.objectiveName)
+                ? qp.progress[obj.objectiveName]
+                : 0;
+
+            if (currentAmount >= obj.requiredAmount)
+                continue;
+
+            string targetID = obj.targetID;
+            if (string.IsNullOrEmpty(targetID))
+                continue;
+
+            Transform target = null;
+
+            switch (obj.type)
+            {
+                case ObjectiveType.TalkToNPC:
+                    target = FindNPCByName(targetID);
+                    break;
+
+                case ObjectiveType.KillEnemies:
+                    target = FindClosestEnemyByKillID(targetID);
+                    break;
+            }
+
+            if (target != null)
+            {
+                float dist = Vector3.Distance(playerPos, target.position);
+
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    bestTarget = target;
+                }
+            }
+        }
+
+        // ===== fallback → chỉ EXIT =====
+        if (bestTarget == null)
+        {
+            bestTarget = FindLevelExit(goNext: true);
+        }
+
+        return bestTarget;
+    }
+    private Transform FindClosestEnemyByKillID(string killID)
+    {
+        if (EnemyTracker.Instance == null) return null;
+
+        Vector3 playerPos = GetPlayerPosition();
+
+        Transform closest = null;
+        float minDist = Mathf.Infinity;
+
+        foreach (var e in EnemyTracker.Instance.GetAllEnemies())
+        {
+            if (e == null || e.IsDead || !e.gameObject.activeInHierarchy)
+                continue;
+
+            if (!string.Equals(e.KillID, killID, System.StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            float dist = Vector3.Distance(playerPos, e.transform.position);
+
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closest = e.transform;
+            }
+        }
+
+        return closest;
+    }
+    private Transform FindClosestDestructible(string id)
+    {
+        if (DestructibleTracker.Instance == null) return null;
+
+        Vector3 playerPos = GetPlayerPosition();
+
+        Transform closest = null;
+        float minDist = Mathf.Infinity;
+
+        foreach (var d in DestructibleTracker.Instance.GetAll())
+        {
+            if (d == null || !d.gameObject.activeInHierarchy)
+                continue;
+
+            if (!string.Equals(d.ObjectiveID, id, System.StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            float dist = Vector3.Distance(playerPos, d.transform.position);
+
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closest = d.transform;
+            }
+        }
+
+        return closest;
+    }
     private Transform FindTurnInTarget(QuestProgress qp)
     {
         if (qp == null || qp.quest == null) return null;
 
-        // ===== 1. Tìm NPC trong scene =====
+        // 1. NPC trong scene
         if (!string.IsNullOrEmpty(qp.quest.turnInNPCName))
         {
             Transform npc = FindNPCByName(qp.quest.turnInNPCName);
@@ -681,18 +708,7 @@ public class QuestManager : Singleton<QuestManager>
                 return npc;
         }
 
-        // ===== 2. Không có NPC → tìm EXIT =====
-        Debug.Log("[Quest] NPC không có trong map → tìm đường");
-
-        // 🔥 tạm logic: NPC nằm ở map trước
-        Transform exit = FindLevelExit(goNext: false);
-
-        return exit;
-    }
-    public int turnInLevelIndex;
-    public void ForceClearArrow()
-    {
-        if (questArrow != null)
-            questArrow.SetTarget(null);
+        // 2. Không có → về map trước
+        return FindLevelExit(goNext: false);
     }
 }

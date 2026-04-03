@@ -221,7 +221,7 @@ public class DestructibleObject : MonoBehaviour
         }
 
         healthUI?.HideUI();
-        QuestManager.Instance.ReportProgress("NV2", ObjectiveID, 1);
+        QuestManager.Instance.ReportProgress("NV1", ObjectiveID, 1);
 
         gameObject.SetActive(false);
 

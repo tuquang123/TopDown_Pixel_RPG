@@ -5,19 +5,29 @@ using UnityEngine;
 public class HealingZone : MonoBehaviour
 {
     [Header("Heal Config (percent of max stats)")]
-    [Range(0f, 1f)] public float healHealthPercent = 0.05f; // 5% max HP mỗi tick
-    [Range(0f, 1f)] public float healManaPercent = 0.03f;   // 3% max MP mỗi tick
-    public float healInterval = 1f;                         // thời gian giữa mỗi lần hồi (giây)
+    [Range(0f, 1f)] public float healHealthPercent = 0.05f;
+    [Range(0f, 1f)] public float healManaPercent = 0.03f;
+    public float healInterval = 1f;
+
+    [Header("Zone Config")]
+    [SerializeField] private bool isHealingArena = true; // ✅ check quest zone
 
     private bool playerInside = false;
     private Coroutine healRoutine;
+    private PlayerStats currentPlayer;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
             playerInside = true;
-            healRoutine = StartCoroutine(HealPlayer(other.GetComponent<PlayerStats>()));
+            currentPlayer = other.GetComponent<PlayerStats>();
+
+            // ✅ đăng ký event
+            if (currentPlayer != null)
+                currentPlayer.OnHealed += OnPlayerHealed;
+
+            healRoutine = StartCoroutine(HealPlayer(currentPlayer));
         }
     }
 
@@ -26,7 +36,15 @@ public class HealingZone : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = false;
-            if (healRoutine != null) StopCoroutine(healRoutine);
+
+            if (healRoutine != null)
+                StopCoroutine(healRoutine);
+
+            // ✅ bỏ đăng ký event
+            if (currentPlayer != null)
+                currentPlayer.OnHealed -= OnPlayerHealed;
+
+            currentPlayer = null;
         }
     }
 
@@ -34,39 +52,51 @@ public class HealingZone : MonoBehaviour
     {
         while (playerInside && playerStats != null && !playerStats.isDead)
         {
-            // --- Heal máu theo % ---
-            int healHP = Mathf.RoundToInt(playerStats.maxHealth.Value  * healHealthPercent);
-            int beforeHP = (int)playerStats.GetCurrentHealth();
-            playerStats.Heal(healHP);
-            int afterHP = (int)playerStats.GetCurrentHealth();
+            // --- Heal HP ---
+            int healHP = Mathf.RoundToInt(playerStats.maxHealth.Value * healHealthPercent);
 
-            int totalHealed = afterHP - beforeHP;
+            float beforeHP = playerStats.GetCurrentHealth();
+            playerStats.Heal(healHP);
+            float afterHP = playerStats.GetCurrentHealth();
+
+            int totalHealed = Mathf.RoundToInt(afterHP - beforeHP);
+
             if (totalHealed > 0)
             {
                 FloatingTextSpawner.Instance.SpawnText(
                     $"+{totalHealed}",
                     playerStats.transform.position + Vector3.up,
-                    new Color(0.3f, 1f, 0.3f) // xanh lá
+                    new Color(0.3f, 1f, 0.3f)
                 );
             }
 
-            // --- Heal mana theo % ---
-            int healMP = Mathf.RoundToInt(playerStats.maxMana.Value  * healManaPercent);
+            // --- Heal MP ---
+            int healMP = Mathf.RoundToInt(playerStats.maxMana.Value * healManaPercent);
+
             int beforeMP = playerStats.currentMana;
             playerStats.RestoreMana(healMP);
             int afterMP = playerStats.currentMana;
 
-            int totalManaRestored = afterMP - beforeMP;
-            if (totalManaRestored > 0)
+            int totalMana = afterMP - beforeMP;
+
+            if (totalMana > 0)
             {
                 FloatingTextSpawner.Instance.SpawnText(
-                    $"+{totalManaRestored} MP",
+                    $"+{totalMana} MP",
                     playerStats.transform.position + Vector3.up * 1.2f,
-                    new Color(0.3f, 0.6f, 1f) // xanh dương
+                    new Color(0.3f, 0.6f, 1f)
                 );
             }
 
             yield return new WaitForSeconds(healInterval);
         }
+    }
+
+    // 🔥 Hook quest ở đây (clean nhất)
+    private void OnPlayerHealed(int amount)
+    {
+        if (!isHealingArena) return;
+
+        QuestManager.Instance.ReportProgress("NV3", "Heal", amount);
     }
 }
