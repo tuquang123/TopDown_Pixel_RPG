@@ -156,9 +156,9 @@ MonoBehaviour:
   enemyLevel: 1
   maxHealth: 10000
   attackDamage: 100
-  attackRange: 1.52
+  attackRange: 1.5
   detectionRange: 20
-  attackCooldown: 1
+  attackCooldown: 2
   skipHurtAnimation: 0
   moveSpeed: 2
   knockForce: 3
@@ -166,13 +166,27 @@ MonoBehaviour:
   damagedStunTime: 0
   bloodVFXOffset: {x: 0, y: 0.5, z: 0}
   timeDieDelay: 0.65
-  isHoldingSpear: 0
-  isBoss: 0
+  rangedHitThreshold: 3
+  rangedHitWindow: 2
+  requireHitToAggro: 1
+  alwaysShowHP: 0
+  isBoss: 1
   goldRange: {x: 1, y: 10}
   dropItems: []
+  isHoldingSpear: 0
+  infoYOffset: 1.8
+  dropRate: 0.1
+  enablePatrol: 0
+  patrolRadius: 3
+  patrolWaitTime: 2
+  exp: 3
+  selectionCircle: {fileID: 1224943919409809662, guid: e6a16324c34ddd944b3bb6d996ead215, type: 3}
+  aggroIcon: {fileID: 8228917635692005565, guid: 6cfc27802a4514a4bb9e49dbf4c20487, type: 3}
+  aggroLoseTime: 5
+  killObjectiveID: Boss
   bossHealthUI: {fileID: 0}
-  minionPrefab: {fileID: 0}
-  bulletPrefab: {fileID: 0}
+  minionPrefab: {fileID: 2970206300379713479, guid: a69260f2b7402d149a15e280862de3b1, type: 3}
+  bulletPrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9, type: 3}
   dashSpeed: 10
   dashDuration: 0.3
   minionCooldown: 10
@@ -322,7 +336,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 25
   m_Sprite: {fileID: 21300000, guid: 0cf1750b38c9e854389b7b71d871d7ce, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
