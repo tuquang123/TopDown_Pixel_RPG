@@ -19,6 +19,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
 
     [Header("Combat")]
     [SerializeField] private bool allowAutoAttack = true;
+    [SerializeField] private bool enableManualInput = false;
 
     protected Rigidbody2D rb;
     protected Animator anim;
@@ -67,7 +68,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
         if (stats == null || stats.isDead)
             return;
 
-        moveInput = GetMoveInput();
+        moveInput = enableManualInput ? GetMoveInput() : Vector2.zero;
 
         if (IsAttacking)
         {
