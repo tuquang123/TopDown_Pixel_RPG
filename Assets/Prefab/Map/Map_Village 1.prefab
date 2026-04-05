@@ -8494,7 +8494,7 @@ Transform:
   m_GameObject: {fileID: 3503501156527346610}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -65.5, y: -9.4, z: 0}
+  m_LocalPosition: {x: -55.3, y: -9.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8540,7 +8540,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5714327157288362222
 Transform:
   m_ObjectHideFlags: 0
@@ -8974,7 +8974,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2387416216960109328}
   m_Layer: 0
-  m_Name: Map_Village
+  m_Name: Map_Village 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8993,7 +8993,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5648311337940645779}
   - {fileID: 2414716722849171104}
   - {fileID: 5881076897839953949}
   - {fileID: 6759833476675584351}
@@ -10592,7 +10591,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5881076897839953949
 Transform:
   m_ObjectHideFlags: 0
@@ -10602,7 +10601,7 @@ Transform:
   m_GameObject: {fileID: 8345336726353943972}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16.199999, y: -13.6, z: 0}
+  m_LocalPosition: {x: 26.4, y: -13.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10610,84 +10609,6 @@ Transform:
   - {fileID: 5778611552079446121}
   m_Father: {fileID: 2387416216960109328}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &8680733777726873644
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5648311337940645779}
-  - component: {fileID: 7442592018345172615}
-  - component: {fileID: 5588089991574481904}
-  m_Layer: 0
-  m_Name: WaveManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5648311337940645779
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8680733777726873644}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 9.791034, y: 1.4680097, z: -0.23950417}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2387416216960109328}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7442592018345172615
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8680733777726873644}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e725ca2d46347fd4d93e59c9f38d52e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  enemyLevelDatabase: {fileID: 11400000, guid: 772ee1512c9cae04c94b3f8f8b705d05, type: 2}
-  stageManager: {fileID: 5588089991574481904}
-  enemyPrefabs:
-  - {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
-  bossPrefab: {fileID: 5987872608596408159, guid: ef6a5168382f276418d774279dcf143b, type: 3}
-  startWave: 1
-  enemiesBaseCount: 4
-  enemiesPerWave: 2
-  baseSpawnInterval: 0.8
-  spawnIntervalDecayPerWave: 0.02
-  minSpawnInterval: 0.15
-  bossWaveFrequency: 5
-  spawnRadiusMin: 6
-  spawnRadiusMax: 10
---- !u!114 &5588089991574481904
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8680733777726873644}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 774b49a8d76173049b1d070c57145c55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentStage: 1
-  healthScalePerStage: 0.2
-  damageScalePerStage: 0.15
-  moveSpeedScalePerStage: 0.03
-  attackCooldownReductionPerStage: 0.01
-  minAttackCooldown: 0.2
 --- !u!1 &8816660978054560725
 GameObject:
   m_ObjectHideFlags: 0
@@ -24094,7 +24015,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1161214552666465198, guid: a1a29b40732733146ae54b7cd0e07ce7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.396612
+      value: 15.596613
       objectReference: {fileID: 0}
     - target: {fileID: 1161214552666465198, guid: a1a29b40732733146ae54b7cd0e07ce7, type: 3}
       propertyPath: m_LocalPosition.y
@@ -24788,10 +24709,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: house_04
       objectReference: {fileID: 0}
-    - target: {fileID: 5165711096306083629, guid: 7cb043d01f186c44f9256ec53d954de5, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6562747393136815597, guid: 7cb043d01f186c44f9256ec53d954de5, type: 3}
       propertyPath: m_SortingOrder
       value: 10
@@ -25010,7 +24927,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1224654372327432921, guid: 9030f8c689d005b43b770e5767dc267d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.0000009536743
+      value: 10.2
       objectReference: {fileID: 0}
     - target: {fileID: 1224654372327432921, guid: 9030f8c689d005b43b770e5767dc267d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -25059,10 +24976,6 @@ PrefabInstance:
     - target: {fileID: 2384746708753092779, guid: 9030f8c689d005b43b770e5767dc267d, type: 3}
       propertyPath: m_Name
       value: HpZone
-      objectReference: {fileID: 0}
-    - target: {fileID: 2384746708753092779, guid: 9030f8c689d005b43b770e5767dc267d, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5455014867939397813, guid: 9030f8c689d005b43b770e5767dc267d, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -25951,35 +25864,31 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1719216281154693861, guid: b60fe35c131f8ac4f91137659c32a385, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1719216281154693861, guid: b60fe35c131f8ac4f91137659c32a385, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1719216281154693861, guid: b60fe35c131f8ac4f91137659c32a385, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2564795742827111348, guid: b60fe35c131f8ac4f91137659c32a385, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2564795742827111348, guid: b60fe35c131f8ac4f91137659c32a385, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6474832937962599709, guid: b60fe35c131f8ac4f91137659c32a385, type: 3}
       propertyPath: m_Name
       value: Telepos
       objectReference: {fileID: 0}
-    - target: {fileID: 6474832937962599709, guid: b60fe35c131f8ac4f91137659c32a385, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7828881137854636716, guid: b60fe35c131f8ac4f91137659c32a385, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 9.76528
+      value: 19.96528
       objectReference: {fileID: 0}
     - target: {fileID: 7828881137854636716, guid: b60fe35c131f8ac4f91137659c32a385, type: 3}
       propertyPath: m_LocalPosition.y
@@ -26495,10 +26404,6 @@ PrefabInstance:
     - target: {fileID: 5165711096306083629, guid: 4495c1bac17d6d64c8091c8acc10ac45, type: 3}
       propertyPath: m_Name
       value: house_01
-      objectReference: {fileID: 0}
-    - target: {fileID: 5165711096306083629, guid: 4495c1bac17d6d64c8091c8acc10ac45, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6562747393136815597, guid: 4495c1bac17d6d64c8091c8acc10ac45, type: 3}
       propertyPath: m_SortingOrder
