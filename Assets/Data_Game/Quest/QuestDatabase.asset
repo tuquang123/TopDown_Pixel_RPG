@@ -13,35 +13,6 @@ MonoBehaviour:
   m_Name: QuestDatabase
   m_EditorClassIdentifier: 
   allQuests:
-  - questID: NV0
-    questName: Talk to Elder
-    description: "N\xF3i chuy\u1EC7n v\u1EDBi tr\u01B0\u1EDFng l\xE0ng \u0111\u1EC3
-      b\u1EAFt \u0111\u1EA7u h\xE0nh tr\xECnh"
-    objectives:
-    - objectiveName: NPC
-      type: 2
-      requiredAmount: 1
-      targetID: NPC_0
-    reward:
-      experienceReward: 20
-      goldReward: 50
-      gemReward: 0
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV1
-    questName: Chop Tree
-    description: "Ch\u1EB7t 3 c\xE2y \u0111\u1EC3 thu th\u1EADp t\xE0i nguy\xEAn"
-    objectives:
-    - objectiveName: Tree
-      type: 0
-      requiredAmount: 3
-      targetID: Tree
-    reward:
-      experienceReward: 50
-      goldReward: 20
-      gemReward: 0
-      itemIDs: []
-    turnInNPCName: NPC_0
   - questID: NV2
     questName: Kill Goblin
     description: "Ti\xEAu di\u1EC7t Goblin \u0111ang qu\u1EA5y ph\xE1 khu r\u1EEBng"
