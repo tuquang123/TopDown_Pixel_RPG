@@ -69,7 +69,7 @@ public partial class EnemyAI
 
     protected virtual void NotifySystemsBeforeDrop()
     {
-        OnDeath?.Invoke();
+        RaiseDeathEvent();
         QuestManager.Instance?.ReportProgress("NV2", enemyName, 1);
         QuestManager.Instance?.ReportProgress("NV4", enemyName, 1);
        

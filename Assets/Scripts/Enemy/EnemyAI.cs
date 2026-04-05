@@ -194,6 +194,11 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     public event Action OnDeath;
     [SerializeField] private string killObjectiveID;
     public string KillID => killObjectiveID;
+
+    protected void RaiseDeathEvent()
+    {
+        OnDeath?.Invoke();
+    }
     protected virtual void Awake()
     {
         EnsureCachedComponents();
