@@ -280,6 +280,7 @@ public class ItemDetailPanel : MonoBehaviour
     {
         PlayerStats.Instance?.Consume(currentItem.itemData);
         inventoryUI.Inventory.RemoveItem(currentItem);
+        QuestManager.Instance.ReportProgressByItemUse(currentItem.itemData.itemID);
         inventoryUI.UpdateInventoryUI();
         Hide();
     }

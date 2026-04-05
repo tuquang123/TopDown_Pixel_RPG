@@ -36,7 +36,7 @@ public class PlayerLevel : MonoBehaviour
         skillPoints = levelSystem.skillPoints;
         playerStats.skillPoints = skillPoints;
         playerStats.CalculatePower(); // đã tự Invoke event bên trong
-
+        QuestManager.Instance.ReportLevelUp(newLevel);
         Debug.Log($"Level {newLevel} → Stat scaled");
     }
 

@@ -370,12 +370,16 @@ public class QuestManager : Singleton<QuestManager>
 
         foreach (var npc in npcs)
         {
-            if (npc.nameObj == name)
-            {
+            if (string.Equals(npc.nameObj, name, System.StringComparison.OrdinalIgnoreCase))
                 return npc.transform;
-            }
         }
 
+        // 🔥 fallback: tìm theo GameObject
+        GameObject go = GameObject.Find(name);
+        if (go != null)
+            return go.transform;
+
+        Debug.LogWarning($"❌ Không tìm thấy NPC với ID: {name}");
         return null;
     }
 
@@ -710,5 +714,74 @@ public class QuestManager : Singleton<QuestManager>
 
         // 2. Không có → về map trước
         return FindLevelExit(goNext: false);
+    }
+    public void ReportProgressByItemUse(string itemID)
+    {
+        foreach (var qp in activeQuests)
+        {
+            if (qp.state != QuestState.InProgress) continue;
+
+            foreach (var obj in qp.quest.objectives)
+            {
+                if (obj.type != ObjectiveType.UseItem) continue;
+
+                // check đúng item
+                if (!string.Equals(obj.targetID, itemID, System.StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                // tăng progress
+                if (!qp.progress.ContainsKey(obj.objectiveName))
+                    qp.progress[obj.objectiveName] = 0;
+
+                qp.progress[obj.objectiveName]++;
+
+                Debug.Log($"[Quest] UseItem matched: {itemID}");
+
+                // check complete
+                if (qp.IsCompleted())
+                {
+                    if (!readyToTurnInQuests.Contains(qp))
+                    {
+                        readyToTurnInQuests.Add(qp);
+                        qp.state = QuestState.Completed;
+                        Debug.Log($"Quest {qp.quest.questName} completed!");
+                    }
+                }
+
+                questUI?.UpdateQuestProgress(qp, qp.state == QuestState.Completed);
+            }
+        }
+
+        OnQuestChanged?.Invoke();
+        UpdateArrow();
+    }
+    public void ReportLevelUp(int level)
+    {
+        foreach (var qp in activeQuests)
+        {
+            if (qp.state != QuestState.InProgress) continue;
+
+            foreach (var obj in qp.quest.objectives)
+            {
+                if (obj.type != ObjectiveType.LevelUp) continue;
+
+                qp.progress[obj.objectiveName] = level;
+
+                if (level >= obj.requiredAmount)
+                {
+                    if (!readyToTurnInQuests.Contains(qp))
+                    {
+                        readyToTurnInQuests.Add(qp);
+                        qp.state = QuestState.Completed;
+                        Debug.Log($"Quest {qp.quest.questName} completed!");
+                    }
+                }
+
+                questUI?.UpdateQuestProgress(qp, qp.state == QuestState.Completed);
+            }
+        }
+
+        OnQuestChanged?.Invoke();
+        UpdateArrow();
     }
 }

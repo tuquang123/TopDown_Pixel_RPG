@@ -136,38 +136,57 @@ public class NPCDialogueTrigger : MonoBehaviour
     }
     private void StartDialogue()
     {
-        if (currentQuest != null && currentQuest.state == QuestState.InProgress)
+        // 🔥 LẤY QUEST THẬT
+        QuestProgress realQuest = null;
+
+        if (currentQuest != null)
         {
-            foreach (var obj in currentQuest.quest.objectives)
+            realQuest = QuestManager.Instance.GetQuestProgressByID(currentQuest.quest.questID);
+        }
+
+        // ===== UPDATE TALK TO NPC =====
+        if (realQuest != null && realQuest.state == QuestState.InProgress)
+        {
+            foreach (var obj in realQuest.quest.objectives)
             {
-                if (obj.objectiveName == nameObj)
+                if (obj.type == ObjectiveType.TalkToNPC && obj.targetID == nameObj)
                 {
-                    QuestManager.Instance.ReportProgress(currentQuest.quest.questID, obj.objectiveName);
+                    QuestManager.Instance.ReportProgress(realQuest.quest.questID, obj.objectiveName);
                     break;
                 }
             }
         }
 
+        // ===== KHÔNG CÓ QUEST =====
         if (currentQuest == null)
         {
             DialogueController.Instance.StartDialogue(dialogueID, "NV0", QuestState.Rewarded);
             return;
         }
 
-        DialogueController.Instance.StartDialogue(dialogueID, currentQuest.quest.questID, currentQuest.state, () =>
-        {
-            if (currentQuest.state == QuestState.NotAccepted)
+        // ===== DIALOGUE =====
+        DialogueController.Instance.StartDialogue(
+            dialogueID,
+            currentQuest.quest.questID,
+            realQuest != null ? realQuest.state : QuestState.NotAccepted,
+            () =>
             {
-                QuestManager.Instance.StartQuest(currentQuest.quest);
-                currentQuest.state = QuestState.InProgress;
-                QuestManager.Instance.questUI?.UpdateQuestProgress(currentQuest);
-            }
-            else if (currentQuest.state == QuestState.Completed)
-            {
-                QuestManager.Instance.TurnInQuest(currentQuest);
-                UpdateCurrentQuest();
-            }
-        });
+                // ===== NHẬN QUEST =====
+                if (realQuest == null)
+                {
+                    QuestManager.Instance.StartQuest(currentQuest.quest);
+
+                    // 🔥 UPDATE LẠI QUEST
+                    UpdateCurrentQuest();
+                }
+
+                // ===== TRẢ QUEST =====
+                else if (realQuest.state == QuestState.Completed)
+                {
+                    QuestManager.Instance.TurnInQuest(realQuest);
+                    UpdateCurrentQuest();
+                }
+            });
     }
 
     public void SetTarget(GameObject npc, string dialogueID)

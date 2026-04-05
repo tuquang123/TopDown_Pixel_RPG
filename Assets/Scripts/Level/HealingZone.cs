@@ -23,9 +23,14 @@ public class HealingZone : MonoBehaviour
             playerInside = true;
             currentPlayer = other.GetComponent<PlayerStats>();
 
-            // ✅ đăng ký event
-            if (currentPlayer != null)
-                currentPlayer.OnHealed += OnPlayerHealed;
+            // ❌ BỎ cái này
+            // currentPlayer.OnHealed += OnPlayerHealed;
+
+            // ✅ HOÀN THÀNH QUEST NGAY LẬP TỨC
+            if (isHealingArena)
+            {
+                QuestManager.Instance.ReportProgress("NV3", "EnterZone", 1);
+            }
 
             healRoutine = StartCoroutine(HealPlayer(currentPlayer));
         }
@@ -42,8 +47,6 @@ public class HealingZone : MonoBehaviour
 
             // ✅ bỏ đăng ký event
             if (currentPlayer != null)
-                currentPlayer.OnHealed -= OnPlayerHealed;
-
             currentPlayer = null;
         }
     }
@@ -92,11 +95,5 @@ public class HealingZone : MonoBehaviour
         }
     }
 
-    // 🔥 Hook quest ở đây (clean nhất)
-    private void OnPlayerHealed(int amount)
-    {
-        if (!isHealingArena) return;
-
-        QuestManager.Instance.ReportProgress("NV3", "Heal", amount);
-    }
+   
 }

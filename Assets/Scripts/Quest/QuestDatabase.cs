@@ -49,6 +49,9 @@ public enum ObjectiveType
     TalkToNPC,
     ExploreArea,
     Custom,
-    DestroyObject
+    DestroyObject,
+    EnterZone,
+    UseItem,
+    LevelUp
 }
 
