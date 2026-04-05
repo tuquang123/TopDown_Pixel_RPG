@@ -1,4 +1,4 @@
-﻿// ================= QuestManager.cs =================
+// ================= QuestManager.cs =================
 
 using System.Collections;
 using System.Collections.Generic;
@@ -22,6 +22,12 @@ public class QuestManager : Singleton<QuestManager>
     public List<QuestProgress> activeQuests = new List<QuestProgress>();
     public List<QuestProgress> completedQuests = new List<QuestProgress>();
     public List<QuestProgress> readyToTurnInQuests = new List<QuestProgress>();
+
+    private void Start()
+    {
+        EnsureCurrentQuestAssigned();
+        RefreshMainQuestUI();
+    }
 
     // Start một quest
     public void StartQuest(Quest quest)
@@ -93,10 +99,13 @@ public class QuestManager : Singleton<QuestManager>
         completedQuests.Add(qp);
 
         qp.state = QuestState.Rewarded;
-        UpdateArrow();
         AwardQuestReward(qp);
+
+        EnsureCurrentQuestAssigned();
+        RefreshMainQuestUI();
         OnQuestChanged?.Invoke();
-        questUI?.Clear();
+        UpdateArrow();
+
         Debug.Log($"Quest Turned In: {qp.quest.questName}");
     }
 
@@ -243,21 +252,60 @@ public class QuestManager : Singleton<QuestManager>
             completedQuests.Add(qp);
         }
 
-        // ===== UPDATE UI CHỈ 1 QUEST =====
-        QuestProgress mainQuest = null;
+        EnsureCurrentQuestAssigned();
+        RefreshMainQuestUI();
+        UpdateArrow();
+    }
 
+    private QuestProgress GetMainQuestProgress()
+    {
         if (readyToTurnInQuests.Count > 0)
-            mainQuest = readyToTurnInQuests[0];
-        else if (activeQuests.Count > 0)
-            mainQuest = activeQuests[0];
+            return readyToTurnInQuests[0];
+
+        if (activeQuests.Count > 0)
+            return activeQuests[0];
+
+        return null;
+    }
+
+    public void RefreshMainQuestUI()
+    {
+        var mainQuest = GetMainQuestProgress();
 
         if (mainQuest != null)
             questUI?.UpdateQuestProgress(mainQuest, mainQuest.state == QuestState.Completed);
         else
             questUI?.Clear();
-
-        UpdateArrow();
     }
+
+    public void EnsureCurrentQuestAssigned()
+    {
+        if (questDatabase == null || questDatabase.allQuests == null)
+            return;
+
+        if (activeQuests.Count > 0 || readyToTurnInQuests.Count > 0)
+            return;
+
+        foreach (var quest in questDatabase.allQuests)
+        {
+            if (quest == null) continue;
+
+            bool isCompleted = completedQuests.Exists(qp => qp.quest.questID == quest.questID);
+            if (isCompleted) continue;
+
+            StartQuest(quest);
+            return;
+        }
+    }
+
+    public void ForceClaimCurrentQuest()
+    {
+        if (readyToTurnInQuests.Count == 0)
+            return;
+
+        TurnInQuest(readyToTurnInQuests[0]);
+    }
+
     public void ForceCompleteQuest(string questID, bool autoTurnIn = false)
     {
         var qp = activeQuests.Find(q => q.quest.questID == questID);

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -112,13 +112,6 @@ public class NPCDialogueTrigger : MonoBehaviour
         {
             var qp = QuestManager.Instance.GetQuestProgressByID(id);
 
-            if (qp == null)
-            {
-                var questSO = QuestManager.Instance.questDatabase.GetQuestByID(id);
-                if (questSO != null)
-                    qp = QuestManager.Instance.CreateQuestProgress(questSO);
-            }
-
             if (qp != null && qp.state != QuestState.Rewarded)
             {
                 currentQuest = qp;
@@ -171,21 +164,9 @@ public class NPCDialogueTrigger : MonoBehaviour
             realQuest != null ? realQuest.state : QuestState.NotAccepted,
             () =>
             {
-                // ===== NHẬN QUEST =====
-                if (realQuest == null)
-                {
-                    QuestManager.Instance.StartQuest(currentQuest.quest);
-
-                    // 🔥 UPDATE LẠI QUEST
-                    UpdateCurrentQuest();
-                }
-
-                // ===== TRẢ QUEST =====
-                else if (realQuest.state == QuestState.Completed)
-                {
-                    QuestManager.Instance.TurnInQuest(realQuest);
-                    UpdateCurrentQuest();
-                }
+                // Quest đã được auto nhận từ QuestManager.
+                // Nhận thưởng sẽ thực hiện bằng nút Claim trong Quest UI.
+                UpdateCurrentQuest();
             });
     }
 
