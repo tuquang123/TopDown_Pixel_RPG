@@ -45,6 +45,7 @@ public class PlayerMovement
         float distance = Vector2.Distance(playerPos, targetPos);
         float moveSpeed = owner.GetHeavyWeaponMoveSpeed();
         float currentAttackRange = owner.GetCurrentAttackRange();
+        float closeCombatAttackBuffer = 0.2f;
 
         if (owner.typeWeapon == WeaponCategory.Bow)
         {
@@ -81,6 +82,16 @@ public class PlayerMovement
                 owner.TryAttack();
             }
 
+            return;
+        }
+
+        // Melee: cho phép đánh khi đã gần nhau kể cả đang lệch chéo nhẹ.
+        if (distance <= currentAttackRange + closeCombatAttackBuffer)
+        {
+            Stop();
+            RotateCharacter(targetPos.x - playerPos.x);
+            onFacing?.Invoke();
+            owner.TryAttack();
             return;
         }
 

@@ -10,6 +10,17 @@ public partial class EnemyAI
 
         Vector2 enemyPos = transform.position;
         Vector2 targetPos = target.position;
+        float distance = Vector2.Distance(enemyPos, targetPos);
+        float closeCombatAttackBuffer = 0.2f;
+
+        // Cho phép quái đánh khi đã đủ gần dù vị trí đang lệch chéo nhẹ.
+        if (distance <= attackRange + closeCombatAttackBuffer)
+        {
+            StopMotion();
+            if (Time.time - lastAttackTime >= attackCooldown)
+                AttackTarget();
+            return;
+        }
 
         float yDiff = Mathf.Abs(enemyPos.y - targetPos.y);
         float xDiff = Mathf.Abs(enemyPos.x - targetPos.x);
@@ -61,7 +72,8 @@ public partial class EnemyAI
         if (isDead || target == null || !target.gameObject.activeInHierarchy)
             return;
 
-        if (Vector2.Distance(transform.position, target.position) > attackRange)
+        float closeCombatAttackBuffer = 0.2f;
+        if (Vector2.Distance(transform.position, target.position) > attackRange + closeCombatAttackBuffer)
             return;
 
         if (target.TryGetComponent(out IDamageable damageable))

@@ -222,6 +222,21 @@ public abstract class AllyBaseAI : MonoBehaviour
 
         Vector2 myPos = transform.position;
         Vector2 targetPos = target.position;
+        float distance = Vector2.Distance(myPos, targetPos);
+        float closeCombatAttackBuffer = 0.2f;
+
+        // Cho phép hero cận chiến đứng lệch chéo nhẹ nhưng vẫn được đánh.
+        if (distance <= attackRange + closeCombatAttackBuffer)
+        {
+            rb.linearVelocity = Vector2.zero;
+            anim?.SetBool(MoveBool, false);
+            RotateCharacter(targetPos.x - myPos.x);
+
+            float cooldown = Mathf.Max(attackCooldown, 1f / Mathf.Max(0.01f, stats.AttackSpeed));
+            if (Time.time - lastAttackTime >= cooldown)
+                AttackTarget();
+            return;
+        }
 
         float yDiff = Mathf.Abs(myPos.y - targetPos.y);
         float xDiff = Mathf.Abs(myPos.x - targetPos.x);
