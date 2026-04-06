@@ -351,6 +351,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1573593336005385581}
   lerpSpeed: 2.5
+  enable25DView: 0
+  tiltAngleX: 35
+  yawAngleY: 0
+  followHeight: 6
+  followDistance: 8
+  framingOffset: {x: 0, y: -1}
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -941,11 +947,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 1242
+      value: 503
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 1290.24
+      value: 381.12
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalScale.x
@@ -993,7 +999,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 461.26086
+      value: 136.25043
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1009,19 +1015,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 438.144
+      value: 129.422
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 438.144
+      value: 129.422
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 401.92798
+      value: 186.789
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 213.69598
+      value: 63.122986
       objectReference: {fileID: 0}
     - target: {fileID: 22491998, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchorMax.x
@@ -2040,7 +2046,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &399048942060011248
 GameObject:
   m_ObjectHideFlags: 0
@@ -2543,7 +2549,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5782081376991817607}
-  - {fileID: 7438675390136568317}
   m_Father: {fileID: 6151908766201854933}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3126,9 +3131,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toastCanvasGroup: {fileID: 2320599417014575562}
-  toastText: {fileID: 2005870741058788850}
   showDuration: 2
   fadeDuration: 0.3
+  spawnInterval: 0.08
+  riseDistance: 70
+  stackSpacing: 62
+  maxVisibleToasts: 5
 --- !u!225 &2320599417014575562
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3384,7 +3392,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4026,13 +4034,14 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 7438675390136568317}
   m_Father: {fileID: 589190607552119910}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -28.475182}
-  m_SizeDelta: {x: 0, y: 623.9327}
+  m_AnchoredPosition: {x: 0, y: -7.975}
+  m_SizeDelta: {x: 0, y: 236.709}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5793871575694525834
 MonoBehaviour:
@@ -4578,11 +4587,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 589190607552119910}
+  m_Father: {fileID: 5782081376991817607}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -0.0000076293945}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7536677122278659830 stripped
