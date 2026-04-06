@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2431658068420218563
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8878791515565055666}
+  - component: {fileID: 2776604855330744611}
+  - component: {fileID: 7386204597494986718}
+  m_Layer: 0
+  m_Name: WaveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8878791515565055666
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2431658068420218563}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 9.791034, y: 1.4680097, z: -0.23950417}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2776604855330744611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2431658068420218563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e725ca2d46347fd4d93e59c9f38d52e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  enemyLevelDatabase: {fileID: 11400000, guid: 772ee1512c9cae04c94b3f8f8b705d05, type: 2}
+  stageManager: {fileID: 7386204597494986718}
+  enemyPrefabs:
+  - {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
+  - {fileID: 2970206300379713479, guid: a69260f2b7402d149a15e280862de3b1, type: 3}
+  - {fileID: 479587598004540727, guid: 62b76e5ce91aae24183f45950012de95, type: 3}
+  - {fileID: 2226953740800684622, guid: a71482f615f20dc47a5c1bfb89b8aed0, type: 3}
+  bossPrefab: {fileID: 5987872608596408159, guid: ef6a5168382f276418d774279dcf143b, type: 3}
+  startWave: 1
+  enemiesBaseCount: 4
+  enemiesPerWave: 2
+  baseSpawnInterval: 0.8
+  spawnIntervalDecayPerWave: 0.02
+  minSpawnInterval: 0.15
+  bossWaveFrequency: 5
+  spawnRadiusMin: 6
+  spawnRadiusMax: 10
+  waveUiPrefab: {fileID: 910000003, guid: 601259764bf5469e95c22ab0d11c8557, type: 3}
+  waveUiRoot: {fileID: 0}
+--- !u!114 &7386204597494986718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2431658068420218563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 774b49a8d76173049b1d070c57145c55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentStage: 1
+  healthScalePerStage: 0.2
+  damageScalePerStage: 0.15
+  moveSpeedScalePerStage: 0.03
+  attackCooldownReductionPerStage: 0.01
+  minAttackCooldown: 0.2
