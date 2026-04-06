@@ -8,6 +8,12 @@ namespace Pattern
     {
         public Transform target;
         public float lerpSpeed = 5.0f;
+        [SerializeField] private bool enable25DView = false;
+        [SerializeField, Range(0f, 80f)] private float tiltAngleX = 35f;
+        [SerializeField, Range(-45f, 45f)] private float yawAngleY = 0f;
+        [SerializeField] private float followHeight = 6f;
+        [SerializeField] private float followDistance = 8f;
+        [SerializeField] private Vector2 framingOffset = new Vector2(0f, -1f);
 
         private Vector3 offset;
         private Vector3 targetPos;
@@ -19,6 +25,8 @@ namespace Pattern
         private Camera cam;
         private float defaultOrthographicSize;
         private Coroutine zoomCoroutine;
+        private Transform lastTarget;
+        private bool isOffsetInitialized;
 
 
         [Button("Test Camera Shake")]
@@ -61,14 +69,33 @@ namespace Pattern
         private void Start()
         {
             if (target == null) return;
-            offset = transform.position - target.position;
+            RebuildFollowOffset();
+            ApplyViewRotationImmediate();
+            lastTarget = target;
+            isOffsetInitialized = true;
         }
 
         private void LateUpdate()
         {
             if (target == null) return;
 
-            targetPos = target.position + offset;
+            if (!isOffsetInitialized || lastTarget != target)
+            {
+                RebuildFollowOffset();
+                lastTarget = target;
+                isOffsetInitialized = true;
+            }
+
+            if (enable25DView)
+            {
+                ApplyViewRotationImmediate();
+                Vector3 frame = new Vector3(framingOffset.x, framingOffset.y, 0f);
+                targetPos = target.position + frame + offset;
+            }
+            else
+            {
+                targetPos = target.position + offset;
+            }
 
             if (shakeTimer > 0)
             {
@@ -83,6 +110,39 @@ namespace Pattern
 
             transform.position = Vector3.Lerp(transform.position, targetPos + shakeOffset, lerpSpeed * Time.deltaTime);
         }
+
+        private void RebuildFollowOffset()
+        {
+            if (target == null)
+                return;
+
+            if (!enable25DView)
+            {
+                offset = transform.position - target.position;
+                return;
+            }
+
+            offset = new Vector3(0f, followHeight, -Mathf.Abs(followDistance));
+        }
+
+        private void ApplyViewRotationImmediate()
+        {
+            if (!enable25DView)
+                return;
+
+            transform.rotation = Quaternion.Euler(tiltAngleX, yawAngleY, 0f);
+        }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (!Application.isPlaying)
+                return;
+
+            RebuildFollowOffset();
+            ApplyViewRotationImmediate();
+        }
+#endif
 
         // 📸 Shake
         public void Shake(float duration, float magnitude)
