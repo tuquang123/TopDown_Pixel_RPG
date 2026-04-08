@@ -13,7 +13,8 @@ public enum PopupType
     ItemConfirm,
     Gacha,
     Map,
-    Hero
+    Hero,
+    LevelUpSkill,
 }
     
 [Serializable]

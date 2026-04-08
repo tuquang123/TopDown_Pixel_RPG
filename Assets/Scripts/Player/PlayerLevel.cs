@@ -6,7 +6,8 @@ public class PlayerLevel : MonoBehaviour
     public LevelSystem levelSystem = new LevelSystem();
     public PlayerStats playerStats; // tham chiếu stats
     public int skillPoints = 0;     // điểm kỹ năng sync với levelSystem
-
+    [Header("Level Up Skill Popup")]
+    public LevelUpSkillPopup levelUpSkillPopup;   // Kéo script LevelUpSkillPopup vào đây
     private void Awake()
     {
         if (levelSystem == null)
@@ -35,13 +36,22 @@ public class PlayerLevel : MonoBehaviour
     {
         skillPoints = levelSystem.skillPoints;
         playerStats.skillPoints = skillPoints;
-        playerStats.CalculatePower(); // đã tự Invoke event bên trong
+        playerStats.CalculatePower();
         QuestManager.Instance.ReportLevelUp(newLevel);
-        Debug.Log($"Level {newLevel} → Stat scaled");
+
+        Debug.Log($"Level Up → Level {newLevel}");
+
+        // === DÙNG UIMANAGER ĐỂ MỞ POPUP ===
+        if (UIManager.Instance != null)
+        {
+            var popup = UIManager.Instance.ShowPopupByType(PopupType.LevelUpSkill) as LevelUpSkillPopup;
+        
+            if (popup != null)
+            {
+                popup.ShowLevelUpPopup(newLevel);
+            }
+        }
     }
-
-
-
     private void GainExp(float amount)
     {
         levelSystem.AddExp(amount);

@@ -2743,6 +2743,10 @@ PrefabInstance:
       propertyPath: waveUiRoot
       value: 
       objectReference: {fileID: 8056764156532566094}
+    - target: {fileID: 2776604855330744611, guid: 39b9792ff43578f47a129b128a552f16, type: 3}
+      propertyPath: enemiesBaseCount
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8878791515565055666, guid: 39b9792ff43578f47a129b128a552f16, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9.791034
@@ -3606,7 +3610,7 @@ PrefabInstance:
       objectReference: {fileID: 1816953769081948282}
     - target: {fileID: 1554304516318374158, guid: dcefc5ba938592042964064b3ca9cdfd, type: 3}
       propertyPath: popupEntries.Array.size
-      value: 9
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1554304516318374158, guid: dcefc5ba938592042964064b3ca9cdfd, type: 3}
       propertyPath: popupEntries.Array.data[7].type
@@ -3617,9 +3621,17 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1554304516318374158, guid: dcefc5ba938592042964064b3ca9cdfd, type: 3}
+      propertyPath: popupEntries.Array.data[9].type
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1554304516318374158, guid: dcefc5ba938592042964064b3ca9cdfd, type: 3}
       propertyPath: popupEntries.Array.data[8].prefab
       value: 
       objectReference: {fileID: 7666631623087108861, guid: 3a48473f14fecc042a4f150505be7e05, type: 3}
+    - target: {fileID: 1554304516318374158, guid: dcefc5ba938592042964064b3ca9cdfd, type: 3}
+      propertyPath: popupEntries.Array.data[9].prefab
+      value: 
+      objectReference: {fileID: 4865574760938506787, guid: cec4093379d928543886065a162a2495, type: 3}
     - target: {fileID: 3213525867512781350, guid: dcefc5ba938592042964064b3ca9cdfd, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

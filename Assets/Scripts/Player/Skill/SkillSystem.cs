@@ -214,27 +214,19 @@ public class SkillSystem : MonoBehaviour
         {
             unlockedSkills[skillID] = new SkillState(skillID, data);
             _playerStats.SetSkillLevel(skillID, 1);
-
-            ApplyPassiveSkill(skillID);   // thêm dòng này
-            return true;
         }
-        ApplyPassiveSkill(skillID);
-        SkillState state = unlockedSkills[skillID];
-
-        if (state.level < data.maxLevel)
+        else
         {
+            SkillState state = unlockedSkills[skillID];
+            if (state.level >= data.maxLevel) return false;
+
             state.level++;
-
             _playerStats.SetSkillLevel(skillID, state.level);
-
-            ApplyPassiveSkill(skillID);   // thêm dòng này
-
             OnSkillLevelChanged?.Invoke(skillID, state.level);
-
-            return true;
         }
 
-        return false;
+        ApplyPassiveSkill(skillID); // chỉ gọi 1 lần duy nhất
+        return true;
     }
     private void ApplyPassiveSkill(SkillID skillID)
     {
