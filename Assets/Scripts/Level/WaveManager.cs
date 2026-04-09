@@ -107,15 +107,7 @@ public class WaveManager : MonoBehaviour
         float spawnInterval = Mathf.Max(minSpawnInterval, baseSpawnInterval - (currentWave - 1) * spawnIntervalDecayPerWave);
         StartCoroutine(SpawnWaveRoutine(enemyCount, spawnInterval));
     }
-
-    private IEnumerator SpawnWaveRoutine(int enemyCount, float spawnInterval)
-    {
-        for (int i = 0; i < enemyCount; i++)
-        {
-            SpawnEnemy(false);
-            yield return new WaitForSeconds(spawnInterval);
-        }
-    }
+    
 
     private void SpawnBoss()
     {
@@ -242,4 +234,32 @@ public class WaveManager : MonoBehaviour
         hpUi.SetTarget(enemyObj);
         enemyAI.EnemyHealthUI = hpUi;
     }
+    // Gọi method này từ PlayerController khi player chết
+    public void OnPlayerDied()
+    {
+        // Dừng tất cả coroutine đang spawn
+        StopAllCoroutines();
+        waveActive = false;
+    }
+
+// Khi player respawn hoặc game restart
+    public void RestartWaves()
+    {
+        currentWave = Mathf.Max(1, startWave) - 1;
+        waveActive = false;
+        aliveEnemies.Clear();
+        deathHandlers.Clear();
+        StartNextWave();
+    }
+    private IEnumerator SpawnWaveRoutine(int enemyCount, float spawnInterval)
+    {
+        for (int i = 0; i < enemyCount; i++)
+        {
+            Debug.Log($"[Wave] Spawning enemy {i+1}/{enemyCount}, timeScale={Time.timeScale}");
+            SpawnEnemy(false);
+            yield return new WaitForSeconds(spawnInterval);
+        }
+    }
+
+   
 }

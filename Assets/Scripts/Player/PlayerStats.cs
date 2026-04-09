@@ -219,21 +219,6 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
         anim.SetTrigger(DeathHash);
         StartCoroutine(HandleDeath());
     }
-    
-    private IEnumerator HandleDeath()
-    {
-        yield return new WaitForSeconds(1.5f); 
-    
-        GameEvents.OnPlayerDied.Raise(); 
-        
-        LevelManager.Instance.LoadSpecificLevel(0, LevelManager.TravelDirection.Default);
-        
-        yield return new WaitForSeconds(0.35f); 
-        
-        Revive(); 
-    }
-
-
     public void ApplyStatModifier(StatModifier modifier)
     {
         switch (modifier.statType)
@@ -502,5 +487,23 @@ public void ApplyStatModifier()
 {
     OnStatsChanged?.Invoke();
     CalculatePower();
+}
+private IEnumerator HandleDeath()
+{
+    yield return new WaitForSeconds(1.5f); 
+
+    GameEvents.OnPlayerDied.Raise(); 
+    
+    // ✅ THÊM DÒNG NÀY
+    FindFirstObjectByType<WaveManager>()?.OnPlayerDied();
+    
+    LevelManager.Instance.LoadSpecificLevel(0, LevelManager.TravelDirection.Default);
+    
+    yield return new WaitForSeconds(0.35f); 
+    
+    Revive();
+    
+    // ✅ THÊM DÒNG NÀY
+    FindFirstObjectByType<WaveManager>()?.RestartWaves();
 }
 }
