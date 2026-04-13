@@ -21,7 +21,7 @@ public class LevelUpSkillPopup : BasePopup
 
     [Header("Confirm Button Colors")]
     public Color confirmDisabledColor = new Color(0.4f, 0.4f, 0.4f, 1f);
-    public Color confirmEnabledColor  = new Color(1f, 0.85f, 0.2f, 1f);  // Vàng khớp viền
+    public Color confirmEnabledColor  = new Color(1f, 0.85f, 0.2f, 1f);
 
     private List<SkillData> currentSkills = new List<SkillData>();
     private int selectedIndex = -1;
@@ -44,6 +44,7 @@ public class LevelUpSkillPopup : BasePopup
         if (levelText != null)
             levelText.text = $"LEVEL UP — CẤP {newLevel}";
 
+        Time.timeScale = 0f; // ← Dừng thời gian
         Show();
         RerollSkills();
     }
@@ -56,9 +57,16 @@ public class LevelUpSkillPopup : BasePopup
 
         List<SkillData> passiveSkills = skillSystem.skillList
             .Where(s => s.skillType == SkillType.Passive)
+            .Where(s => skillSystem.GetSkillLevel(s.skillID) < s.maxLevel) // ← fix
             .ToList();
 
-        if (passiveSkills.Count < 3) return;
+        // Xử lý khi không đủ 3 skill để chọn
+        if (passiveSkills.Count == 0)
+        {
+            Debug.Log("[LevelUp] Tất cả skill đã max cấp!");
+            UIManager.Instance.HidePopupByType(PopupType.LevelUpSkill);
+            return;
+        }
 
         List<SkillData> shuffled = new List<SkillData>(passiveSkills);
         for (int i = 0; i < shuffled.Count; i++)
@@ -67,14 +75,20 @@ public class LevelUpSkillPopup : BasePopup
             (shuffled[i], shuffled[rnd]) = (shuffled[rnd], shuffled[i]);
         }
 
-        currentSkills = shuffled.Take(3).ToList();
+        currentSkills = shuffled.Take(Mathf.Min(3, shuffled.Count)).ToList();
         selectedIndex = -1;
 
+        // Ẩn hết 3 slot trước
         for (int i = 0; i < 3; i++)
+            if (skillDisplays[i] != null)
+                skillDisplays[i].gameObject.SetActive(false);
+
+        // Chỉ hiện số slot bằng số skill còn lại
+        for (int i = 0; i < currentSkills.Count; i++)
         {
             if (skillDisplays[i] != null)
             {
-                // FIX: ForceReset trước khi DisplaySkill mới
+                skillDisplays[i].gameObject.SetActive(true);
                 skillDisplays[i].ForceReset();
                 skillDisplays[i].DisplaySkill(currentSkills[i], i, OnSkillClicked);
             }
@@ -82,6 +96,7 @@ public class LevelUpSkillPopup : BasePopup
 
         SetConfirmButton(false);
     }
+
     private void OnSkillClicked(int index)
     {
         selectedIndex = index;
@@ -92,18 +107,18 @@ public class LevelUpSkillPopup : BasePopup
 
         SetConfirmButton(true);
     }
-    
+
     private void SetConfirmButton(bool interactable)
     {
         if (confirmButton == null) return;
 
         confirmButton.interactable = interactable;
 
-        // Đổi màu nút theo trạng thái
         var img = confirmButton.GetComponent<Image>();
         if (img != null)
             img.color = interactable ? confirmEnabledColor : confirmDisabledColor;
     }
+
     // ====================== OVERRIDE HIDE ======================
     public override void Hide()
     {
@@ -115,10 +130,11 @@ public class LevelUpSkillPopup : BasePopup
             Debug.Log($"[LevelUp] Tự động chọn random: {currentSkills[randomIndex].skillName}");
         }
 
+        Time.timeScale = 1f; // ← Khôi phục thời gian
         base.Hide();
     }
 
-// ====================== CONFIRM ======================
+    // ====================== CONFIRM ======================
     private void ConfirmSelectedSkill()
     {
         if (selectedIndex < 0 || selectedIndex >= currentSkills.Count) return;
@@ -127,7 +143,7 @@ public class LevelUpSkillPopup : BasePopup
         UIManager.Instance.HidePopupByType(PopupType.LevelUpSkill);
     }
 
-// ====================== APPLY SKILL (dùng chung) ======================
+    // ====================== APPLY SKILL ======================
     private void ApplySkill(SkillData skill)
     {
         SkillSystem skillSystem = CommonReferent.Instance.skill;

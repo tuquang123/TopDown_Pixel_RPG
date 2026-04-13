@@ -44,13 +44,14 @@ GameObject:
   - component: {fileID: 8250384217451532234}
   - component: {fileID: 5642792850345242632}
   - component: {fileID: 6086211267255370067}
+  - component: {fileID: 7186230036931082594}
   m_Layer: 7
   m_Name: Boss
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6378732232669590760
 Transform:
   m_ObjectHideFlags: 0
@@ -192,6 +193,18 @@ MonoBehaviour:
   minionCooldown: 10
   dashCooldown: 8
   shootCooldown: 6
+--- !u!225 &7186230036931082594
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5987872608596408159}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8566106691307338156
 GameObject:
   m_ObjectHideFlags: 0
