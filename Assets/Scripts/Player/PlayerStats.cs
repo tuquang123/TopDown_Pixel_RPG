@@ -42,7 +42,8 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
 
 
     [Title("Current Values (Runtime Only)")]
-    [ReadOnly, ShowInInspector] private int currentHealth;
+    [ReadOnly, ShowInInspector]
+    public int currentHealth;
     [ReadOnly, ShowInInspector] public int currentMana;
 
     public event Action OnStatsChanged;

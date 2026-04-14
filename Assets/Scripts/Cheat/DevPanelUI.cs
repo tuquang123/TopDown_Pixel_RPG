@@ -196,5 +196,13 @@ using System.Collections.Generic;
          playerStats.CalculatePower();
          RefreshUI(); SaveGame();
      }
-     
+     public void HealFull()
+     {
+         if (PlayerStats.Instance == null) return;
+
+         PlayerStats.Instance.Heal((int)PlayerStats.Instance.maxHealth.Value);
+         PlayerStats.Instance.RestoreMana((int)PlayerStats.Instance.maxMana.Value);
+
+         RefreshUI();
+     }
  }

@@ -1,135 +1,143 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-[RequireComponent(typeof(RectTransform))]
 public class WaveProgressUI : MonoBehaviour
 {
-    [Header("Text References")]
-    [SerializeField] private TMP_Text stageText;
+    [Header("Text")]
     [SerializeField] private TMP_Text waveText;
-    [SerializeField] private TMP_Text statusText;
 
-    [Header("Layout")]
-    [SerializeField] private Vector2 rootAnchor = new(0.5f, 1f);
-    [SerializeField] private Vector2 rootPosition = new(0f, -30f);
+    [Header("Points")]
+    [SerializeField] private Image starPoint;   // wave 1
+    [SerializeField] private Image point2;      // wave 2
+    [SerializeField] private Image point3;      // wave 3
+    [SerializeField] private Image bossPoint;   // boss
+
+    [Header("Progress Fill")]
+    [SerializeField] private Slider progressFill; // thanh kéo dài
+
+    private Image[] points;
 
     private WaveManager waveManager;
-    private StageManager stageManager;
+    private int currentWave;
+    private int bossFreq = 4;
 
-    private void Awake()
+    private Coroutine pulseRoutine;
+
+    // màu
+    private Color done    = new Color(1f, 0.8f, 0.3f, 1f);
+    private Color current = Color.white;
+    private Color empty   = new Color(1f, 1f, 1f, 0.2f);
+    private Color bossOn  = new Color(1f, 0.3f, 0.3f, 1f);
+
+    // smooth fill
+    private float targetFill;
+    private float currentFill;
+
+    void Awake()
     {
-        SetupRoot();
-        EnsureLabels();
+        points = new Image[] { starPoint, point2, point3 };
     }
 
-    private void OnDestroy()
+    public void Bind(WaveManager wm, StageManager stageManager)
     {
-        Unbind();
+        waveManager = wm;
+        bossFreq = Mathf.Max(2, wm.BossWaveFrequency);
+
+        wm.OnWaveStarted += OnWaveStart;
+        wm.OnWaveCleared += OnWaveClear;
+
+        Refresh();
     }
 
-    public void Bind(WaveManager waveMgr, StageManager stageMgr)
+    private void Update()
     {
-        if (waveMgr == null)
-            return;
-
-        Unbind();
-
-        waveManager = waveMgr;
-        stageManager = stageMgr;
-
-        waveManager.OnWaveStarted += HandleWaveStarted;
-        waveManager.OnWaveCleared += HandleWaveCleared;
-
-        if (stageManager != null)
-            stageManager.OnStageChanged += HandleStageChanged;
-
-        RefreshImmediate();
-    }
-
-    private void Unbind()
-    {
-        if (waveManager != null)
+        // smooth progress
+        if (progressFill != null)
         {
-            waveManager.OnWaveStarted -= HandleWaveStarted;
-            waveManager.OnWaveCleared -= HandleWaveCleared;
+            currentFill = Mathf.Lerp(currentFill, targetFill, Time.deltaTime * 6f);
+            progressFill.value = currentFill;
+        }
+    }
+
+    private void OnWaveStart(int wave, bool isBoss)
+    {
+        currentWave = wave;
+
+        if (waveText != null)
+            waveText.text = "Wave " + wave;
+
+        Refresh();
+
+        if (isBoss) StartPulse();
+        else StopPulse();
+    }
+
+    private void OnWaveClear(int wave)
+    {
+        Refresh();
+        StopPulse();
+    }
+
+    private void Refresh()
+    {
+        int pos = currentWave <= 0 ? 0 : ((currentWave - 1) % bossFreq) + 1;
+
+        // reset màu
+        foreach (var p in points)
+            if (p != null) p.color = empty;
+
+        if (bossPoint != null)
+            bossPoint.color = empty;
+
+        // fill point thường
+        for (int i = 0; i < points.Length; i++)
+        {
+            int slot = i + 1;
+
+            if (slot < pos) points[i].color = done;
+            else if (slot == pos) points[i].color = current;
         }
 
-        if (stageManager != null)
-            stageManager.OnStageChanged -= HandleStageChanged;
+        // boss
+        if (pos == bossFreq && bossPoint != null)
+            bossPoint.color = bossOn;
 
-        waveManager = null;
-        stageManager = null;
+        // progress
+        int totalSteps = bossFreq;
+        float progress = 0f;
+
+        if (currentWave > 0)
+            progress = (float)(pos - 1) / (totalSteps - 1);
+
+        targetFill = progress;
     }
 
-    private void SetupRoot()
+    // ───────── boss pulse ─────────
+    private void StartPulse()
     {
-        RectTransform root = (RectTransform)transform;
-        root.anchorMin = rootAnchor;
-        root.anchorMax = rootAnchor;
-        root.pivot = new Vector2(0.5f, 1f);
-        root.anchoredPosition = rootPosition;
-        root.sizeDelta = new Vector2(400f, 110f);
+        StopPulse();
+        if (bossPoint != null)
+            pulseRoutine = StartCoroutine(Pulse());
     }
 
-    private void EnsureLabels()
+    private void StopPulse()
     {
-        stageText ??= CreateLabel("StageText", new Vector2(0f, 0f), 40, 30);
-        waveText ??= CreateLabel("WaveText", new Vector2(0f, -34f), 40, 28);
-        statusText ??= CreateLabel("StatusText", new Vector2(0f, -66f), 40, 24);
-
-        stageText.color = new Color(1f, 0.95f, 0.6f, 1f);
-        waveText.color = Color.white;
-        statusText.color = new Color(0.7f, 0.9f, 1f, 1f);
+        if (pulseRoutine != null)
+        {
+            StopCoroutine(pulseRoutine);
+            pulseRoutine = null;
+        }
     }
 
-    private TMP_Text CreateLabel(string labelName, Vector2 anchoredPos, float width, float fontSize)
+    private IEnumerator Pulse()
     {
-        GameObject textObj = new GameObject(labelName, typeof(RectTransform), typeof(TextMeshProUGUI));
-        textObj.transform.SetParent(transform, false);
-
-        RectTransform rect = textObj.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 1f);
-        rect.anchorMax = new Vector2(0.5f, 1f);
-        rect.pivot = new Vector2(0.5f, 1f);
-        rect.anchoredPosition = anchoredPos;
-        rect.sizeDelta = new Vector2(width * 10f, 30f);
-
-        TextMeshProUGUI tmp = textObj.GetComponent<TextMeshProUGUI>();
-        tmp.alignment = TextAlignmentOptions.Center;
-        tmp.fontSize = fontSize;
-        tmp.raycastTarget = false;
-        tmp.text = string.Empty;
-
-        if (TMP_Settings.defaultFontAsset != null)
-            tmp.font = TMP_Settings.defaultFontAsset;
-
-        return tmp;
-    }
-
-    private void RefreshImmediate()
-    {
-        int stage = stageManager != null ? stageManager.CurrentStage : 1;
-        int wave = waveManager != null ? waveManager.CurrentWave : 1;
-
-        stageText.text = $"Stage {stage}";
-        waveText.text = $"Wave {Mathf.Max(1, wave)}";
-        statusText.text = "Preparing...";
-    }
-
-    private void HandleWaveStarted(int wave, bool isBossWave)
-    {
-        waveText.text = $"Wave {wave}";
-        statusText.text = isBossWave ? "Boss Wave" : "Enemies Incoming";
-    }
-
-    private void HandleWaveCleared(int wave)
-    {
-        statusText.text = $"Wave {wave} Cleared";
-    }
-
-    private void HandleStageChanged(int stage)
-    {
-        stageText.text = $"Stage {stage}";
-        statusText.text = "Stage Up";
+        while (true)
+        {
+            float t = (Mathf.Sin(Time.time * 4f) + 1f) / 2f;
+            bossPoint.color = Color.Lerp(bossOn, Color.white, t);
+            yield return null;
+        }
     }
 }

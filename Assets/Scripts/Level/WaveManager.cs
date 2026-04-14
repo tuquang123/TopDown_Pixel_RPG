@@ -17,7 +17,8 @@ public class WaveManager : MonoBehaviour
         VShape,     // hình chữ V hướng vào player
         Burst,      // tất cả spawn đồng thời tứ phía
     }
-
+// Thêm vào phần Public API (dưới CurrentWave)
+    public int BossWaveFrequency => bossWaveFrequency;
     [Header("References")]
     [SerializeField] private Transform player;
     [SerializeField] private EnemyLevelDatabase enemyLevelDatabase;
@@ -449,13 +450,14 @@ public class WaveManager : MonoBehaviour
         StopAllCoroutines();
         waveActive = false;
     }
-
+    public event Action OnWavesRestarted;
     public void RestartWaves()
     {
         currentWave = Mathf.Max(1, startWave) - 1;
         waveActive  = false;
         aliveEnemies.Clear();
         deathHandlers.Clear();
+        OnWavesRestarted?.Invoke();
         StartNextWave();
     }
 }
