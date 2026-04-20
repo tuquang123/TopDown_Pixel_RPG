@@ -8,13 +8,11 @@ public partial class EnemyAI
         if (target == null || anim == null)
             return;
 
-        Vector2 enemyPos = transform.position;
-        Vector2 targetPos = target.position;
-        float distance = Vector2.Distance(enemyPos, targetPos);
-        float closeCombatAttackBuffer = 0.2f;
+        Vector2 toTarget = (Vector2)target.position - (Vector2)transform.position;
+        float distance = toTarget.magnitude;
+        const float attackBuffer = 0.3f;
 
-        // Cho phép quái đánh khi đã đủ gần dù vị trí đang lệch chéo nhẹ.
-        if (distance <= attackRange + closeCombatAttackBuffer)
+        if (distance <= attackRange + attackBuffer)
         {
             StopMotion();
             if (Time.time - lastAttackTime >= attackCooldown)
@@ -22,26 +20,9 @@ public partial class EnemyAI
             return;
         }
 
-        float yDiff = Mathf.Abs(enemyPos.y - targetPos.y);
-        float xDiff = Mathf.Abs(enemyPos.x - targetPos.x);
-
-        if (yDiff > 0.1f)
-        {
-            Vector2 directionY = new Vector2(0f, targetPos.y - enemyPos.y).normalized;
-            MoveInDirection(directionY);
-        }
-        else if (xDiff > attackRange * 0.8f)
-        {
-            Vector2 directionX = new Vector2(targetPos.x - enemyPos.x, 0f).normalized;
-            MoveInDirection(directionX);
-            RotateEnemy(directionX.x);
-        }
-        else
-        {
-            StopMotion();
-            if (Time.time - lastAttackTime >= attackCooldown)
-                AttackTarget();
-        }
+        // Di chuyển thẳng về phía target — không bị kẹt do logic trục X/Y
+        MoveInDirection(toTarget.normalized);
+        RotateEnemy(toTarget.x);
     }
 
     protected void RotateEnemy(float direction)
@@ -51,6 +32,8 @@ public partial class EnemyAI
 
         transform.localScale = new Vector3(Mathf.Sign(direction) * -1f, 1f, 1f);
     }
+
+    private Transform _attackSnapshot;
 
     protected virtual void AttackTarget()
     {
@@ -62,6 +45,7 @@ public partial class EnemyAI
         if (Time.time - lastAttackTime < attackCooldown)
             return;
 
+        _attackSnapshot = target; // lưu target tại thời điểm đánh
         anim.SetBool(MoveBool, false);
         anim.SetTrigger(isHoldingSpear ? LongAttack : AttackTrigger);
         lastAttackTime = Time.time;
@@ -69,14 +53,16 @@ public partial class EnemyAI
 
     public void DealDamageToTarget()
     {
-        if (isDead || target == null || !target.gameObject.activeInHierarchy)
+        if (isDead) return;
+
+        // Dùng snapshot — target đã được validate lúc AttackTarget() gọi
+        // Không check distance lại vì enemy có thể dịch chuyển trong lúc animation play
+        Transform attackTarget = _attackSnapshot != null ? _attackSnapshot : target;
+
+        if (attackTarget == null || !attackTarget.gameObject.activeInHierarchy)
             return;
 
-        float closeCombatAttackBuffer = 0.2f;
-        if (Vector2.Distance(transform.position, target.position) > attackRange + closeCombatAttackBuffer)
-            return;
-
-        if (target.TryGetComponent(out IDamageable damageable))
+        if (attackTarget.TryGetComponent(out IDamageable damageable))
             damageable.TakeDamage(attackDamage);
     }
 
@@ -153,6 +139,11 @@ public partial class EnemyAI
 
         if (currentHealth <= 0)
         {
+            // Reset toàn bộ trigger tấn công trong queue
+            // Nếu không reset, Animator sẽ vẫn play attack animation dù isDead = true
+            anim?.ResetTrigger(AttackTrigger);
+            anim?.ResetTrigger(LongAttack);
+            anim?.ResetTrigger(DamagedTrigger);
             Die();
         }
         else

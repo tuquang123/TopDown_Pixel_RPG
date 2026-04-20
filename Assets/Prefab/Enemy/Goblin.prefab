@@ -394,7 +394,7 @@ Transform:
   m_GameObject: {fileID: 1581309216436780966}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.26323435, y: 0.4864082, z: -0.017392695}
+  m_LocalPosition: {x: 0.218, y: 0.547, z: -0.017392695}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -491,12 +491,12 @@ MonoBehaviour:
   enemyName: Goblin
   enemyLevel: 1
   maxHealth: 100
-  attackDamage: 15
+  attackDamage: 11
   attackRange: 1
   detectionRange: 40
   attackCooldown: 3.5
   skipHurtAnimation: 0
-  moveSpeed: 0.3
+  moveSpeed: 0.6
   knockForce: 1.5
   knockDuration: 0.2
   damagedStunTime: 0.2
@@ -520,7 +520,7 @@ MonoBehaviour:
   enablePatrol: 0
   patrolRadius: 3
   patrolWaitTime: 2
-  exp: 10
+  exp: 5
   selectionCircle: {fileID: 8760505730230405147}
   aggroIcon: {fileID: 5991207650147407323}
   aggroLoseTime: 5

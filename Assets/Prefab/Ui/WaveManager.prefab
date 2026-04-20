@@ -50,8 +50,6 @@ MonoBehaviour:
   stageManager: {fileID: 7386204597494986718}
   enemyPrefabs:
   - {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
-  - {fileID: 2970206300379713479, guid: a69260f2b7402d149a15e280862de3b1, type: 3}
-  - {fileID: 479587598004540727, guid: 62b76e5ce91aae24183f45950012de95, type: 3}
   bossPrefab: {fileID: 5987872608596408159, guid: ef6a5168382f276418d774279dcf143b, type: 3}
   startWave: 1
   enemiesBaseCount: 4
@@ -60,6 +58,10 @@ MonoBehaviour:
   spawnIntervalDecayPerWave: 0.02
   minSpawnInterval: 0.15
   bossWaveFrequency: 5
+  formation: 0
+  formationRadius: 8
+  formationSpacing: 1.4
+  burstDelay: 0.05
   spawnRadiusMin: 3
   spawnRadiusMax: 3
   waveUiPrefab: {fileID: 910000003, guid: 601259764bf5469e95c22ab0d11c8557, type: 3}

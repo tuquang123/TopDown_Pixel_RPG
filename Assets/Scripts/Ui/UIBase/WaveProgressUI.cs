@@ -11,7 +11,9 @@ public class WaveProgressUI : MonoBehaviour
     [Header("Points")]
     [SerializeField] private Image starPoint;   // wave 1
     [SerializeField] private Image point2;      // wave 2
-    [SerializeField] private Image point3;      // wave 3
+    [SerializeField] private Image point3; 
+    [SerializeField] private Image point4;    
+
     [SerializeField] private Image bossPoint;   // boss
 
     [Header("Progress Fill")]
@@ -37,7 +39,7 @@ public class WaveProgressUI : MonoBehaviour
 
     void Awake()
     {
-        points = new Image[] { starPoint, point2, point3 };
+        points = new Image[] { starPoint, point2, point3, point4  };
     }
 
     public void Bind(WaveManager wm, StageManager stageManager)

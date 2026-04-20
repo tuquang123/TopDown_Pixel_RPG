@@ -94,16 +94,21 @@ public class PlayerCombat
 
     public void ApplyAttackDamage(bool isSkill, SkillData skill = null)
     {
-        if (owner.Stats == null || owner.Stats.isDead || owner.AttackPoint == null)
+        if (owner.Stats == null || owner.Stats.isDead)
             return;
 
         AudioManager.Instance?.PlaySFX("Attack");
+
+        // Dùng vị trí player làm tâm — không phụ thuộc hướng attackPoint
+        // AttackPoint chỉ dùng cho projectile (FireArrow, ThrowShuriken)
+        Vector2 damageOrigin = owner.transform.position;
+        float damageRadius   = owner.GetCurrentAttackRange() + owner.AttackRadius;
 
         int totalHealed = 0;
         EnemyTracker tracker = EnemyTracker.Instance;
         if (tracker != null)
         {
-            foreach (EnemyAI enemy in tracker.GetEnemiesInRange(owner.AttackPoint.position, owner.AttackRadius))
+            foreach (EnemyAI enemy in tracker.GetEnemiesInRange(damageOrigin, damageRadius))
             {
                 if (enemy == null || enemy.IsDead)
                     continue;
@@ -120,7 +125,7 @@ public class PlayerCombat
 
         if (!isSkill && DestructibleTracker.Instance != null)
         {
-            foreach (DestructibleObject destructible in DestructibleTracker.Instance.GetInRange(owner.AttackPoint.position, owner.AttackRadius))
+            foreach (DestructibleObject destructible in DestructibleTracker.Instance.GetInRange(damageOrigin, damageRadius))
             {
                 destructible.Hit();
             }

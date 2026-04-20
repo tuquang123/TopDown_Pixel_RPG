@@ -108,6 +108,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
 
         if (targetEnemy != null)
         {
+            UpdateAttackPoint(); // cập nhật hướng attackPoint trước khi move/attack
             MoveToTarget(targetEnemy, FaceEnemy);
             return;
         }
@@ -116,6 +117,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
 
         if (targetDestructible != null)
         {
+            UpdateAttackPoint();
             MoveToTarget(targetDestructible);
             return;
         }
@@ -219,6 +221,27 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
             return;
 
         RotateCharacter(targetEnemy.position.x - transform.position.x);
+        UpdateAttackPoint();
+    }
+
+    /// <summary>
+    /// Xoay AttackPoint về phía target mỗi frame.
+    /// AttackPoint là Transform con cố định trong Hierarchy — không tự xoay theo target,
+    /// nên phải update localPosition thủ công về hướng enemy hiện tại.
+    /// </summary>
+    private void UpdateAttackPoint()
+    {
+        if (attackPoint == null) return;
+
+        Transform t = targetEnemy ?? targetDestructible;
+        if (t == null) return;
+
+        // Giữ nguyên khoảng cách gốc, chỉ đổi hướng
+        float radius = attackPoint.localPosition.magnitude;
+        if (radius < 0.01f) radius = attackRadius;
+
+        Vector2 dir = ((Vector2)t.position - (Vector2)transform.position).normalized;
+        attackPoint.localPosition = dir * radius;
     }
 
     public void ApplyKnockback(Vector2 direction, float force, float duration = 0.1f)

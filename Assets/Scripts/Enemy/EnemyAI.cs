@@ -103,6 +103,9 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
     private bool isKnockbacked;
 
+    // Velocity mong muốn — được set bởi AI logic (Update), apply bởi FixedUpdate
+    private Vector2 _desiredVelocity;
+
     #endregion
 
     [Header("Anti Ranged Pressure")]
@@ -190,7 +193,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     [SerializeField] private float aggroLoseTime = 5f;
 
     private float lastAggroTime;
-    
+
     public event Action OnDeath;
     [SerializeField] private string killObjectiveID;
     public string KillID => killObjectiveID;
@@ -199,6 +202,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     {
         OnDeath?.Invoke();
     }
+
     protected virtual void Awake()
     {
         EnsureCachedComponents();
@@ -244,6 +248,12 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     private void Update()
     {
         TickAI(true);
+    }
+
+    private void FixedUpdate()
+    {
+        if (cachedRigidbody == null) return;
+        cachedRigidbody.linearVelocity = _desiredVelocity;
     }
 
     public void OptimizedUpdate()
@@ -298,6 +308,8 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         HandleAggroState();
     }
 
+    // ─── PATROL ────────────────────────────────────────────────────────────────
+
     protected void Patrol()
     {
         if (!enablePatrol || isDead)
@@ -330,6 +342,8 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         isPatrolling = true;
     }
 
+    // ─── LEVEL / OPTIMIZATION ─────────────────────────────────────────────────
+
     public void ApplyLevelData(EnemyLevelData data)
     {
         if (data == null)
@@ -358,6 +372,8 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         if (cachedCollider != null)
             cachedCollider.enabled = active && !IsDead;
     }
+
+    // ─── TARGET FINDING ────────────────────────────────────────────────────────
 
     protected void FindClosestTarget()
     {
@@ -398,6 +414,8 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         target = bestTarget;
     }
 
+    // ─── UTILITIES ─────────────────────────────────────────────────────────────
+
     protected void EnsureCachedComponents()
     {
         anim ??= GetComponentInChildren<Animator>();
@@ -413,12 +431,14 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
             return;
         }
 
-        transform.position += (Vector3)(direction.normalized * moveSpeed * Time.deltaTime);
+        _desiredVelocity = direction.normalized * moveSpeed;
         anim?.SetBool(MoveBool, true);
     }
 
     protected void StopMotion(bool disablePhysics = false)
     {
+        _desiredVelocity = Vector2.zero;
+
         if (cachedRigidbody != null)
         {
             cachedRigidbody.linearVelocity = Vector2.zero;
@@ -471,6 +491,8 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
             aggroIcon.SetActive(value);
     }
 
+    // ─── HEALTH UI ─────────────────────────────────────────────────────────────
+
     public void AssignHealthUI(EnemyHealthUI ui)
     {
         if (enemyHealthUI != null && enemyHealthUI != ui)
@@ -502,6 +524,8 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
             enemyHealthUI.HideUI();
     }
 
+    // ─── TARGET VALIDATION ─────────────────────────────────────────────────────
+
     private bool IsValidTarget(Transform candidate, float sqrDetectionRange)
     {
         if (candidate == null || !candidate.gameObject.activeInHierarchy)
@@ -519,5 +543,4 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
         return true;
     }
-    
 }
