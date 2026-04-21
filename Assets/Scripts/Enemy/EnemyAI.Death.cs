@@ -10,7 +10,11 @@ public partial class EnemyAI
 
         isDead = true;
         target = null;
+
+        // Huỷ toàn bộ Invoke VÀ Coroutine đang chạy dở (attack, hurt, v.v.)
         CancelInvoke();
+        StopAllCoroutines();
+
         SetSelected(false);
         StopMotion(disablePhysics: true);
         HandleDieAnimation();
@@ -72,7 +76,6 @@ public partial class EnemyAI
         RaiseDeathEvent();
         QuestManager.Instance?.ReportProgress("NV2", enemyName, 1);
         QuestManager.Instance?.ReportProgress("NV4", enemyName, 1);
-       
     }
 
     protected virtual void HandleDrops()
@@ -93,14 +96,15 @@ public partial class EnemyAI
 
     protected virtual void DropItems()
     {
-        if (UnityEngine.Random.value > dropRate || dropItems.Count == 0 || CommonReferent.Instance?.itemDropPrefab == null || ObjectPooler.Instance == null)
+        if (UnityEngine.Random.value > dropRate || dropItems.Count == 0 ||
+            CommonReferent.Instance?.itemDropPrefab == null || ObjectPooler.Instance == null)
             return;
 
         EnemyDropItem chosen = dropItems[UnityEngine.Random.Range(0, dropItems.Count)];
         if (chosen.item == null)
             return;
 
-        GameObject prefab = CommonReferent.Instance.itemDropPrefab;
+        GameObject prefab  = CommonReferent.Instance.itemDropPrefab;
         GameObject dropObj = ObjectPooler.Instance.Get(prefab.name, prefab, transform.position, Quaternion.identity);
         dropObj?.GetComponent<ItemDrop>()?.Setup(new ItemInstance(chosen.item, 0), 1);
     }
@@ -113,21 +117,22 @@ public partial class EnemyAI
     public void ResetEnemy()
     {
         CancelInvoke();
+        StopAllCoroutines();
         EnsureCachedComponents();
 
-        patrolWaitTimer = 0f;
-        currentHealth = maxHealth;
-        isDead = false;
-        isTakingDamage = false;
-        isKnockbacked = false;
-        enabled = true;
-        isAggro = false;
+        patrolWaitTimer      = 0f;
+        currentHealth        = maxHealth;
+        isDead               = false;
+        isTakingDamage       = false;
+        isKnockbacked        = false;
+        enabled              = true;
+        isAggro              = false;
         isUnderRangedPressure = false;
-        rangedHitCount = 0;
-        target = null;
-        lastAttackTime = 0f;
-        lastRangedHitTime = -999f;
-        lastAggroTime = 0f;
+        rangedHitCount       = 0;
+        target               = null;
+        lastAttackTime       = 0f;
+        lastRangedHitTime    = -999f;
+        lastAggroTime        = 0f;
         SetAggroIcon(false);
 
         if (cachedCollider != null)

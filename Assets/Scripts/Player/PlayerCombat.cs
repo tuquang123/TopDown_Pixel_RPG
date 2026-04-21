@@ -11,7 +11,7 @@ public class PlayerCombat
 
     public void ClearTargetsAndSelection()
     {
-        owner.TargetEnemy = null;
+        owner.TargetEnemy       = null;
         owner.TargetDestructible = null;
 
         if (owner.CurrentSelectedEnemy != null)
@@ -99,10 +99,8 @@ public class PlayerCombat
 
         AudioManager.Instance?.PlaySFX("Attack");
 
-        // Dùng vị trí player làm tâm — không phụ thuộc hướng attackPoint
-        // AttackPoint chỉ dùng cho projectile (FireArrow, ThrowShuriken)
         Vector2 damageOrigin = owner.transform.position;
-        float damageRadius   = owner.GetCurrentAttackRange() + owner.AttackRadius;
+        float   damageRadius = owner.GetCurrentAttackRange() + owner.AttackRadius;
 
         int totalHealed = 0;
         EnemyTracker tracker = EnemyTracker.Instance;
@@ -110,13 +108,11 @@ public class PlayerCombat
         {
             foreach (EnemyAI enemy in tracker.GetEnemiesInRange(damageOrigin, damageRadius))
             {
-                if (enemy == null || enemy.IsDead)
-                    continue;
+                if (enemy == null || enemy.IsDead) continue;
 
-                int damage = (int)owner.Stats.attack.Value;
+                int  damage = (int)owner.Stats.attack.Value;
                 bool isCrit = Random.Range(0f, 100f) < owner.Stats.GetCritChance();
-                if (isCrit)
-                    damage = Mathf.RoundToInt(damage * 1.5f);
+                if (isCrit) damage = Mathf.RoundToInt(damage * 1.5f);
 
                 enemy.TakeDamage(damage, isCrit);
                 totalHealed += Mathf.Max(0, owner.Stats.HealFromLifeSteal(damage));
@@ -164,15 +160,14 @@ public class PlayerCombat
     public void FindClosestDestructible()
     {
         owner.TargetDestructible = null;
-        DestructibleObject best = null;
-        float minSqrDist = float.MaxValue;
+        DestructibleObject best  = null;
+        float minSqrDist         = float.MaxValue;
 
         if (DestructibleTracker.Instance != null)
         {
             foreach (DestructibleObject obj in DestructibleTracker.Instance.GetInRange(owner.transform.position, owner.GetDetectionRange()))
             {
-                if (obj == null)
-                    continue;
+                if (obj == null) continue;
 
                 float sqrDist = ((Vector2)obj.transform.position - (Vector2)owner.transform.position).sqrMagnitude;
                 if (sqrDist < minSqrDist)
@@ -211,8 +206,7 @@ public class PlayerCombat
 
     private void UpdateEnemySelection(EnemyAI bestEnemy)
     {
-        if (owner.CurrentSelectedEnemy == bestEnemy)
-            return;
+        if (owner.CurrentSelectedEnemy == bestEnemy) return;
 
         if (owner.CurrentSelectedEnemy != null)
             owner.CurrentSelectedEnemy.SetSelected(false);
@@ -225,8 +219,7 @@ public class PlayerCombat
 
     private void UpdateDestructibleSelection(DestructibleObject best)
     {
-        if (owner.CurrentSelectedDestructible == best)
-            return;
+        if (owner.CurrentSelectedDestructible == best) return;
 
         if (owner.CurrentSelectedDestructible != null)
             owner.CurrentSelectedDestructible.SetSelected(false);
