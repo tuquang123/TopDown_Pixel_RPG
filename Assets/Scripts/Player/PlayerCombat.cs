@@ -11,7 +11,7 @@ public class PlayerCombat
 
     public void ClearTargetsAndSelection()
     {
-        owner.TargetEnemy       = null;
+        owner.TargetEnemy        = null;
         owner.TargetDestructible = null;
 
         if (owner.CurrentSelectedEnemy != null)
@@ -29,8 +29,17 @@ public class PlayerCombat
 
     public void TryAttack()
     {
-        if (!HasValidTarget() || owner.Stats == null || owner.Stats.isUsingSkill || owner.Animator == null)
+        if (owner.Stats == null || owner.Stats.isUsingSkill || owner.Animator == null)
             return;
+
+        // Clear trigger nếu target vừa die
+        if (!HasValidTarget())
+        {
+            owner.Animator.ResetTrigger(PlayerController.AttackTrigger);
+            owner.Animator.ResetTrigger(PlayerController.AttackBow);
+            owner.Animator.ResetTrigger(PlayerController.AttackRange);
+            return;
+        }
 
         float finalAttackSpeed = owner.Stats.GetAttackSpeed() * owner.GetWeaponAttackSpeedMultiplier();
         if (finalAttackSpeed <= 0f || Time.time - owner.LastAttackTime < 1f / finalAttackSpeed)
@@ -99,40 +108,40 @@ public class PlayerCombat
 
         AudioManager.Instance?.PlaySFX("Attack");
 
-        Vector2 damageOrigin = owner.transform.position;
-        float   damageRadius = owner.GetCurrentAttackRange() + owner.AttackRadius;
-
-        int totalHealed = 0;
-        EnemyTracker tracker = EnemyTracker.Instance;
-        if (tracker != null)
+        // ── Enemy target ─────────────────────────────────────────────────────
+        if (owner.TargetEnemy != null)
         {
-            foreach (EnemyAI enemy in tracker.GetEnemiesInRange(damageOrigin, damageRadius))
+            EnemyAI enemy = owner.TargetEnemy.GetComponent<EnemyAI>();
+
+            // Guard: enemy vừa die giữa lúc animation chạy → skip
+            if (enemy == null || enemy.IsDead)
             {
-                if (enemy == null || enemy.IsDead) continue;
-
-                int  damage = (int)owner.Stats.attack.Value;
-                bool isCrit = Random.Range(0f, 100f) < owner.Stats.GetCritChance();
-                if (isCrit) damage = Mathf.RoundToInt(damage * 1.5f);
-
-                enemy.TakeDamage(damage, isCrit);
-                totalHealed += Mathf.Max(0, owner.Stats.HealFromLifeSteal(damage));
+                ClearTargetsAndSelection();
+                return;
             }
+
+            int  damage = (int)owner.Stats.attack.Value;
+            bool isCrit = Random.Range(0f, 100f) < owner.Stats.GetCritChance();
+            if (isCrit) damage = Mathf.RoundToInt(damage * 1.5f);
+
+            enemy.TakeDamage(damage, isCrit);
+
+            int healed = Mathf.Max(0, owner.Stats.HealFromLifeSteal(damage));
+            if (healed > 0)
+            {
+                FloatingTextSpawner.Instance?.SpawnText(
+                    $"+{healed}",
+                    owner.transform.position + Vector3.up,
+                    new Color(0.3f, 1f, 0.3f));
+            }
+
+            return;
         }
 
-        if (!isSkill && DestructibleTracker.Instance != null)
+        // ── Destructible (chỉ khi không có enemy target) ─────────────────────
+        if (!isSkill && owner.TargetDestructible != null)
         {
-            foreach (DestructibleObject destructible in DestructibleTracker.Instance.GetInRange(damageOrigin, damageRadius))
-            {
-                destructible.Hit();
-            }
-        }
-
-        if (totalHealed > 0)
-        {
-            FloatingTextSpawner.Instance?.SpawnText(
-                $"+{totalHealed}",
-                owner.transform.position + Vector3.up,
-                new Color(0.3f, 1f, 0.3f));
+            owner.TargetDestructible.GetComponent<DestructibleObject>()?.Hit();
         }
     }
 

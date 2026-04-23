@@ -521,7 +521,7 @@ public class QuestManager : Singleton<QuestManager>
             yield return new WaitForSeconds(0.2f);
         }
 
-        questArrow.SetTarget(null);
+        //questArrow.SetTarget(null);
         Debug.LogWarning("Không tìm thấy target cho quest!");
     }
 

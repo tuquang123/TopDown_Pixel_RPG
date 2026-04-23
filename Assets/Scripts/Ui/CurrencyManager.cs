@@ -6,7 +6,7 @@ public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager Instance;
 
-    public int Gold { get; private set; }
+    public int Gold { get; set; }
     public int Gems { get; private set; }
     public List<ItemData> shopItems; // Danh sách vật phẩm cửa hàng
 

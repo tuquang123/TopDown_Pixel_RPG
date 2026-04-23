@@ -13,17 +13,18 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
     [SerializeField] private   float rangedRange        = 5f;
     [SerializeField] private   float bowRange           = 4f;
 
-    [SerializeField] protected Transform  attackPoint;
-    [SerializeField] protected float      attackRadius = 0.8f;
+    [SerializeField] protected Transform attackPoint;
+
+    [Tooltip("Bán kính hitbox damage — chỉ dùng cho melee AoE nếu cần, KHÔNG ảnh hưởng tới tầm dừng lại để đánh.")]
+    [SerializeField] protected float attackRadius = 0.8f;
+
     [SerializeField] protected GameObject vfxDust;
 
     [Header("Combat")]
     [SerializeField] private bool  allowAutoAttack   = true;
     [SerializeField] private bool  enableManualInput = false;
 
-    /// <summary>
-    /// Sau khi bị đánh, player "bám" target và ưu tiên phản đòn trong khoảng thời gian này (giây).
-    /// </summary>
+    [Tooltip("Sau khi bị đánh, player bám target và ưu tiên phản đòn trong khoảng thời gian này (giây).")]
     [SerializeField] private float combatStanceDuration = 1.5f;
 
     protected Rigidbody2D  rb;
@@ -41,23 +42,18 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
     private float              lastStepSoundTime;
     private const float        StepCooldown = 0.4f;
 
-    /// <summary>
-    /// Thời điểm player nhận đòn cuối cùng — kích hoạt combat stance.
-    /// Gọi NotifyHit() từ PlayerStats mỗi khi player bị tấn công.
-    /// </summary>
     private float lastHitTime = -999f;
 
     public WeaponCategory typeWeapon;
 
     // ─────────────────────────── Public accessors ────────────────────────────
 
-    public Vector2   MoveInput         => moveInput;
-    public Transform GetTargetEnemy()   => targetEnemy;
-    public bool      IsPlayerDie()      => stats != null && stats.isDead;
-    public bool      IsMoving()         => moveInput.magnitude > 0.01f;
-    public bool      IsDashing          => GetComponent<PlayerDash>()?.IsDashing == true;
+    public Vector2   MoveInput        => moveInput;
+    public Transform GetTargetEnemy() => targetEnemy;
+    public bool      IsPlayerDie()    => stats != null && stats.isDead;
+    public bool      IsMoving()       => moveInput.magnitude > 0.01f;
+    public bool      IsDashing        => GetComponent<PlayerDash>()?.IsDashing == true;
 
-    /// <summary>True khi player đang trong animation Attack chưa kết thúc.</summary>
     public bool IsAttacking
     {
         get
@@ -68,10 +64,6 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
         }
     }
 
-    /// <summary>
-    /// True khi player vừa bị đánh và còn trong cửa sổ combat stance.
-    /// Lúc này player sẽ ưu tiên phản đòn và mở rộng detection range.
-    /// </summary>
     public bool IsInCombatStance => Time.time - lastHitTime < combatStanceDuration;
 
     // ─────────────────────────── Unity lifecycle ─────────────────────────────
@@ -90,8 +82,6 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
 
         moveInput = enableManualInput ? GetMoveInput() : Vector2.zero;
 
-        // Đang tấn công: khoá di chuyển nhưng không return sớm —
-        // để frame tiếp theo vẫn gọi TryAttack() ngay khi animation xong.
         if (IsAttacking)
         {
             rb.linearVelocity = Vector2.zero;
@@ -102,7 +92,6 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
         bool isMoving = IsMoving();
         anim.SetBool(MoveBool, isMoving);
 
-        // ── Step sounds ──────────────────────────────────────────────────────
         if (isMoving && !IsDashing && Time.time - lastStepSoundTime >= StepCooldown)
         {
             if (moveInput.magnitude > 0.9f) PlayRunSFX();
@@ -110,7 +99,6 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
             lastStepSoundTime = Time.time;
         }
 
-        // ── Manual movement: bỏ target, di chuyển ───────────────────────────
         if (isMoving)
         {
             MovePlayer();
@@ -128,6 +116,20 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
         // ── Auto-combat ──────────────────────────────────────────────────────
         FindClosestEnemy();
 
+        // Guard: clear ngay nếu enemy vừa die
+        if (targetEnemy != null)
+        {
+            EnemyAI e = targetEnemy.GetComponent<EnemyAI>();
+            if (e == null || e.IsDead)
+            {
+                combatLogic.ClearTargetsAndSelection();
+                anim.ResetTrigger(AttackTrigger);
+                anim.ResetTrigger(AttackBow);
+                anim.ResetTrigger(AttackRange);
+                targetEnemy = null;
+            }
+        }
+
         if (targetEnemy != null)
         {
             UpdateAttackPoint();
@@ -135,14 +137,12 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
 
             if (IsTargetInAttackRange(targetEnemy))
             {
-                // Đứng yên và phản đòn ngay
                 rb.linearVelocity = Vector2.zero;
                 anim.SetBool(MoveBool, false);
                 combatLogic.TryAttack();
             }
             else
             {
-                // Tiến lại gần target
                 MoveToTarget(targetEnemy, FaceEnemy);
             }
             return;
@@ -195,29 +195,19 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
 
     // ─────────────────────────── Combat Stance ───────────────────────────────
 
-    /// <summary>
-    /// Gọi hàm này từ PlayerStats (hoặc nơi xử lý nhận damage) mỗi khi player bị đánh.
-    /// Ví dụ: PlayerController.Instance?.NotifyHit();
-    /// </summary>
     public void NotifyHit()
     {
         lastHitTime = Time.time;
-
-        // Nếu chưa có target, tìm ngay để phản đòn kịp thời
         if (targetEnemy == null)
             FindClosestEnemy();
     }
 
     // ─────────────────────────── Attack range helper ─────────────────────────
 
-    /// <summary>
-    /// Kiểm tra target có nằm trong attack range không.
-    /// Dùng GetCurrentAttackRange() + attackRadius để khớp vùng damage thực tế.
-    /// </summary>
     private bool IsTargetInAttackRange(Transform target)
     {
         if (target == null) return false;
-        float range   = GetCurrentAttackRange() + attackRadius;
+        float range   = GetCurrentAttackRange();
         float sqrDist = ((Vector2)target.position - (Vector2)transform.position).sqrMagnitude;
         return sqrDist <= range * range;
     }
@@ -317,10 +307,6 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
         UpdateAttackPoint();
     }
 
-    /// <summary>
-    /// Xoay AttackPoint về phía target mỗi frame.
-    /// AttackPoint là Transform con cố định — không tự xoay, nên phải update thủ công.
-    /// </summary>
     private void UpdateAttackPoint()
     {
         if (attackPoint == null) return;
@@ -377,7 +363,6 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
             case WeaponCategory.Bow:        range += 4f;   break;
         }
 
-        // Khi vừa bị đánh, mở rộng detection để tìm kẻ tấn công kể cả khi bị đẩy lùi
         if (IsInCombatStance)
             range += 1f;
 
@@ -404,7 +389,7 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
         Gizmos.DrawWireSphere(transform.position, GetDetectionRange());
 
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, GetCurrentAttackRange() + attackRadius);
+        Gizmos.DrawWireSphere(transform.position, GetCurrentAttackRange());
 
         if (attackPoint != null)
         {
@@ -412,11 +397,10 @@ public class PlayerController : Singleton<PlayerController>, IGameEventListener,
             Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
         }
 
-        // Hiển thị combat stance indicator trong Scene view
         if (Application.isPlaying && IsInCombatStance)
         {
             Gizmos.color = new Color(1f, 0.4f, 0f, 0.35f);
-            Gizmos.DrawWireSphere(transform.position, GetCurrentAttackRange() + attackRadius + 0.15f);
+            Gizmos.DrawWireSphere(transform.position, GetCurrentAttackRange() + 0.15f);
         }
     }
 

@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81e1f438c57a1394d8b77eefd166becc, type: 3}
+  m_Name: PlayerStatsData
+  m_EditorClassIdentifier: 
+  stats:
+    attack:
+      baseValue: 10
+      level: 0
+      maxLevel: 20
+      increasePerLevel: 2
+      goldCost: 50
+    defense:
+      baseValue: 5
+      level: 0
+      maxLevel: 20
+      increasePerLevel: 1
+      goldCost: 40
+    speed:
+      baseValue: 3
+      level: 0
+      maxLevel: 20
+      increasePerLevel: 0.5
+      goldCost: 30
+    crit:
+      baseValue: 5
+      level: 0
+      maxLevel: 20
+      increasePerLevel: 0.5
+      goldCost: 60
+    lifesteal:
+      baseValue: 2
+      level: 0
+      maxLevel: 20
+      increasePerLevel: 0.3
+      goldCost: 70
+    attackSpeed:
+      baseValue: 1
+      level: 0
+      maxLevel: 20
+      increasePerLevel: 0.2
+      goldCost: 50
+    health:
+      baseValue: 100
+      level: 0
+      maxLevel: 20
+      increasePerLevel: 10
+      goldCost: 80
+    mana:
+      baseValue: 50
+      level: 0
+      maxLevel: 20
+      increasePerLevel: 5
+      goldCost: 60

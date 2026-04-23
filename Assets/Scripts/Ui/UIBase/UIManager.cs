@@ -160,9 +160,5 @@ public class UIManager : Singleton<UIManager>
     {
         return activePopups.TryGetValue(type, out popup);
     }
-    // ================== GACHA ==================
-
-    
-
-
+   
 }

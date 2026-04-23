@@ -1,47 +1,5 @@
 ﻿using System.Collections.Generic;
 
-[System.Serializable]
-public class Stat
-{
-    public float baseValue;
-    private List<StatModifier> modifiers = new List<StatModifier>();
-
-    public Stat(float baseValue)
-    {
-        this.baseValue = baseValue;
-    }
-
-    public float Value
-    {
-        get
-        {
-            float finalValue = baseValue;
-            float percentSum = 0f;
-
-            foreach (var mod in modifiers)
-            {
-                if (mod.modType == StatModType.Flat)
-                    finalValue += mod.value;
-                else if (mod.modType == StatModType.Percent)
-                    percentSum += mod.value;
-            }
-
-            finalValue *= (1 + percentSum / 100f);
-            return finalValue;
-        }
-    }
-
-
-    public void AddModifier(StatModifier modifier)
-    {
-        modifiers.Add(modifier);
-    }
-
-    public void RemoveModifier(StatModifier modifier)
-    {
-        modifiers.Remove(modifier);
-    }
-}
 public enum StatType
 {
     MaxHealth,
@@ -70,8 +28,8 @@ public class StatModifier
     public StatModifier(StatType type, float value, StatModType modType = StatModType.Percent)
     {
         this.statType = type;
-        this.value = value;
-        this.modType = modType;
+        this.value    = value;
+        this.modType  = modType;
     }
 }
 
@@ -85,3 +43,54 @@ public class MultiStatModifier
     }
 }
 
+[System.Serializable]
+public class Stat
+{
+    public float baseValue;
+
+    [System.NonSerialized]
+    private List<StatModifier> modifiers;
+
+    public Stat(float baseValue)
+    {
+        this.baseValue = baseValue;
+        modifiers      = new List<StatModifier>();
+    }
+
+    public float Value
+    {
+        get
+        {
+            if (modifiers == null) modifiers = new List<StatModifier>();
+
+            float finalValue  = baseValue;
+            float percentSum  = 0f;
+
+            foreach (var mod in modifiers)
+            {
+                if (mod.modType == StatModType.Flat)
+                    finalValue += mod.value;
+                else if (mod.modType == StatModType.Percent)
+                    percentSum += mod.value;
+            }
+
+            finalValue *= (1 + percentSum / 100f);
+            return finalValue;
+        }
+    }
+
+    public void SetBaseValue(float value) => baseValue = value;
+
+    public void AddModifier(StatModifier modifier)
+    {
+        modifiers ??= new List<StatModifier>();
+        modifiers.Add(modifier);
+    }
+
+    public void RemoveModifier(StatModifier modifier)
+    {
+        modifiers?.Remove(modifier);
+    }
+
+    public void RemoveAllModifiers() => modifiers?.Clear();
+}
