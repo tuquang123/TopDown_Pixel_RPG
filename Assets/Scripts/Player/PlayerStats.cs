@@ -12,7 +12,10 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     [Title("Level & Skill Points")]
     [ReadOnly, ShowInInspector] public int level = 1;
     [ReadOnly, ShowInInspector] public int skillPoints = 0;
-
+// Thêm vào PlayerStats
+    public void NotifyHealthChanged()  => OnHealthChanged?.Invoke();
+    public void NotifyManaChanged()    => OnManaChanged?.Invoke();
+    public void NotifyStatsChanged()   => OnStatsChanged?.Invoke();
     [Title("Stats")]
     [BoxGroup("Stats")]
     public Stat maxHealth = new(100);
@@ -27,7 +30,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     public Stat defense = new(5);
 
     [BoxGroup("Stats")]
-    public Stat speed = new(5);
+    public Stat speed = new(2);
 
     [BoxGroup("Stats")]
     public Stat critChance = new(10); // %

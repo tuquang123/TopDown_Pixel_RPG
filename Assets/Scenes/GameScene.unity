@@ -947,11 +947,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 503
+      value: 481
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 393.12
+      value: 401.75998
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalScale.x
@@ -999,7 +999,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 140.5404
+      value: 143.62921
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1015,19 +1015,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 133.497
+      value: 136.431
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 133.497
+      value: 136.431
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 184.7515
+      value: 172.2845
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 65.110504
+      value: 66.541504
       objectReference: {fileID: 0}
     - target: {fileID: 22491998, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1391,6 +1391,14 @@ PrefabInstance:
       propertyPath: playerStats
       value: 
       objectReference: {fileID: 7325997695250661373}
+    - target: {fileID: 8176118346113918326, guid: 557c37f4eb8828b4c8961bbeb2c869f7, type: 3}
+      propertyPath: cheatGemAmount
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8176118346113918326, guid: 557c37f4eb8828b4c8961bbeb2c869f7, type: 3}
+      propertyPath: cheatGoldAmount
+      value: 1000000
+      objectReference: {fileID: 0}
     - target: {fileID: 8254249035337534183, guid: 557c37f4eb8828b4c8961bbeb2c869f7, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -2760,6 +2768,10 @@ PrefabInstance:
     - target: {fileID: 2431658068420218563, guid: 39b9792ff43578f47a129b128a552f16, type: 3}
       propertyPath: m_Name
       value: WaveManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 2431658068420218563, guid: 39b9792ff43578f47a129b128a552f16, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2776604855330744611, guid: 39b9792ff43578f47a129b128a552f16, type: 3}
       propertyPath: player

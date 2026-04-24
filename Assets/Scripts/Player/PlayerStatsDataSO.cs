@@ -35,47 +35,34 @@ public class PlayerStatsDataSO : ScriptableObject
 [Serializable]
 public class PlayerStatsDataContainer
 {
-    public PlayerStatData attack      = new PlayerStatData(10,  2f,   50);
-    public PlayerStatData defense     = new PlayerStatData(5,   1f,   40);
-    public PlayerStatData speed       = new PlayerStatData(3,   0.5f, 30);
-    public PlayerStatData crit        = new PlayerStatData(5,   0.5f, 60);
-    public PlayerStatData lifesteal   = new PlayerStatData(2,   0.3f, 70);
-    public PlayerStatData attackSpeed = new PlayerStatData(1,   0.2f, 50);
-    public PlayerStatData health      = new PlayerStatData(100, 10f,  80);
-    public PlayerStatData mana        = new PlayerStatData(50,  5f,   60);
+    public PlayerStatData attack      = new PlayerStatData(10,  2f,    50);
+    public PlayerStatData defense     = new PlayerStatData(5,   1f,    40);
+    public PlayerStatData speed       = new PlayerStatData(3,   0.01f, 30);  // +0.01
+    public PlayerStatData crit        = new PlayerStatData(5,   0.1f,  60);  // +0.1
+    public PlayerStatData lifesteal   = new PlayerStatData(2,   0.1f,  70);  // +0.1
+    public PlayerStatData attackSpeed = new PlayerStatData(1,   0.01f, 50);  // +0.01
+    public PlayerStatData health      = new PlayerStatData(100, 10f,   80);
+    public PlayerStatData mana        = new PlayerStatData(50,  5f,    60);
 }
 
 [Serializable]
 public class PlayerStatData
 {
     public float baseValue;
-    public int level;
+    public int   level;
 
     public float increasePerLevel;
-    public int goldCost;
-
-    public int maxLevel = int.MaxValue;
+    public int   goldCost;
 
     public PlayerStatData(float baseValue, float increasePerLevel, int goldCost)
     {
-        this.baseValue = baseValue;
+        this.baseValue        = baseValue;
         this.increasePerLevel = increasePerLevel;
-        this.goldCost = goldCost;
-        this.level = 0;
+        this.goldCost         = goldCost;
+        this.level            = 0;
     }
 
-    public float GetValue() => baseValue + level * increasePerLevel;
-
-    public bool CanUpgrade() => level < maxLevel;
-
-    public long GetUpgradeCost(int targetLevel)
-    {
-        return (long)goldCost * (targetLevel + 1);
-    }
-
-    public void Upgrade()
-    {
-        if (!CanUpgrade()) return;
-        level++;
-    }
+    public float GetValue()                  => baseValue + level * increasePerLevel;
+    public long  GetUpgradeCost(int atLevel) => (long)goldCost * (atLevel + 1);
+    public void  Upgrade()                   => level++;
 }

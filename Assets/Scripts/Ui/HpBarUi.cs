@@ -5,41 +5,54 @@ using System.Collections;
 public class HPBarUI : MonoBehaviour
 {
     [SerializeField] private PlayerStats playerStats;
-    [SerializeField] private Slider hpSlider;        // thanh máu chính
-    [SerializeField] private Slider delayHpSlider;   // thanh máu trễ (optional)
-
-    [SerializeField] private float delaySpeed = 2f;  // tốc độ delay thu hẹp máu
+    [SerializeField] private Slider hpSlider;
+    [SerializeField] private Slider delayHpSlider;
+    [SerializeField] private float delaySpeed = 2f;
 
     private void Start()
     {
-        hpSlider.value = 1;
-        // Setup ban đầu
+        playerStats = PlayerStats.Instance;
+
         hpSlider.maxValue = playerStats.maxHealth.Value;
-        hpSlider.value = playerStats.GetCurrentHealth();
+        hpSlider.value    = playerStats.GetCurrentHealth();
 
         if (delayHpSlider != null)
         {
             delayHpSlider.maxValue = playerStats.maxHealth.Value;
-            delayHpSlider.value = playerStats.GetCurrentHealth();
+            delayHpSlider.value    = playerStats.GetCurrentHealth();
         }
 
-        playerStats.OnStatsChanged += UpdateMaxHP;
+        playerStats.OnStatsChanged  += UpdateMaxHP;
         playerStats.OnHealthChanged += UpdateHP;
+    }
+
+    private void OnDestroy()
+    {
+        if (playerStats == null) return;
+        playerStats.OnStatsChanged  -= UpdateMaxHP;
+        playerStats.OnHealthChanged -= UpdateHP;
     }
 
     private void UpdateMaxHP()
     {
-        hpSlider.maxValue = playerStats.maxHealth.Value;
+        float newMax = playerStats.maxHealth.Value;
+        float current = playerStats.GetCurrentHealth();
+
+        // Update maxValue TRƯỚC rồi mới set value
+        hpSlider.maxValue = newMax;
+        hpSlider.value    = current;
 
         if (delayHpSlider != null)
         {
-            delayHpSlider.maxValue = playerStats.maxHealth.Value;
+            delayHpSlider.maxValue = newMax;
+            delayHpSlider.value    = current;
         }
     }
 
     private void UpdateHP()
     {
-        hpSlider.value = playerStats.GetCurrentHealth();
+        hpSlider.maxValue = playerStats.maxHealth.Value;
+        hpSlider.value    = playerStats.GetCurrentHealth();
 
         if (delayHpSlider != null)
         {
@@ -50,11 +63,12 @@ public class HPBarUI : MonoBehaviour
 
     private IEnumerator DelayHPAnimation()
     {
-        yield return new WaitForSeconds(0.2f); // chờ 1 tí rồi mới tụt xuống cho đẹp
+        yield return new WaitForSeconds(0.2f);
 
         while (delayHpSlider.value > hpSlider.value)
         {
-            delayHpSlider.value = Mathf.MoveTowards(delayHpSlider.value, hpSlider.value, delaySpeed * Time.deltaTime);
+            delayHpSlider.value = Mathf.MoveTowards(
+                delayHpSlider.value, hpSlider.value, delaySpeed * Time.deltaTime);
             yield return null;
         }
 

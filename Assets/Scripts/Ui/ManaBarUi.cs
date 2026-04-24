@@ -5,40 +5,54 @@ using System.Collections;
 public class ManaBarUI : MonoBehaviour
 {
     [SerializeField] private PlayerStats playerStats;
-    [SerializeField] private Slider manaSlider;        // thanh mana chính
-    [SerializeField] private Slider delayManaSlider;   // thanh mana trễ (optional)
-
+    [SerializeField] private Slider manaSlider;
+    [SerializeField] private Slider delayManaSlider;
     [SerializeField] private float delaySpeed = 2f;
 
     private void Start()
     {
-        manaSlider.value = 1;
+        playerStats = PlayerStats.Instance;
+
         manaSlider.maxValue = playerStats.maxMana.Value;
-        manaSlider.value = playerStats.currentMana;
+        manaSlider.value    = playerStats.currentMana;
 
         if (delayManaSlider != null)
         {
             delayManaSlider.maxValue = playerStats.maxMana.Value;
-            delayManaSlider.value = playerStats.currentMana;
+            delayManaSlider.value    = playerStats.currentMana;
         }
 
         playerStats.OnStatsChanged += UpdateMaxMana;
-        playerStats.OnManaChanged += UpdateMana; // dùng chung event cho đơn giản
+        playerStats.OnManaChanged  += UpdateMana;
+    }
+
+    private void OnDestroy()
+    {
+        if (playerStats == null) return;
+        playerStats.OnStatsChanged -= UpdateMaxMana;
+        playerStats.OnManaChanged  -= UpdateMana;
     }
 
     private void UpdateMaxMana()
     {
-        manaSlider.maxValue = playerStats.maxMana.Value;
+        float newMax  = playerStats.maxMana.Value;
+        float current = playerStats.currentMana;
+
+        // Update maxValue TRƯỚC rồi mới set value
+        manaSlider.maxValue = newMax;
+        manaSlider.value    = current;
 
         if (delayManaSlider != null)
         {
-            delayManaSlider.maxValue = playerStats.maxMana.Value;
+            delayManaSlider.maxValue = newMax;
+            delayManaSlider.value    = current;
         }
     }
 
     private void UpdateMana()
     {
-        manaSlider.value = playerStats.currentMana;
+        manaSlider.maxValue = playerStats.maxMana.Value;
+        manaSlider.value    = playerStats.currentMana;
 
         if (delayManaSlider != null)
         {
@@ -53,7 +67,8 @@ public class ManaBarUI : MonoBehaviour
 
         while (delayManaSlider.value > manaSlider.value)
         {
-            delayManaSlider.value = Mathf.MoveTowards(delayManaSlider.value, manaSlider.value, delaySpeed * Time.deltaTime);
+            delayManaSlider.value = Mathf.MoveTowards(
+                delayManaSlider.value, manaSlider.value, delaySpeed * Time.deltaTime);
             yield return null;
         }
 
