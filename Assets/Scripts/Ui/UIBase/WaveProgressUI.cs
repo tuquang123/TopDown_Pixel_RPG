@@ -18,7 +18,6 @@ public class WaveProgressUI : MonoBehaviour
 
     [Header("Progress Fill")]
     [SerializeField] private Slider progressFill; // thanh kéo dài
-    private StageManager stageManager;
     private Image[] points;
 
     private WaveManager waveManager;
@@ -42,10 +41,9 @@ public class WaveProgressUI : MonoBehaviour
         points = new Image[] { starPoint, point2, point3, point4  };
     }
 
-    public void Bind(WaveManager wm, StageManager stageManager)
+    public void Bind(WaveManager wm)
     {
         waveManager = wm;
-        this.stageManager = stageManager;
         bossFreq = Mathf.Max(2, wm.BossWaveFrequency);
 
         wm.OnWaveStarted += OnWaveStart;
@@ -64,13 +62,13 @@ public class WaveProgressUI : MonoBehaviour
         }
     }
 
-    private void OnWaveStart(int wave, bool isBoss)
+    private void OnWaveStart(int wave , int stage, bool isBoss)
     {
         currentWave = wave;
 
-        if (waveText != null && stageManager != null)
+        if (waveText != null)
         {
-            waveText.text = $"Stage {stageManager.CurrentStage}   Wave {wave}";
+            waveText.text = $"Stage {stage}   Wave {wave}";
         }
 
         Refresh();

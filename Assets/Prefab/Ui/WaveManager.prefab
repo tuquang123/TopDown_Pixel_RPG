@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8878791515565055666}
   - component: {fileID: 2776604855330744611}
-  - component: {fileID: 7386204597494986718}
   m_Layer: 0
   m_Name: WaveManager
   m_TagString: Untagged
@@ -46,8 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  enemyLevelDatabase: {fileID: 11400000, guid: 772ee1512c9cae04c94b3f8f8b705d05, type: 2}
-  stageManager: {fileID: 7386204597494986718}
   enemyPrefabs:
   - {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
   bossPrefab: {fileID: 5987872608596408159, guid: ef6a5168382f276418d774279dcf143b, type: 3}
@@ -58,29 +55,26 @@ MonoBehaviour:
   spawnIntervalDecayPerWave: 0.02
   minSpawnInterval: 0.15
   bossWaveFrequency: 5
-  formation: 0
   formationRadius: 8
   formationSpacing: 1.4
-  burstDelay: 0.05
   spawnRadiusMin: 3
   spawnRadiusMax: 3
+  enemyLayerName: Enemy
   waveUiPrefab: {fileID: 910000003, guid: 601259764bf5469e95c22ab0d11c8557, type: 3}
   waveUiRoot: {fileID: 0}
---- !u!114 &7386204597494986718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2431658068420218563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 774b49a8d76173049b1d070c57145c55, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  currentStage: 1
+  baseHealth: 50
+  baseDamage: 8
+  baseMoveSpeed: 2
+  baseAttackRange: 1.2
+  baseDetectRange: 6
+  baseAttackCooldown: 1.5
+  waveHealthGrowth: 0.15
+  waveDamageGrowth: 0.1
+  waveSpeedGrowth: 0.02
   healthScalePerStage: 0.2
   damageScalePerStage: 0.15
   moveSpeedScalePerStage: 0.03
-  attackCooldownReductionPerStage: 0.01
+  cooldownReductionPerStage: 0.01
   minAttackCooldown: 0.2
+  bossHealthMult: 5
+  bossDamageMult: 2
