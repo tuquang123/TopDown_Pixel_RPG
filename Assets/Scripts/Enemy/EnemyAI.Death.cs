@@ -23,7 +23,13 @@ public partial class EnemyAI
         NotifySystemsBeforeDrop();
         HandleDrops();
         NotifySystemsAfterDrop();
-        StartCoroutine(DelayDestroy());
+        //StartCoroutine(DelayDestroy());
+		
+		GameObject prefab  = CommonReferent.Instance.destructionVFXPrefab;
+        GameObject desObj = ObjectPooler.Instance.Get(prefab.name, prefab, transform.position, Quaternion.identity);
+		
+		Destroy(gameObject);
+		
     }
 
     private IEnumerator DelayDestroy()
