@@ -30,6 +30,22 @@ public class PlayerStatsDataSO : ScriptableObject
         stats.health.level      = PlayerPrefs.GetInt("stat_health_lv",      0);
         stats.mana.level        = PlayerPrefs.GetInt("stat_mana_lv",        0);
     }
+    private void OnValidate()
+    {
+        stats.speed.increasePerLevel       = 0.05f;
+        stats.attackSpeed.increasePerLevel = 0.05f;
+        stats.crit.increasePerLevel        = 0.1f;
+        stats.lifesteal.increasePerLevel   = 0.1f;
+
+        stats.attack.goldCost      = 50;
+        stats.defense.goldCost     = 40;
+        stats.speed.goldCost       = 500;
+        stats.crit.goldCost        = 300;
+        stats.lifesteal.goldCost   = 200;
+        stats.attackSpeed.goldCost = 50;
+        stats.health.goldCost      = 80;
+        stats.mana.goldCost        = 60;
+    }
 }
 
 [Serializable]
@@ -37,10 +53,10 @@ public class PlayerStatsDataContainer
 {
     public PlayerStatData attack      = new PlayerStatData(10,  2f,    50);
     public PlayerStatData defense     = new PlayerStatData(5,   1f,    40);
-    public PlayerStatData speed       = new PlayerStatData(3,   0.01f, 30);  // +0.01
-    public PlayerStatData crit        = new PlayerStatData(5,   0.1f,  60);  // +0.1
-    public PlayerStatData lifesteal   = new PlayerStatData(2,   0.1f,  70);  // +0.1
-    public PlayerStatData attackSpeed = new PlayerStatData(1,   0.01f, 50);  // +0.01
+    public PlayerStatData speed       = new PlayerStatData(3,   0.001f, 500);  // +0.01
+    public PlayerStatData crit        = new PlayerStatData(5,   0.01f,  300);  // +0.1
+    public PlayerStatData lifesteal   = new PlayerStatData(2,   0.01f,  200);  // +0.1
+    public PlayerStatData attackSpeed = new PlayerStatData(1,   0.001f, 50);  // +0.01
     public PlayerStatData health      = new PlayerStatData(100, 10f,   80);
     public PlayerStatData mana        = new PlayerStatData(50,  5f,    60);
 }

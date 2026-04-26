@@ -2,17 +2,26 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
+[System.Serializable]
+public struct EnemySpawnEntry
+{
+    public GameObject prefab;
+    [Min(1)]    public int   minStage;
+    [Min(0.1f)] public float weight;
+}
 
 public class WaveManager : Singleton<WaveManager>
 {
-    // ──────────────────────────────────────────────────────────
-    //  Inspector
-    // ──────────────────────────────────────────────────────────
     [Header("References")]
     [SerializeField] private Transform player;
 
+    [Header("Stage Database")]
+    [SerializeField] private StageDataSO stageDatabase;
+
     [Header("Prefabs")]
-    [SerializeField] private List<GameObject> enemyPrefabs = new();
+    [SerializeField] private List<EnemySpawnEntry> enemySpawnEntries = new();
     [SerializeField] private GameObject bossPrefab;
 
     [Header("Wave")]
@@ -66,17 +75,16 @@ public class WaveManager : Singleton<WaveManager>
     [Header("Level")]
     [SerializeField, Min(0)] private int bossLevelBonus = 2;
 
-    // ──────────────────────────────────────────────────────────
-    //  Events
-    // ──────────────────────────────────────────────────────────
+    [Header("Spawn Weight Scaling")]
+    [SerializeField, Min(0f)] private float weightGrowthPerStage = 0.1f;
+
+    // ── Events ──
     public event Action<int, int, bool> OnWaveStarted;
     public event Action<int>            OnWaveCleared;
     public event Action                 OnWavesRestarted;
     public event Action<int>            OnStageChanged;
 
-    // ──────────────────────────────────────────────────────────
-    //  State
-    // ──────────────────────────────────────────────────────────
+    // ── State ──
     private readonly HashSet<EnemyAI>            aliveEnemies  = new();
     private readonly Dictionary<EnemyAI, Action> deathHandlers = new();
 
@@ -84,14 +92,14 @@ public class WaveManager : Singleton<WaveManager>
     private int  currentStage = 1;
     private bool waveActive;
     private WaveProgressUI waveUiInstance;
+    private GameObject     currentMapInstance;
 
     public int CurrentWave       => currentWave;
     public int CurrentStage      => currentStage;
     public int BossWaveFrequency => bossWaveFrequency;
+    public StageData CurrentStageData => stageDatabase?.GetOrLast(currentStage);
 
-    // ──────────────────────────────────────────────────────────
-    //  Unity lifecycle
-    // ──────────────────────────────────────────────────────────
+    // ── Unity lifecycle ──
     private void OnDisable()
     {
         foreach (var pair in deathHandlers)
@@ -113,33 +121,78 @@ public class WaveManager : Singleton<WaveManager>
         SetupWaveUi();
 
         currentWave = Mathf.Max(1, startWave) - 1;
+        ApplyStageData(currentStage);
         StartNextWave();
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  Stage
-    // ──────────────────────────────────────────────────────────
+    // ── Stage ──
     private void AdvanceStage()
     {
         currentStage++;
+        ApplyStageData(currentStage);
         OnStageChanged?.Invoke(currentStage);
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  Enemy stat & level computation
-    // ──────────────────────────────────────────────────────────
+    private void ApplyStageData(int stageNumber)
+    {
+        if (stageDatabase == null) return;
+
+        StageData data = stageDatabase.GetOrLast(stageNumber);
+        if (data == null) return;
+
+        Debug.Log($"[WaveManager] Stage {stageNumber} → {data.stageName}");
+
+        if (data.mapPrefab != null)
+        {
+            if (ScreenFader.Instance != null)
+            {
+                ScreenFader.Instance.FadeIn(0.4f, () =>
+                {
+                    SwapMap(data.mapPrefab);
+                    ScreenFader.Instance.FadeOut(0.4f);
+                });
+            }
+            else
+            {
+                SwapMap(data.mapPrefab);
+            }
+        }
+
+        if (stageNumber > 1)
+            GiveStageReward(data);
+    }
+
+    private void SwapMap(GameObject mapPrefab)
+    {
+        if (currentMapInstance != null)
+            Destroy(currentMapInstance);
+
+        currentMapInstance = Instantiate(mapPrefab);
+    }
+
+    private void GiveStageReward(StageData data)
+    {
+        if (data.bonusGold > 0)
+            CurrencyManager.Instance?.AddGold(data.bonusGold);
+
+        if (data.bonusExp > 0)
+        {
+            var playerLevel = PlayerStats.Instance?.GetComponent<PlayerLevel>();
+            playerLevel?.levelSystem?.AddExp(data.bonusExp);
+        }
+    }
+
+    // ── Compute stats ──
     private EnemyLevelData ComputeEnemyData(bool isBoss)
     {
         int waveIndex = isBoss
             ? Mathf.Max(0, Mathf.CeilToInt(currentWave / 2f) - 1)
             : currentWave - 1;
 
-        // wave scale — exponential
         float wf = Mathf.Pow(1f + waveHealthGrowth, waveIndex);
         float df = Mathf.Pow(1f + waveDamageGrowth, waveIndex);
         float sf = 1f + waveSpeedGrowth * waveIndex;
 
-        // stage scale — linear
         int   s        = currentStage - 1;
         float stageHp  = 1f + s * healthScalePerStage;
         float stageDmg = 1f + s * damageScalePerStage;
@@ -157,7 +210,6 @@ public class WaveManager : Singleton<WaveManager>
             dmg = Mathf.RoundToInt(dmg * bossDamageMult);
         }
 
-        // level = tổng wave tích lũy qua các stage
         int level = (currentStage - 1) * bossWaveFrequency + currentWave;
         if (isBoss) level += bossLevelBonus;
 
@@ -173,9 +225,7 @@ public class WaveManager : Singleton<WaveManager>
         };
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  Wave flow
-    // ──────────────────────────────────────────────────────────
+    // ── Wave flow ──
     private void StartNextWave()
     {
         currentWave++;
@@ -198,9 +248,7 @@ public class WaveManager : Singleton<WaveManager>
         yield return StartCoroutine(SpawnDiamond(enemyCount));
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  Spawn
-    // ──────────────────────────────────────────────────────────
+    // ── Spawn ──
     private IEnumerator SpawnDiamond(int enemyCount)
     {
         Vector3 center = PlayerPosition();
@@ -243,9 +291,7 @@ public class WaveManager : Singleton<WaveManager>
         RegisterAliveEnemy(ai);
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  Enemy setup & death
-    // ──────────────────────────────────────────────────────────
+    // ── Enemy setup & death ──
     private void SetupEnemy(EnemyAI ai, bool isBoss)
     {
         var data = ComputeEnemyData(isBoss);
@@ -287,9 +333,7 @@ public class WaveManager : Singleton<WaveManager>
         StartNextWave();
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  Helpers
-    // ──────────────────────────────────────────────────────────
+    // ── Helpers ──
     private Vector3 PlayerPosition() => player != null ? player.position : Vector3.zero;
 
     private Vector3 GetRandomSpawnPosition()
@@ -302,8 +346,35 @@ public class WaveManager : Singleton<WaveManager>
 
     private GameObject GetRandomEnemyPrefab()
     {
-        if (enemyPrefabs == null || enemyPrefabs.Count == 0) return null;
-        return enemyPrefabs[UnityEngine.Random.Range(0, enemyPrefabs.Count)];
+        var available = enemySpawnEntries.FindAll(e => e.prefab != null && currentStage >= e.minStage);
+
+        if (available.Count == 0)
+        {
+            available = enemySpawnEntries.FindAll(e => e.prefab != null);
+            if (available.Count == 0) return null;
+        }
+
+        float totalWeight = 0f;
+        var effectiveWeights = new float[available.Count];
+
+        for (int i = 0; i < available.Count; i++)
+        {
+            int stagesUnlocked = Mathf.Max(0, currentStage - available[i].minStage);
+            effectiveWeights[i] = Mathf.Max(0.01f, available[i].weight)
+                                  * (1f + weightGrowthPerStage * stagesUnlocked);
+            totalWeight += effectiveWeights[i];
+        }
+
+        float roll       = UnityEngine.Random.Range(0f, totalWeight);
+        float cumulative = 0f;
+
+        for (int i = 0; i < available.Count; i++)
+        {
+            cumulative += effectiveWeights[i];
+            if (roll <= cumulative) return available[i].prefab;
+        }
+
+        return available[available.Count - 1].prefab;
     }
 
     private void EnsureHealthUI(GameObject obj, EnemyAI ai)
@@ -337,9 +408,7 @@ public class WaveManager : Singleton<WaveManager>
         waveUiInstance.Bind(this);
     }
 
-    // ──────────────────────────────────────────────────────────
-    //  Public API
-    // ──────────────────────────────────────────────────────────
+    // ── Public API ──
     public void OnPlayerDied()
     {
         StopAllCoroutines();
@@ -353,6 +422,11 @@ public class WaveManager : Singleton<WaveManager>
         waveActive   = false;
         aliveEnemies.Clear();
         deathHandlers.Clear();
+
+        if (currentMapInstance != null)
+            Destroy(currentMapInstance);
+
+        ApplyStageData(currentStage);
         OnWavesRestarted?.Invoke();
         StartNextWave();
     }

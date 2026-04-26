@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using DG.Tweening;
 
-public class ScreenFader : MonoBehaviour
+public class ScreenFader : Singleton<ScreenFader>  // ← đổi chỗ này
 {
     [SerializeField] private CanvasGroup fadePanel;
 

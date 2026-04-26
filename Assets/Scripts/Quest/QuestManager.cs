@@ -505,6 +505,7 @@ public class QuestManager : Singleton<QuestManager>
 
     private IEnumerator UpdateArrowRoutine()
     {
+        yield break; 
         float timeout = 2f;
         float timer = 0f;
 
