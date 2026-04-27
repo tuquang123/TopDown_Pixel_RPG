@@ -4894,7 +4894,7 @@ MonoBehaviour:
   maxHealth: 500
   attackDamage: 45
   attackRange: 1
-  detectionRange: 2
+  detectionRange: 40
   attackCooldown: 3.5
   skipHurtAnimation: 0
   moveSpeed: 0.7
@@ -4906,6 +4906,7 @@ MonoBehaviour:
   rangedHitThreshold: 3
   rangedHitWindow: 2
   requireHitToAggro: 1
+  alwaysShowHP: 0
   isBoss: 0
   goldRange: {x: 1, y: 2}
   dropItems:
@@ -4924,6 +4925,7 @@ MonoBehaviour:
   selectionCircle: {fileID: 3061788636479384840}
   aggroIcon: {fileID: 4944632009777208948}
   aggroLoseTime: 5
+  killObjectiveID: 
 --- !u!1 &2340316211728648110
 GameObject:
   m_ObjectHideFlags: 0

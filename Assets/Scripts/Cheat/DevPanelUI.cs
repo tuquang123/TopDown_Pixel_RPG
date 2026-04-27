@@ -24,11 +24,17 @@ public class DevPanelUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI goldText;
     [SerializeField] private TextMeshProUGUI gemText;
     [SerializeField] private TextMeshProUGUI lifeStealText;
+    [SerializeField] private TextMeshProUGUI gameSpeedText;
 
     [SerializeField] private GameObject    statsGroup;
     [SerializeField] private QuestDatabase questDatabase;
 
     private PlayerLevel playerLevel;
+
+    // tốc độ hiện tại
+    private float currentGameSpeed = 1f;
+    // các mức tốc độ hỗ trợ
+    private readonly float[] speedSteps = { 1f, 2f, 3f };
 
     private void Awake()
     {
@@ -46,6 +52,7 @@ public class DevPanelUI : MonoBehaviour
         CurrencyManager.Instance.OnGoldChanged += HandleGoldChanged;
         CurrencyManager.Instance.OnGemsChanged += HandleGemChanged;
 
+        SetGameSpeed(1f);
         RefreshUI();
     }
 
@@ -60,7 +67,35 @@ public class DevPanelUI : MonoBehaviour
             CurrencyManager.Instance.OnGoldChanged -= HandleGoldChanged;
             CurrencyManager.Instance.OnGemsChanged -= HandleGemChanged;
         }
+
+        // Reset tốc độ khi panel bị destroy
+        SetGameSpeed(1f);
     }
+
+    // ========================= GAME SPEED =========================
+
+    /// <summary>Đặt tốc độ game theo multiplier (1 = bình thường, 2 = x2, 3 = x3).</summary>
+    public void SetGameSpeed(float multiplier)
+    {
+        currentGameSpeed     = multiplier;
+        Time.timeScale       = multiplier;
+        Time.fixedDeltaTime  = 0.02f * multiplier;
+
+        if (gameSpeedText != null)
+            gameSpeedText.text = $"Speed: x{multiplier}";
+    }
+
+    /// <summary>Bấm liên tục để chuyển qua các mức: x1 → x2 → x3 → x1 ...</summary>
+    public void CycleGameSpeed()
+    {
+        int currentIndex = System.Array.IndexOf(speedSteps, currentGameSpeed);
+        int nextIndex    = (currentIndex + 1) % speedSteps.Length;
+        SetGameSpeed(speedSteps[nextIndex]);
+    }
+
+    public void SetSpeed1x() => SetGameSpeed(1f);
+    public void SetSpeed2x() => SetGameSpeed(2f);
+    public void SetSpeed3x() => SetGameSpeed(3f);
 
     // ========================= CHEAT HELPERS =========================
 
@@ -142,10 +177,10 @@ public class DevPanelUI : MonoBehaviour
 
     // ========================= EVENTS =========================
 
-    private void HandleLevelUp(int level)       => RefreshUI();
+    private void HandleLevelUp(int level)           => RefreshUI();
     private void HandleExpChanged(float c, float r) => RefreshUI();
-    private void HandleGoldChanged(int value)   => RefreshUI();
-    private void HandleGemChanged(int value)    => RefreshUI();
+    private void HandleGoldChanged(int value)       => RefreshUI();
+    private void HandleGemChanged(int value)        => RefreshUI();
 
     // ========================= SAVE =========================
 

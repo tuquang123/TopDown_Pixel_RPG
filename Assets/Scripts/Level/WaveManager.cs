@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public struct EnemySpawnEntry
@@ -33,13 +32,9 @@ public class WaveManager : Singleton<WaveManager>
     [SerializeField, Min(0.05f)]private float minSpawnInterval          = 0.15f;
     [SerializeField, Min(1)]    private int   bossWaveFrequency         = 5;
 
-    [Header("Formation")]
-    [SerializeField, Min(1f)]  private float formationRadius  = 8f;
-    [SerializeField, Min(0.5f)]private float formationSpacing = 1.4f;
-
-    [Header("Spawn Area")]
-    [SerializeField, Min(1f)] private float spawnRadiusMin = 6f;
-    [SerializeField, Min(1f)] private float spawnRadiusMax = 10f;
+    [Header("Spawn Settings")]
+    [SerializeField, Min(0f)] private float minSpawnDistanceFromPlayer = 5f;
+    [SerializeField, Min(0f)] private float maxSpawnDistanceFromPlayer = 10f;
 
     [Header("Physics")]
     [SerializeField] private string enemyLayerName = "Enemy";
@@ -78,6 +73,10 @@ public class WaveManager : Singleton<WaveManager>
     [Header("Spawn Weight Scaling")]
     [SerializeField, Min(0f)] private float weightGrowthPerStage = 0.1f;
 
+    // ── Save keys ──
+    private const string KEY_WAVE  = "wave_current";
+    private const string KEY_STAGE = "wave_stage";
+
     // ── Events ──
     public event Action<int, int, bool> OnWaveStarted;
     public event Action<int>            OnWaveCleared;
@@ -88,11 +87,12 @@ public class WaveManager : Singleton<WaveManager>
     private readonly HashSet<EnemyAI>            aliveEnemies  = new();
     private readonly Dictionary<EnemyAI, Action> deathHandlers = new();
 
-    private int  currentWave;
-    private int  currentStage = 1;
-    private bool waveActive;
+    private int            currentWave;
+    private int            currentStage = 1;
+    private bool           waveActive;
     private WaveProgressUI waveUiInstance;
     private GameObject     currentMapInstance;
+    private GameObject     currentMapPrefab;   // track prefab đang dùng để tránh swap trùng
 
     public int CurrentWave       => currentWave;
     public int CurrentStage      => currentStage;
@@ -113,6 +113,9 @@ public class WaveManager : Singleton<WaveManager>
             Destroy(waveUiInstance.gameObject);
     }
 
+    private void OnApplicationQuit() => SaveProgress();
+    private void OnApplicationPause(bool pause) { if (pause) SaveProgress(); }
+
     private void Start()
     {
         player ??= PlayerController.Instance?.transform;
@@ -120,9 +123,36 @@ public class WaveManager : Singleton<WaveManager>
         SetupEnemyLayerCollision();
         SetupWaveUi();
 
-        currentWave = Mathf.Max(1, startWave) - 1;
+        LoadProgress();
         ApplyStageData(currentStage);
         StartNextWave();
+    }
+
+    // ── Save / Load ──
+    private void SaveProgress()
+    {
+        PlayerPrefs.SetInt(KEY_WAVE,  currentWave);
+        PlayerPrefs.SetInt(KEY_STAGE, currentStage);
+        PlayerPrefs.Save();
+        Debug.Log($"[WaveManager] Saved → Stage {currentStage}, Wave {currentWave}");
+    }
+
+    private void LoadProgress()
+    {
+        int savedWave  = PlayerPrefs.GetInt(KEY_WAVE,  Mathf.Max(1, startWave) - 1);
+        int savedStage = PlayerPrefs.GetInt(KEY_STAGE, 1);
+
+        currentWave  = savedWave;
+        currentStage = Mathf.Max(1, savedStage);
+
+        Debug.Log($"[WaveManager] Loaded → Stage {currentStage}, Wave {currentWave}");
+    }
+
+    public void ClearSave()
+    {
+        PlayerPrefs.DeleteKey(KEY_WAVE);
+        PlayerPrefs.DeleteKey(KEY_STAGE);
+        PlayerPrefs.Save();
     }
 
     // ── Stage ──
@@ -142,7 +172,10 @@ public class WaveManager : Singleton<WaveManager>
 
         Debug.Log($"[WaveManager] Stage {stageNumber} → {data.stageName}");
 
-        if (data.mapPrefab != null)
+        // Chỉ swap map nếu prefab khác với map đang chạy
+        bool shouldSwap = data.mapPrefab != null && data.mapPrefab != currentMapPrefab;
+
+        if (shouldSwap)
         {
             if (ScreenFader.Instance != null)
             {
@@ -168,6 +201,7 @@ public class WaveManager : Singleton<WaveManager>
             Destroy(currentMapInstance);
 
         currentMapInstance = Instantiate(mapPrefab);
+        currentMapPrefab   = mapPrefab; // ghi nhớ prefab đang dùng
     }
 
     private void GiveStageReward(StageData data)
@@ -232,6 +266,8 @@ public class WaveManager : Singleton<WaveManager>
         bool isBossWave = currentWave % Mathf.Max(1, bossWaveFrequency) == 0;
         waveActive = true;
 
+        SaveProgress();
+
         OnWaveStarted?.Invoke(currentWave, currentStage, isBossWave);
 
         if (isBossWave) { SpawnBoss(); return; }
@@ -245,32 +281,16 @@ public class WaveManager : Singleton<WaveManager>
 
     private IEnumerator SpawnWaveRoutine(int enemyCount, float spawnInterval)
     {
-        yield return StartCoroutine(SpawnDiamond(enemyCount));
+        yield return StartCoroutine(SpawnWave(enemyCount));
     }
 
     // ── Spawn ──
-    private IEnumerator SpawnDiamond(int enemyCount)
+    private IEnumerator SpawnWave(int enemyCount)
     {
-        Vector3 center = PlayerPosition();
-        Vector3[] apexes =
+        for (int i = 0; i < enemyCount; i++)
         {
-            center + new Vector3( 0,               formationRadius, 0),
-            center + new Vector3( 0,              -formationRadius, 0),
-            center + new Vector3(-formationRadius,  0,              0),
-            center + new Vector3( formationRadius,  0,              0),
-        };
-
-        int groupSize = Mathf.Max(2, Mathf.CeilToInt((float)enemyCount / 4));
-
-        for (int g = 0; g < 4; g++)
-        {
-            Vector3 outDir = (apexes[g] - center).normalized;
-            for (int i = 0; i < groupSize; i++)
-            {
-                SpawnEnemyAt(apexes[g] + outDir * (i * formationSpacing), false);
-                yield return new WaitForSeconds(0.08f);
-            }
-            yield return new WaitForSeconds(0.15f);
+            SpawnEnemyAt(GetRandomSpawnPosition(), false);
+            yield return new WaitForSeconds(0.08f);
         }
     }
 
@@ -338,10 +358,12 @@ public class WaveManager : Singleton<WaveManager>
 
     private Vector3 GetRandomSpawnPosition()
     {
-        Vector2 dir = UnityEngine.Random.insideUnitCircle.normalized;
-        if (dir == Vector2.zero) dir = Vector2.right;
-        float dist = UnityEngine.Random.Range(spawnRadiusMin, Mathf.Max(spawnRadiusMin, spawnRadiusMax));
-        return PlayerPosition() + new Vector3(dir.x, dir.y) * dist;
+        float angle = UnityEngine.Random.Range(0f, 360f) * Mathf.Deg2Rad;
+        float dist  = UnityEngine.Random.Range(minSpawnDistanceFromPlayer,
+                          Mathf.Max(minSpawnDistanceFromPlayer, maxSpawnDistanceFromPlayer));
+
+        Vector3 playerPos = PlayerPosition();
+        return playerPos + new Vector3(Mathf.Cos(angle) * dist, Mathf.Sin(angle) * dist, 0f);
     }
 
     private GameObject GetRandomEnemyPrefab()
@@ -413,15 +435,19 @@ public class WaveManager : Singleton<WaveManager>
     {
         StopAllCoroutines();
         waveActive = false;
+        SaveProgress();
     }
 
     public void RestartWaves()
     {
-        currentWave  = Mathf.Max(1, startWave) - 1;
-        currentStage = 1;
-        waveActive   = false;
+        currentWave      = Mathf.Max(1, startWave) - 1;
+        currentStage     = 1;
+        waveActive       = false;
+        currentMapPrefab = null;
         aliveEnemies.Clear();
         deathHandlers.Clear();
+
+        ClearSave();
 
         if (currentMapInstance != null)
             Destroy(currentMapInstance);
