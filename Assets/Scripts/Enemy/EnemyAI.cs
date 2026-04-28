@@ -52,6 +52,15 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     [BoxGroup("Movement"), LabelText("Move Speed"), Range(0f, 10f)] [SerializeField]
     protected float moveSpeed = 3f;
 
+    [BoxGroup("Movement"), LabelText("Separation Radius"), Range(0f, 2f)] [SerializeField]
+    private float separationRadius = 0.6f;
+
+    [BoxGroup("Movement"), LabelText("Separation Weight"), Range(0f, 3f)] [SerializeField]
+    private float separationWeight = 1.2f;
+
+    [BoxGroup("Movement"), LabelText("Max Neighbors"), Range(1, 24)] [SerializeField]
+    private int maxSeparationNeighbors = 8;
+
     #endregion
 
     #region Knockback
@@ -105,6 +114,9 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
     // Velocity mong muốn — được set bởi AI logic (Update), apply bởi FixedUpdate
     private Vector2 _desiredVelocity;
+
+    private const int MaxSeparationBuffer = 24;
+    private readonly Collider2D[] _separationBuffer = new Collider2D[MaxSeparationBuffer];
 
     #endregion
 
@@ -431,8 +443,47 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
             return;
         }
 
-        _desiredVelocity = direction.normalized * moveSpeed;
+        Vector2 steeringDirection = direction.normalized + CalculateSeparationOffset();
+        if (steeringDirection.sqrMagnitude <= 0.0001f)
+            steeringDirection = direction.normalized;
+
+        _desiredVelocity = steeringDirection.normalized * moveSpeed;
         anim?.SetBool(MoveBool, true);
+    }
+
+    private Vector2 CalculateSeparationOffset()
+    {
+        if (separationRadius <= 0f || separationWeight <= 0f)
+            return Vector2.zero;
+
+        int hits = Physics2D.OverlapCircleNonAlloc(transform.position, separationRadius, _separationBuffer);
+        if (hits <= 1)
+            return Vector2.zero;
+
+        Vector2 separation = Vector2.zero;
+        int countedNeighbors = 0;
+        int allowedNeighbors = Mathf.Min(maxSeparationNeighbors, MaxSeparationBuffer);
+        Vector2 selfPosition = transform.position;
+
+        for (int i = 0; i < hits && countedNeighbors < allowedNeighbors; i++)
+        {
+            Collider2D otherCollider = _separationBuffer[i];
+            if (otherCollider == null || otherCollider.attachedRigidbody == cachedRigidbody)
+                continue;
+
+            if (!otherCollider.TryGetComponent(out EnemyAI otherEnemy) || otherEnemy.IsDead)
+                continue;
+
+            Vector2 away = selfPosition - (Vector2)otherEnemy.transform.position;
+            float sqrDistance = away.sqrMagnitude;
+            if (sqrDistance <= 0.0001f)
+                continue;
+
+            separation += away / sqrDistance;
+            countedNeighbors++;
+        }
+
+        return countedNeighbors > 0 ? separation.normalized * separationWeight : Vector2.zero;
     }
 
     protected void StopMotion(bool disablePhysics = false)
