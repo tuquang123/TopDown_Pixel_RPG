@@ -8,7 +8,8 @@ public class StageData
     public string stageName = "Stage 1";
 
     [Header("Map")]
-    [Tooltip("Prefab map sẽ được spawn khi vào stage này")]
+    [Tooltip("Prefab map chồng lên base map khi vào stage này.\n" +
+             "Stage 1 (base map) để trống vì base map đã có sẵn trong scene.")]
     public GameObject mapPrefab;
 
     [Header("Reward khi clear stage")]
@@ -22,14 +23,13 @@ public class StageDataSO : ScriptableObject
     [Tooltip("Danh sách stage theo thứ tự. Index 0 = Stage 1, Index 1 = Stage 2, ...")]
     public List<StageData> stages = new();
 
-    /// <summary>Lấy data stage theo số stage (bắt đầu từ 1). Trả về null nếu list rỗng.</summary>
     public StageData Get(int stageNumber)
     {
         int index = stageNumber - 1;
         if (index < 0 || index >= stages.Count) return null;
         return stages[index];
     }
-    
+
     public StageData GetOrLast(int stageNumber)
     {
         if (stages == null || stages.Count == 0) return null;

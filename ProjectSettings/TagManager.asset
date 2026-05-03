@@ -17,8 +17,8 @@ TagManager:
   - UI
   - Player
   - Enemys
-  - 
-  - 
+  - GameObject
+  - Walls
   - 
   - 
   - 
@@ -47,6 +47,9 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Walls
+    uniqueID: 1170771235
     locked: 0
   m_RenderingLayers:
   - Default

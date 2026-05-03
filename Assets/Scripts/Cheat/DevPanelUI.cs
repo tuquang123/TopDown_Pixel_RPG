@@ -25,6 +25,7 @@ public class DevPanelUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI gemText;
     [SerializeField] private TextMeshProUGUI lifeStealText;
     [SerializeField] private TextMeshProUGUI gameSpeedText;
+    [SerializeField] private TextMeshProUGUI waveText;
 
     [SerializeField] private GameObject    statsGroup;
     [SerializeField] private QuestDatabase questDatabase;
@@ -52,6 +53,12 @@ public class DevPanelUI : MonoBehaviour
         CurrencyManager.Instance.OnGoldChanged += HandleGoldChanged;
         CurrencyManager.Instance.OnGemsChanged += HandleGemChanged;
 
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.OnWaveStarted  += HandleWaveStarted;
+            WaveManager.Instance.OnWaveCleared  += HandleWaveCleared;
+        }
+
         SetGameSpeed(1f);
         RefreshUI();
     }
@@ -66,6 +73,12 @@ public class DevPanelUI : MonoBehaviour
         {
             CurrencyManager.Instance.OnGoldChanged -= HandleGoldChanged;
             CurrencyManager.Instance.OnGemsChanged -= HandleGemChanged;
+        }
+
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.OnWaveStarted -= HandleWaveStarted;
+            WaveManager.Instance.OnWaveCleared -= HandleWaveCleared;
         }
 
         // Reset tốc độ khi panel bị destroy
@@ -155,6 +168,16 @@ public class DevPanelUI : MonoBehaviour
         SaveGame();
     }
 
+    /// <summary>
+    /// [CHEAT] Bắt đầu wave tiếp theo ngay lập tức.
+    /// Quái wave cũ vẫn còn sống — chỉ spawn thêm quái wave mới chồng lên.
+    /// </summary>
+    public void CheatNextWave()
+    {
+        WaveManager.Instance?.ForceNextWave();
+        RefreshUI();
+    }
+
     // ========================= UI =========================
 
     public void RefreshUI()
@@ -170,6 +193,9 @@ public class DevPanelUI : MonoBehaviour
         manaText.text        = "Mana: "      + playerStats.maxMana.Value;
         goldText.text        = "Gold: "      + CurrencyManager.Instance.Gold;
         gemText.text         = "Gem: "       + CurrencyManager.Instance.Gems;
+
+        if (waveText != null && WaveManager.Instance != null)
+            waveText.text = $"Wave: {WaveManager.Instance.CurrentWave}  Stage: {WaveManager.Instance.CurrentStage}";
     }
 
     public void TogglePanel()  => gameObject.SetActive(!gameObject.activeSelf);
@@ -177,10 +203,12 @@ public class DevPanelUI : MonoBehaviour
 
     // ========================= EVENTS =========================
 
-    private void HandleLevelUp(int level)           => RefreshUI();
-    private void HandleExpChanged(float c, float r) => RefreshUI();
-    private void HandleGoldChanged(int value)       => RefreshUI();
-    private void HandleGemChanged(int value)        => RefreshUI();
+    private void HandleLevelUp(int level)               => RefreshUI();
+    private void HandleExpChanged(float c, float r)     => RefreshUI();
+    private void HandleGoldChanged(int value)           => RefreshUI();
+    private void HandleGemChanged(int value)            => RefreshUI();
+    private void HandleWaveStarted(int w, int s, bool b) => RefreshUI();
+    private void HandleWaveCleared(int w)               => RefreshUI();
 
     // ========================= SAVE =========================
 
