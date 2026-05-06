@@ -23,8 +23,9 @@ public struct EnemySpawnEntry
 ///     2. "SpawnZone" — vẽ những ô TRONG NỘI THẤT mà quái được spawn
 ///        (đặt Alpha = 0 trên Tile hoặc ẩn TilemapRenderer để invisible ingame)
 ///
-///   Mỗi StageData PHẢI có mapPrefab — khi stage đổi, map cũ bị Destroy
-///   và map mới được Instantiate thay thế.
+///   Stage 1 dùng map có sẵn trong scene → kéo root GameObject đó vào
+///   initialSceneMap để WaveManager có thể Destroy đúng khi chuyển stage.
+///   Stage 2 trở đi → điền mapPrefab như bình thường.
 /// </summary>
 public class WaveManager : Singleton<WaveManager>
 {
@@ -42,6 +43,12 @@ public class WaveManager : Singleton<WaveManager>
     [Tooltip("Tên chính xác của Tilemap con dùng làm vùng spawn trong mỗi map prefab.\n" +
              "Mặc định: 'SpawnZone' — đổi nếu bạn đặt tên khác trong Hierarchy.")]
     [SerializeField] private string spawnZoneTilemapName = "SpawnZone";
+
+    [Header("Map")]
+    [Tooltip("Kéo root GameObject của map Stage 1 có sẵn trong scene vào đây.\n" +
+             "WaveManager sẽ coi đây là currentMapInstance ban đầu —\n" +
+             "đảm bảo Destroy đúng khi chuyển sang Stage 2 (tránh 2 map tồn tại cùng lúc).")]
+    [SerializeField] private GameObject initialSceneMap;
 
     [Header("Prefabs")]
     [SerializeField] private List<EnemySpawnEntry> enemySpawnEntries = new();
@@ -128,6 +135,9 @@ public class WaveManager : Singleton<WaveManager>
     private GameObject currentMapInstance;
     private GameObject currentMapPrefab;
 
+    // Ngăn spawn 2 map khi fader đang chạy dở
+    private GameObject pendingMapPrefab;
+
     // ── SPAWN TILE CACHE ─────────────────────────────────────────
     private readonly List<Vector3> spawnTiles = new();
 
@@ -165,8 +175,52 @@ public class WaveManager : Singleton<WaveManager>
         SetupEnemyLayerCollision();
         SetupWaveUi();
         LoadProgress();
+
+        // ── FIX ROOT CAUSE ────────────────────────────────────────
+        // Stage 1 thường dùng map có sẵn trong scene (mapPrefab = null).
+        // Nếu không đăng ký nó vào currentMapInstance, khi swap sang Stage 2
+        // SwapMap() sẽ Destroy(null) — tức là KHÔNG xóa map cũ — gây ra 2 map.
+        RegisterInitialSceneMap();
+        // ─────────────────────────────────────────────────────────
+
         ApplyStageData(currentStage);
         StartNextWave();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  INITIAL SCENE MAP
+    // ═══════════════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Đăng ký map Stage 1 có sẵn trong scene vào currentMapInstance.
+    /// Gọi trước ApplyStageData để SwapMap biết phải Destroy cái nào.
+    /// </summary>
+    private void RegisterInitialSceneMap()
+    {
+        // Ưu tiên 1: designer kéo thẳng vào Inspector
+        if (initialSceneMap != null)
+        {
+            currentMapInstance = initialSceneMap;
+            BuildSpawnCache(currentMapInstance);
+            Debug.Log($"[WaveManager] Đăng ký initialSceneMap: \"{initialSceneMap.name}\"");
+            return;
+        }
+
+        // Ưu tiên 2: tự tìm trong scene qua SpawnZone Tilemap
+        // (fallback nếu designer quên kéo vào Inspector)
+        foreach (var tm in FindObjectsByType<Tilemap>(FindObjectsSortMode.None))
+        {
+            if (tm.name != spawnZoneTilemapName) continue;
+
+            GameObject root = tm.transform.root.gameObject;
+            if (root == gameObject) continue; // bỏ qua nếu là chính WaveManager
+
+            currentMapInstance = root;
+            BuildSpawnCache(currentMapInstance);
+            Debug.Log($"[WaveManager] Tự tìm thấy scene map: \"{root.name}\" " +
+                      "(gợi ý: kéo nó vào trường 'Initial Scene Map' để chắc chắn hơn)");
+            return;
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -215,20 +269,35 @@ public class WaveManager : Singleton<WaveManager>
 
         Debug.Log($"[WaveManager] Stage {stageNumber} -> {data.stageName}");
 
-        if (data.mapPrefab != null && data.mapPrefab != currentMapPrefab)
+        bool needSwap = data.mapPrefab != null
+                     && data.mapPrefab != currentMapPrefab
+                     && data.mapPrefab != pendingMapPrefab;
+
+        if (needSwap)
         {
+            pendingMapPrefab = data.mapPrefab;
+
             if (ScreenFader.Instance != null)
                 ScreenFader.Instance.FadeIn(0.4f, () =>
                 {
                     SwapMap(data.mapPrefab);
+                    pendingMapPrefab = null;
                     ScreenFader.Instance.FadeOut(0.4f);
                 });
             else
+            {
                 SwapMap(data.mapPrefab);
+                pendingMapPrefab = null;
+            }
         }
-        else if (data.mapPrefab == null)
+        else if (data.mapPrefab == null && spawnTiles.Count == 0)
         {
-            Debug.LogWarning($"[WaveManager] Stage {stageNumber} không có mapPrefab — spawnTiles có thể rỗng.");
+            // mapPrefab null nhưng chưa có cache → build lại từ currentMapInstance
+            if (currentMapInstance != null)
+                BuildSpawnCache(currentMapInstance);
+            else
+                Debug.LogWarning($"[WaveManager] Stage {stageNumber} không có mapPrefab " +
+                                 "và không tìm thấy scene map — spawnTiles sẽ rỗng.");
         }
 
         if (stageNumber > 1)
@@ -238,7 +307,10 @@ public class WaveManager : Singleton<WaveManager>
     private void SwapMap(GameObject newPrefab)
     {
         if (currentMapInstance != null)
+        {
             Destroy(currentMapInstance);
+            currentMapInstance = null;
+        }
 
         currentMapInstance = Instantiate(newPrefab);
         currentMapPrefab   = newPrefab;
@@ -614,6 +686,7 @@ public class WaveManager : Singleton<WaveManager>
         currentStage     = 1;
         waveActive       = false;
         currentMapPrefab = null;
+        pendingMapPrefab = null;
         spawnTiles.Clear();
         aliveEnemies.Clear();
         deathHandlers.Clear();
@@ -625,6 +698,7 @@ public class WaveManager : Singleton<WaveManager>
             currentMapInstance = null;
         }
 
+        // Sau restart scene map ban đầu đã bị Destroy — ApplyStageData sẽ Instantiate map mới.
         ApplyStageData(currentStage);
         OnWavesRestarted?.Invoke();
         StartNextWave();

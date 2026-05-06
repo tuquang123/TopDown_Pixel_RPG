@@ -918,7 +918,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 533
+      value: 586
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
@@ -994,7 +994,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 198.2845
+      value: 224.7845
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1439,67 +1439,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 557c37f4eb8828b4c8961bbeb2c869f7, type: 3}
---- !u!1001 &1231989521
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2387416216960109328, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2387416216960109328, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2387416216960109328, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2387416216960109328, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2387416216960109328, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2387416216960109328, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2387416216960109328, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2387416216960109328, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2387416216960109328, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2387416216960109328, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3918573245951797597, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_Name
-      value: Map_Village
-      objectReference: {fileID: 0}
-    - target: {fileID: 3918573245951797597, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
 --- !u!1 &1285432036
 GameObject:
   m_ObjectHideFlags: 0
@@ -1673,11 +1612,6 @@ Transform:
   - {fileID: 519420032}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1500474453 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3918573245951797597, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
-  m_PrefabInstance: {fileID: 1231989521}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1549552518
 GameObject:
   m_ObjectHideFlags: 0
@@ -2841,7 +2775,7 @@ PrefabInstance:
     - target: {fileID: 2776604855330744611, guid: 39b9792ff43578f47a129b128a552f16, type: 3}
       propertyPath: baseMapInstance
       value: 
-      objectReference: {fileID: 1500474453}
+      objectReference: {fileID: 0}
     - target: {fileID: 2776604855330744611, guid: 39b9792ff43578f47a129b128a552f16, type: 3}
       propertyPath: enemiesBaseCount
       value: 2
@@ -5410,4 +5344,3 @@ SceneRoots:
   - {fileID: 8923448626749527518}
   - {fileID: 5315643320553686428}
   - {fileID: 1549552520}
-  - {fileID: 1231989521}
