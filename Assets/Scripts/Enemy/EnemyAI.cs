@@ -114,6 +114,11 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
     // Velocity mong muốn — được set bởi AI logic (Update), apply bởi FixedUpdate
     private Vector2 _desiredVelocity;
+    private Vector2 _lastPhysicsPosition;
+    private float _blockedMoveTimer;
+
+    private const float BlockedMoveDistanceEpsilon = 0.005f;
+    private const float BlockedMoveTimeBeforeIdle = 0.12f;
 
     private const int MaxSeparationBuffer = 24;
     private readonly Collider2D[] _separationBuffer = new Collider2D[MaxSeparationBuffer];
@@ -231,6 +236,9 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     private void OnEnable()
     {
         EnsureCachedComponents();
+        if (cachedRigidbody != null)
+            _lastPhysicsPosition = cachedRigidbody.position;
+        _blockedMoveTimer = 0f;
         EnemyTracker.Instance?.Register(this);
         isDead = false;
         spawnPosition = transform.position;
@@ -265,7 +273,21 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     private void FixedUpdate()
     {
         if (cachedRigidbody == null) return;
+
         cachedRigidbody.linearVelocity = _desiredVelocity;
+
+        Vector2 currentPosition = cachedRigidbody.position;
+        float movedDistance = (currentPosition - _lastPhysicsPosition).magnitude;
+
+        if (_desiredVelocity.sqrMagnitude > 0.0001f && movedDistance <= BlockedMoveDistanceEpsilon)
+            _blockedMoveTimer += Time.fixedDeltaTime;
+        else
+            _blockedMoveTimer = 0f;
+
+        bool isActuallyMoving = _desiredVelocity.sqrMagnitude > 0.0001f && _blockedMoveTimer < BlockedMoveTimeBeforeIdle;
+        anim?.SetBool(MoveBool, isActuallyMoving);
+
+        _lastPhysicsPosition = currentPosition;
     }
 
     public void OptimizedUpdate()
@@ -443,12 +465,20 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
             return;
         }
 
-        Vector2 steeringDirection = direction.normalized + CalculateSeparationOffset();
+        Vector2 forwardDirection = direction.normalized;
+        Vector2 separationOffset = CalculateSeparationOffset();
+
+        // Tránh trường hợp separation đẩy ngược hoàn toàn hướng đuổi mục tiêu,
+        // gây hiện tượng enemy chạy tới rồi giật lùi liên tục.
+        float oppositeAmount = Vector2.Dot(separationOffset, -forwardDirection);
+        if (oppositeAmount > 0f)
+            separationOffset += forwardDirection * oppositeAmount;
+
+        Vector2 steeringDirection = forwardDirection + separationOffset;
         if (steeringDirection.sqrMagnitude <= 0.0001f)
-            steeringDirection = direction.normalized;
+            steeringDirection = forwardDirection;
 
         _desiredVelocity = steeringDirection.normalized * moveSpeed;
-        anim?.SetBool(MoveBool, true);
     }
 
     private Vector2 CalculateSeparationOffset()

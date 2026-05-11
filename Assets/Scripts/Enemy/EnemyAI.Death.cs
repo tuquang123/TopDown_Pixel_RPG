@@ -145,6 +145,9 @@ public partial class EnemyAI
             cachedCollider.enabled = true;
 
         StopMotion();
+        if (cachedRigidbody != null)
+            _lastPhysicsPosition = cachedRigidbody.position;
+        _blockedMoveTimer = 0f;
         ChooseNewPatrolPoint();
         RefreshHealthUI();
     }
