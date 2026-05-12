@@ -40,6 +40,7 @@ public class QuestReward
     public int goldReward;
     public int gemReward;
     public List<string> itemIDs;
+    public ItemInstance rewardItem; // item nhận được, để null nếu không có
 }
 
 public enum ObjectiveType

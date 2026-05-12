@@ -15,8 +15,9 @@ public enum PopupType
     Map,
     Hero,
     LevelUpSkill,
+    QuestReward,
 }
-    
+
 [Serializable]
 public class PopupEntry
 {
@@ -32,11 +33,8 @@ public class UIManager : Singleton<UIManager>
     [Header("Popup Prefabs")]
     [SerializeField] private List<PopupEntry> popupEntries;
 
-    // popupType -> prefab
     private Dictionary<PopupType, BasePopup> popupPrefabDict = new();
-
-    // popupType -> instance đang mở
-    private Dictionary<PopupType, BasePopup> activePopups = new();
+    private Dictionary<PopupType, BasePopup> activePopups    = new();
 
     protected override void Awake()
     {
@@ -50,33 +48,59 @@ public class UIManager : Singleton<UIManager>
             if (entry.prefab == null) continue;
 
             if (!popupPrefabDict.ContainsKey(entry.type))
-            {
                 popupPrefabDict.Add(entry.type, entry.prefab);
-            }
         }
 
         UpdateBlurState();
     }
-    
+
     private void UpdateTimeScale()
     {
         var invalidKeys = new List<PopupType>();
 
         foreach (var pair in activePopups)
-        {
             if (pair.Value == null)
                 invalidKeys.Add(pair.Key);
-        }
 
         foreach (var key in invalidKeys)
             activePopups.Remove(key);
 
-        //Time.timeScale = activePopups.Count > 0 ? 0f : 1f;
+        // Time.timeScale = activePopups.Count > 0 ? 0f : 1f;
     }
 
     // ================== SHOW ==================
 
-   
+    public BasePopup ShowPopupByType(PopupType type)
+    {
+        if (activePopups.TryGetValue(type, out var existing))
+        {
+            if (existing != null)
+                return existing;
+
+            activePopups.Remove(type);
+        }
+
+        if (!popupPrefabDict.TryGetValue(type, out var prefab))
+        {
+            Debug.LogWarning($"[UIManager] Không tìm thấy prefab cho popup: {type}");
+            return null;
+        }
+
+        var instance = Instantiate(prefab, transform);
+        activePopups[type] = instance;
+
+        UpdateBlurState();
+        UpdateTimeScale();
+
+        return instance;
+    }
+
+    public QuestRewardPopupUI ShowQuestRewardPopup(QuestReward reward, string questName = "")
+    {
+        var popup = ShowPopupByType(PopupType.QuestReward) as QuestRewardPopupUI;
+        popup?.ShowReward(reward, questName); // ← fix: ShowReward thay vì Show
+        return popup;
+    }
 
     // ================== HIDE ==================
 
@@ -85,7 +109,7 @@ public class UIManager : Singleton<UIManager>
         if (!activePopups.TryGetValue(type, out var popup))
             return;
 
-        popup.Hide(); // popup tự Destroy
+        popup.Hide();
         activePopups.Remove(type);
 
         UpdateBlurState();
@@ -111,7 +135,12 @@ public class UIManager : Singleton<UIManager>
     {
         return activePopups.ContainsKey(type);
     }
-    
+
+    public bool TryGetPopup(PopupType type, out BasePopup popup)
+    {
+        return activePopups.TryGetValue(type, out popup);
+    }
+
     // ================== BLUR ==================
 
     public void UpdateBlurState()
@@ -127,38 +156,4 @@ public class UIManager : Singleton<UIManager>
               .SetUpdate(true);
         }
     }
-  
-    
-    public BasePopup ShowPopupByType(PopupType type)
-    {
-        if (activePopups.TryGetValue(type, out var existing))
-        {
-            if (existing != null)
-                return existing;
-
-            // popup đã bị destroy → xoá reference cũ
-            activePopups.Remove(type);
-        }
-
-        if (!popupPrefabDict.TryGetValue(type, out var prefab))
-        {
-            Debug.LogWarning($"[UIManager] Không tìm thấy prefab cho popup: {type}");
-            return null;
-        }
-
-        var instance = Instantiate(prefab, transform);
-        activePopups[type] = instance;
-
-        instance.Show();
-        UpdateBlurState();
-        UpdateTimeScale();
-
-        return instance;
-    }
-    
-    public bool TryGetPopup(PopupType type, out BasePopup popup)
-    {
-        return activePopups.TryGetValue(type, out popup);
-    }
-   
 }

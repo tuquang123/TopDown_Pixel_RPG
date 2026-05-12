@@ -18,6 +18,9 @@ public class RewardPopupManager : Singleton<RewardPopupManager>
     [SerializeField] private float startYOffset = -200f;
     [SerializeField] private float endYOffset = 200f;
 
+    [Header("EXP Icon")]
+    [SerializeField] private Sprite expIcon; // kéo sprite EXP vào đây trong Inspector
+
     private Queue<RewardData> rewardQueue = new();
     private bool isShowing = false;
 
@@ -26,6 +29,13 @@ public class RewardPopupManager : Singleton<RewardPopupManager>
         rewardQueue.Enqueue(new RewardData(icon, name, quantity));
         if (!isShowing)
             StartCoroutine(ProcessQueue());
+    }
+
+    // ── Gọi khi giết quái ─────────────────────────────────────────────────────
+    public void ShowEXP(int amount)
+    {
+        if (amount <= 0) return;
+        ShowReward(expIcon, "EXP", amount);
     }
 
     private System.Collections.IEnumerator ProcessQueue()
@@ -39,12 +49,10 @@ public class RewardPopupManager : Singleton<RewardPopupManager>
 
             popup.Setup(data.icon, $"{data.name} x{data.quantity}");
 
-            // reset state
             popup.Rect.anchoredPosition = new Vector2(0, startYOffset);
             popup.Rect.localScale = Vector3.zero;
             popup.CanvasGroup.alpha = 0f;
 
-            // animation sequence
             Sequence seq = DOTween.Sequence();
             seq.Append(popup.Rect.DOScale(1f, scaleDuration).SetEase(Ease.OutBack));
             seq.Join(popup.Rect.DOAnchorPosY(0, moveInDuration).SetEase(Ease.OutCubic));

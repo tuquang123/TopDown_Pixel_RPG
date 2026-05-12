@@ -29,33 +29,33 @@ public class QuestUI : MonoBehaviour
         var claimGO = new GameObject("ClaimButton", typeof(RectTransform), typeof(Image), typeof(Button));
         claimGO.transform.SetParent(transform, false);
 
-        var rect = claimGO.GetComponent<RectTransform>();
-        rect.anchorMin = new Vector2(0.5f, 0f);
-        rect.anchorMax = new Vector2(0.5f, 0f);
-        rect.pivot = new Vector2(0.5f, 0f);
+        var rect              = claimGO.GetComponent<RectTransform>();
+        rect.anchorMin        = new Vector2(0.5f, 0f);
+        rect.anchorMax        = new Vector2(0.5f, 0f);
+        rect.pivot            = new Vector2(0.5f, 0f);
         rect.anchoredPosition = new Vector2(0f, 8f);
-        rect.sizeDelta = new Vector2(140f, 36f);
+        rect.sizeDelta        = new Vector2(140f, 36f);
 
-        var image = claimGO.GetComponent<Image>();
+        var image   = claimGO.GetComponent<Image>();
         image.color = new Color(0.2f, 0.65f, 0.2f, 0.95f);
 
-        claimButton = claimGO.GetComponent<Button>();
+        claimButton               = claimGO.GetComponent<Button>();
         claimButton.targetGraphic = image;
 
         var textGO = new GameObject("Label", typeof(RectTransform), typeof(Text));
         textGO.transform.SetParent(claimGO.transform, false);
 
-        var textRect = textGO.GetComponent<RectTransform>();
+        var textRect       = textGO.GetComponent<RectTransform>();
         textRect.anchorMin = Vector2.zero;
         textRect.anchorMax = Vector2.one;
         textRect.offsetMin = Vector2.zero;
         textRect.offsetMax = Vector2.zero;
 
-        var label = textGO.GetComponent<Text>();
-        label.text = "Claim";
+        var label       = textGO.GetComponent<Text>();
+        label.text      = "Claim";
         label.alignment = TextAnchor.MiddleCenter;
-        label.color = Color.white;
-        label.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        label.color     = Color.white;
+        label.font      = Resources.GetBuiltinResource<Font>("Arial.ttf");
     }
 
     public void UpdateQuestProgress(QuestProgress qp, bool readyToTurnIn = false)
@@ -96,16 +96,12 @@ public class QuestUI : MonoBehaviour
             if (qp.quest.reward.itemIDs != null)
             {
                 foreach (var item in qp.quest.reward.itemIDs)
-                {
                     text += $"• {item}\n";
-                }
             }
         }
 
         if (readyToTurnIn)
-        {
             text += "\n<color=yellow>Hoàn thành! Nhấn Claim để nhận thưởng.</color>";
-        }
 
         questProgressText.text = text;
 
@@ -127,6 +123,17 @@ public class QuestUI : MonoBehaviour
         if (currentQuest == null || currentQuest.state != QuestState.Completed)
             return;
 
+        if (currentQuest.quest?.reward != null)
+        {
+            UIManager.Instance.ShowQuestRewardPopup(
+                currentQuest.quest.reward,
+                currentQuest.quest.questName
+            );
+        }
+
         QuestManager.Instance?.TurnInQuest(currentQuest);
+
+        if (claimButton != null)
+            claimButton.gameObject.SetActive(false);
     }
 }
