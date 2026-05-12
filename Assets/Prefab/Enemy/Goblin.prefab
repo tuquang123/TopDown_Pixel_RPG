@@ -410,7 +410,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1581309216436780966}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
@@ -497,6 +497,11 @@ MonoBehaviour:
   attackCooldown: 3.5
   skipHurtAnimation: 0
   moveSpeed: 1
+  separationRadius: 0.6
+  separationWeight: 1.2
+  maxSeparationNeighbors: 8
+  acceleration: 20
+  separationSmoothSpeed: 8
   knockForce: 1.5
   knockDuration: 0.2
   damagedStunTime: 0.2

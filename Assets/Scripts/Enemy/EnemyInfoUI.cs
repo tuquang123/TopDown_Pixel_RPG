@@ -5,17 +5,23 @@ using System.Collections;
 
 public class EnemyInfoPopupUI : MonoBehaviour
 {
-    [Header("UI")]
+    [Header("Basic Info")]
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI levelText;
+
+    [Header("HP")]
     [SerializeField] private Slider hpSlider;
     [SerializeField] private TextMeshProUGUI hpText;
 
+    [Header("Stats")]
+    [SerializeField] private TextMeshProUGUI attackDamageText;
+    [SerializeField] private TextMeshProUGUI moveSpeedText;
+
     [Header("Auto Hide")]
-    [SerializeField] private float autoHideTime = 3f; // ⭐ 3 giây
+    [SerializeField] private float autoHideTime = 4f;
 
     private EnemyAI currentEnemy;
-    private Coroutine autoHideCoroutine; // ⭐
+    private Coroutine autoHideCoroutine;
 
     public static EnemyInfoPopupUI Instance { get; private set; }
 
@@ -25,7 +31,6 @@ public class EnemyInfoPopupUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    // ====== PUBLIC API ======
     public void Show(EnemyAI enemy)
     {
         if (enemy == null || enemy.IsDead)
@@ -38,7 +43,6 @@ public class EnemyInfoPopupUI : MonoBehaviour
         gameObject.SetActive(true);
         Refresh();
 
-        // ⭐ reset đếm 3 giây mỗi lần Show
         if (autoHideCoroutine != null)
             StopCoroutine(autoHideCoroutine);
 
@@ -58,31 +62,52 @@ public class EnemyInfoPopupUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private IEnumerator AutoHideAfterDelay() // ⭐
+    public void Refresh()
+    {
+        if (currentEnemy == null) return;
+
+        if (nameText != null)
+            nameText.text = currentEnemy.EnemyName;
+
+        if (levelText != null)
+            levelText.text = $"Lv {currentEnemy.EnemyLevel}";
+
+        if (hpSlider != null)
+        {
+            hpSlider.maxValue = currentEnemy.MaxHealth;
+            hpSlider.value    = currentEnemy.CurrentHealth;
+        }
+
+        if (hpText != null)
+            hpText.text = $"{currentEnemy.CurrentHealth} / {currentEnemy.MaxHealth}";
+
+        if (attackDamageText != null)
+            attackDamageText.text = $"ATK: {currentEnemy.AttackDamage}";
+
+        if (moveSpeedText != null)
+            moveSpeedText.text = $"SPD: {currentEnemy.MoveSpeed:F1}";
+    }
+
+    private IEnumerator AutoHideAfterDelay()
     {
         yield return new WaitForSeconds(autoHideTime);
         Hide();
     }
 
-    public void Refresh()
+    private void Update()
     {
         if (currentEnemy == null) return;
 
-        nameText.text = currentEnemy.EnemyName;
-        levelText.text = $"Lv {currentEnemy.EnemyLevel}";
-
-        hpSlider.maxValue = currentEnemy.MaxHealth;
-        hpSlider.value = currentEnemy.CurrentHealth;
-
-        hpText.text = $"{currentEnemy.CurrentHealth} / {currentEnemy.MaxHealth}";
-    }
-
-    private void Update()
-    {
-        // Enemy chết → đóng popup ngay
-        if (currentEnemy != null && currentEnemy.IsDead)
+        if (currentEnemy.IsDead)
         {
             Hide();
+            return;
         }
+
+        if (hpSlider != null)
+            hpSlider.value = currentEnemy.CurrentHealth;
+
+        if (hpText != null)
+            hpText.text = $"{currentEnemy.CurrentHealth} / {currentEnemy.MaxHealth}";
     }
 }

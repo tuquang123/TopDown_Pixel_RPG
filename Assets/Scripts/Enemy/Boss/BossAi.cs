@@ -4,7 +4,6 @@ using UnityEngine;
 public class BossAI : EnemyAI
 {
     [Header("Boss Special Settings")]
-    //[SerializeField] private float specialAttackCooldown = 5f;
     [SerializeField] private BossHealthUI bossHealthUI;
 
     [Header("Boss Skills")]
@@ -16,7 +15,6 @@ public class BossAI : EnemyAI
     [SerializeField] private float dashCooldown = 8f;
     [SerializeField] private float shootCooldown = 6f;
 
-    //private float _lastSpecialAttackTime;
     private float _lastMinionTime;
     private float _lastDashTime;
     private float _lastShootTime;
@@ -72,7 +70,6 @@ public class BossAI : EnemyAI
             anim.SetBool(MoveBool, false);
         }
 
-
         // Gọi skill theo cooldown
         if (Time.time - _lastMinionTime >= minionCooldown)
         {
@@ -100,7 +97,6 @@ public class BossAI : EnemyAI
         yield return new WaitForSeconds(0.5f); // delay gồng trước khi triệu hồi
 
         EnemyLevelDatabase levelDB = CommonReferent.Instance.enemyLevelDatabase;
-        Transform hpCanvas = CommonReferent.Instance.canvasHp.transform;
 
         for (int i = 0; i < 2; i++)
         {
@@ -135,15 +131,6 @@ public class BossAI : EnemyAI
                 }
 
                 ai.ResetEnemy();
-
-                // Tạo UI HP nếu chưa có
-                if (ai.EnemyHealthUI == null && CommonReferent.Instance.hpSliderUi != null)
-                {
-                    GameObject ui = Instantiate(CommonReferent.Instance.hpSliderUi, hpCanvas, false);
-                    var uiComp = ui.GetComponent<EnemyHealthUI>();
-                    uiComp.SetTarget(minion);
-                    ai.EnemyHealthUI = uiComp;
-                }
             }
             else
             {
@@ -154,7 +141,6 @@ public class BossAI : EnemyAI
         yield return new WaitForSeconds(0.5f);
         _isPerformingSkill = false;
     }
-
 
     private IEnumerator Skill_Dash()
     {

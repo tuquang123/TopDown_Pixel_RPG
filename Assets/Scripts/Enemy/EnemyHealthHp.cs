@@ -77,17 +77,14 @@ public class EnemyHealthUI : MonoBehaviour
             return;
         }
         
-        // UI hoặc script đã bị destroy → thoát
         if (gameObject == null) return;
 
-        // Không có target hoặc target đã bị destroy
         if (currentTarget == null || !currentTarget.target)
         {
             Destroy(gameObject);
             return;
         }
 
-        // Player chết → xoá UI
         if (PlayerController.Instance != null &&
             PlayerController.Instance.IsPlayerDie())
         {
@@ -95,10 +92,8 @@ public class EnemyHealthUI : MonoBehaviour
             return;
         }
 
-        // Enemy chết → xoá UI
         if (currentTarget.isEnemy || currentTarget.isAlly)
         {
-            // TUYỆT ĐỐI không gọi TryGetComponent nếu target có thể chết
             if (!currentTarget.target)
             {
                 Destroy(gameObject);
@@ -118,7 +113,6 @@ public class EnemyHealthUI : MonoBehaviour
             }
         }
 
-        // Follow world position
         if (mainCamera != null)
         {
             Vector3 screenPos = mainCamera.WorldToScreenPoint(
@@ -127,7 +121,6 @@ public class EnemyHealthUI : MonoBehaviour
             transform.position = screenPos;
         }
 
-        // Auto hide (enemy only)
         if (autoHide && gameObject.activeSelf)
         {
             hideTimer -= Time.deltaTime;
@@ -136,81 +129,85 @@ public class EnemyHealthUI : MonoBehaviour
         }
     }
 
-
     #endregion
 
     #region Public API
 
-  
-
     public void SetTarget(GameObject target)
-{
-    if (!this) return;
-    
-    // Nếu đã set đúng target này rồi → chỉ refresh HP
-    if (currentTarget != null && currentTarget.target == target)
     {
-        RefreshHealthFromTarget();
-        return;
+        if (!this) return;
+        
+        // ✅ CHỈ 4 DÒNG NÀY - TẮT EnemyHealthUI CHO BOSS
+        BossAI component;
+        if (target != null && target.TryGetComponent<BossAI>(out component))
+        {
+            return; // Không hiển thị EnemyHealthUI cho Boss
+        }
+        
+        // Nếu đã set đúng target này rồi → chỉ refresh HP
+        if (currentTarget != null && currentTarget.target == target)
+        {
+            RefreshHealthFromTarget();
+            return;
+        }
+        
+        HideUI();
+        hideTimer = hideDelay;
+        currentTarget = default;
+
+        if (target == null) return;
+
+        TargetInfo info = new TargetInfo { target = target };
+
+        if (target.TryGetComponent(out EnemyAI enemy))
+        {
+            info.isEnemy = true;
+            info.maxHealth = enemy.MaxHealth;
+            info.displayName = $"{enemy.EnemyName} (Lv {enemy.EnemyLevel})";
+            info.sliderColor = enemyHpColor;
+            autoHide = false;
+        }
+        else if (target.TryGetComponent(out AllyStats ally))
+        {
+            info.isAlly = true;
+            info.maxHealth = ally.MaxHP;
+            info.displayName = $"{ally.HeroName}";
+            info.sliderColor = enemyHpColor;
+            autoHide = false;
+        }
+        else if (target.TryGetComponent(out DestructibleObject destruct))
+        {
+            info.isEnemy = true;
+            info.maxHealth = destruct.MaxHealth;
+            info.displayName = destruct.displayName;
+            info.sliderColor = Color.yellow;
+            autoHide = false;
+        }
+        else
+        {
+            info.isEnemy = true;
+            info.maxHealth = 1;
+            info.displayName = "Unknown";
+            info.sliderColor = enemyHpColor;
+            autoHide = true;
+        }
+
+        currentTarget = info;
+        maxHealth = info.maxHealth;
+
+        healthSlider.maxValue = maxHealth;
+        healthSlider.value = maxHealth;
+
+        if (nameAndLevelText != null)
+            nameAndLevelText.text = info.displayName;
+
+        if (hpText != null)
+            hpText.text = $"{maxHealth}/{maxHealth}";
+
+        SetSliderColor(info.sliderColor);
+
+        gameObject.SetActive(true);
     }
-    
-    HideUI();
-    hideTimer = hideDelay;
-    currentTarget = default;
-
-    if (target == null) return;
-
-    TargetInfo info = new TargetInfo { target = target };
-
-    if (target.TryGetComponent(out EnemyAI enemy))
-    {
-        info.isEnemy = true;
-        info.maxHealth = enemy.MaxHealth;
-        info.displayName = $"{enemy.EnemyName} (Lv {enemy.EnemyLevel})";
-        info.sliderColor = enemyHpColor;
-        autoHide = false;
-    }
-    else if (target.TryGetComponent(out AllyStats ally))
-    {
-        info.isAlly = true;
-        info.maxHealth = ally.MaxHP;
-        info.displayName = $"{ally.HeroName}";
-        info.sliderColor = enemyHpColor;
-        autoHide = false;
-    }
-    else if (target.TryGetComponent(out DestructibleObject destruct))
-    {
-        info.isEnemy = true;  // hoặc false tùy bạn
-        info.maxHealth = destruct.MaxHealth;
-        info.displayName = destruct.displayName;
-        info.sliderColor = Color.yellow;
-        autoHide = false;           // ← quan trọng
-    }
-    else
-    {
-        info.isEnemy = true;
-        info.maxHealth = 1;
-        info.displayName = "Unknown";
-        info.sliderColor = enemyHpColor;
-        autoHide = true;
-    }
-
-    currentTarget = info;
-    maxHealth = info.maxHealth;
-
-    healthSlider.maxValue = maxHealth;
-    healthSlider.value = maxHealth;
-
-    if (nameAndLevelText != null)
-        nameAndLevelText.text = info.displayName;
-
-    if (hpText != null)
-        hpText.text = $"{maxHealth}/{maxHealth}";
-
-    SetSliderColor(info.sliderColor);
-
-    gameObject.SetActive(true);
-}
 
     private void RefreshHealthFromTarget()
     {
@@ -228,15 +225,16 @@ public class EnemyHealthUI : MonoBehaviour
         }
         else if (currentTarget.target.TryGetComponent(out DestructibleObject destruct))
         {
-            currentHp = destruct.CurrentHealth;   // đảm bảo property này public và getter đúng
+            currentHp = destruct.CurrentHealth;
         }
 
         UpdateHealth(currentHp);
     }
+
     public void UpdateHealth(int currentHealth)
     {
         if (!this) return;
-        if (currentTarget.target == null) return;
+        if (currentTarget?.target == null) return;
 
         if (PlayerController.Instance != null && PlayerController.Instance.IsPlayerDie())
         {
@@ -248,11 +246,8 @@ public class EnemyHealthUI : MonoBehaviour
         if (hpText != null)
             hpText.text = $"{currentHealth}/{maxHealth}";
 
-        // Luôn hiển thị khi đang cập nhật HP
         if (!gameObject.activeSelf)
             gameObject.SetActive(true);
-
-        // Không cần reset hideTimer nữa vì autoHide = false
     }
 
     #endregion
@@ -274,7 +269,7 @@ public class EnemyHealthUI : MonoBehaviour
     {
         if (!this || gameObject == null) return;
         gameObject.SetActive(true);
-        hideTimer = hideDelay;   // reset timer nếu có auto hide
+        hideTimer = hideDelay;
     }
 
     public void HideUI()
@@ -283,10 +278,9 @@ public class EnemyHealthUI : MonoBehaviour
         if (gameObject != null && gameObject.activeSelf)
             gameObject.SetActive(false);
     }
-    // Thêm vào #region Public API
+
     public void ForceSetTarget(GameObject target)
     {
-        // Destroy tất cả UI khác đang trỏ vào cùng target này
         var allUIs = FindObjectsOfType<EnemyHealthUI>(true);
         foreach (var ui in allUIs)
         {

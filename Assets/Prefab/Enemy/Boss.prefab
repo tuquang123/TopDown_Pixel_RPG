@@ -162,6 +162,9 @@ MonoBehaviour:
   attackCooldown: 2
   skipHurtAnimation: 0
   moveSpeed: 2
+  separationRadius: 0.6
+  separationWeight: 1.2
+  maxSeparationNeighbors: 8
   knockForce: 3
   knockDuration: 0.3
   damagedStunTime: 0
@@ -182,7 +185,7 @@ MonoBehaviour:
   patrolWaitTime: 2
   exp: 3
   selectionCircle: {fileID: 1224943919409809662, guid: e6a16324c34ddd944b3bb6d996ead215, type: 3}
-  aggroIcon: {fileID: 8228917635692005565, guid: 6cfc27802a4514a4bb9e49dbf4c20487, type: 3}
+  aggroIcon: {fileID: 0}
   aggroLoseTime: 5
   killObjectiveID: Boss
   bossHealthUI: {fileID: 0}
