@@ -52,7 +52,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     public event Action OnStatsChanged;
     public event Action OnHealthChanged;
     public event Action OnManaChanged;
-    
+    public event Action OnDeath; 
     private static readonly int DeathHash = Animator.StringToHash("4_Death");
     private static readonly int HurtAnm = Animator.StringToHash("3_Damaged");
     
@@ -221,6 +221,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
         isDead = true;
         Debug.Log("Player đã chết!");
         anim.SetTrigger(DeathHash);
+OnDeath?.Invoke(); 
         StartCoroutine(HandleDeath());
     }
     public void ApplyStatModifier(StatModifier modifier)

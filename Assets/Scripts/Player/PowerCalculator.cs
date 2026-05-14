@@ -17,6 +17,7 @@ public class PowerUI : MonoBehaviour
         if (stats == null) return;
 
         stats.OnStatsChanged += UpdatePower;
+        stats.OnDeath        += ResetTime;
         UpdatePower();
     }
 
@@ -37,12 +38,20 @@ public class PowerUI : MonoBehaviour
     private void OnDestroy()
     {
         if (stats != null)
+        {
             stats.OnStatsChanged -= UpdatePower;
+            stats.OnDeath        -= ResetTime;
+        }
     }
 
     private void UpdatePower()
     {
         if (powerText == null || stats == null) return;
         powerText.text = "Power: " + stats.CurrentPower.ToString("N0");
+    }
+
+    private void ResetTime()
+    {
+        elapsedTime = 0f;
     }
 }

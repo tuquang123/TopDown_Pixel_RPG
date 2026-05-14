@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class PlayerStatsPopupUI : BasePopup
@@ -7,63 +8,97 @@ public class PlayerStatsPopupUI : BasePopup
 
     [SerializeField] private PlayerStatsDataSO dataAsset;
 
-    [Header("Cost x1")]
-    [SerializeField] private TextMeshProUGUI attackCostText,      defenseCostText,      speedCostText,      critCostText,
-                                             lifestealCostText,   attackSpeedCostText,  healthCostText,     manaCostText;
+    [Header("Cost Texts")]
+    [SerializeField] private TextMeshProUGUI attackCostText, defenseCostText, speedCostText, critCostText,
+                                             lifestealCostText, attackSpeedCostText, healthCostText, manaCostText;
 
-    [Header("Cost x5")]
-    [SerializeField] private TextMeshProUGUI attackCostTextX5,    defenseCostTextX5,    speedCostTextX5,    critCostTextX5,
-                                             lifestealCostTextX5, attackSpeedCostTextX5, healthCostTextX5,  manaCostTextX5;
+    [Header("Preview Texts")]
+    [SerializeField] private TextMeshProUGUI attackPreview, defensePreview, speedPreview, critPreview,
+                                             lifestealPreview, attackSpeedPreview, healthPreview, manaPreview;
 
-    [Header("Cost x10")]
-    [SerializeField] private TextMeshProUGUI attackCostTextX10,    defenseCostTextX10,    speedCostTextX10,    critCostTextX10,
-                                             lifestealCostTextX10, attackSpeedCostTextX10, healthCostTextX10,  manaCostTextX10;
+    [Header("Multiplier Buttons")]
+    [SerializeField] private Button btnX1, btnX10, btnX100;
 
     private PlayerStatsDataContainer data => dataAsset.stats;
+    private int currentMultiplier = 1;
 
     public override void Show()
     {
         base.Show();
         dataAsset.Load();
         ApplyBaseStatsOnly();
-        RefreshUI();
+        SetMultiplier(1);
     }
 
-    // ================= REFRESH =================
+    private void SetMultiplier(int value)
+    {
+        currentMultiplier = value;
+
+        btnX1.interactable   = value != 1;
+        btnX10.interactable  = value != 10;
+        btnX100.interactable = value != 100;
+
+        RefreshUI();
+    }
 
     private void RefreshUI()
     {
         statDisplayComponent.SetStats(PlayerStats.Instance);
         RefreshCostTexts();
+        RefreshPreviewTexts();
     }
 
     private void RefreshCostTexts()
     {
-        SetAll(1,
-            attackCostText,    defenseCostText,    speedCostText,    critCostText,
-            lifestealCostText, attackSpeedCostText, healthCostText,  manaCostText);
-
-        SetAll(5,
-            attackCostTextX5,    defenseCostTextX5,    speedCostTextX5,    critCostTextX5,
-            lifestealCostTextX5, attackSpeedCostTextX5, healthCostTextX5,  manaCostTextX5);
-
-        SetAll(10,
-            attackCostTextX10,    defenseCostTextX10,    speedCostTextX10,    critCostTextX10,
-            lifestealCostTextX10, attackSpeedCostTextX10, healthCostTextX10,  manaCostTextX10);
+        SetCostText(attackCostText,      data.attack,      currentMultiplier);
+        SetCostText(defenseCostText,     data.defense,     currentMultiplier);
+        SetCostText(speedCostText,       data.speed,       currentMultiplier);
+        SetCostText(critCostText,        data.crit,        currentMultiplier);
+        SetCostText(lifestealCostText,   data.lifesteal,   currentMultiplier);
+        SetCostText(attackSpeedCostText, data.attackSpeed, currentMultiplier);
+        SetCostText(healthCostText,      data.health,      currentMultiplier);
+        SetCostText(manaCostText,        data.mana,        currentMultiplier);
     }
 
-    private void SetAll(int times,
-        TextMeshProUGUI atk,  TextMeshProUGUI def, TextMeshProUGUI spd,  TextMeshProUGUI crit,
-        TextMeshProUGUI ls,   TextMeshProUGUI aspd, TextMeshProUGUI hp,  TextMeshProUGUI mp)
+    private void RefreshPreviewTexts()
     {
-        SetCostText(atk,  data.attack,      times);
-        SetCostText(def,  data.defense,     times);
-        SetCostText(spd,  data.speed,       times);
-        SetCostText(crit, data.crit,        times);
-        SetCostText(ls,   data.lifesteal,   times);
-        SetCostText(aspd, data.attackSpeed, times);
-        SetCostText(hp,   data.health,      times);
-        SetCostText(mp,   data.mana,        times);
+        var ps = PlayerStats.Instance;
+        if (ps == null) return;
+
+        SetPreviewText(attackPreview,      data.attack,      ps.attack.Value,      currentMultiplier, false);
+        SetPreviewText(defensePreview,     data.defense,     ps.defense.Value,     currentMultiplier, false);
+        SetPreviewText(speedPreview,       data.speed,       ps.speed.Value,       currentMultiplier, false);
+        SetPreviewText(critPreview,        data.crit,        ps.critChance.Value,  currentMultiplier, true);
+        SetPreviewText(lifestealPreview,   data.lifesteal,   ps.lifeSteal.Value,   currentMultiplier, true);
+        SetPreviewText(attackSpeedPreview, data.attackSpeed, ps.attackSpeed.Value, currentMultiplier, true);
+        SetPreviewText(healthPreview,      data.health,      ps.maxHealth.Value,   currentMultiplier, false);
+        SetPreviewText(manaPreview,        data.mana,        ps.maxMana.Value,     currentMultiplier, false);
+    }
+
+    private void SetPreviewText(TextMeshProUGUI text, PlayerStatData stat, float currentValue, int times, bool isPercent)
+    {
+        if (text == null) return;
+
+        float nextValue = stat.baseValue + (stat.level + times) * stat.increasePerLevel;
+
+        string current = FormatStatValue(currentValue, isPercent);
+        string next    = FormatStatValue(nextValue,    isPercent);
+
+        text.text = $"{current} <color=#888888>>></color> <color=#00FF99>{next}</color>";
+    }
+
+    private string FormatStatValue(float value, bool isPercent)
+    {
+        if (isPercent)
+            return $"{value:0.#}%";
+
+        if (value >= 1000000f)
+            return $"{value / 1000000f:0.#}M";
+
+        if (value >= 1000f)
+            return $"{value / 1000f:0.#}K";
+
+        return $"{value:0.#}";
     }
 
     private void SetCostText(TextMeshProUGUI text, PlayerStatData stat, int times)
@@ -92,8 +127,6 @@ public class PlayerStatsPopupUI : BasePopup
 
         return total;
     }
-
-    // ================= APPLY =================
 
     private void ApplyBaseStatsOnly()
     {
@@ -128,8 +161,6 @@ public class PlayerStatsPopupUI : BasePopup
         if (value > stat.baseValue)
             stat.SetBaseValue(value);
     }
-
-    // ================= UPGRADE =================
 
     private void TryUpgrade(PlayerStatData stat, System.Func<PlayerStats, Stat> getter, int times)
     {
@@ -174,39 +205,18 @@ public class PlayerStatsPopupUI : BasePopup
         RefreshUI();
     }
 
-    // ================= BUTTONS =================
+    public void OnClickX1()   => SetMultiplier(1);
+    public void OnClickX10()  => SetMultiplier(10);
+    public void OnClickX100() => SetMultiplier(100);
 
-    public void UpgradeAttackX1()       => TryUpgrade(data.attack,      ps => ps.attack,      1);
-    public void UpgradeAttackX5()       => TryUpgrade(data.attack,      ps => ps.attack,      5);
-    public void UpgradeAttackX10()      => TryUpgrade(data.attack,      ps => ps.attack,      10);
-
-    public void UpgradeDefenseX1()      => TryUpgrade(data.defense,     ps => ps.defense,     1);
-    public void UpgradeDefenseX5()      => TryUpgrade(data.defense,     ps => ps.defense,     5);
-    public void UpgradeDefenseX10()     => TryUpgrade(data.defense,     ps => ps.defense,     10);
-
-    public void UpgradeSpeedX1()        => TryUpgrade(data.speed,       ps => ps.speed,       1);
-    public void UpgradeSpeedX5()        => TryUpgrade(data.speed,       ps => ps.speed,       5);
-    public void UpgradeSpeedX10()       => TryUpgrade(data.speed,       ps => ps.speed,       10);
-
-    public void UpgradeCritX1()         => TryUpgrade(data.crit,        ps => ps.critChance,  1);
-    public void UpgradeCritX5()         => TryUpgrade(data.crit,        ps => ps.critChance,  5);
-    public void UpgradeCritX10()        => TryUpgrade(data.crit,        ps => ps.critChance,  10);
-
-    public void UpgradeLifestealX1()    => TryUpgrade(data.lifesteal,   ps => ps.lifeSteal,   1);
-    public void UpgradeLifestealX5()    => TryUpgrade(data.lifesteal,   ps => ps.lifeSteal,   5);
-    public void UpgradeLifestealX10()   => TryUpgrade(data.lifesteal,   ps => ps.lifeSteal,   10);
-
-    public void UpgradeAttackSpeedX1()  => TryUpgrade(data.attackSpeed, ps => ps.attackSpeed, 1);
-    public void UpgradeAttackSpeedX5()  => TryUpgrade(data.attackSpeed, ps => ps.attackSpeed, 5);
-    public void UpgradeAttackSpeedX10() => TryUpgrade(data.attackSpeed, ps => ps.attackSpeed, 10);
-
-    public void UpgradeHealthX1()       => TryUpgrade(data.health,      ps => ps.maxHealth,   1);
-    public void UpgradeHealthX5()       => TryUpgrade(data.health,      ps => ps.maxHealth,   5);
-    public void UpgradeHealthX10()      => TryUpgrade(data.health,      ps => ps.maxHealth,   10);
-
-    public void UpgradeManaX1()         => TryUpgrade(data.mana,        ps => ps.maxMana,     1);
-    public void UpgradeManaX5()         => TryUpgrade(data.mana,        ps => ps.maxMana,     5);
-    public void UpgradeManaX10()        => TryUpgrade(data.mana,        ps => ps.maxMana,     10);
+    public void UpgradeAttack()      => TryUpgrade(data.attack,      ps => ps.attack,      currentMultiplier);
+    public void UpgradeDefense()     => TryUpgrade(data.defense,     ps => ps.defense,     currentMultiplier);
+    public void UpgradeSpeed()       => TryUpgrade(data.speed,       ps => ps.speed,       currentMultiplier);
+    public void UpgradeCrit()        => TryUpgrade(data.crit,        ps => ps.critChance,  currentMultiplier);
+    public void UpgradeLifesteal()   => TryUpgrade(data.lifesteal,   ps => ps.lifeSteal,   currentMultiplier);
+    public void UpgradeAttackSpeed() => TryUpgrade(data.attackSpeed, ps => ps.attackSpeed, currentMultiplier);
+    public void UpgradeHealth()      => TryUpgrade(data.health,      ps => ps.maxHealth,   currentMultiplier);
+    public void UpgradeMana()        => TryUpgrade(data.mana,        ps => ps.maxMana,     currentMultiplier);
 
     public void Close() => UIManager.Instance.HidePopupByType(PopupType.Stats);
 }

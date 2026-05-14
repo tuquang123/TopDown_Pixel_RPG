@@ -30,7 +30,14 @@ public class RewardPopupManager : Singleton<RewardPopupManager>
         if (!isShowing)
             StartCoroutine(ProcessQueue());
     }
+    [Header("Gold Icon")]
+    [SerializeField] private Sprite goldIcon; // kéo sprite Gold vào Inspector
 
+    public void ShowGold(int amount)
+    {
+        if (amount <= 0) return;
+        ShowReward(goldIcon, "Gold", amount);
+    }
     // ── Gọi khi giết quái ─────────────────────────────────────────────────────
     public void ShowEXP(int amount)
     {

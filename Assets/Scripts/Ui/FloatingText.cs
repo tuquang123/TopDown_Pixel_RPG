@@ -5,25 +5,28 @@ using DG.Tweening;
 public class FloatingText : MonoBehaviour
 {
     public TextMeshProUGUI textMesh;
-
+    
     public void Setup(string text, Color color, float fontSize = 36f)
     {
-        // Replace text → sprite
+        // ── Chuyển Gold sang RewardPopup, không float ──────────────────
         if (text.Contains("Gold"))
         {
-            text = text.Replace("Gold", "");                  // bỏ chữ Gold
-            text = text.Replace(":", "");                     // bỏ :
-            text = text.Replace("+ ", "+");                   // gọn dấu +
-            text = text.Trim() + " <sprite name=\"gold_icon\">";
+            // Parse số lượng từ chuỗi, ví dụ "+ 50 Gold:" hoặc "Gold: +50"
+            string digits = System.Text.RegularExpressions.Regex.Match(text, @"\d+").Value;
+            if (int.TryParse(digits, out int goldAmount))
+                RewardPopupManager.Instance.ShowGold(goldAmount);
+
+            Destroy(gameObject); // không hiện floating text
+            return;
         }
 
-
+        // ── CRIT vẫn float bình thường ─────────────────────────────────
         if (text.Contains("CRIT"))
             text = text.Replace("CRIT", "<sprite name=\"crit_icon\" color=#FF2B2B> ");
 
         textMesh.text = text;
         textMesh.color = color;
-        textMesh.fontSize = fontSize;   // ✅ TO / NHỎ TUỲ TRƯỜNG HỢP
+        textMesh.fontSize = fontSize;
 
         float randomXOffset = Random.Range(-50f, 50f);
         Vector3 targetPosition = transform.position + new Vector3(randomXOffset, 70f, 0f);
@@ -31,6 +34,6 @@ public class FloatingText : MonoBehaviour
         transform.DOMove(targetPosition, 1f).SetEase(Ease.OutCubic);
         textMesh.DOFade(0, 1f)
             .SetEase(Ease.Linear)
-            .OnComplete(() => Destroy(gameObject)); // ✅ TỰ BIẾN MẤT
+            .OnComplete(() => Destroy(gameObject));
     }
 }
