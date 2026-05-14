@@ -133,7 +133,7 @@ public partial class EnemyAI
         Color damageColor = isCrit ? new Color(1f, 0.84f, 0.2f) : Color.white;
         FloatingTextSpawner.Instance?.SpawnText(damageText, transform.position + Vector3.up * 1.2f, damageColor);
 
-        SpawnBloodVFX();
+        //SpawnBloodVFX();
 
         CancelInvoke(nameof(EndDamageStun));
 
