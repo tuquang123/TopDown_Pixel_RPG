@@ -26,9 +26,7 @@ public class WaveManager : Singleton<WaveManager>
     [SerializeField] private string spawnZoneTilemapName = "SpawnZone";
 
     [Header("Map")]
-    [Tooltip("Kéo root GameObject của map Stage 1 có sẵn trong scene vào đây.\n" +
-             "WaveManager sẽ coi đây là currentMapInstance ban đầu —\n" +
-             "đảm bảo Destroy đúng khi chuyển sang Stage 2 (tránh 2 map tồn tại cùng lúc).")]
+    [Tooltip("Kéo root GameObject của map Stage 1 có sẵn trong scene vào đây.")]
     [SerializeField] private GameObject initialSceneMap;
 
     [Header("Prefabs")]
@@ -48,10 +46,6 @@ public class WaveManager : Singleton<WaveManager>
     [Tooltip("Quái không spawn trong bán kính này quanh player (tính theo tile).")]
     [SerializeField, Min(0f)] private float minSpawnDistanceFromPlayer = 4f;
 
-    [Header("Out-of-Bounds Teleport")]
-    [Tooltip("Tần suất kiểm tra quái ra ngoài map (giây).")]
-    [SerializeField, Min(0.1f)] private float oobCheckInterval = 0.5f;
-
     [Header("Physics")]
     [SerializeField] private string enemyLayerName = "Enemy";
 
@@ -63,13 +57,15 @@ public class WaveManager : Singleton<WaveManager>
     [Tooltip("Thời gian chờ (giây) trước khi hồi sinh player sau khi chết.")]
     [SerializeField, Min(0f)] private float respawnDelay = 1.5f;
 
-    [Tooltip("Thời gian chờ thêm (giây) SAU KHI player hồi sinh trước khi quái bắt đầu spawn.\n" +
-             "Dùng để player kịp chuẩn bị trước khi bị tấn công.")]
+    [Tooltip("Thời gian chờ thêm (giây) SAU KHI player hồi sinh trước khi quái bắt đầu spawn.")]
     [SerializeField, Min(0f)] private float graceAfterRespawn = 3f;
 
-    [Tooltip("Khoảng cách spawn tối thiểu (tile) ngay sau khi hồi sinh.\n" +
-             "Nên lớn hơn minSpawnDistanceFromPlayer vì player vừa ở giữa map.")]
+    [Tooltip("Khoảng cách spawn tối thiểu (tile) ngay sau khi hồi sinh.")]
     [SerializeField, Min(0f)] private float postRespawnMinSpawnDistance = 10f;
+
+    [Tooltip("Thời gian tối đa (giây) chờ spawn cache sẵn sàng sau hồi sinh.\n" +
+             "Tăng nếu map của bạn load chậm (nhiều tile).")]
+    [SerializeField, Min(0.5f)] private float spawnCacheWaitTimeout = 4f;
 
     [Header("Enemy Base Stats")]
     [SerializeField] private int   baseHealth         = 50;
@@ -131,8 +127,8 @@ public class WaveManager : Singleton<WaveManager>
     private GameObject currentMapPrefab;
     private GameObject pendingMapPrefab;
 
-    private readonly List<Vector3> spawnTiles = new();
-    private Tilemap activeSpawnZoneTilemap;
+    private readonly List<Vector3> spawnTiles         = new();
+    private          Tilemap       activeSpawnZoneTilemap;
 
     public int CurrentWave       => currentWave;
     public int CurrentStage      => currentStage;
@@ -194,8 +190,7 @@ public class WaveManager : Singleton<WaveManager>
 
             currentMapInstance = root;
             BuildSpawnCache(currentMapInstance);
-            Debug.Log($"[WaveManager] Tự tìm thấy scene map: \"{root.name}\" " +
-                      "(gợi ý: kéo nó vào trường 'Initial Scene Map' để chắc chắn hơn)");
+            Debug.Log($"[WaveManager] Tự tìm thấy scene map: \"{root.name}\"");
             return;
         }
     }
@@ -209,7 +204,6 @@ public class WaveManager : Singleton<WaveManager>
         PlayerPrefs.SetInt(KEY_WAVE,  currentWave);
         PlayerPrefs.SetInt(KEY_STAGE, currentStage);
         PlayerPrefs.Save();
-        Debug.Log($"[WaveManager] Saved -> Stage {currentStage}, Wave {currentWave}");
     }
 
     private void LoadProgress()
@@ -307,18 +301,13 @@ public class WaveManager : Singleton<WaveManager>
         Tilemap target = null;
         foreach (var tm in mapRoot.GetComponentsInChildren<Tilemap>())
         {
-            if (tm.name == spawnZoneTilemapName)
-            {
-                target = tm;
-                break;
-            }
+            if (tm.name == spawnZoneTilemapName) { target = tm; break; }
         }
 
         if (target == null)
         {
-            Debug.LogWarning($"[WaveManager] Không tìm thấy Tilemap tên \"{spawnZoneTilemapName}\" " +
+            Debug.LogWarning($"[WaveManager] Không tìm thấy Tilemap \"{spawnZoneTilemapName}\" " +
                              $"trong \"{mapRoot.name}\". Dùng tất cả Tilemap làm fallback.");
-
             foreach (var tm in mapRoot.GetComponentsInChildren<Tilemap>())
                 CacheTilemap(tm);
         }
@@ -414,8 +403,6 @@ public class WaveManager : Singleton<WaveManager>
         SaveProgress();
         OnWaveStarted?.Invoke(currentWave, currentStage, isBossWave);
 
-        StartCoroutine(OutOfBoundsChecker());
-
         if (isBossWave) { SpawnBoss(); return; }
 
         int   count    = enemiesBaseCount + (currentWave - 1) * enemiesPerWave;
@@ -443,13 +430,22 @@ public class WaveManager : Singleton<WaveManager>
 
     private Vector3 PickSpawnTile()
     {
+        Vector3 playerPos = PlayerPosition();
+
+        // ── FIX: Khi spawnTiles rỗng, KHÔNG spawn tại PlayerPosition() ─────────
+        // Nguyên nhân bug cũ: spawnTiles.Count == 0 → return PlayerPosition()
+        // → quái xuất hiện chồng ngay trên đầu player lúc hồi sinh.
+        // Fix: spawn tại vị trí ngẫu nhiên cách player một khoảng an toàn.
         if (spawnTiles.Count == 0)
         {
-            Debug.LogWarning("[WaveManager] SpawnTiles rỗng! Spawn tại vị trí player.");
-            return PlayerPosition();
+            float safeRadius = Mathf.Max(minSpawnDistanceFromPlayer,
+                                         justRespawned ? postRespawnMinSpawnDistance : 0f,
+                                         5f);
+            Vector2 rndDir   = UnityEngine.Random.insideUnitCircle.normalized;
+            Vector3 fallback = playerPos + new Vector3(rndDir.x * safeRadius, rndDir.y * safeRadius, 0f);
+            Debug.LogWarning($"[WaveManager] SpawnTiles rỗng — spawn fallback cách player {safeRadius:F1} units.");
+            return fallback;
         }
-
-        Vector3 playerPos = PlayerPosition();
 
         float minDist = justRespawned
             ? Mathf.Max(minSpawnDistanceFromPlayer, postRespawnMinSpawnDistance)
@@ -464,7 +460,6 @@ public class WaveManager : Singleton<WaveManager>
         }
 
         float hardMin = minDist * 0.5f;
-
         Vector3 best    = spawnTiles[0];
         float   bestDst = -1f;
         int     sample  = Mathf.Min(200, spawnTiles.Count);
@@ -473,11 +468,7 @@ public class WaveManager : Singleton<WaveManager>
         {
             int   idx = UnityEngine.Random.Range(0, spawnTiles.Count);
             float d   = Vector2.Distance(spawnTiles[idx], playerPos);
-            if (d > bestDst && d >= hardMin)
-            {
-                bestDst = d;
-                best    = spawnTiles[idx];
-            }
+            if (d > bestDst && d >= hardMin) { bestDst = d; best = spawnTiles[idx]; }
         }
 
         if (bestDst < 0f)
@@ -490,64 +481,6 @@ public class WaveManager : Singleton<WaveManager>
         }
 
         return best;
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    //  OUT-OF-BOUNDS TELEPORT
-    // ═══════════════════════════════════════════════════════════════
-
-    private IEnumerator OutOfBoundsChecker()
-    {
-        var wait = new WaitForSeconds(oobCheckInterval);
-        while (waveActive)
-        {
-            yield return wait;
-            var snapshot = new List<EnemyAI>(aliveEnemies);
-            foreach (var ai in snapshot)
-            {
-                if (ai == null) continue;
-                if (!IsOnSpawnZone(ai.transform.position))
-                    TeleportToNearest(ai);
-            }
-        }
-    }
-
-    private bool IsOnSpawnZone(Vector3 pos)
-    {
-        if (activeSpawnZoneTilemap == null)
-            return spawnTiles.Count == 0 || IsNearAnyTile(pos);
-
-        Vector3Int cell = activeSpawnZoneTilemap.WorldToCell(pos);
-        return activeSpawnZoneTilemap.HasTile(cell);
-    }
-
-    private bool IsNearAnyTile(Vector3 pos)
-    {
-        float threshold = 0.6f;
-        foreach (var tile in spawnTiles)
-            if (Mathf.Abs(pos.x - tile.x) < threshold && Mathf.Abs(pos.y - tile.y) < threshold)
-                return true;
-        return false;
-    }
-
-    private void TeleportToNearest(EnemyAI ai)
-    {
-        if (spawnTiles.Count == 0) return;
-
-        Vector3 pos     = ai.transform.position;
-        Vector3 best    = spawnTiles[0];
-        float   bestDst = float.MaxValue;
-
-        int sample = Mathf.Min(300, spawnTiles.Count);
-        for (int i = 0; i < sample; i++)
-        {
-            int   idx = UnityEngine.Random.Range(0, spawnTiles.Count);
-            float d   = Vector2.SqrMagnitude((Vector2)(spawnTiles[idx] - pos));
-            if (d < bestDst) { bestDst = d; best = spawnTiles[idx]; }
-        }
-
-        ai.transform.position = best;
-        Debug.Log($"[WaveManager] OOB Teleport: {ai.name} -> {best}");
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -615,16 +548,8 @@ public class WaveManager : Singleton<WaveManager>
     //  XÓA TOÀN BỘ QUÁI ĐANG SỐNG
     // ═══════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Xóa sạch toàn bộ quái:
-    ///   1. Unsubscribe event và trả về pool / Destroy tất cả enemy đang được TRACK.
-    ///   2. Quét toàn scene bằng FindObjectsByType để bắt những quái KHÔNG được track
-    ///      (ví dụ: đang spawn dở trong coroutine, hoặc RegisterAliveEnemy thất bại).
-    /// Không kích hoạt HandleEnemyDeath — tránh StartNextWave chạy lúc reset.
-    /// </summary>
     private void ClearAllEnemies()
     {
-        // ── Bước 1: xóa quái đang được track ─────────────────────
         var snapshot = new List<EnemyAI>(aliveEnemies);
         foreach (var ai in snapshot)
             ForceRemoveEnemy(ai);
@@ -632,32 +557,22 @@ public class WaveManager : Singleton<WaveManager>
         aliveEnemies.Clear();
         deathHandlers.Clear();
 
-        // ── Bước 2: quét scene, xóa quái không được track ────────
-        // Đây là fix chính: bắt quái spawn dở, quái pool bị "nhả" lại,
-        // hoặc quái do coroutine spawn ngay trước khi StopAllCoroutines chạy.
         foreach (var ai in FindObjectsByType<EnemyAI>(FindObjectsSortMode.None))
             ForceRemoveEnemy(ai);
 
         Debug.Log("[WaveManager] ClearAllEnemies: toàn bộ quái đã bị xóa.");
     }
 
-    /// <summary>
-    /// Unsubscribe event và tắt / xóa một EnemyAI bất kỳ.
-    /// Dùng chung cho cả tracked lẫn untracked enemy.
-    /// </summary>
     private void ForceRemoveEnemy(EnemyAI ai)
     {
         if (ai == null) return;
 
-        // Gỡ event nếu còn đăng ký
         if (deathHandlers.TryGetValue(ai, out var handler))
         {
             ai.OnDeath -= handler;
             deathHandlers.Remove(ai);
         }
 
-        // Tắt ngay lập tức TRƯỚC khi trả pool
-        // (một số ObjectPooler.ReturnToPool tự gọi SetActive(true) bên trong)
         ai.gameObject.SetActive(false);
 
         if (ObjectPooler.Instance != null)
@@ -712,6 +627,12 @@ public class WaveManager : Singleton<WaveManager>
         if (!player.gameObject.activeSelf)
             player.gameObject.SetActive(true);
 
+        // ── FIX: Đợi spawn cache sẵn sàng TRƯỚC KHI đặt player và bắt đầu wave ──
+        // Trước đây StartNextWave() có thể chạy khi spawnTiles vẫn rỗng
+        // (map swap async chưa kịp hoàn thành) → PickSpawnTile() trả PlayerPosition()
+        // → quái spawn chồng lên đầu player ngay lúc hồi sinh.
+        yield return StartCoroutine(WaitForSpawnCache());
+
         Vector3 center = GetMapCenter();
         player.position = center;
 
@@ -734,6 +655,42 @@ public class WaveManager : Singleton<WaveManager>
         spawnBlocked  = false;
         Debug.Log("[WaveManager] Grace period kết thúc — bắt đầu wave mới.");
         StartNextWave();
+    }
+
+    // ── FIX: Chờ spawn cache có dữ liệu (xử lý map swap async qua ScreenFader) ─
+    // Mỗi frame kiểm tra spawnTiles, thử rebuild nếu currentMapInstance đã sẵn.
+    // Dừng sớm khi có tile, hoặc sau spawnCacheWaitTimeout giây.
+    private IEnumerator WaitForSpawnCache()
+    {
+        // Thử rebuild ngay nếu map đã có nhưng cache chưa được build
+        if (spawnTiles.Count == 0 && currentMapInstance != null)
+        {
+            BuildSpawnCache(currentMapInstance);
+            Debug.Log("[WaveManager] WaitForSpawnCache: rebuild ngay từ currentMapInstance.");
+        }
+
+        if (spawnTiles.Count > 0) yield break;
+
+        // Tiles vẫn rỗng → map đang load async, chờ từng frame
+        float elapsed = 0f;
+        Debug.Log("[WaveManager] WaitForSpawnCache: đang chờ map load...");
+
+        while (spawnTiles.Count == 0 && elapsed < spawnCacheWaitTimeout)
+        {
+            yield return null;
+            elapsed += Time.deltaTime;
+
+            // Thử rebuild mỗi frame phòng map vừa được instantiate
+            if (currentMapInstance != null)
+                BuildSpawnCache(currentMapInstance);
+        }
+
+        if (spawnTiles.Count == 0)
+            Debug.LogWarning($"[WaveManager] WaitForSpawnCache: hết timeout {spawnCacheWaitTimeout}s " +
+                             "— spawn cache vẫn rỗng, wave sẽ dùng fallback offset.");
+        else
+            Debug.Log($"[WaveManager] WaitForSpawnCache: sẵn sàng ({spawnTiles.Count} tiles) " +
+                      $"sau {elapsed:F2}s.");
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -806,10 +763,8 @@ public class WaveManager : Singleton<WaveManager>
         waveActive   = false;
         spawnBlocked = true;
 
-        // 1. Xóa sạch toàn bộ quái — kể cả quái không được track
         ClearAllEnemies();
 
-        // 2. Reset wave / stage / map
         isRespawning     = false;
         justRespawned    = false;
         currentWave      = Mathf.Max(1, startWave) - 1;
@@ -819,16 +774,32 @@ public class WaveManager : Singleton<WaveManager>
         spawnTiles.Clear();
         ClearSave();
 
+        // ── FIX: Chỉ destroy map nếu stage 1 có mapPrefab để thay thế ──────────
+        // Trước đây luôn destroy → currentMapInstance = null → ApplyStageData không
+        // thể rebuild tiles (vì không có prefab) → spawnTiles rỗng mãi mãi
+        // → PickSpawnTile() trả PlayerPosition() → quái spawn đè lên player.
+        StageData stage1Data      = stageDatabase?.GetOrLast(1);
+        bool      stage1HasPrefab = stage1Data?.mapPrefab != null;
+
         if (currentMapInstance != null)
         {
-            Destroy(currentMapInstance);
-            currentMapInstance = null;
+            if (stage1HasPrefab)
+            {
+                // Có prefab thay thế → destroy an toàn, ApplyStageData sẽ load map mới
+                Destroy(currentMapInstance);
+                currentMapInstance = null;
+            }
+            else
+            {
+                // Không có prefab riêng → giữ lại map hiện tại và rebuild spawn cache
+                Debug.Log("[WaveManager] Stage 1 không có mapPrefab — giữ lại map, rebuild cache.");
+                BuildSpawnCache(currentMapInstance);
+            }
         }
 
         ApplyStageData(currentStage);
         OnWavesRestarted?.Invoke();
 
-        // 3. Hồi sinh player → grace period → spawn Wave 1
         StartCoroutine(RespawnPlayerRoutine());
     }
 
@@ -863,7 +834,6 @@ public class WaveManager : Singleton<WaveManager>
     /// <summary>
     /// [CHEAT] Bắt đầu wave tiếp theo ngay lập tức.
     /// Quái wave cũ vẫn còn sống — không clear aliveEnemies.
-    /// Wave mới kết thúc bình thường khi toàn bộ quái (cũ + mới) đã chết.
     /// </summary>
     public void ForceNextWave()
     {

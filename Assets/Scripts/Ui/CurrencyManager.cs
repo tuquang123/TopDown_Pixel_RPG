@@ -8,7 +8,7 @@ public class CurrencyManager : MonoBehaviour
 
     public int Gold { get; set; }
     public int Gems { get; private set; }
-    public List<ItemData> shopItems; // Danh sách vật phẩm cửa hàng
+    public List<ItemData> shopItems;
 
     public event Action<int> OnGoldChanged;
     public event Action<int> OnGemsChanged;
@@ -18,8 +18,16 @@ public class CurrencyManager : MonoBehaviour
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
         LoadCurrency();
+    }
+
+    public static string FormatGold(long value)
+    {
+        if (value >= 1000000)
+            return $"{value / 1000000f:0.#}M";
+        if (value >= 1000)
+            return $"{value / 1000f:0.#}K";
+        return value.ToString();
     }
 
     public void AddGold(int amount)
@@ -29,14 +37,12 @@ public class CurrencyManager : MonoBehaviour
         QuestManager.Instance.ReportProgress("NV7", "Gold", amount);
         SaveCurrency();
         Debug.Log($"Đã thêm {amount} vàng. Tổng vàng: {Gold}");
-        
     }
 
     public void AddGems(int amount)
     {
         Gems += amount;
         OnGemsChanged?.Invoke(Gems);
-        
         SaveCurrency();
         Debug.Log($"Đã thêm {amount} ngọc. Tổng ngọc: {Gems}");
     }
@@ -54,6 +60,7 @@ public class CurrencyManager : MonoBehaviour
         Debug.Log($"Đã tiêu {amount} vàng. Tổng vàng: {Gold}");
         return true;
     }
+
     public bool SpendGems(int amount)
     {
         if (Gems < amount)
@@ -61,7 +68,6 @@ public class CurrencyManager : MonoBehaviour
             Debug.Log($"Không đủ ngọc để tiêu {amount}. Tổng ngọc hiện tại: {Gems}");
             return false;
         }
-
         Gems -= amount;
         OnGemsChanged?.Invoke(Gems);
         SaveCurrency();

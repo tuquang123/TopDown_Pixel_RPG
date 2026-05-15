@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CurrencyUI : MonoBehaviour
 {
@@ -16,6 +15,6 @@ public class CurrencyUI : MonoBehaviour
         UpdateGems(CurrencyManager.Instance.Gems);
     }
 
-    void UpdateGold(int gold) => goldText.text = $"{gold}";
+    void UpdateGold(int gold) => goldText.text = CurrencyManager.FormatGold(gold);
     void UpdateGems(int gems) => gemsText.text = $"{gems}";
 }

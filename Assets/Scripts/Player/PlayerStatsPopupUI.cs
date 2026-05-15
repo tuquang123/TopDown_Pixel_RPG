@@ -79,26 +79,30 @@ public class PlayerStatsPopupUI : BasePopup
     {
         if (text == null) return;
 
-        float nextValue = stat.baseValue + (stat.level + times) * stat.increasePerLevel;
+        float nextValue = currentValue + times * stat.increasePerLevel;
 
         string current = FormatStatValue(currentValue, isPercent);
         string next    = FormatStatValue(nextValue,    isPercent);
 
         text.text = $"{current} <color=#888888>>></color> <color=#00FF99>{next}</color>";
     }
-
     private string FormatStatValue(float value, bool isPercent)
     {
         if (isPercent)
             return $"{value:0.#}%";
 
-        if (value >= 1000000f)
+        return $"{value:0.#}";
+    }
+
+    private string FormatGoldValue(long value)
+    {
+        if (value >= 1000000)
             return $"{value / 1000000f:0.#}M";
 
-        if (value >= 1000f)
+        if (value >= 1000)
             return $"{value / 1000f:0.#}K";
 
-        return $"{value:0.#}";
+        return value.ToString();
     }
 
     private void SetCostText(TextMeshProUGUI text, PlayerStatData stat, int times)
@@ -108,26 +112,13 @@ public class PlayerStatsPopupUI : BasePopup
         long cost      = CalculateTotalCost(stat, times);
         int  safeCost  = cost > int.MaxValue ? int.MaxValue : (int)cost;
         bool canAfford = CurrencyManager.Instance.Gold >= safeCost;
+        string display = CurrencyManager.FormatGold(safeCost);
 
         text.text = canAfford
-            ? $"<color=#FFFFFF>{safeCost}</color> <sprite name=\"gold_icon\">"
-            : $"<color=#FF4444>{safeCost}</color> <sprite name=\"gold_icon\">";
+            ? $"<color=#FFFFFF>{display}</color> <sprite name=\"gold_icon\">"
+            : $"<color=#FF4444>{display}</color> <sprite name=\"gold_icon\">";
     }
-
-    private long CalculateTotalCost(PlayerStatData stat, int times)
-    {
-        long total = 0;
-        int  level = stat.level;
-
-        for (int i = 0; i < times; i++)
-        {
-            total += stat.GetUpgradeCost(level);
-            level++;
-        }
-
-        return total;
-    }
-
+    
     private void ApplyBaseStatsOnly()
     {
         var ps = PlayerStats.Instance;
@@ -162,23 +153,29 @@ public class PlayerStatsPopupUI : BasePopup
             stat.SetBaseValue(value);
     }
 
-    private void TryUpgrade(PlayerStatData stat, System.Func<PlayerStats, Stat> getter, int times)
+    private long CalculateTotalCost(PlayerStatData stat, int times)
     {
-        long totalCost = 0;
-        int  tempLevel = stat.level;
+        long total    = 0;
+        int  curLevel = stat.Level;
 
         for (int i = 0; i < times; i++)
         {
-            totalCost += stat.GetUpgradeCost(tempLevel);
-            tempLevel++;
+            total += stat.GetUpgradeCost(curLevel + i);
         }
 
-        int safeCost = totalCost > int.MaxValue ? int.MaxValue : (int)totalCost;
+        return total;
+    }
+
+    private void TryUpgrade(PlayerStatData stat, System.Func<PlayerStats, Stat> getter, int times)
+    {
+        long totalCost = CalculateTotalCost(stat, times);
+        int  safeCost  = totalCost > int.MaxValue ? int.MaxValue : (int)totalCost;
 
         if (!CurrencyManager.Instance.SpendGold(safeCost))
             return;
 
-        stat.level = tempLevel;
+        for (int i = 0; i < times; i++)
+            stat.Upgrade();
 
         var ps         = PlayerStats.Instance;
         var playerStat = getter(ps);
