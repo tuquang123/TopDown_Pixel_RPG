@@ -52,23 +52,6 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     [BoxGroup("Movement"), LabelText("Move Speed"), Range(0f, 10f)] [SerializeField]
     protected float moveSpeed = 3f;
 
-    [BoxGroup("Movement"), LabelText("Separation Radius"), Range(0f, 2f)] [SerializeField]
-    private float separationRadius = 0.6f;
-
-    [BoxGroup("Movement"), LabelText("Separation Weight"), Range(0f, 3f)] [SerializeField]
-    private float separationWeight = 1.2f;
-
-    [BoxGroup("Movement"), LabelText("Max Neighbors"), Range(1, 24)] [SerializeField]
-    private int maxSeparationNeighbors = 8;
-
-    // ── FIX: Smoothing tốc độ tăng/giảm vận tốc, tránh giật cục ──────────────
-    [BoxGroup("Movement"), LabelText("Acceleration"), Range(1f, 50f)] [SerializeField]
-    private float acceleration = 20f;
-
-    // ── FIX: Separation lerp speed — làm mượt lực đẩy, tránh dao động ────────
-    [BoxGroup("Movement"), LabelText("Separation Smooth Speed"), Range(1f, 20f)] [SerializeField]
-    private float separationSmoothSpeed = 8f;
-
     #endregion
 
     #region Knockback
@@ -120,17 +103,8 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
     private bool isKnockbacked;
 
-    // ── FIX: Tách _desiredVelocity (mục tiêu) và _smoothedVelocity (thực tế) ──
-    // _desiredVelocity: vận tốc AI muốn đạt được (tính trong FixedUpdate)
-    // _smoothedVelocity: vận tốc thực tế được lerp dần đến _desiredVelocity
+    // Velocity mong muốn — được set bởi AI logic (Update), apply bởi FixedUpdate
     private Vector2 _desiredVelocity;
-    private Vector2 _smoothedVelocity;
-
-    // ── FIX: Cache separation riêng, lerp độc lập tránh dao động ──────────────
-    private Vector2 _smoothedSeparation;
-
-    private const int MaxSeparationBuffer = 24;
-    private readonly Collider2D[] _separationBuffer = new Collider2D[MaxSeparationBuffer];
 
     #endregion
 
@@ -152,14 +126,11 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
     public static event Action<float> OnEnemyDefeated;
 
-    // ── Public Properties ──────────────────────────────────────────────────────
-    public int CurrentHealth  => currentHealth;
-    public bool IsDead        => isDead;
-    public int MaxHealth      => maxHealth;
-    public string EnemyName   => enemyName;
-    public int EnemyLevel     => enemyLevel;
-    public int AttackDamage   => attackDamage;
-    public float MoveSpeed    => moveSpeed;
+    public int CurrentHealth => currentHealth;
+    public bool IsDead => isDead;
+    public int MaxHealth => maxHealth;
+    public string EnemyName => enemyName;
+    public int EnemyLevel => enemyLevel;
 
     protected EnemyHealthUI enemyHealthUI;
 
@@ -208,11 +179,11 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     protected Rigidbody2D cachedRigidbody;
     private bool isOptimizedActive = true;
 
-    protected static readonly int MoveBool      = Animator.StringToHash("1_Move");
+    protected static readonly int MoveBool = Animator.StringToHash("1_Move");
     protected static readonly int AttackTrigger = Animator.StringToHash("2_Attack");
-    private static readonly int DamagedTrigger  = Animator.StringToHash("3_Damaged");
-    protected static readonly int DieTrigger    = Animator.StringToHash("4_Death");
-    private static readonly int LongAttack      = Animator.StringToHash("8_Attack");
+    private static readonly int DamagedTrigger = Animator.StringToHash("3_Damaged");
+    protected static readonly int DieTrigger = Animator.StringToHash("4_Death");
+    private static readonly int LongAttack = Animator.StringToHash("8_Attack");
 
     [Header("Selection")]
     [SerializeField] private GameObject selectionCircle;
@@ -230,7 +201,6 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     protected void RaiseDeathEvent()
     {
         OnDeath?.Invoke();
-        RewardPopupManager.Instance?.ShowEXP(exp); 
     }
 
     protected virtual void Awake()
@@ -240,7 +210,9 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
     private void OnMouseDown()
     {
-        if (isDead) return;
+        if (isDead)
+            return;
+
         EnemyInfoPopupUI.Instance?.Show(this);
     }
 
@@ -254,11 +226,6 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         ResetEnemy();
         QuestManager.Instance?.UpdateArrow();
         EnemyTracker.Instance?.Register(this);
-
-        // FIX: Reset smooth state khi enable lại tránh velocity tồn đọng
-        _smoothedVelocity   = Vector2.zero;
-        _desiredVelocity    = Vector2.zero;
-        _smoothedSeparation = Vector2.zero;
     }
 
     private void OnDisable()
@@ -267,7 +234,6 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
         if (!gameObject.scene.isLoaded)
             return;
-
         EnemyTracker.Instance?.Unregister(this);
         ResetEnemy();
     }
@@ -279,43 +245,26 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         RefreshHealthUI();
     }
 
-    // ── FIX: Update chỉ xử lý logic thuần (target, state, animator) ───────────
-    // Không đụng vào Rigidbody ở đây để tránh desync với FixedUpdate
     private void Update()
     {
-        TickAILogic(true);
+        TickAI(true);
     }
 
-    // ── FIX: Toàn bộ physics (velocity) được apply trong FixedUpdate ───────────
     private void FixedUpdate()
     {
         if (cachedRigidbody == null) return;
-
-        // Lerp từ vận tốc hiện tại → vận tốc mục tiêu bằng acceleration
-        // Tránh giật khi đổi hướng đột ngột
-        _smoothedVelocity = Vector2.MoveTowards(
-            _smoothedVelocity,
-            _desiredVelocity,
-            acceleration * Time.fixedDeltaTime
-        );
-
-        cachedRigidbody.linearVelocity = _smoothedVelocity;
+        cachedRigidbody.linearVelocity = _desiredVelocity;
     }
 
     public void OptimizedUpdate()
     {
-        TickAILogic(false);
+        TickAI(false);
     }
 
-    // ── FIX: Đổi tên TickAI → TickAILogic, chỉ xử lý logic, không apply vật lý
-    private void TickAILogic(bool allowPatrolWhenIdle)
+    private void TickAI(bool allowPatrolWhenIdle)
     {
         if ((!allowPatrolWhenIdle && !isOptimizedActive) || isDead || isTakingDamage || isKnockbacked)
-        {
-            // Nếu bị stun/knock/die → dừng mượt
-            SetDesiredVelocity(Vector2.zero);
             return;
-        }
 
         EnsureCachedComponents();
 
@@ -324,7 +273,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
             if (allowPatrolWhenIdle)
                 Patrol();
             else
-                SetDesiredVelocity(Vector2.zero);
+                StopMotion();
 
             return;
         }
@@ -340,7 +289,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         if (!IsValidTarget(target, detectionRange * detectionRange))
         {
             target = null;
-            SetDesiredVelocity(Vector2.zero);
+            StopMotion();
             HandleAggroState();
             return;
         }
@@ -353,7 +302,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         }
         else
         {
-            SetDesiredVelocity(Vector2.zero);
+            StopMotion();
         }
 
         HandleAggroState();
@@ -369,14 +318,14 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         if (patrolWaitTimer > 0f)
         {
             patrolWaitTimer -= Time.deltaTime;
-            SetDesiredVelocity(Vector2.zero);
+            StopMotion();
             return;
         }
 
         if (Vector2.Distance(transform.position, patrolTarget) <= 0.1f)
         {
             patrolWaitTimer = patrolWaitTime;
-            SetDesiredVelocity(Vector2.zero);
+            StopMotion();
             ChooseNewPatrolPoint();
             return;
         }
@@ -403,11 +352,11 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
             return;
         }
 
-        maxHealth     = data.maxHealth;
-        attackDamage  = data.attackDamage;
-        moveSpeed     = data.moveSpeed;
+        maxHealth = data.maxHealth;
+        attackDamage = data.attackDamage;
+        moveSpeed = data.moveSpeed;
         attackCooldown = data.attackCooldown;
-        enemyLevel    = data.level;
+        enemyLevel = data.level;
     }
 
     public void SetActiveForOptimization(bool active)
@@ -415,7 +364,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         isOptimizedActive = active;
 
         if (!active)
-            SetDesiredVelocity(Vector2.zero);
+            StopMotion();
 
         if (anim != null)
             anim.enabled = active;
@@ -469,111 +418,35 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
     protected void EnsureCachedComponents()
     {
-        anim           ??= GetComponentInChildren<Animator>();
+        anim ??= GetComponentInChildren<Animator>();
         cachedCollider ??= GetComponent<Collider2D>();
-
-        if (cachedRigidbody == null)
-        {
-            cachedRigidbody = GetComponent<Rigidbody2D>();
-
-            // FIX: Bật interpolation để Unity nội suy vị trí giữa các physics frame
-            // Tránh hiện tượng tele/nhảy cóc khi render rate > physics rate
-            if (cachedRigidbody != null)
-                cachedRigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
-        }
+        cachedRigidbody ??= GetComponent<Rigidbody2D>();
     }
 
     protected void MoveInDirection(Vector2 direction)
     {
         if (direction.sqrMagnitude <= 0.0001f)
         {
-            SetDesiredVelocity(Vector2.zero);
+            StopMotion();
             return;
         }
 
-        // ── FIX: Lerp separation force thay vì tính raw mỗi frame ──────────────
-        // Tránh separation dao động quá nhanh gây quái khựng/rung
-        Vector2 rawSeparation = CalculateSeparationOffset();
-        _smoothedSeparation = Vector2.Lerp(
-            _smoothedSeparation,
-            rawSeparation,
-            separationSmoothSpeed * Time.deltaTime
-        );
-
-        Vector2 steeringDirection = direction.normalized + _smoothedSeparation;
-
-        // ── FIX: Nếu separation triệt tiêu hướng di chuyển thì ưu tiên hướng gốc
-        // Không để quái bị "đứng hình" vì lực đẩy ngược chiều hoàn toàn
-        if (steeringDirection.sqrMagnitude <= 0.0001f)
-            steeringDirection = direction.normalized;
-
-        SetDesiredVelocity(steeringDirection.normalized * moveSpeed);
+        _desiredVelocity = direction.normalized * moveSpeed;
+        anim?.SetBool(MoveBool, true);
     }
 
-    // ── FIX: Tách hàm SetDesiredVelocity để cập nhật cả Animator đúng chỗ ─────
-    // Animator chỉ được set 1 chỗ, không bị gọi chồng chéo
-    private void SetDesiredVelocity(Vector2 velocity)
-    {
-        _desiredVelocity = velocity;
-        anim?.SetBool(MoveBool, velocity.sqrMagnitude > 0.01f);
-    }
-
-    private Vector2 CalculateSeparationOffset()
-    {
-        if (separationRadius <= 0f || separationWeight <= 0f)
-            return Vector2.zero;
-
-        int hits = Physics2D.OverlapCircleNonAlloc(transform.position, separationRadius, _separationBuffer);
-        if (hits <= 1)
-            return Vector2.zero;
-
-        Vector2 separation   = Vector2.zero;
-        int countedNeighbors = 0;
-        int allowedNeighbors = Mathf.Min(maxSeparationNeighbors, MaxSeparationBuffer);
-        Vector2 selfPosition = transform.position;
-
-        for (int i = 0; i < hits && countedNeighbors < allowedNeighbors; i++)
-        {
-            Collider2D otherCollider = _separationBuffer[i];
-            if (otherCollider == null || otherCollider.attachedRigidbody == cachedRigidbody)
-                continue;
-
-            if (!otherCollider.TryGetComponent(out EnemyAI otherEnemy) || otherEnemy.IsDead)
-                continue;
-
-            Vector2 away      = selfPosition - (Vector2)otherEnemy.transform.position;
-            float sqrDistance = away.sqrMagnitude;
-            if (sqrDistance <= 0.0001f)
-                continue;
-
-            // ── FIX: Clamp separation tối đa để tránh lực đẩy quá mạnh gây giật
-            float strength = Mathf.Clamp(1f / sqrDistance, 0f, 5f);
-            separation += away.normalized * strength;
-            countedNeighbors++;
-        }
-
-        return countedNeighbors > 0 ? separation.normalized * separationWeight : Vector2.zero;
-    }
-
-    // ── FIX: StopMotion chỉ set desired = 0, KHÔNG reset rigidbody velocity thẳng
-    // FixedUpdate sẽ lerp về 0 mượt mà thay vì cắt đứt đột ngột
     protected void StopMotion(bool disablePhysics = false)
     {
         _desiredVelocity = Vector2.zero;
-        anim?.SetBool(MoveBool, false);
 
         if (cachedRigidbody != null)
         {
-            if (disablePhysics)
-            {
-                // Chỉ hard-stop khi disable physics hẳn (die, knockback)
-                _smoothedVelocity               = Vector2.zero;
-                cachedRigidbody.linearVelocity  = Vector2.zero;
-                cachedRigidbody.angularVelocity = 0f;
-                cachedRigidbody.simulated       = false;
-            }
-            // Nếu không disable physics thì để FixedUpdate lerp về 0 tự nhiên
+            cachedRigidbody.linearVelocity = Vector2.zero;
+            cachedRigidbody.angularVelocity = 0f;
+            cachedRigidbody.simulated = !disablePhysics;
         }
+
+        anim?.SetBool(MoveBool, false);
     }
 
     private void OnDrawGizmosSelected()
@@ -597,7 +470,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
             float sqrDist = ((Vector2)target.position - (Vector2)transform.position).sqrMagnitude;
             if (sqrDist <= detectionRange * detectionRange)
             {
-                isAggro       = true;
+                isAggro = true;
                 lastAggroTime = Time.time;
                 SetAggroIcon(true);
                 return;
@@ -607,7 +480,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         if (Time.time - lastAggroTime > aggroLoseTime)
         {
             isAggro = false;
-            target  = null;
+            target = null;
             SetAggroIcon(false);
         }
     }
@@ -634,15 +507,14 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
     public void ShowUIOnHit()
     {
-        EnemyInfoPopupUI.Instance?.Show(this);
-
         if (enemyHealthUI != null && !alwaysShowHP)
             enemyHealthUI.ShowUI();
     }
 
     private void RefreshHealthUI()
     {
-        if (enemyHealthUI == null) return;
+        if (enemyHealthUI == null)
+            return;
 
         enemyHealthUI.ForceSetTarget(gameObject);
 
