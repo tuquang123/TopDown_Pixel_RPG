@@ -15,6 +15,32 @@ public class StageData
     [Header("Reward khi clear stage")]
     public int bonusGold = 0;
     public int bonusExp  = 0;
+
+    [Header("Wave Config (Override)")]
+    [Tooltip("Bật để dùng config riêng cho stage này thay vì config mặc định trong WaveManager.")]
+    public bool useWaveConfigOverride;
+    public StageWaveConfig waveConfigOverride = StageWaveConfig.Default;
+}
+
+[System.Serializable]
+public struct StageWaveConfig
+{
+    [Min(1)]  public int enemiesBaseCount;
+    [Min(0)]  public int enemiesPerWave;
+    [Min(0f)] public float baseSpawnInterval;
+    [Min(0f)] public float spawnIntervalDecayPerWave;
+    [Min(0.05f)] public float minSpawnInterval;
+    [Min(1)]  public int bossWaveFrequency;
+
+    public static StageWaveConfig Default => new()
+    {
+        enemiesBaseCount = 4,
+        enemiesPerWave = 2,
+        baseSpawnInterval = 0.8f,
+        spawnIntervalDecayPerWave = 0.02f,
+        minSpawnInterval = 0.15f,
+        bossWaveFrequency = 5
+    };
 }
 
 [CreateAssetMenu(fileName = "StageDatabase", menuName = "Data/StageDatabase")]

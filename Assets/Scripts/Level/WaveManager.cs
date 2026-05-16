@@ -35,12 +35,12 @@ public class WaveManager : Singleton<WaveManager>
 
     [Header("Wave")]
     [SerializeField, Min(1)]    private int   startWave                 = 1;
-    [SerializeField, Min(1)]    private int   enemiesBaseCount          = 4;
-    [SerializeField, Min(0)]    private int   enemiesPerWave            = 2;
-    [SerializeField, Min(0f)]   private float baseSpawnInterval         = 0.8f;
-    [SerializeField, Min(0f)]   private float spawnIntervalDecayPerWave = 0.02f;
-    [SerializeField, Min(0.05f)]private float minSpawnInterval          = 0.15f;
-    [SerializeField, Min(1)]    private int   bossWaveFrequency         = 5;
+    [SerializeField, Min(1)]    private int   defaultEnemiesBaseCount          = 4;
+    [SerializeField, Min(0)]    private int   defaultEnemiesPerWave            = 2;
+    [SerializeField, Min(0f)]   private float defaultBaseSpawnInterval         = 0.8f;
+    [SerializeField, Min(0f)]   private float defaultSpawnIntervalDecayPerWave = 0.02f;
+    [SerializeField, Min(0.05f)]private float defaultMinSpawnInterval          = 0.15f;
+    [SerializeField, Min(1)]    private int   defaultBossWaveFrequency         = 5;
 
     [Header("Spawn Distance")]
     [Tooltip("Quái không spawn trong bán kính này quanh player (tính theo tile).")]
@@ -132,8 +132,25 @@ public class WaveManager : Singleton<WaveManager>
 
     public int CurrentWave       => currentWave;
     public int CurrentStage      => currentStage;
-    public int BossWaveFrequency => bossWaveFrequency;
+    public int BossWaveFrequency => GetStageWaveConfig().bossWaveFrequency;
     public StageData CurrentStageData => stageDatabase?.GetOrLast(currentStage);
+
+    private StageWaveConfig GetStageWaveConfig()
+    {
+        StageData data = CurrentStageData;
+        if (data != null && data.useWaveConfigOverride)
+            return data.waveConfigOverride;
+
+        return new StageWaveConfig
+        {
+            enemiesBaseCount = defaultEnemiesBaseCount,
+            enemiesPerWave = defaultEnemiesPerWave,
+            baseSpawnInterval = defaultBaseSpawnInterval,
+            spawnIntervalDecayPerWave = defaultSpawnIntervalDecayPerWave,
+            minSpawnInterval = defaultMinSpawnInterval,
+            bossWaveFrequency = defaultBossWaveFrequency
+        };
+    }
 
     // ═══════════════════════════════════════════════════════════════
     //  UNITY LIFECYCLE
@@ -375,7 +392,7 @@ public class WaveManager : Singleton<WaveManager>
 
         if (isBoss) { hp = Mathf.RoundToInt(hp * bossHealthMult); dmg = Mathf.RoundToInt(dmg * bossDamageMult); }
 
-        int level = (currentStage - 1) * bossWaveFrequency + currentWave;
+        int level = (currentStage - 1) * GetStageWaveConfig().bossWaveFrequency + currentWave;
         if (isBoss) level += bossLevelBonus;
 
         return new EnemyLevelData
@@ -397,7 +414,7 @@ public class WaveManager : Singleton<WaveManager>
     private void StartNextWave()
     {
         currentWave++;
-        bool isBossWave = currentWave % Mathf.Max(1, bossWaveFrequency) == 0;
+        bool isBossWave = currentWave % Mathf.Max(1, GetStageWaveConfig().bossWaveFrequency) == 0;
         waveActive = true;
 
         SaveProgress();
@@ -405,9 +422,9 @@ public class WaveManager : Singleton<WaveManager>
 
         if (isBossWave) { SpawnBoss(); return; }
 
-        int   count    = enemiesBaseCount + (currentWave - 1) * enemiesPerWave;
-        float interval = Mathf.Max(minSpawnInterval,
-            baseSpawnInterval - (currentWave - 1) * spawnIntervalDecayPerWave);
+        int   count    = GetStageWaveConfig().enemiesBaseCount + (currentWave - 1) * GetStageWaveConfig().enemiesPerWave;
+        float interval = Mathf.Max(GetStageWaveConfig().minSpawnInterval,
+            GetStageWaveConfig().baseSpawnInterval - (currentWave - 1) * GetStageWaveConfig().spawnIntervalDecayPerWave);
 
         StartCoroutine(SpawnWaveRoutine(count, interval));
     }
@@ -838,16 +855,16 @@ public class WaveManager : Singleton<WaveManager>
     public void ForceNextWave()
     {
         currentWave++;
-        bool isBossWave = currentWave % Mathf.Max(1, bossWaveFrequency) == 0;
+        bool isBossWave = currentWave % Mathf.Max(1, GetStageWaveConfig().bossWaveFrequency) == 0;
 
         SaveProgress();
         OnWaveStarted?.Invoke(currentWave, currentStage, isBossWave);
 
         if (isBossWave) { SpawnBoss(); return; }
 
-        int   count    = enemiesBaseCount + (currentWave - 1) * enemiesPerWave;
-        float interval = Mathf.Max(minSpawnInterval,
-            baseSpawnInterval - (currentWave - 1) * spawnIntervalDecayPerWave);
+        int   count    = GetStageWaveConfig().enemiesBaseCount + (currentWave - 1) * GetStageWaveConfig().enemiesPerWave;
+        float interval = Mathf.Max(GetStageWaveConfig().minSpawnInterval,
+            GetStageWaveConfig().baseSpawnInterval - (currentWave - 1) * GetStageWaveConfig().spawnIntervalDecayPerWave);
 
         StartCoroutine(SpawnWaveRoutine(count, interval));
     }
