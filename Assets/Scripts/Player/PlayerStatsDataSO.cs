@@ -87,5 +87,6 @@ public class PlayerStatData
 
     public float GetValueAtLevel(int level) => baseValue + Mathf.Max(0, level) * increasePerLevel;
 
-    public long GetUpgradeCost(int atLevel) => (long)goldCost * (atLevel + 1);
+    // Giá nâng cấp cố định theo cấu hình data (không scale theo level).
+    public long GetUpgradeCost(int atLevel) => goldCost;
 }

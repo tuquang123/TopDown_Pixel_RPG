@@ -39,7 +39,6 @@ public class HoldButton : MonoBehaviour
                 _holding   = true;
                 _timer     = 0f;
                 _repeating = false;
-                onHoldAction?.Invoke(); // Kích hoạt ngay lần đầu
             }
             else
             {
