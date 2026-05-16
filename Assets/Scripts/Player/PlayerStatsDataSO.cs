@@ -6,29 +6,31 @@ public class PlayerStatsDataSO : ScriptableObject
 {
     public PlayerStatsDataContainer stats = new PlayerStatsDataContainer();
 
-    public void Save()
+    public void Save() => PlayerPrefs.Save();
+    public void Load() { }
+
+    public int GetSavedLevel(PlayerStatData stat)
     {
-        PlayerPrefs.SetFloat("stat_attack_val",      stats.attack.currentValue);
-        PlayerPrefs.SetFloat("stat_defense_val",     stats.defense.currentValue);
-        PlayerPrefs.SetFloat("stat_speed_val",       stats.speed.currentValue);
-        PlayerPrefs.SetFloat("stat_crit_val",        stats.crit.currentValue);
-        PlayerPrefs.SetFloat("stat_lifesteal_val",   stats.lifesteal.currentValue);
-        PlayerPrefs.SetFloat("stat_attackspeed_val", stats.attackSpeed.currentValue);
-        PlayerPrefs.SetFloat("stat_health_val",      stats.health.currentValue);
-        PlayerPrefs.SetFloat("stat_mana_val",        stats.mana.currentValue);
-        PlayerPrefs.Save();
+        return Mathf.Max(0, PlayerPrefs.GetInt(GetStatLevelKey(stat), 0));
     }
 
-    public void Load()
+    public void SetSavedLevel(PlayerStatData stat, int level)
     {
-        stats.attack.currentValue      = PlayerPrefs.GetFloat("stat_attack_val",      stats.attack.baseValue);
-        stats.defense.currentValue     = PlayerPrefs.GetFloat("stat_defense_val",     stats.defense.baseValue);
-        stats.speed.currentValue       = PlayerPrefs.GetFloat("stat_speed_val",       stats.speed.baseValue);
-        stats.crit.currentValue        = PlayerPrefs.GetFloat("stat_crit_val",        stats.crit.baseValue);
-        stats.lifesteal.currentValue   = PlayerPrefs.GetFloat("stat_lifesteal_val",   stats.lifesteal.baseValue);
-        stats.attackSpeed.currentValue = PlayerPrefs.GetFloat("stat_attackspeed_val", stats.attackSpeed.baseValue);
-        stats.health.currentValue      = PlayerPrefs.GetFloat("stat_health_val",      stats.health.baseValue);
-        stats.mana.currentValue        = PlayerPrefs.GetFloat("stat_mana_val",        stats.mana.baseValue);
+        PlayerPrefs.SetInt(GetStatLevelKey(stat), Mathf.Max(0, level));
+    }
+
+    private string GetStatLevelKey(PlayerStatData stat)
+    {
+        if (stat == stats.attack)      return "stat_attack_lv";
+        if (stat == stats.defense)     return "stat_defense_lv";
+        if (stat == stats.speed)       return "stat_speed_lv";
+        if (stat == stats.crit)        return "stat_crit_lv";
+        if (stat == stats.lifesteal)   return "stat_lifesteal_lv";
+        if (stat == stats.attackSpeed) return "stat_attackspeed_lv";
+        if (stat == stats.health)      return "stat_health_lv";
+        if (stat == stats.mana)        return "stat_mana_lv";
+
+        return "stat_unknown_lv";
     }
 
     private void OnValidate()
@@ -66,14 +68,12 @@ public class PlayerStatsDataContainer
 public class PlayerStatData
 {
     public float baseValue;
-    public float currentValue;
     public float increasePerLevel;
     public int   goldCost;
 
     public PlayerStatData(float baseValue, float increasePerLevel, int goldCost)
     {
         this.baseValue        = baseValue;
-        this.currentValue     = baseValue;
         this.increasePerLevel = increasePerLevel;
         this.goldCost         = goldCost;
     }
@@ -85,8 +85,7 @@ public class PlayerStatData
         return Mathf.Max(0, Mathf.RoundToInt((runtimeValue - baseValue) / increasePerLevel));
     }
 
-    public float GetValue()      => currentValue;
-    public void  Upgrade()       => currentValue += increasePerLevel;
+    public float GetValueAtLevel(int level) => baseValue + Mathf.Max(0, level) * increasePerLevel;
 
     public long GetUpgradeCost(int atLevel) => (long)goldCost * (atLevel + 1);
 }
