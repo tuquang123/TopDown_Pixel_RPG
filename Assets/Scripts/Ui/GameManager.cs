@@ -53,7 +53,8 @@ public class GameManager : MonoBehaviour
             c.inventory,
             c.equipment,
             c.skill,
-            c.playerLevel
+            c.playerLevel,
+            c.playerStatsDataSO
         );
     }
 
@@ -68,7 +69,8 @@ public class GameManager : MonoBehaviour
             c.equipment,
             c.itemDatabase,
             c.skill,
-            c.playerLevel
+            c.playerLevel,
+            c.playerStatsDataSO
         );
 
         if (loaded)

@@ -17,6 +17,7 @@ public class SaveData
     public SkillSaveData skill;
     public LevelData levelData;
     public QuestSaveData questData;
+    public PlayerStatUpgradeSaveData statUpgrades;
 }
 
 
@@ -75,7 +76,8 @@ public static class SaveManager
         Inventory inventory,
         Equipment equipment,
         SkillSystem skill,
-        PlayerLevel playerLevel)
+        PlayerLevel playerLevel,
+        PlayerStatsDataSO statsDataSO)
     {
         Initialize();
 
@@ -93,7 +95,8 @@ public static class SaveManager
                 exp = playerLevel.levelSystem.exp,
                 skillPoints = playerLevel.skillPoints
             },
-            questData = QuestManager.Instance.ToData()
+            questData = QuestManager.Instance.ToData(),
+            statUpgrades = statsDataSO != null ? statsDataSO.CaptureFromRuntime(playerStats) : null
         };
 
         string json = JsonUtility.ToJson(data, false);
@@ -117,7 +120,8 @@ public static class SaveManager
         Equipment equipment,
         ItemDatabase db,
         SkillSystem skill,
-        PlayerLevel playerLevel)
+        PlayerLevel playerLevel,
+        PlayerStatsDataSO statsDataSO)
     {
         Initialize();
 
@@ -160,6 +164,8 @@ public static class SaveManager
 
         inventory.FromData(data.inventory, db);
         playerStats.FromData(data.playerStats);
+        if (statsDataSO != null && data.statUpgrades != null)
+            statsDataSO.ApplySaveDataToRuntime(playerStats, data.statUpgrades);
 
         inventory.FromData(data.inventory, db);
         equipment.FromData(data.equipment, db, playerStats);
@@ -232,4 +238,3 @@ public static class SaveManager
     }
    
 }
-

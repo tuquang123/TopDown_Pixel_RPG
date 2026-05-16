@@ -220,7 +220,8 @@ public class DevPanelUI : MonoBehaviour
             FindObjectOfType<Inventory>(),
             FindObjectOfType<Equipment>(),
             FindObjectOfType<SkillSystem>(),
-            FindObjectOfType<PlayerLevel>()
+            FindObjectOfType<PlayerLevel>(),
+            CommonReferent.Instance.playerStatsDataSO
         );
     }
 }

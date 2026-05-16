@@ -124,20 +124,20 @@ public class PlayerStatsPopupUI : BasePopup
         var ps = PlayerStats.Instance;
         if (ps == null) return;
 
-        ApplyIfHigher(ps.attack,      data.attack.GetValue());
-        ApplyIfHigher(ps.defense,     data.defense.GetValue());
-        ApplyIfHigher(ps.speed,       data.speed.GetValue());
-        ApplyIfHigher(ps.critChance,  data.crit.GetValue());
-        ApplyIfHigher(ps.lifeSteal,   data.lifesteal.GetValue());
-        ApplyIfHigher(ps.attackSpeed, data.attackSpeed.GetValue());
+        ApplyIfHigher(ps.attack,      data.attack.GetValueAtLevel(dataAsset.GetSavedLevel(data.attack)));
+        ApplyIfHigher(ps.defense,     data.defense.GetValueAtLevel(dataAsset.GetSavedLevel(data.defense)));
+        ApplyIfHigher(ps.speed,       data.speed.GetValueAtLevel(dataAsset.GetSavedLevel(data.speed)));
+        ApplyIfHigher(ps.critChance,  data.crit.GetValueAtLevel(dataAsset.GetSavedLevel(data.crit)));
+        ApplyIfHigher(ps.lifeSteal,   data.lifesteal.GetValueAtLevel(dataAsset.GetSavedLevel(data.lifesteal)));
+        ApplyIfHigher(ps.attackSpeed, data.attackSpeed.GetValueAtLevel(dataAsset.GetSavedLevel(data.attackSpeed)));
 
-        float newMaxHp = data.health.GetValue();
+        float newMaxHp = data.health.GetValueAtLevel(dataAsset.GetSavedLevel(data.health));
         if (newMaxHp > ps.maxHealth.baseValue)
             ps.maxHealth.SetBaseValue(newMaxHp);
         ps.currentHealth = Mathf.Clamp(ps.currentHealth, 1, (int)ps.maxHealth.Value);
         ps.NotifyHealthChanged();
 
-        float newMaxMana = data.mana.GetValue();
+        float newMaxMana = data.mana.GetValueAtLevel(dataAsset.GetSavedLevel(data.mana));
         if (newMaxMana > ps.maxMana.baseValue)
             ps.maxMana.SetBaseValue(newMaxMana);
         ps.currentMana = Mathf.Clamp(ps.currentMana, 0, (int)ps.maxMana.Value);
@@ -183,7 +183,7 @@ public class PlayerStatsPopupUI : BasePopup
         if (stat == data.health) return ps.maxHealth.baseValue;
         if (stat == data.mana) return ps.maxMana.baseValue;
 
-        return stat.GetValue();
+        return stat.GetValueAtLevel(dataAsset.GetSavedLevel(stat));
     }
 
     private void TryUpgrade(PlayerStatData stat, System.Func<PlayerStats, Stat> getter, int times)
@@ -194,15 +194,15 @@ public class PlayerStatsPopupUI : BasePopup
         if (!CurrencyManager.Instance.SpendGold(safeCost))
             return;
 
-        for (int i = 0; i < times; i++)
-            stat.Upgrade();
-
         var ps         = PlayerStats.Instance;
         var playerStat = getter(ps);
+        int currentLevel = stat.GetLevelFromValue(playerStat.baseValue);
+        int nextLevel = currentLevel + times;
 
         float oldMax = playerStat.Value;
-        playerStat.SetBaseValue(stat.GetValue());
+        playerStat.SetBaseValue(stat.GetValueAtLevel(nextLevel));
         float newMax = playerStat.Value;
+        dataAsset.SetSavedLevel(stat, nextLevel);
 
         if (playerStat == ps.maxHealth && oldMax > 0)
         {

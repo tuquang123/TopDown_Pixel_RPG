@@ -20,6 +20,7 @@ public class CommonReferent : Singleton<CommonReferent>
     public SkillSystem skill;
     public PlayerLevel playerLevel;
     public PlayerLevelUI playerLevelUI;
+    public PlayerStatsDataSO playerStatsDataSO;
     
     public EnemyLevelDatabase enemyLevelDatabase;
     public LevelDatabase levelDatabase;
