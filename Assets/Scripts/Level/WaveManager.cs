@@ -36,73 +36,7 @@ public class WaveManager : Singleton<WaveManager>
     [SerializeField] private GameObject bossPrefab;
 
     [Header("Wave")]
-    [SerializeField, Min(1)]    private int   startWave                 = 1;
-    [SerializeField, Min(1)]    private int   enemiesBaseCount          = 4;
-    [SerializeField, Min(0)]    private int   enemiesPerWave            = 2;
-    [SerializeField, Min(0f)]   private float baseSpawnInterval         = 0.8f;
-    [SerializeField, Min(0f)]   private float spawnIntervalDecayPerWave = 0.02f;
-    [SerializeField, Min(0.05f)]private float minSpawnInterval          = 0.15f;
-    [SerializeField, Min(1)]    private int   bossWaveFrequency         = 5;
-
-    [Header("Spawn Distance")]
-    [Tooltip("Quái không spawn trong bán kính này quanh player (tính theo tile).")]
-    [SerializeField, Min(0f)] private float minSpawnDistanceFromPlayer = 4f;
-
-    [Header("Out-of-Bounds Teleport")]
-    [Tooltip("Tần suất kiểm tra quái ra ngoài map (giây).")]
-    [SerializeField, Min(0.1f)] private float oobCheckInterval = 0.5f;
-
-    [Header("Physics")]
-    [SerializeField] private string enemyLayerName = "Enemy";
-
-    [Header("UI")]
-    [SerializeField] private WaveProgressUI waveUiPrefab;
-    [SerializeField] private Transform      waveUiRoot;
-
-    [Header("Player Respawn")]
-    [Tooltip("Thời gian chờ (giây) trước khi hồi sinh player sau khi chết.")]
-    [SerializeField, Min(0f)] private float respawnDelay = 1.5f;
-
-    [Tooltip("Thời gian chờ thêm (giây) SAU KHI player hồi sinh trước khi quái bắt đầu spawn.\n" +
-             "Dùng để player kịp chuẩn bị trước khi bị tấn công.")]
-    [SerializeField, Min(0f)] private float graceAfterRespawn = 3f;
-
-    [Tooltip("Khoảng cách spawn tối thiểu (tile) ngay sau khi hồi sinh.\n" +
-             "Nên lớn hơn minSpawnDistanceFromPlayer vì player vừa ở giữa map.")]
-    [SerializeField, Min(0f)] private float postRespawnMinSpawnDistance = 10f;
-
-    [Header("Enemy Base Stats")]
-    [SerializeField] private int   baseHealth         = 50;
-    [SerializeField] private int   baseDamage         = 8;
-    [SerializeField] private float baseMoveSpeed      = 2f;
-    [SerializeField] private float baseAttackRange    = 1.2f;
-    [SerializeField] private float baseDetectRange    = 6f;
-    [SerializeField] private float baseAttackCooldown = 1.5f;
-
-    [Header("Wave Scaling")]
-    [SerializeField, Min(0f)] private float waveHealthGrowth = 0.15f;
-    [SerializeField, Min(0f)] private float waveDamageGrowth = 0.10f;
-    [SerializeField, Min(0f)] private float waveSpeedGrowth  = 0.02f;
-
-    [Header("Stage Scaling")]
-    [SerializeField, Min(0f)]   private float healthScalePerStage       = 0.20f;
-    [SerializeField, Min(0f)]   private float damageScalePerStage       = 0.15f;
-    [SerializeField, Min(0f)]   private float moveSpeedScalePerStage    = 0.03f;
-    [SerializeField, Min(0f)]   private float cooldownReductionPerStage = 0.01f;
-    [SerializeField, Min(0.05f)]private float minAttackCooldown         = 0.2f;
-
-    [Header("Boss Multiplier")]
-    [SerializeField, Min(1f)] private float bossHealthMult = 5f;
-    [SerializeField, Min(1f)] private float bossDamageMult = 2f;
-
-    [Header("Level")]
-    [SerializeField, Min(0)] private int bossLevelBonus = 2;
-
-    [Header("Spawn Weight Scaling")]
-    [SerializeField, Min(0f)] private float weightGrowthPerStage = 0.1f;
-
-    [Header("Debug (Editor only)")]
-    [SerializeField] private bool showSpawnGizmos;
+    [SerializeField, Min(1)] private int startWave = 1;
 
     // ═══════════════════════════════════════════════════════════════
     //  PRIVATE
@@ -136,8 +70,17 @@ public class WaveManager : Singleton<WaveManager>
 
     public int CurrentWave       => currentWave;
     public int CurrentStage      => currentStage;
-    public int BossWaveFrequency => bossWaveFrequency;
+    public int BossWaveFrequency => Cfg.bossWaveFrequency;
     public StageData CurrentStageData => stageDatabase?.GetOrLast(currentStage);
+    private StageGameplayConfig Cfg
+    {
+        get
+        {
+            StageData data = CurrentStageData;
+            if (data == null) return StageGameplayConfig.Default;
+            return data.gameplayConfig;
+        }
+    }
 
     // ═══════════════════════════════════════════════════════════════
     //  UNITY LIFECYCLE
@@ -369,25 +312,25 @@ public class WaveManager : Singleton<WaveManager>
             ? Mathf.Max(0, Mathf.CeilToInt(currentWave / 2f) - 1)
             : currentWave - 1;
 
-        float wf = Mathf.Pow(1f + waveHealthGrowth, waveIndex);
-        float df = Mathf.Pow(1f + waveDamageGrowth, waveIndex);
-        float sf = 1f + waveSpeedGrowth * waveIndex;
+        float wf = Mathf.Pow(1f + Cfg.waveHealthGrowth, waveIndex);
+        float df = Mathf.Pow(1f + Cfg.waveDamageGrowth, waveIndex);
+        float sf = 1f + Cfg.waveSpeedGrowth * waveIndex;
 
         int   s        = currentStage - 1;
-        float stageHp  = 1f + s * healthScalePerStage;
-        float stageDmg = 1f + s * damageScalePerStage;
-        float stageSpd = 1f + s * moveSpeedScalePerStage;
+        float stageHp  = 1f + s * Cfg.healthScalePerStage;
+        float stageDmg = 1f + s * Cfg.damageScalePerStage;
+        float stageSpd = 1f + s * Cfg.moveSpeedScalePerStage;
 
-        int   hp  = Mathf.Max(1, Mathf.RoundToInt(baseHealth * wf * stageHp));
-        int   dmg = Mathf.Max(1, Mathf.RoundToInt(baseDamage * df * stageDmg));
-        float spd = Mathf.Max(0.1f, baseMoveSpeed * sf * stageSpd);
-        float cd  = Mathf.Max(minAttackCooldown,
-                        baseAttackCooldown * Mathf.Pow(1f - cooldownReductionPerStage, s));
+        int   hp  = Mathf.Max(1, Mathf.RoundToInt(Cfg.baseHealth * wf * stageHp));
+        int   dmg = Mathf.Max(1, Mathf.RoundToInt(Cfg.baseDamage * df * stageDmg));
+        float spd = Mathf.Max(0.1f, Cfg.baseMoveSpeed * sf * stageSpd);
+        float cd  = Mathf.Max(Cfg.minAttackCooldown,
+                        Cfg.baseAttackCooldown * Mathf.Pow(1f - Cfg.cooldownReductionPerStage, s));
 
-        if (isBoss) { hp = Mathf.RoundToInt(hp * bossHealthMult); dmg = Mathf.RoundToInt(dmg * bossDamageMult); }
+        if (isBoss) { hp = Mathf.RoundToInt(hp * Cfg.bossHealthMult); dmg = Mathf.RoundToInt(dmg * Cfg.bossDamageMult); }
 
-        int level = (currentStage - 1) * bossWaveFrequency + currentWave;
-        if (isBoss) level += bossLevelBonus;
+        int level = (currentStage - 1) * Cfg.bossWaveFrequency + currentWave;
+        if (isBoss) level += Cfg.bossLevelBonus;
 
         return new EnemyLevelData
         {
@@ -395,8 +338,8 @@ public class WaveManager : Singleton<WaveManager>
             maxHealth      = hp,
             attackDamage   = dmg,
             moveSpeed      = spd,
-            attackRange    = baseAttackRange,
-            detectionRange = baseDetectRange,
+            attackRange    = Cfg.baseAttackRange,
+            detectionRange = Cfg.baseDetectRange,
             attackCooldown = cd
         };
     }
@@ -408,7 +351,7 @@ public class WaveManager : Singleton<WaveManager>
     private void StartNextWave()
     {
         currentWave++;
-        bool isBossWave = currentWave % Mathf.Max(1, bossWaveFrequency) == 0;
+        bool isBossWave = currentWave % Mathf.Max(1, Cfg.bossWaveFrequency) == 0;
         waveActive = true;
 
         SaveProgress();
@@ -418,9 +361,9 @@ public class WaveManager : Singleton<WaveManager>
 
         if (isBossWave) { SpawnBoss(); return; }
 
-        int   count    = enemiesBaseCount + (currentWave - 1) * enemiesPerWave;
-        float interval = Mathf.Max(minSpawnInterval,
-            baseSpawnInterval - (currentWave - 1) * spawnIntervalDecayPerWave);
+        int   count    = Cfg.enemiesBaseCount + (currentWave - 1) * Cfg.enemiesPerWave;
+        float interval = Mathf.Max(Cfg.minSpawnInterval,
+            Cfg.baseSpawnInterval - (currentWave - 1) * Cfg.spawnIntervalDecayPerWave);
 
         StartCoroutine(SpawnWaveRoutine(count, interval));
     }
@@ -452,8 +395,8 @@ public class WaveManager : Singleton<WaveManager>
         Vector3 playerPos = PlayerPosition();
 
         float minDist = justRespawned
-            ? Mathf.Max(minSpawnDistanceFromPlayer, postRespawnMinSpawnDistance)
-            : minSpawnDistanceFromPlayer;
+            ? Mathf.Max(Cfg.minSpawnDistanceFromPlayer, Cfg.postRespawnMinSpawnDistance)
+            : Cfg.minSpawnDistanceFromPlayer;
 
         int attempts = Mathf.Min(60, spawnTiles.Count);
         for (int i = 0; i < attempts; i++)
@@ -498,7 +441,7 @@ public class WaveManager : Singleton<WaveManager>
 
     private IEnumerator OutOfBoundsChecker()
     {
-        var wait = new WaitForSeconds(oobCheckInterval);
+        var wait = new WaitForSeconds(Cfg.oobCheckInterval);
         while (waveActive)
         {
             yield return wait;
@@ -700,7 +643,7 @@ public class WaveManager : Singleton<WaveManager>
     {
         isRespawning = true;
 
-        yield return new WaitForSeconds(respawnDelay);
+        yield return new WaitForSeconds(Cfg.respawnDelay);
 
         if (player == null)
         {
@@ -723,10 +666,10 @@ public class WaveManager : Singleton<WaveManager>
 
         Debug.Log($"[WaveManager] Player hồi sinh tại giữa map: {center}");
 
-        if (graceAfterRespawn > 0f)
+        if (Cfg.graceAfterRespawn > 0f)
         {
-            Debug.Log($"[WaveManager] Grace period {graceAfterRespawn}s — quái chưa spawn...");
-            yield return new WaitForSeconds(graceAfterRespawn);
+            Debug.Log($"[WaveManager] Grace period {Cfg.graceAfterRespawn}s — quái chưa spawn...");
+            yield return new WaitForSeconds(Cfg.graceAfterRespawn);
         }
 
         isRespawning  = false;
@@ -756,7 +699,7 @@ public class WaveManager : Singleton<WaveManager>
         for (int i = 0; i < avail.Count; i++)
         {
             int stages = Mathf.Max(0, currentStage - avail[i].minStage);
-            weights[i] = Mathf.Max(0.01f, avail[i].weight) * (1f + weightGrowthPerStage * stages);
+            weights[i] = Mathf.Max(0.01f, avail[i].weight) * (1f + Cfg.weightGrowthPerStage * stages);
             total += weights[i];
         }
 
@@ -868,16 +811,16 @@ public class WaveManager : Singleton<WaveManager>
     public void ForceNextWave()
     {
         currentWave++;
-        bool isBossWave = currentWave % Mathf.Max(1, bossWaveFrequency) == 0;
+        bool isBossWave = currentWave % Mathf.Max(1, Cfg.bossWaveFrequency) == 0;
 
         SaveProgress();
         OnWaveStarted?.Invoke(currentWave, currentStage, isBossWave);
 
         if (isBossWave) { SpawnBoss(); return; }
 
-        int   count    = enemiesBaseCount + (currentWave - 1) * enemiesPerWave;
-        float interval = Mathf.Max(minSpawnInterval,
-            baseSpawnInterval - (currentWave - 1) * spawnIntervalDecayPerWave);
+        int   count    = Cfg.enemiesBaseCount + (currentWave - 1) * Cfg.enemiesPerWave;
+        float interval = Mathf.Max(Cfg.minSpawnInterval,
+            Cfg.baseSpawnInterval - (currentWave - 1) * Cfg.spawnIntervalDecayPerWave);
 
         StartCoroutine(SpawnWaveRoutine(count, interval));
     }
@@ -897,7 +840,7 @@ public class WaveManager : Singleton<WaveManager>
         if (player != null)
         {
             Gizmos.color = new Color(1f, 0.15f, 0.15f, 0.4f);
-            Gizmos.DrawWireSphere(player.position, minSpawnDistanceFromPlayer);
+            Gizmos.DrawWireSphere(player.position, Cfg.minSpawnDistanceFromPlayer);
         }
 
         if (spawnTiles.Count > 0)
