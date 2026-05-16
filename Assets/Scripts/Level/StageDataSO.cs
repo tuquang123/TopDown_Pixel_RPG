@@ -2,88 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct StageGameplayConfig
-{
-    [Header("Wave")]
-    [Min(1)] public int enemiesBaseCount;
-    [Min(0)] public int enemiesPerWave;
-    [Min(0f)] public float baseSpawnInterval;
-    [Min(0f)] public float spawnIntervalDecayPerWave;
-    [Min(0.05f)] public float minSpawnInterval;
-    [Min(1)] public int bossWaveFrequency;
-
-    [Header("Spawn")]
-    [Min(0f)] public float minSpawnDistanceFromPlayer;
-    [Min(0.1f)] public float oobCheckInterval;
-    [Min(0f)] public float postRespawnMinSpawnDistance;
-
-    [Header("Enemy Base Stats")]
-    public int baseHealth;
-    public int baseDamage;
-    public float baseMoveSpeed;
-    public float baseAttackRange;
-    public float baseDetectRange;
-    public float baseAttackCooldown;
-
-    [Header("Wave Scaling")]
-    [Min(0f)] public float waveHealthGrowth;
-    [Min(0f)] public float waveDamageGrowth;
-    [Min(0f)] public float waveSpeedGrowth;
-
-    [Header("Stage Scaling")]
-    [Min(0f)] public float healthScalePerStage;
-    [Min(0f)] public float damageScalePerStage;
-    [Min(0f)] public float moveSpeedScalePerStage;
-    [Min(0f)] public float cooldownReductionPerStage;
-    [Min(0.05f)] public float minAttackCooldown;
-
-    [Header("Boss")]
-    [Min(1f)] public float bossHealthMult;
-    [Min(1f)] public float bossDamageMult;
-    [Min(0)] public int bossLevelBonus;
-
-    [Header("Spawn Weight")]
-    [Min(0f)] public float weightGrowthPerStage;
-
-    [Header("Respawn")]
-    [Min(0f)] public float respawnDelay;
-    [Min(0f)] public float graceAfterRespawn;
-
-    public static StageGameplayConfig Default => new()
-    {
-        enemiesBaseCount = 4,
-        enemiesPerWave = 2,
-        baseSpawnInterval = 0.8f,
-        spawnIntervalDecayPerWave = 0.02f,
-        minSpawnInterval = 0.15f,
-        bossWaveFrequency = 5,
-        minSpawnDistanceFromPlayer = 4f,
-        oobCheckInterval = 0.5f,
-        postRespawnMinSpawnDistance = 10f,
-        baseHealth = 50,
-        baseDamage = 8,
-        baseMoveSpeed = 2f,
-        baseAttackRange = 1.2f,
-        baseDetectRange = 6f,
-        baseAttackCooldown = 1.5f,
-        waveHealthGrowth = 0.15f,
-        waveDamageGrowth = 0.10f,
-        waveSpeedGrowth = 0.02f,
-        healthScalePerStage = 0.20f,
-        damageScalePerStage = 0.15f,
-        moveSpeedScalePerStage = 0.03f,
-        cooldownReductionPerStage = 0.01f,
-        minAttackCooldown = 0.2f,
-        bossHealthMult = 5f,
-        bossDamageMult = 2f,
-        bossLevelBonus = 2,
-        weightGrowthPerStage = 0.1f,
-        respawnDelay = 1.5f,
-        graceAfterRespawn = 3f
-    };
-}
-
-[System.Serializable]
 public class StageData
 {
     [Header("Info")]
@@ -96,10 +14,33 @@ public class StageData
 
     [Header("Reward khi clear stage")]
     public int bonusGold = 0;
-    public int bonusExp = 0;
+    public int bonusExp  = 0;
 
-    [Header("Gameplay Config")]
-    public StageGameplayConfig gameplayConfig = StageGameplayConfig.Default;
+    [Header("Wave Config (Override)")]
+    [Tooltip("Bật để dùng config riêng cho stage này thay vì config mặc định trong WaveManager.")]
+    public bool useWaveConfigOverride;
+    public StageWaveConfig waveConfigOverride = StageWaveConfig.Default;
+}
+
+[System.Serializable]
+public struct StageWaveConfig
+{
+    [Min(1)]  public int enemiesBaseCount;
+    [Min(0)]  public int enemiesPerWave;
+    [Min(0f)] public float baseSpawnInterval;
+    [Min(0f)] public float spawnIntervalDecayPerWave;
+    [Min(0.05f)] public float minSpawnInterval;
+    [Min(1)]  public int bossWaveFrequency;
+
+    public static StageWaveConfig Default => new()
+    {
+        enemiesBaseCount = 4,
+        enemiesPerWave = 2,
+        baseSpawnInterval = 0.8f,
+        spawnIntervalDecayPerWave = 0.02f,
+        minSpawnInterval = 0.15f,
+        bossWaveFrequency = 5
+    };
 }
 
 [CreateAssetMenu(fileName = "StageDatabase", menuName = "Data/StageDatabase")]
