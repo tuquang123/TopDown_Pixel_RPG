@@ -26,7 +26,9 @@ public class WaveManager : Singleton<WaveManager>
     [SerializeField] private string spawnZoneTilemapName = "SpawnZone";
 
     [Header("Map")]
-    [Tooltip("Kéo root GameObject của map Stage 1 có sẵn trong scene vào đây.")]
+    [Tooltip("Kéo root GameObject của map Stage 1 có sẵn trong scene vào đây.\n" +
+             "WaveManager sẽ coi đây là currentMapInstance ban đầu —\n" +
+             "đảm bảo Destroy đúng khi chuyển sang Stage 2 (tránh 2 map tồn tại cùng lúc).")]
     [SerializeField] private GameObject initialSceneMap;
 
     [Header("Prefabs")]
@@ -34,71 +36,7 @@ public class WaveManager : Singleton<WaveManager>
     [SerializeField] private GameObject bossPrefab;
 
     [Header("Wave")]
-    [SerializeField, Min(1)]    private int   startWave                 = 1;
-    [SerializeField, Min(1)]    private int   defaultEnemiesBaseCount          = 4;
-    [SerializeField, Min(0)]    private int   defaultEnemiesPerWave            = 2;
-    [SerializeField, Min(0f)]   private float defaultBaseSpawnInterval         = 0.8f;
-    [SerializeField, Min(0f)]   private float defaultSpawnIntervalDecayPerWave = 0.02f;
-    [SerializeField, Min(0.05f)]private float defaultMinSpawnInterval          = 0.15f;
-    [SerializeField, Min(1)]    private int   defaultBossWaveFrequency         = 5;
-
-    [Header("Spawn Distance")]
-    [Tooltip("Quái không spawn trong bán kính này quanh player (tính theo tile).")]
-    [SerializeField, Min(0f)] private float minSpawnDistanceFromPlayer = 4f;
-
-    [Header("Physics")]
-    [SerializeField] private string enemyLayerName = "Enemy";
-
-    [Header("UI")]
-    [SerializeField] private WaveProgressUI waveUiPrefab;
-    [SerializeField] private Transform      waveUiRoot;
-
-    [Header("Player Respawn")]
-    [Tooltip("Thời gian chờ (giây) trước khi hồi sinh player sau khi chết.")]
-    [SerializeField, Min(0f)] private float respawnDelay = 1.5f;
-
-    [Tooltip("Thời gian chờ thêm (giây) SAU KHI player hồi sinh trước khi quái bắt đầu spawn.")]
-    [SerializeField, Min(0f)] private float graceAfterRespawn = 3f;
-
-    [Tooltip("Khoảng cách spawn tối thiểu (tile) ngay sau khi hồi sinh.")]
-    [SerializeField, Min(0f)] private float postRespawnMinSpawnDistance = 10f;
-
-    [Tooltip("Thời gian tối đa (giây) chờ spawn cache sẵn sàng sau hồi sinh.\n" +
-             "Tăng nếu map của bạn load chậm (nhiều tile).")]
-    [SerializeField, Min(0.5f)] private float spawnCacheWaitTimeout = 4f;
-
-    [Header("Enemy Base Stats")]
-    [SerializeField] private int   baseHealth         = 50;
-    [SerializeField] private int   baseDamage         = 8;
-    [SerializeField] private float baseMoveSpeed      = 2f;
-    [SerializeField] private float baseAttackRange    = 1.2f;
-    [SerializeField] private float baseDetectRange    = 6f;
-    [SerializeField] private float baseAttackCooldown = 1.5f;
-
-    [Header("Wave Scaling")]
-    [SerializeField, Min(0f)] private float waveHealthGrowth = 0.15f;
-    [SerializeField, Min(0f)] private float waveDamageGrowth = 0.10f;
-    [SerializeField, Min(0f)] private float waveSpeedGrowth  = 0.02f;
-
-    [Header("Stage Scaling")]
-    [SerializeField, Min(0f)]   private float healthScalePerStage       = 0.20f;
-    [SerializeField, Min(0f)]   private float damageScalePerStage       = 0.15f;
-    [SerializeField, Min(0f)]   private float moveSpeedScalePerStage    = 0.03f;
-    [SerializeField, Min(0f)]   private float cooldownReductionPerStage = 0.01f;
-    [SerializeField, Min(0.05f)]private float minAttackCooldown         = 0.2f;
-
-    [Header("Boss Multiplier")]
-    [SerializeField, Min(1f)] private float bossHealthMult = 5f;
-    [SerializeField, Min(1f)] private float bossDamageMult = 2f;
-
-    [Header("Level")]
-    [SerializeField, Min(0)] private int bossLevelBonus = 2;
-
-    [Header("Spawn Weight Scaling")]
-    [SerializeField, Min(0f)] private float weightGrowthPerStage = 0.1f;
-
-    [Header("Debug (Editor only)")]
-    [SerializeField] private bool showSpawnGizmos;
+    [SerializeField, Min(1)] private int startWave = 1;
 
     // ═══════════════════════════════════════════════════════════════
     //  PRIVATE
@@ -127,29 +65,21 @@ public class WaveManager : Singleton<WaveManager>
     private GameObject currentMapPrefab;
     private GameObject pendingMapPrefab;
 
-    private readonly List<Vector3> spawnTiles         = new();
-    private          Tilemap       activeSpawnZoneTilemap;
+    private readonly List<Vector3> spawnTiles = new();
+    private Tilemap activeSpawnZoneTilemap;
 
     public int CurrentWave       => currentWave;
     public int CurrentStage      => currentStage;
-    public int BossWaveFrequency => GetStageWaveConfig().bossWaveFrequency;
+    public int BossWaveFrequency => Cfg.bossWaveFrequency;
     public StageData CurrentStageData => stageDatabase?.GetOrLast(currentStage);
-
-    private StageWaveConfig GetStageWaveConfig()
+    private StageGameplayConfig Cfg
     {
-        StageData data = CurrentStageData;
-        if (data != null && data.useWaveConfigOverride)
-            return data.waveConfigOverride;
-
-        return new StageWaveConfig
+        get
         {
-            enemiesBaseCount = defaultEnemiesBaseCount,
-            enemiesPerWave = defaultEnemiesPerWave,
-            baseSpawnInterval = defaultBaseSpawnInterval,
-            spawnIntervalDecayPerWave = defaultSpawnIntervalDecayPerWave,
-            minSpawnInterval = defaultMinSpawnInterval,
-            bossWaveFrequency = defaultBossWaveFrequency
-        };
+            StageData data = CurrentStageData;
+            if (data == null) return StageGameplayConfig.Default;
+            return data.gameplayConfig;
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -207,7 +137,8 @@ public class WaveManager : Singleton<WaveManager>
 
             currentMapInstance = root;
             BuildSpawnCache(currentMapInstance);
-            Debug.Log($"[WaveManager] Tự tìm thấy scene map: \"{root.name}\"");
+            Debug.Log($"[WaveManager] Tự tìm thấy scene map: \"{root.name}\" " +
+                      "(gợi ý: kéo nó vào trường 'Initial Scene Map' để chắc chắn hơn)");
             return;
         }
     }
@@ -221,6 +152,7 @@ public class WaveManager : Singleton<WaveManager>
         PlayerPrefs.SetInt(KEY_WAVE,  currentWave);
         PlayerPrefs.SetInt(KEY_STAGE, currentStage);
         PlayerPrefs.Save();
+        Debug.Log($"[WaveManager] Saved -> Stage {currentStage}, Wave {currentWave}");
     }
 
     private void LoadProgress()
@@ -318,13 +250,18 @@ public class WaveManager : Singleton<WaveManager>
         Tilemap target = null;
         foreach (var tm in mapRoot.GetComponentsInChildren<Tilemap>())
         {
-            if (tm.name == spawnZoneTilemapName) { target = tm; break; }
+            if (tm.name == spawnZoneTilemapName)
+            {
+                target = tm;
+                break;
+            }
         }
 
         if (target == null)
         {
-            Debug.LogWarning($"[WaveManager] Không tìm thấy Tilemap \"{spawnZoneTilemapName}\" " +
+            Debug.LogWarning($"[WaveManager] Không tìm thấy Tilemap tên \"{spawnZoneTilemapName}\" " +
                              $"trong \"{mapRoot.name}\". Dùng tất cả Tilemap làm fallback.");
+
             foreach (var tm in mapRoot.GetComponentsInChildren<Tilemap>())
                 CacheTilemap(tm);
         }
@@ -375,25 +312,25 @@ public class WaveManager : Singleton<WaveManager>
             ? Mathf.Max(0, Mathf.CeilToInt(currentWave / 2f) - 1)
             : currentWave - 1;
 
-        float wf = Mathf.Pow(1f + waveHealthGrowth, waveIndex);
-        float df = Mathf.Pow(1f + waveDamageGrowth, waveIndex);
-        float sf = 1f + waveSpeedGrowth * waveIndex;
+        float wf = Mathf.Pow(1f + Cfg.waveHealthGrowth, waveIndex);
+        float df = Mathf.Pow(1f + Cfg.waveDamageGrowth, waveIndex);
+        float sf = 1f + Cfg.waveSpeedGrowth * waveIndex;
 
         int   s        = currentStage - 1;
-        float stageHp  = 1f + s * healthScalePerStage;
-        float stageDmg = 1f + s * damageScalePerStage;
-        float stageSpd = 1f + s * moveSpeedScalePerStage;
+        float stageHp  = 1f + s * Cfg.healthScalePerStage;
+        float stageDmg = 1f + s * Cfg.damageScalePerStage;
+        float stageSpd = 1f + s * Cfg.moveSpeedScalePerStage;
 
-        int   hp  = Mathf.Max(1, Mathf.RoundToInt(baseHealth * wf * stageHp));
-        int   dmg = Mathf.Max(1, Mathf.RoundToInt(baseDamage * df * stageDmg));
-        float spd = Mathf.Max(0.1f, baseMoveSpeed * sf * stageSpd);
-        float cd  = Mathf.Max(minAttackCooldown,
-                        baseAttackCooldown * Mathf.Pow(1f - cooldownReductionPerStage, s));
+        int   hp  = Mathf.Max(1, Mathf.RoundToInt(Cfg.baseHealth * wf * stageHp));
+        int   dmg = Mathf.Max(1, Mathf.RoundToInt(Cfg.baseDamage * df * stageDmg));
+        float spd = Mathf.Max(0.1f, Cfg.baseMoveSpeed * sf * stageSpd);
+        float cd  = Mathf.Max(Cfg.minAttackCooldown,
+                        Cfg.baseAttackCooldown * Mathf.Pow(1f - Cfg.cooldownReductionPerStage, s));
 
-        if (isBoss) { hp = Mathf.RoundToInt(hp * bossHealthMult); dmg = Mathf.RoundToInt(dmg * bossDamageMult); }
+        if (isBoss) { hp = Mathf.RoundToInt(hp * Cfg.bossHealthMult); dmg = Mathf.RoundToInt(dmg * Cfg.bossDamageMult); }
 
-        int level = (currentStage - 1) * GetStageWaveConfig().bossWaveFrequency + currentWave;
-        if (isBoss) level += bossLevelBonus;
+        int level = (currentStage - 1) * Cfg.bossWaveFrequency + currentWave;
+        if (isBoss) level += Cfg.bossLevelBonus;
 
         return new EnemyLevelData
         {
@@ -401,8 +338,8 @@ public class WaveManager : Singleton<WaveManager>
             maxHealth      = hp,
             attackDamage   = dmg,
             moveSpeed      = spd,
-            attackRange    = baseAttackRange,
-            detectionRange = baseDetectRange,
+            attackRange    = Cfg.baseAttackRange,
+            detectionRange = Cfg.baseDetectRange,
             attackCooldown = cd
         };
     }
@@ -414,17 +351,19 @@ public class WaveManager : Singleton<WaveManager>
     private void StartNextWave()
     {
         currentWave++;
-        bool isBossWave = currentWave % Mathf.Max(1, GetStageWaveConfig().bossWaveFrequency) == 0;
+        bool isBossWave = currentWave % Mathf.Max(1, Cfg.bossWaveFrequency) == 0;
         waveActive = true;
 
         SaveProgress();
         OnWaveStarted?.Invoke(currentWave, currentStage, isBossWave);
 
+        StartCoroutine(OutOfBoundsChecker());
+
         if (isBossWave) { SpawnBoss(); return; }
 
-        int   count    = GetStageWaveConfig().enemiesBaseCount + (currentWave - 1) * GetStageWaveConfig().enemiesPerWave;
-        float interval = Mathf.Max(GetStageWaveConfig().minSpawnInterval,
-            GetStageWaveConfig().baseSpawnInterval - (currentWave - 1) * GetStageWaveConfig().spawnIntervalDecayPerWave);
+        int   count    = Cfg.enemiesBaseCount + (currentWave - 1) * Cfg.enemiesPerWave;
+        float interval = Mathf.Max(Cfg.minSpawnInterval,
+            Cfg.baseSpawnInterval - (currentWave - 1) * Cfg.spawnIntervalDecayPerWave);
 
         StartCoroutine(SpawnWaveRoutine(count, interval));
     }
@@ -447,26 +386,17 @@ public class WaveManager : Singleton<WaveManager>
 
     private Vector3 PickSpawnTile()
     {
-        Vector3 playerPos = PlayerPosition();
-
-        // ── FIX: Khi spawnTiles rỗng, KHÔNG spawn tại PlayerPosition() ─────────
-        // Nguyên nhân bug cũ: spawnTiles.Count == 0 → return PlayerPosition()
-        // → quái xuất hiện chồng ngay trên đầu player lúc hồi sinh.
-        // Fix: spawn tại vị trí ngẫu nhiên cách player một khoảng an toàn.
         if (spawnTiles.Count == 0)
         {
-            float safeRadius = Mathf.Max(minSpawnDistanceFromPlayer,
-                                         justRespawned ? postRespawnMinSpawnDistance : 0f,
-                                         5f);
-            Vector2 rndDir   = UnityEngine.Random.insideUnitCircle.normalized;
-            Vector3 fallback = playerPos + new Vector3(rndDir.x * safeRadius, rndDir.y * safeRadius, 0f);
-            Debug.LogWarning($"[WaveManager] SpawnTiles rỗng — spawn fallback cách player {safeRadius:F1} units.");
-            return fallback;
+            Debug.LogWarning("[WaveManager] SpawnTiles rỗng! Spawn tại vị trí player.");
+            return PlayerPosition();
         }
 
+        Vector3 playerPos = PlayerPosition();
+
         float minDist = justRespawned
-            ? Mathf.Max(minSpawnDistanceFromPlayer, postRespawnMinSpawnDistance)
-            : minSpawnDistanceFromPlayer;
+            ? Mathf.Max(Cfg.minSpawnDistanceFromPlayer, Cfg.postRespawnMinSpawnDistance)
+            : Cfg.minSpawnDistanceFromPlayer;
 
         int attempts = Mathf.Min(60, spawnTiles.Count);
         for (int i = 0; i < attempts; i++)
@@ -477,6 +407,7 @@ public class WaveManager : Singleton<WaveManager>
         }
 
         float hardMin = minDist * 0.5f;
+
         Vector3 best    = spawnTiles[0];
         float   bestDst = -1f;
         int     sample  = Mathf.Min(200, spawnTiles.Count);
@@ -485,7 +416,11 @@ public class WaveManager : Singleton<WaveManager>
         {
             int   idx = UnityEngine.Random.Range(0, spawnTiles.Count);
             float d   = Vector2.Distance(spawnTiles[idx], playerPos);
-            if (d > bestDst && d >= hardMin) { bestDst = d; best = spawnTiles[idx]; }
+            if (d > bestDst && d >= hardMin)
+            {
+                bestDst = d;
+                best    = spawnTiles[idx];
+            }
         }
 
         if (bestDst < 0f)
@@ -498,6 +433,64 @@ public class WaveManager : Singleton<WaveManager>
         }
 
         return best;
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  OUT-OF-BOUNDS TELEPORT
+    // ═══════════════════════════════════════════════════════════════
+
+    private IEnumerator OutOfBoundsChecker()
+    {
+        var wait = new WaitForSeconds(Cfg.oobCheckInterval);
+        while (waveActive)
+        {
+            yield return wait;
+            var snapshot = new List<EnemyAI>(aliveEnemies);
+            foreach (var ai in snapshot)
+            {
+                if (ai == null) continue;
+                if (!IsOnSpawnZone(ai.transform.position))
+                    TeleportToNearest(ai);
+            }
+        }
+    }
+
+    private bool IsOnSpawnZone(Vector3 pos)
+    {
+        if (activeSpawnZoneTilemap == null)
+            return spawnTiles.Count == 0 || IsNearAnyTile(pos);
+
+        Vector3Int cell = activeSpawnZoneTilemap.WorldToCell(pos);
+        return activeSpawnZoneTilemap.HasTile(cell);
+    }
+
+    private bool IsNearAnyTile(Vector3 pos)
+    {
+        float threshold = 0.6f;
+        foreach (var tile in spawnTiles)
+            if (Mathf.Abs(pos.x - tile.x) < threshold && Mathf.Abs(pos.y - tile.y) < threshold)
+                return true;
+        return false;
+    }
+
+    private void TeleportToNearest(EnemyAI ai)
+    {
+        if (spawnTiles.Count == 0) return;
+
+        Vector3 pos     = ai.transform.position;
+        Vector3 best    = spawnTiles[0];
+        float   bestDst = float.MaxValue;
+
+        int sample = Mathf.Min(300, spawnTiles.Count);
+        for (int i = 0; i < sample; i++)
+        {
+            int   idx = UnityEngine.Random.Range(0, spawnTiles.Count);
+            float d   = Vector2.SqrMagnitude((Vector2)(spawnTiles[idx] - pos));
+            if (d < bestDst) { bestDst = d; best = spawnTiles[idx]; }
+        }
+
+        ai.transform.position = best;
+        Debug.Log($"[WaveManager] OOB Teleport: {ai.name} -> {best}");
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -565,8 +558,16 @@ public class WaveManager : Singleton<WaveManager>
     //  XÓA TOÀN BỘ QUÁI ĐANG SỐNG
     // ═══════════════════════════════════════════════════════════════
 
+    /// <summary>
+    /// Xóa sạch toàn bộ quái:
+    ///   1. Unsubscribe event và trả về pool / Destroy tất cả enemy đang được TRACK.
+    ///   2. Quét toàn scene bằng FindObjectsByType để bắt những quái KHÔNG được track
+    ///      (ví dụ: đang spawn dở trong coroutine, hoặc RegisterAliveEnemy thất bại).
+    /// Không kích hoạt HandleEnemyDeath — tránh StartNextWave chạy lúc reset.
+    /// </summary>
     private void ClearAllEnemies()
     {
+        // ── Bước 1: xóa quái đang được track ─────────────────────
         var snapshot = new List<EnemyAI>(aliveEnemies);
         foreach (var ai in snapshot)
             ForceRemoveEnemy(ai);
@@ -574,22 +575,32 @@ public class WaveManager : Singleton<WaveManager>
         aliveEnemies.Clear();
         deathHandlers.Clear();
 
+        // ── Bước 2: quét scene, xóa quái không được track ────────
+        // Đây là fix chính: bắt quái spawn dở, quái pool bị "nhả" lại,
+        // hoặc quái do coroutine spawn ngay trước khi StopAllCoroutines chạy.
         foreach (var ai in FindObjectsByType<EnemyAI>(FindObjectsSortMode.None))
             ForceRemoveEnemy(ai);
 
         Debug.Log("[WaveManager] ClearAllEnemies: toàn bộ quái đã bị xóa.");
     }
 
+    /// <summary>
+    /// Unsubscribe event và tắt / xóa một EnemyAI bất kỳ.
+    /// Dùng chung cho cả tracked lẫn untracked enemy.
+    /// </summary>
     private void ForceRemoveEnemy(EnemyAI ai)
     {
         if (ai == null) return;
 
+        // Gỡ event nếu còn đăng ký
         if (deathHandlers.TryGetValue(ai, out var handler))
         {
             ai.OnDeath -= handler;
             deathHandlers.Remove(ai);
         }
 
+        // Tắt ngay lập tức TRƯỚC khi trả pool
+        // (một số ObjectPooler.ReturnToPool tự gọi SetActive(true) bên trong)
         ai.gameObject.SetActive(false);
 
         if (ObjectPooler.Instance != null)
@@ -632,7 +643,7 @@ public class WaveManager : Singleton<WaveManager>
     {
         isRespawning = true;
 
-        yield return new WaitForSeconds(respawnDelay);
+        yield return new WaitForSeconds(Cfg.respawnDelay);
 
         if (player == null)
         {
@@ -643,12 +654,6 @@ public class WaveManager : Singleton<WaveManager>
 
         if (!player.gameObject.activeSelf)
             player.gameObject.SetActive(true);
-
-        // ── FIX: Đợi spawn cache sẵn sàng TRƯỚC KHI đặt player và bắt đầu wave ──
-        // Trước đây StartNextWave() có thể chạy khi spawnTiles vẫn rỗng
-        // (map swap async chưa kịp hoàn thành) → PickSpawnTile() trả PlayerPosition()
-        // → quái spawn chồng lên đầu player ngay lúc hồi sinh.
-        yield return StartCoroutine(WaitForSpawnCache());
 
         Vector3 center = GetMapCenter();
         player.position = center;
@@ -661,10 +666,10 @@ public class WaveManager : Singleton<WaveManager>
 
         Debug.Log($"[WaveManager] Player hồi sinh tại giữa map: {center}");
 
-        if (graceAfterRespawn > 0f)
+        if (Cfg.graceAfterRespawn > 0f)
         {
-            Debug.Log($"[WaveManager] Grace period {graceAfterRespawn}s — quái chưa spawn...");
-            yield return new WaitForSeconds(graceAfterRespawn);
+            Debug.Log($"[WaveManager] Grace period {Cfg.graceAfterRespawn}s — quái chưa spawn...");
+            yield return new WaitForSeconds(Cfg.graceAfterRespawn);
         }
 
         isRespawning  = false;
@@ -672,42 +677,6 @@ public class WaveManager : Singleton<WaveManager>
         spawnBlocked  = false;
         Debug.Log("[WaveManager] Grace period kết thúc — bắt đầu wave mới.");
         StartNextWave();
-    }
-
-    // ── FIX: Chờ spawn cache có dữ liệu (xử lý map swap async qua ScreenFader) ─
-    // Mỗi frame kiểm tra spawnTiles, thử rebuild nếu currentMapInstance đã sẵn.
-    // Dừng sớm khi có tile, hoặc sau spawnCacheWaitTimeout giây.
-    private IEnumerator WaitForSpawnCache()
-    {
-        // Thử rebuild ngay nếu map đã có nhưng cache chưa được build
-        if (spawnTiles.Count == 0 && currentMapInstance != null)
-        {
-            BuildSpawnCache(currentMapInstance);
-            Debug.Log("[WaveManager] WaitForSpawnCache: rebuild ngay từ currentMapInstance.");
-        }
-
-        if (spawnTiles.Count > 0) yield break;
-
-        // Tiles vẫn rỗng → map đang load async, chờ từng frame
-        float elapsed = 0f;
-        Debug.Log("[WaveManager] WaitForSpawnCache: đang chờ map load...");
-
-        while (spawnTiles.Count == 0 && elapsed < spawnCacheWaitTimeout)
-        {
-            yield return null;
-            elapsed += Time.deltaTime;
-
-            // Thử rebuild mỗi frame phòng map vừa được instantiate
-            if (currentMapInstance != null)
-                BuildSpawnCache(currentMapInstance);
-        }
-
-        if (spawnTiles.Count == 0)
-            Debug.LogWarning($"[WaveManager] WaitForSpawnCache: hết timeout {spawnCacheWaitTimeout}s " +
-                             "— spawn cache vẫn rỗng, wave sẽ dùng fallback offset.");
-        else
-            Debug.Log($"[WaveManager] WaitForSpawnCache: sẵn sàng ({spawnTiles.Count} tiles) " +
-                      $"sau {elapsed:F2}s.");
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -730,7 +699,7 @@ public class WaveManager : Singleton<WaveManager>
         for (int i = 0; i < avail.Count; i++)
         {
             int stages = Mathf.Max(0, currentStage - avail[i].minStage);
-            weights[i] = Mathf.Max(0.01f, avail[i].weight) * (1f + weightGrowthPerStage * stages);
+            weights[i] = Mathf.Max(0.01f, avail[i].weight) * (1f + Cfg.weightGrowthPerStage * stages);
             total += weights[i];
         }
 
@@ -780,8 +749,10 @@ public class WaveManager : Singleton<WaveManager>
         waveActive   = false;
         spawnBlocked = true;
 
+        // 1. Xóa sạch toàn bộ quái — kể cả quái không được track
         ClearAllEnemies();
 
+        // 2. Reset wave / stage / map
         isRespawning     = false;
         justRespawned    = false;
         currentWave      = Mathf.Max(1, startWave) - 1;
@@ -791,32 +762,16 @@ public class WaveManager : Singleton<WaveManager>
         spawnTiles.Clear();
         ClearSave();
 
-        // ── FIX: Chỉ destroy map nếu stage 1 có mapPrefab để thay thế ──────────
-        // Trước đây luôn destroy → currentMapInstance = null → ApplyStageData không
-        // thể rebuild tiles (vì không có prefab) → spawnTiles rỗng mãi mãi
-        // → PickSpawnTile() trả PlayerPosition() → quái spawn đè lên player.
-        StageData stage1Data      = stageDatabase?.GetOrLast(1);
-        bool      stage1HasPrefab = stage1Data?.mapPrefab != null;
-
         if (currentMapInstance != null)
         {
-            if (stage1HasPrefab)
-            {
-                // Có prefab thay thế → destroy an toàn, ApplyStageData sẽ load map mới
-                Destroy(currentMapInstance);
-                currentMapInstance = null;
-            }
-            else
-            {
-                // Không có prefab riêng → giữ lại map hiện tại và rebuild spawn cache
-                Debug.Log("[WaveManager] Stage 1 không có mapPrefab — giữ lại map, rebuild cache.");
-                BuildSpawnCache(currentMapInstance);
-            }
+            Destroy(currentMapInstance);
+            currentMapInstance = null;
         }
 
         ApplyStageData(currentStage);
         OnWavesRestarted?.Invoke();
 
+        // 3. Hồi sinh player → grace period → spawn Wave 1
         StartCoroutine(RespawnPlayerRoutine());
     }
 
@@ -851,20 +806,21 @@ public class WaveManager : Singleton<WaveManager>
     /// <summary>
     /// [CHEAT] Bắt đầu wave tiếp theo ngay lập tức.
     /// Quái wave cũ vẫn còn sống — không clear aliveEnemies.
+    /// Wave mới kết thúc bình thường khi toàn bộ quái (cũ + mới) đã chết.
     /// </summary>
     public void ForceNextWave()
     {
         currentWave++;
-        bool isBossWave = currentWave % Mathf.Max(1, GetStageWaveConfig().bossWaveFrequency) == 0;
+        bool isBossWave = currentWave % Mathf.Max(1, Cfg.bossWaveFrequency) == 0;
 
         SaveProgress();
         OnWaveStarted?.Invoke(currentWave, currentStage, isBossWave);
 
         if (isBossWave) { SpawnBoss(); return; }
 
-        int   count    = GetStageWaveConfig().enemiesBaseCount + (currentWave - 1) * GetStageWaveConfig().enemiesPerWave;
-        float interval = Mathf.Max(GetStageWaveConfig().minSpawnInterval,
-            GetStageWaveConfig().baseSpawnInterval - (currentWave - 1) * GetStageWaveConfig().spawnIntervalDecayPerWave);
+        int   count    = Cfg.enemiesBaseCount + (currentWave - 1) * Cfg.enemiesPerWave;
+        float interval = Mathf.Max(Cfg.minSpawnInterval,
+            Cfg.baseSpawnInterval - (currentWave - 1) * Cfg.spawnIntervalDecayPerWave);
 
         StartCoroutine(SpawnWaveRoutine(count, interval));
     }
@@ -884,7 +840,7 @@ public class WaveManager : Singleton<WaveManager>
         if (player != null)
         {
             Gizmos.color = new Color(1f, 0.15f, 0.15f, 0.4f);
-            Gizmos.DrawWireSphere(player.position, minSpawnDistanceFromPlayer);
+            Gizmos.DrawWireSphere(player.position, Cfg.minSpawnDistanceFromPlayer);
         }
 
         if (spawnTiles.Count > 0)
