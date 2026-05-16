@@ -1,11 +1,14 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "PlayerStatsSO", menuName = "RPG/Player Stats")]
 public class PlayerStatsSO : ScriptableObject
 {
-    [Header("Level & Points")]
-    public int level = 1;
-    public int skillPoints = 0;
+    [Header("Initial Values (used only when initializing runtime instance)")]
+    [Tooltip("Chỉ dùng để khởi tạo PlayerStats runtime, không phải current level realtime.")]
+    public int initialLevel = 1;
+
+    [Tooltip("Chỉ dùng để khởi tạo runtime skill points.")]
+    public int initialSkillPoints = 0;
 
     [Header("Base Stats")]
     public float maxHealth = 100;

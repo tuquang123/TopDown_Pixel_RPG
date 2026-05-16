@@ -78,7 +78,13 @@ public class PlayerStatData
         this.goldCost         = goldCost;
     }
 
-    public int   Level           => Mathf.RoundToInt((currentValue - baseValue) / increasePerLevel);
+    // Không lưu/đọc level trong data SO; level nâng cấp phải suy ra từ runtime value hiện tại.
+    public int GetLevelFromValue(float runtimeValue)
+    {
+        if (increasePerLevel <= 0f) return 0;
+        return Mathf.Max(0, Mathf.RoundToInt((runtimeValue - baseValue) / increasePerLevel));
+    }
+
     public float GetValue()      => currentValue;
     public void  Upgrade()       => currentValue += increasePerLevel;
 

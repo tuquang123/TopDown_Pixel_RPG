@@ -23,6 +23,11 @@ public class PlayerLevel : MonoBehaviour
         
         levelSystem.OnLevelUp += HandleLevelUp;
         EnemyAI.OnEnemyDefeated += GainExp;
+
+        // Đồng bộ runtime PlayerStats với level hiện tại của LevelSystem khi vào scene.
+        playerStats.level = levelSystem.level;
+        skillPoints = levelSystem.skillPoints;
+        playerStats.skillPoints = skillPoints;
     }
 
 
@@ -34,6 +39,7 @@ public class PlayerLevel : MonoBehaviour
 
     private void HandleLevelUp(int newLevel)
     {
+        playerStats.level = newLevel;
         skillPoints = levelSystem.skillPoints;
         playerStats.skillPoints = skillPoints;
         playerStats.CalculatePower();
@@ -55,6 +61,7 @@ public class PlayerLevel : MonoBehaviour
     private void GainExp(float amount)
     {
         levelSystem.AddExp(amount);
+        playerStats.level = levelSystem.level;
         skillPoints = levelSystem.skillPoints;
         playerStats.skillPoints = skillPoints;
         Debug.Log($"[PlayerLevel] Nhận {amount} EXP! Tổng EXP: {levelSystem.exp}/{levelSystem.ExpRequired}");
@@ -64,6 +71,7 @@ public class PlayerLevel : MonoBehaviour
     public void LoadLevel(int lvl, float exp, int sp)
     {
         levelSystem.SetLevelDirectly(lvl, exp, sp);
+        playerStats.level = lvl;
         skillPoints = sp;
         playerStats.skillPoints = sp;
     }
