@@ -48,20 +48,29 @@ public class PlayerStatsDataSO : ScriptableObject
         stats.attackSpeed.goldCost = 50;
         stats.health.goldCost      = 80;
         stats.mana.goldCost        = 60;
+
+        stats.attack.costGrowthRate      = 1.07f;
+        stats.defense.costGrowthRate     = 1.07f;
+        stats.speed.costGrowthRate       = 1.08f;
+        stats.crit.costGrowthRate        = 1.08f;
+        stats.lifesteal.costGrowthRate   = 1.08f;
+        stats.attackSpeed.costGrowthRate = 1.07f;
+        stats.health.costGrowthRate      = 1.07f;
+        stats.mana.costGrowthRate        = 1.07f;
     }
 }
 
 [Serializable]
 public class PlayerStatsDataContainer
 {
-    public PlayerStatData attack      = new PlayerStatData(10,  2f,    50);
-    public PlayerStatData defense     = new PlayerStatData(5,   1f,    40);
-    public PlayerStatData speed       = new PlayerStatData(3,   0.05f, 500);
-    public PlayerStatData crit        = new PlayerStatData(5,   0.1f,  300);
-    public PlayerStatData lifesteal   = new PlayerStatData(2,   0.1f,  200);
-    public PlayerStatData attackSpeed = new PlayerStatData(1,   0.05f, 50);
-    public PlayerStatData health      = new PlayerStatData(100, 10f,   80);
-    public PlayerStatData mana        = new PlayerStatData(50,  5f,    60);
+    public PlayerStatData attack      = new PlayerStatData(10,  2f,    50, 1.07f);
+    public PlayerStatData defense     = new PlayerStatData(5,   1f,    40, 1.07f);
+    public PlayerStatData speed       = new PlayerStatData(3,   0.05f, 500, 1.08f);
+    public PlayerStatData crit        = new PlayerStatData(5,   0.1f,  300, 1.08f);
+    public PlayerStatData lifesteal   = new PlayerStatData(2,   0.1f,  200, 1.08f);
+    public PlayerStatData attackSpeed = new PlayerStatData(1,   0.05f, 50, 1.07f);
+    public PlayerStatData health      = new PlayerStatData(100, 10f,   80, 1.07f);
+    public PlayerStatData mana        = new PlayerStatData(50,  5f,    60, 1.07f);
 }
 
 [Serializable]
@@ -70,12 +79,14 @@ public class PlayerStatData
     public float baseValue;
     public float increasePerLevel;
     public int   goldCost;
+    public float costGrowthRate;
 
-    public PlayerStatData(float baseValue, float increasePerLevel, int goldCost)
+    public PlayerStatData(float baseValue, float increasePerLevel, int goldCost, float costGrowthRate = 1.08f)
     {
         this.baseValue        = baseValue;
         this.increasePerLevel = increasePerLevel;
         this.goldCost         = goldCost;
+        this.costGrowthRate   = Mathf.Max(1f, costGrowthRate);
     }
 
     // Không lưu/đọc level trong data SO; level nâng cấp phải suy ra từ runtime value hiện tại.
@@ -87,5 +98,12 @@ public class PlayerStatData
 
     public float GetValueAtLevel(int level) => baseValue + Mathf.Max(0, level) * increasePerLevel;
 
-    public long GetUpgradeCost(int atLevel) => (long)goldCost * (atLevel + 1);
+    // Cost kiểu idle phổ biến: tăng theo cấp số nhân nhẹ để giữ nhịp tiến trình dài hạn.
+    // atLevel = level hiện tại của stat trước khi mua lần nâng tiếp theo.
+    public long GetUpgradeCost(int atLevel)
+    {
+        int safeLevel = Mathf.Max(0, atLevel);
+        double scaled = goldCost * System.Math.Pow(costGrowthRate, safeLevel);
+        return (long)System.Math.Ceiling(scaled);
+    }
 }
