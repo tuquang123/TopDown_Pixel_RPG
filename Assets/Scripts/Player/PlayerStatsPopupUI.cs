@@ -124,22 +124,20 @@ public class PlayerStatsPopupUI : BasePopup
         var ps = PlayerStats.Instance;
         if (ps == null) return;
 
-        ApplyIfHigher(ps.attack,      data.attack.GetValueAtLevel(dataAsset.GetSavedLevel(data.attack)));
-        ApplyIfHigher(ps.defense,     data.defense.GetValueAtLevel(dataAsset.GetSavedLevel(data.defense)));
-        ApplyIfHigher(ps.speed,       data.speed.GetValueAtLevel(dataAsset.GetSavedLevel(data.speed)));
-        ApplyIfHigher(ps.critChance,  data.crit.GetValueAtLevel(dataAsset.GetSavedLevel(data.crit)));
-        ApplyIfHigher(ps.lifeSteal,   data.lifesteal.GetValueAtLevel(dataAsset.GetSavedLevel(data.lifesteal)));
-        ApplyIfHigher(ps.attackSpeed, data.attackSpeed.GetValueAtLevel(dataAsset.GetSavedLevel(data.attackSpeed)));
+        ps.attack.SetBaseValue(data.attack.GetValueAtLevel(dataAsset.GetSavedLevel(data.attack)));
+        ps.defense.SetBaseValue(data.defense.GetValueAtLevel(dataAsset.GetSavedLevel(data.defense)));
+        ps.speed.SetBaseValue(data.speed.GetValueAtLevel(dataAsset.GetSavedLevel(data.speed)));
+        ps.critChance.SetBaseValue(data.crit.GetValueAtLevel(dataAsset.GetSavedLevel(data.crit)));
+        ps.lifeSteal.SetBaseValue(data.lifesteal.GetValueAtLevel(dataAsset.GetSavedLevel(data.lifesteal)));
+        ps.attackSpeed.SetBaseValue(data.attackSpeed.GetValueAtLevel(dataAsset.GetSavedLevel(data.attackSpeed)));
 
         float newMaxHp = data.health.GetValueAtLevel(dataAsset.GetSavedLevel(data.health));
-        if (newMaxHp > ps.maxHealth.baseValue)
-            ps.maxHealth.SetBaseValue(newMaxHp);
+        ps.maxHealth.SetBaseValue(newMaxHp);
         ps.currentHealth = Mathf.Clamp(ps.currentHealth, 1, (int)ps.maxHealth.Value);
         ps.NotifyHealthChanged();
 
         float newMaxMana = data.mana.GetValueAtLevel(dataAsset.GetSavedLevel(data.mana));
-        if (newMaxMana > ps.maxMana.baseValue)
-            ps.maxMana.SetBaseValue(newMaxMana);
+        ps.maxMana.SetBaseValue(newMaxMana);
         ps.currentMana = Mathf.Clamp(ps.currentMana, 0, (int)ps.maxMana.Value);
         ps.NotifyManaChanged();
 
@@ -147,11 +145,6 @@ public class PlayerStatsPopupUI : BasePopup
         ps.NotifyStatsChanged();
     }
 
-    private void ApplyIfHigher(Stat stat, float value)
-    {
-        if (value > stat.baseValue)
-            stat.SetBaseValue(value);
-    }
 
     private long CalculateTotalCost(PlayerStatData stat, int times)
     {
