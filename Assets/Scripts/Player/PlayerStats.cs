@@ -1,4 +1,4 @@
-﻿// ================= PlayerStats.cs =================
+// ================= PlayerStats.cs =================
 
 using System;
 using System.Collections;
@@ -96,8 +96,9 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     
     private void ResetFromSO(PlayerStatsSO so)
     {
-        level = so.level;
-        skillPoints = so.skillPoints;
+        // SO chỉ là dữ liệu khởi tạo, level realtime nằm ở PlayerStats instance.
+        level = so.initialLevel;
+        skillPoints = so.initialSkillPoints;
 
         maxHealth = new Stat(so.maxHealth);
         maxMana = new Stat(so.maxMana);

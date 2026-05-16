@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -155,15 +155,35 @@ public class PlayerStatsPopupUI : BasePopup
 
     private long CalculateTotalCost(PlayerStatData stat, int times)
     {
-        long total    = 0;
-        int  curLevel = stat.Level;
+        var ps = PlayerStats.Instance;
+        if (ps == null) return 0;
 
+        // Cost nâng cấp phải bám theo base stat đã nâng cấp (không tính buff tạm thời từ modifier).
+        float runtimeValue = GetUpgradeableRuntimeValueForStat(ps, stat);
+        int currentLevel = stat.GetLevelFromValue(runtimeValue);
+
+        long total = 0;
         for (int i = 0; i < times; i++)
         {
-            total += stat.GetUpgradeCost(curLevel + i);
+            total += stat.GetUpgradeCost(currentLevel + i);
         }
 
         return total;
+    }
+
+    private float GetUpgradeableRuntimeValueForStat(PlayerStats ps, PlayerStatData stat)
+    {
+        // Dùng baseValue để level/cost không bị lệch bởi buff/debuff runtime.
+        if (stat == data.attack) return ps.attack.baseValue;
+        if (stat == data.defense) return ps.defense.baseValue;
+        if (stat == data.speed) return ps.speed.baseValue;
+        if (stat == data.crit) return ps.critChance.baseValue;
+        if (stat == data.lifesteal) return ps.lifeSteal.baseValue;
+        if (stat == data.attackSpeed) return ps.attackSpeed.baseValue;
+        if (stat == data.health) return ps.maxHealth.baseValue;
+        if (stat == data.mana) return ps.maxMana.baseValue;
+
+        return stat.GetValue();
     }
 
     private void TryUpgrade(PlayerStatData stat, System.Func<PlayerStats, Stat> getter, int times)
