@@ -79,12 +79,14 @@ public class PlayerStatsPopupUI : BasePopup
     {
         if (text == null) return;
 
-        float nextValue = currentValue + times * stat.increasePerLevel;
+        float nextValue  = currentValue + times * stat.increasePerLevel;
+        int   currentLvl = stat.GetLevelFromValue(currentValue);
+        int   nextLvl    = currentLvl + times;
 
         string current = FormatStatValue(currentValue, isPercent);
         string next    = FormatStatValue(nextValue,    isPercent);
 
-        text.text = $"{current} <color=#888888>>></color> <color=#00FF99>{next}</color>";
+        text.text = $"<color=#AAAAAA>Lv.{currentLvl}</color>  {current} <color=#888888>>></color> <color=#00FF99>{next}</color>  <color=#AAAAAA>(→Lv.{nextLvl})</color>";
     }
     private string FormatStatValue(float value, bool isPercent)
     {

@@ -19,9 +19,11 @@ public class EnemyInfoPopupUI : MonoBehaviour
 
     [Header("Auto Hide")]
     [SerializeField] private float autoHideTime = 4f;
+    [SerializeField] private float hideOnDeathDelay = 1f;
 
     private EnemyAI currentEnemy;
     private Coroutine autoHideCoroutine;
+    private bool isDyingHide = false;
 
     public static EnemyInfoPopupUI Instance { get; private set; }
 
@@ -40,18 +42,20 @@ public class EnemyInfoPopupUI : MonoBehaviour
         }
 
         currentEnemy = enemy;
+        isDyingHide = false;
         gameObject.SetActive(true);
         Refresh();
 
         if (autoHideCoroutine != null)
             StopCoroutine(autoHideCoroutine);
 
-        autoHideCoroutine = StartCoroutine(AutoHideAfterDelay());
+        autoHideCoroutine = StartCoroutine(AutoHideAfterDelay(autoHideTime));
     }
 
     public void Hide()
     {
         currentEnemy = null;
+        isDyingHide = false;
 
         if (autoHideCoroutine != null)
         {
@@ -72,14 +76,16 @@ public class EnemyInfoPopupUI : MonoBehaviour
         if (levelText != null)
             levelText.text = $"Lv {currentEnemy.EnemyLevel}";
 
+        float displayHp = Mathf.Max(0, currentEnemy.CurrentHealth);
+
         if (hpSlider != null)
         {
             hpSlider.maxValue = currentEnemy.MaxHealth;
-            hpSlider.value    = currentEnemy.CurrentHealth;
+            hpSlider.value    = displayHp;
         }
 
         if (hpText != null)
-            hpText.text = $"{currentEnemy.CurrentHealth} / {currentEnemy.MaxHealth}";
+            hpText.text = $"{displayHp} / {currentEnemy.MaxHealth}";
 
         if (attackDamageText != null)
             attackDamageText.text = $"ATK: {currentEnemy.AttackDamage}";
@@ -88,26 +94,36 @@ public class EnemyInfoPopupUI : MonoBehaviour
             moveSpeedText.text = $"SPD: {currentEnemy.MoveSpeed:F1}";
     }
 
-    private IEnumerator AutoHideAfterDelay()
-    {
-        yield return new WaitForSeconds(autoHideTime);
-        Hide();
-    }
-
     private void Update()
     {
         if (currentEnemy == null) return;
 
         if (currentEnemy.IsDead)
         {
-            Hide();
+            if (!isDyingHide)
+            {
+                isDyingHide = true;
+
+                if (autoHideCoroutine != null)
+                    StopCoroutine(autoHideCoroutine);
+
+                autoHideCoroutine = StartCoroutine(AutoHideAfterDelay(hideOnDeathDelay));
+            }
             return;
         }
 
+        float displayHp = Mathf.Max(0, currentEnemy.CurrentHealth);
+
         if (hpSlider != null)
-            hpSlider.value = currentEnemy.CurrentHealth;
+            hpSlider.value = displayHp;
 
         if (hpText != null)
-            hpText.text = $"{currentEnemy.CurrentHealth} / {currentEnemy.MaxHealth}";
+            hpText.text = $"{displayHp} / {currentEnemy.MaxHealth}";
+    }
+
+    private IEnumerator AutoHideAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Hide();
     }
 }
