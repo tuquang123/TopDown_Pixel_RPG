@@ -119,15 +119,13 @@ public class WaveManager : Singleton<WaveManager>
     private GameObject currentMapPrefab;
     private GameObject pendingMapPrefab;
 
-    // ✅ Track xem map hiện tại là scene object hay được Instantiate từ prefab
-    // Scene object: KHÔNG Destroy khi reset, chỉ tìm lại
-    // Prefab instance: Destroy bình thường
+ 
     private bool currentMapIsInstantiated = false;
 
     private readonly List<Vector3> spawnTiles = new();
     private Tilemap activeSpawnZoneTilemap;
 
-    // ✅ Bounds tổng hợp toàn bộ map — dùng cho OOB check thay vì SpawnZone tiles
+  
     private Bounds mapBounds;
     private bool   mapBoundsValid = false;
 
@@ -184,14 +182,6 @@ public class WaveManager : Singleton<WaveManager>
         StartNextWave();
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    //  SCENE MAP FINDER
-    // ═══════════════════════════════════════════════════════════════
-
-    /// <summary>
-    /// Tự tìm map scene (tilemap có tên spawnZoneTilemapName) trong Hierarchy.
-    /// Gọi khi Start và khi reset về stage 1.
-    /// </summary>
     private void FindAndRegisterSceneMap()
     {
         foreach (var tm in FindObjectsByType<Tilemap>(FindObjectsSortMode.None))
@@ -225,9 +215,10 @@ public class WaveManager : Singleton<WaveManager>
 
     private void LoadProgress()
     {
-        currentWave  = PlayerPrefs.GetInt(KEY_WAVE,  Mathf.Max(1, startWave) - 1);
+        int savedWave = PlayerPrefs.GetInt(KEY_WAVE, Mathf.Max(1, startWave) - 1);
+        currentWave  = savedWave - 1;
         currentStage = Mathf.Max(1, PlayerPrefs.GetInt(KEY_STAGE, 1));
-        Debug.Log($"[WaveManager] Loaded -> Stage {currentStage}, Wave {currentWave}");
+        Debug.Log($"[WaveManager] Loaded -> Stage {currentStage}, Wave {savedWave} (resume)");
     }
 
     public void ClearSave()
@@ -523,20 +514,15 @@ public class WaveManager : Singleton<WaveManager>
             }
         }
     }
-
-    /// <summary>
-    /// ✅ Check bounds tổng hợp TOÀN BỘ map (không phải chỉ SpawnZone).
-    /// Quái đi lại bên trong map sẽ không bao giờ bị tele oan.
-    /// </summary>
     private bool IsInsideMapBounds(Vector3 pos)
     {
         if (!mapBoundsValid)
         {
-            // Fallback: nếu chưa có bounds thì dùng cách cũ
+           
             return spawnTiles.Count == 0 || IsNearAnyTile(pos);
         }
 
-        // Mở rộng bounds thêm padding để tránh tele sát mép
+      
         Bounds padded = mapBounds;
         padded.Expand(oobBoundsPadding * 2f);
         return padded.Contains(new Vector3(pos.x, pos.y, mapBounds.center.z));
@@ -583,7 +569,7 @@ public class WaveManager : Singleton<WaveManager>
             return;
         }
 
-        // ✅ Bỏ qua nếu PickSpawnTile báo lỗi (spawnTiles rỗng)
+       
         if (float.IsPositiveInfinity(pos.x))
         {
             Debug.LogWarning("[WaveManager] Bỏ qua spawn vì không tìm được vị trí hợp lệ.");
@@ -639,10 +625,7 @@ public class WaveManager : Singleton<WaveManager>
         StartNextWave();
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    //  XÓA TOÀN BỘ QUÁI ĐANG SỐNG
-    // ═══════════════════════════════════════════════════════════════
-
+   
     private void ClearAllEnemies()
     {
         var snapshot = new List<EnemyAI>(aliveEnemies);

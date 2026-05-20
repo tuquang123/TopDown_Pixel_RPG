@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using DG.Tweening; 
 public class PlayerStatsPopupUI : BasePopup
 {
     public StatDisplayComponent statDisplayComponent;
@@ -181,18 +181,21 @@ public class PlayerStatsPopupUI : BasePopup
         return stat.GetValueAtLevel(dataAsset.GetSavedLevel(stat));
     }
 
-    private void TryUpgrade(PlayerStatData stat, System.Func<PlayerStats, Stat> getter, int times)
+    private void TryUpgrade(PlayerStatData stat, System.Func<PlayerStats, Stat> getter, int times, Transform animTarget = null)
     {
         long totalCost = CalculateTotalCost(stat, times);
         int  safeCost  = totalCost > int.MaxValue ? int.MaxValue : (int)totalCost;
 
         if (!CurrencyManager.Instance.SpendGold(safeCost))
+        {
+            GameEvents.OnShowToast.Raise("Không đủ Vàng");
             return;
+        }
 
-        var ps         = PlayerStats.Instance;
-        var playerStat = getter(ps);
+        var ps           = PlayerStats.Instance;
+        var playerStat   = getter(ps);
         int currentLevel = stat.GetLevelFromValue(playerStat.baseValue);
-        int nextLevel = currentLevel + times;
+        int nextLevel    = currentLevel + times;
 
         float oldMax = playerStat.Value;
         playerStat.SetBaseValue(stat.GetValueAtLevel(nextLevel));
@@ -212,23 +215,27 @@ public class PlayerStatsPopupUI : BasePopup
 
         ps.CalculatePower();
         ps.NotifyStatsChanged();
-
         dataAsset.Save();
         RefreshUI();
-    }
 
+     
+        if (animTarget != null)
+        {
+            animTarget.DOKill();
+            animTarget.localScale = Vector3.one;
+            animTarget.DOPunchScale(Vector3.one * 0.25f, 0.4f, 8, 0.5f);
+        }
+    }
     public void OnClickX1()   => SetMultiplier(1);
     public void OnClickX10()  => SetMultiplier(10);
     public void OnClickX100() => SetMultiplier(100);
-
-    public void UpgradeAttack()      => TryUpgrade(data.attack,      ps => ps.attack,      currentMultiplier);
-    public void UpgradeDefense()     => TryUpgrade(data.defense,     ps => ps.defense,     currentMultiplier);
-    public void UpgradeSpeed()       => TryUpgrade(data.speed,       ps => ps.speed,       currentMultiplier);
-    public void UpgradeCrit()        => TryUpgrade(data.crit,        ps => ps.critChance,  currentMultiplier);
-    public void UpgradeLifesteal()   => TryUpgrade(data.lifesteal,   ps => ps.lifeSteal,   currentMultiplier);
-    public void UpgradeAttackSpeed() => TryUpgrade(data.attackSpeed, ps => ps.attackSpeed, currentMultiplier);
-    public void UpgradeHealth()      => TryUpgrade(data.health,      ps => ps.maxHealth,   currentMultiplier);
-    public void UpgradeMana()        => TryUpgrade(data.mana,        ps => ps.maxMana,     currentMultiplier);
-
+    public void UpgradeAttack()      => TryUpgrade(data.attack,      ps => ps.attack,      currentMultiplier, attackPreview?.transform);
+    public void UpgradeDefense()     => TryUpgrade(data.defense,     ps => ps.defense,     currentMultiplier, defensePreview?.transform);
+    public void UpgradeSpeed()       => TryUpgrade(data.speed,       ps => ps.speed,       currentMultiplier, speedPreview?.transform);
+    public void UpgradeCrit()        => TryUpgrade(data.crit,        ps => ps.critChance,  currentMultiplier, critPreview?.transform);
+    public void UpgradeLifesteal()   => TryUpgrade(data.lifesteal,   ps => ps.lifeSteal,   currentMultiplier, lifestealPreview?.transform);
+    public void UpgradeAttackSpeed() => TryUpgrade(data.attackSpeed, ps => ps.attackSpeed, currentMultiplier, attackSpeedPreview?.transform);
+    public void UpgradeHealth()      => TryUpgrade(data.health,      ps => ps.maxHealth,   currentMultiplier, healthPreview?.transform);
+    public void UpgradeMana()        => TryUpgrade(data.mana,        ps => ps.maxMana,     currentMultiplier, manaPreview?.transform);
     public void Close() => UIManager.Instance.HidePopupByType(PopupType.Stats);
 }

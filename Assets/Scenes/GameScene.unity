@@ -124,6 +124,22 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5702549682338432583, guid: 2ed0a40fd4ef0e84d94a1e163541a777, type: 3}
   m_PrefabInstance: {fileID: 7762326987268650608}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &126246018 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3517516209439643076, guid: a436b7a056ac54844a736f54e0034ffa, type: 3}
+  m_PrefabInstance: {fileID: 483146659142130707}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &126246019 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3330835185237777090, guid: a436b7a056ac54844a736f54e0034ffa, type: 3}
+  m_PrefabInstance: {fileID: 483146659142130707}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &276197073 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7900506383266647277, guid: 557c37f4eb8828b4c8961bbeb2c869f7, type: 3}
@@ -918,7 +934,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 581
+      value: 498
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
@@ -994,7 +1010,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 222.2845
+      value: 180.7845
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1841,6 +1857,22 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5979782657606155748, guid: cbab9e256f80fe94e9214220c67208ac, type: 3}
   m_PrefabInstance: {fileID: 9215077252843624072}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &2068049599 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7417466584740513039, guid: a436b7a056ac54844a736f54e0034ffa, type: 3}
+  m_PrefabInstance: {fileID: 483146659142130707}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2068049600 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8454699023588023791, guid: a436b7a056ac54844a736f54e0034ffa, type: 3}
+  m_PrefabInstance: {fileID: 483146659142130707}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2112954703
 GameObject:
   m_ObjectHideFlags: 0
@@ -2099,6 +2131,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8056764156532566094}
     m_Modifications:
+    - target: {fileID: 229038044992382009, guid: a436b7a056ac54844a736f54e0034ffa, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 334904677099323274, guid: a436b7a056ac54844a736f54e0034ffa, type: 3}
       propertyPath: m_Name
       value: InfoPlayer
@@ -2234,6 +2270,10 @@ PrefabInstance:
     - target: {fileID: 7457510321088354814, guid: a436b7a056ac54844a736f54e0034ffa, type: 3}
       propertyPath: m_AnchorMin.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8267936471148203308, guid: a436b7a056ac54844a736f54e0034ffa, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8438932098853714451, guid: a436b7a056ac54844a736f54e0034ffa, type: 3}
       propertyPath: playerStats
@@ -3744,6 +3784,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   goldText: {fileID: 7100442847551856107}
   gemsText: {fileID: 7750409862042350456}
+  goldIconRect: {fileID: 2068049599}
+  gemIconRect: {fileID: 126246018}
+  goldIconImage: {fileID: 2068049600}
+  gemIconImage: {fileID: 126246019}
 --- !u!222 &5106508264084325350
 CanvasRenderer:
   m_ObjectHideFlags: 0
