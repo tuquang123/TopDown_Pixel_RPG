@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1279858165579808514}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.06, y: -0.82, z: 0}
+  m_LocalPosition: {x: 0.329, y: -0.492, z: 0}
   m_LocalScale: {x: 1.0000968, y: 1.0000968, z: 1.0000968}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 6086211267255370067}
   - component: {fileID: 7186230036931082594}
   m_Layer: 7
-  m_Name: Boss
+  m_Name: Boss 1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -60,8 +60,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5987872608596408159}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.57, y: -3.53, z: -0.017392695}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.57, y: -4, z: -0.017392695}
   m_LocalScale: {x: -1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -191,8 +191,8 @@ MonoBehaviour:
   aggroLoseTime: 5
   killObjectiveID: Boss
   bossHealthUI: {fileID: 0}
-  minionPrefab: {fileID: 2970206300379713479, guid: a69260f2b7402d149a15e280862de3b1, type: 3}
-  bulletPrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9, type: 3}
+  minionPrefab: {fileID: 0}
+  bulletPrefab: {fileID: 0}
   dashSpeed: 10
   dashDuration: 0.3
   minionCooldown: 10
@@ -270,8 +270,8 @@ Transform:
   m_GameObject: {fileID: 8796084538282400949}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.355, y: -0.271, z: -0}
+  m_LocalScale: {x: 1.2777003, y: 1.3801373, z: 0.8501}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8731189059089629717}
@@ -287,7 +287,7 @@ Animator:
   m_GameObject: {fileID: 8796084538282400949}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 5c77714358a37254ea3f1093b9c98dad, type: 2}
+  m_Controller: {fileID: 9100000, guid: 69fe1078185e4284fb8932c9d7a6baa3, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -355,7 +355,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 25
-  m_Sprite: {fileID: 21300000, guid: 0cf1750b38c9e854389b7b71d871d7ce, type: 3}
+  m_Sprite: {fileID: -750047184722822154, guid: 1914d95466e3d4341a618c35a56d5f82, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -392,8 +392,8 @@ Transform:
   m_GameObject: {fileID: 9124573615830645067}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.018000001, z: 0.00015256465}
-  m_LocalScale: {x: 0.05, y: 0.015, z: 1}
+  m_LocalPosition: {x: 0.032, y: 0.031, z: -0}
+  m_LocalScale: {x: 0.032015, y: 0.0096045, z: 0.6403}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8731189059089629717}
@@ -441,7 +441,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -50
+  m_SortingOrder: 26
   m_Sprite: {fileID: 21300000, guid: acb3bfd86ae6c41b084245f578292734, type: 3}
   m_Color: {r: 0, g: 0, b: 0, a: 0.56078434}
   m_FlipX: 0
