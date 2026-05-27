@@ -788,7 +788,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2172743966441396126
 Transform:
   m_ObjectHideFlags: 0
@@ -866,7 +866,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 850308522725762723}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3317ebb364834352a9912f23dec7ddd6, type: 3}
   m_Name: 
@@ -1416,15 +1416,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43030b43d4705934fa2495dba51a168c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseDetectionRange: 50
-  meleeRange: 1
+  baseDetectionRange: 25
+  meleeRange: 0.84
   rangedRange: 4
   bowRange: 4
   attackPoint: {fileID: 212721936305039982}
-  attackRadius: 1.5
+  attackRadius: 0.68
   vfxDust: {fileID: 2258320781521006159}
   allowAutoAttack: 1
   enableManualInput: 1
+  combatStanceDuration: 1.5
   typeWeapon: 0
 --- !u!114 &868799524688306759
 MonoBehaviour:
@@ -1521,6 +1522,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ead44a5e72d3ac14999f2fc65b8bc88b, type: 2}
   - {fileID: 11400000, guid: 83a2b33dfc16b62459b0621a0663f834, type: 2}
   - {fileID: 11400000, guid: 51d3f0e9d891ed045813915ed5830e53, type: 2}
+  - {fileID: 11400000, guid: 07e5931aa041ac448af5943611460b67, type: 2}
+  - {fileID: 11400000, guid: 28dc6e10e8ec3f34b8243b947a707264, type: 2}
+  - {fileID: 11400000, guid: 44b5a5f347a9adf439ba2baa4c674d46, type: 2}
+  - {fileID: 11400000, guid: 6d966789c8247d045aaafe8ca9109750, type: 2}
   _playerStats: {fileID: 6414742079472401658}
   autoCastEnabled: 0
 --- !u!114 &9046378061321873016
@@ -1594,13 +1599,14 @@ MonoBehaviour:
   defense:
     baseValue: 0
   speed:
-    baseValue: 5
+    baseValue: 1
   critChance:
     baseValue: 0
   lifeSteal:
     baseValue: 0
   attackSpeed:
     baseValue: 1
+  currentHealth: 0
   currentMana: 0
   isInvincible: 0
   isUsingSkill: 0
