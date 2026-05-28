@@ -304,8 +304,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -1, y: 0}
-  m_SizeDelta: {x: -56, y: -3.2588}
+  m_AnchoredPosition: {x: 0.23318481, y: 0}
+  m_SizeDelta: {x: -96.5691, y: -3.2588}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &502023552
 MonoBehaviour:
@@ -437,6 +437,7 @@ GameObject:
   - component: {fileID: 765592016}
   - component: {fileID: 765592015}
   - component: {fileID: 765592019}
+  - component: {fileID: 765592020}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -542,6 +543,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loadingSlider: {fileID: 873016307}
   loadingText: {fileID: 1944762069}
+--- !u!328 &765592020
+VideoPlayer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 765592014}
+  m_Enabled: 1
+  m_VideoClip: {fileID: 32900000, guid: cea066df2b5bf494ba39e99a632ceaf3, type: 3}
+  m_TargetCameraAlpha: 1
+  m_TargetCamera3DLayout: 0
+  m_TargetCamera: {fileID: 0}
+  m_TargetTexture: {fileID: 0}
+  m_TimeReference: 0
+  m_TargetMaterialRenderer: {fileID: 0}
+  m_TargetMaterialProperty: <noninit>
+  m_RenderMode: 2
+  m_AspectRatio: 2
+  m_DataSource: 0
+  m_TimeUpdateMode: 2
+  m_PlaybackSpeed: 1
+  m_AudioOutputMode: 2
+  m_TargetAudioSources:
+  - {fileID: 0}
+  m_DirectAudioVolumes:
+  - 1
+  m_Url: 
+  m_EnabledAudioTracks: 01
+  m_DirectAudioMutes: 00
+  m_ControlledAudioTrackCount: 1
+  m_PlayOnAwake: 1
+  m_SkipOnDrop: 1
+  m_Looping: 0
+  m_WaitForFirstFrame: 1
+  m_FrameReadyEventEnabled: 0
+  m_VideoShaders: []
 --- !u!1 &873016305
 GameObject:
   m_ObjectHideFlags: 0
@@ -1128,8 +1165,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1242, y: 116.862}
+  m_AnchoredPosition: {x: 0.0024719, y: 0}
+  m_SizeDelta: {x: 512.49, y: 116.862}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2000556049
 MonoBehaviour:
@@ -1226,7 +1263,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1838046178544159959, guid: f3bdd5a2cb8dae040bcdd29d67c44dd3, type: 3}
+  m_Sprite: {fileID: 3743020039469294708, guid: b5e61bbd4a87418498abe90bb0c9c403, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
