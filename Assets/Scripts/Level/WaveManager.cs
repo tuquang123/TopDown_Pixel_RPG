@@ -48,6 +48,16 @@ public class WaveManager : Singleton<WaveManager>
     [SerializeField, Min(0.05f)]private float defaultMinSpawnInterval          = 0.15f;
     [SerializeField, Min(1)]    private int   defaultBossWaveFrequency         = 5;
 
+    [Header("Boss Wave")]
+    [Tooltip("Delay (giây) trước khi boss xuất hiện — BossWarningUI nhấp nháy trong thời gian này.")]
+    [SerializeField, Min(0f)] private float bossSpawnDelay     = 3f;
+    [Tooltip("Delay (giây) sau khi boss chết trước khi bắt đầu wave tiếp theo.")]
+    [SerializeField, Min(0f)] private float bossWaveClearDelay = 3f;
+
+    [Header("Boss Warning UI")]
+    [Tooltip("Kéo object BossWarning trong scene vào đây.")]
+    [SerializeField] private BossWarningUI bossWarningUI;
+
     [Header("Spawn Distance")]
     [Tooltip("Quái không spawn trong bán kính này quanh player (tính theo tile).")]
     [SerializeField, Min(0f)] private float minSpawnDistanceFromPlayer = 4f;
@@ -124,9 +134,11 @@ public class WaveManager : Singleton<WaveManager>
     private bool           isRespawning;
     private bool           justRespawned;
     private bool           spawnBlocked;
+    private bool           isBossWaveActive;
+
     private WaveProgressUI waveUiInstance;
 
-    private GameObject currentMapInstance;           // ← FIX: field bị thiếu khai báo
+    private GameObject currentMapInstance;
     private GameObject currentMapPrefab;
     private GameObject pendingMapPrefab;
 
@@ -444,7 +456,13 @@ public class WaveManager : Singleton<WaveManager>
 
         StartCoroutine(OutOfBoundsChecker());
 
-        if (isBossWave) { SpawnBoss(); return; }
+        if (isBossWave)
+        {
+            StartCoroutine(BossWaveRoutine());
+            return;
+        }
+
+        isBossWaveActive = false;
 
         int   count    = GetStageWaveConfig().enemiesBaseCount + (currentWave - 1) * GetStageWaveConfig().enemiesPerWave;
         float interval = Mathf.Max(GetStageWaveConfig().minSpawnInterval,
@@ -464,19 +482,28 @@ public class WaveManager : Singleton<WaveManager>
     }
 
     // ═══════════════════════════════════════════════════════════════
-    //  BOSS SPAWN
+    //  BOSS WAVE ROUTINE
     // ═══════════════════════════════════════════════════════════════
 
-    private void SpawnBoss()
+    private IEnumerator BossWaveRoutine()
     {
+        isBossWaveActive = true;
+
+        if (bossWarningUI != null)
+            bossWarningUI.SetVisible(true);
+
+        Debug.Log($"[WaveManager] Boss wave! Đang chờ {bossSpawnDelay}s...");
+        yield return new WaitForSeconds(bossSpawnDelay);
+
+        if (bossWarningUI != null)
+            bossWarningUI.SetVisible(false);
+
         GameObject prefab = GetBossPrefabForCurrentStage();
 
-        // ── FIX: không có boss prefab → fallback sang wave thường thay vì return ──
-        // Nếu return thẳng: aliveEnemies rỗng + waveActive = true → wave kẹt vĩnh viễn.
         if (prefab == null)
         {
-            Debug.LogWarning($"[WaveManager] Không có boss prefab cho stage {currentStage} " +
-                             "— fallback sang wave thường.");
+            Debug.LogWarning($"[WaveManager] Không có boss prefab cho stage {currentStage} — fallback sang wave thường.");
+            isBossWaveActive = false;
 
             int   count    = GetStageWaveConfig().enemiesBaseCount
                            + (currentWave - 1) * GetStageWaveConfig().enemiesPerWave;
@@ -485,16 +512,13 @@ public class WaveManager : Singleton<WaveManager>
                 - (currentWave - 1) * GetStageWaveConfig().spawnIntervalDecayPerWave);
 
             StartCoroutine(SpawnWaveRoutine(count, interval));
-            return;
+            yield break;
         }
 
         SpawnEnemyAt(PickSpawnTile(), true, prefab);
+        Debug.Log("[WaveManager] Boss đã spawn.");
     }
 
-    /// <summary>
-    /// Tìm entry có Stage cao nhất mà &lt;= currentStage và trả về bossPrefab của nó.
-    /// Ví dụ: có entry Stage1=Dragon, Stage3=Demon — stage 2 sẽ dùng Dragon.
-    /// </summary>
     private GameObject GetBossPrefabForCurrentStage()
     {
         GameObject result    = null;
@@ -631,12 +655,17 @@ public class WaveManager : Singleton<WaveManager>
     //  SPAWN
     // ═══════════════════════════════════════════════════════════════
 
-    /// <param name="overridePrefab">Truyền prefab cụ thể (dùng cho boss). Null = tự chọn.</param>
     private void SpawnEnemyAt(Vector3 pos, bool isBoss, GameObject overridePrefab = null)
     {
         if (spawnBlocked)
         {
             Debug.Log("[WaveManager] SpawnEnemyAt bị chặn (grace period).");
+            return;
+        }
+
+        if (isBossWaveActive && !isBoss)
+        {
+            Debug.Log("[WaveManager] SpawnEnemyAt bị chặn (boss wave đang diễn ra).");
             return;
         }
 
@@ -706,7 +735,23 @@ public class WaveManager : Singleton<WaveManager>
 
         waveActive = false;
         OnWaveCleared?.Invoke(currentWave);
-        if (dead.isBoss) AdvanceStage();
+
+        if (dead.isBoss)
+        {
+            isBossWaveActive = false;
+            StartCoroutine(DelayedNextWave(bossWaveClearDelay));
+        }
+        else
+        {
+            StartNextWave();
+        }
+    }
+
+    private IEnumerator DelayedNextWave(float delay)
+    {
+        Debug.Log($"[WaveManager] Boss đã chết! Nghỉ {delay}s trước wave tiếp...");
+        yield return new WaitForSeconds(delay);
+        AdvanceStage();
         StartNextWave();
     }
 
@@ -880,8 +925,11 @@ public class WaveManager : Singleton<WaveManager>
     public void OnPlayerDied()
     {
         StopAllCoroutines();
-        waveActive   = false;
-        spawnBlocked = true;
+        waveActive       = false;
+        spawnBlocked     = true;
+        isBossWaveActive = false;
+
+        if (bossWarningUI != null) bossWarningUI.SetVisible(false);
 
         ClearAllEnemies();
 
@@ -892,7 +940,7 @@ public class WaveManager : Singleton<WaveManager>
         currentMapPrefab = null;
         pendingMapPrefab = null;
         spawnTiles.Clear();
-        mapBoundsValid = false;
+        mapBoundsValid   = false;
         ClearSave();
 
         if (currentMapInstance != null && currentMapIsInstantiated)
@@ -905,14 +953,16 @@ public class WaveManager : Singleton<WaveManager>
         FindAndRegisterSceneMap();
         ApplyStageData(currentStage);
         OnWavesRestarted?.Invoke();
-
         StartCoroutine(RespawnPlayerRoutine());
     }
 
     public void RestartWaves()
     {
         StopAllCoroutines();
-        waveActive = false;
+        waveActive       = false;
+        isBossWaveActive = false;
+
+        if (bossWarningUI != null) bossWarningUI.SetVisible(false);
 
         ClearAllEnemies();
 
@@ -948,7 +998,13 @@ public class WaveManager : Singleton<WaveManager>
         SaveProgress();
         OnWaveStarted?.Invoke(currentWave, currentStage, isBossWave);
 
-        if (isBossWave) { SpawnBoss(); return; }
+        if (isBossWave)
+        {
+            StartCoroutine(BossWaveRoutine());
+            return;
+        }
+
+        isBossWaveActive = false;
 
         int   count    = GetStageWaveConfig().enemiesBaseCount + (currentWave - 1) * GetStageWaveConfig().enemiesPerWave;
         float interval = Mathf.Max(GetStageWaveConfig().minSpawnInterval,
