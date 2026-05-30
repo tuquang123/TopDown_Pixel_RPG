@@ -9,77 +9,72 @@ public class CurrencyItem : MonoBehaviour, IPooledObject
     public CurrencyType currencyType = CurrencyType.Gold;
     public int value = 1;
 
-    [Header("Timings")]
-    public float flyDuration = 0.3f;               // Thời gian bay ra ban đầu
-    public float autoCollectDelay = 0.5f;          // Delay trước khi hút
-    public float collectDelayAfterReady = 0.2f;    // Thêm delay trước khi hút
+    [Header("Spawn")]
+    public float bounceDuration = 0.4f;
+    public float bounceDistance = 1.5f;
 
-    [Header("Collect Settings")]
-    public float attractRange = 3f;
-    public float pickupDistance = 0.25f;
-    public float attractSpeed = 10f;
+    [Header("Auto Collect")]
+    public float autoCollectDelay = 0.6f;
+    public float attractRange = 4f;
 
-    private Transform player;
+    [Header("Fly To UI")]
+    public float flyToUIDuration = 0.7f;   // chậm rãi
+    public float arcHeight = 1.5f;
+
     private Tween flyTween;
     private float spawnTime;
-    private float readyTime;
-
-    private bool isReadyToCollect = false;
-    private bool isCollecting = false;
+    private bool isFlyingToUI = false;
+    private Transform player;
 
     public void OnObjectSpawn()
     {
         if (player == null)
             player = PlayerController.Instance?.transform;
 
-        isReadyToCollect = false;
-        isCollecting = false;
+        isFlyingToUI = false;
         spawnTime = Time.time;
+        transform.localScale = Vector3.one;
+        transform.rotation = Quaternion.identity;
 
         flyTween?.Kill();
 
-        // Bay ra hướng ngẫu nhiên khi spawn
-        Vector2 dir = Random.insideUnitCircle.normalized * Random.Range(1f, 2f);
-        Vector3 offset = new Vector3(dir.x, Mathf.Abs(dir.y) + 0.5f, 0f);
+        // Bounce ra ngẫu nhiên, giữ nguyên kích thước
+        Vector2 dir = Random.insideUnitCircle.normalized;
+        Vector3 offset = new Vector3(dir.x, Mathf.Abs(dir.y) * 0.5f + 0.3f, 0f)
+                         * Random.Range(1f, bounceDistance);
 
-        Vector3 targetPos = transform.position + offset;
-
-        flyTween = transform.DOMove(targetPos, flyDuration).SetEase(Ease.OutQuad);
+        flyTween = transform
+            .DOMove(transform.position + offset, bounceDuration)
+            .SetEase(Ease.OutQuad);
     }
 
     private void Update()
     {
-        if (player == null) return;
+        if (isFlyingToUI || player == null) return;
+        if (Time.time - spawnTime < autoCollectDelay) return;
 
-        float timeSinceSpawn = Time.time - spawnTime;
+        if (Vector3.Distance(transform.position, player.position) <= attractRange)
+            StartFlyToUI();
+    }
 
-        // Chuẩn bị hút
-        if (!isReadyToCollect && timeSinceSpawn >= autoCollectDelay)
-        {
-            if (Vector3.Distance(transform.position, player.position) <= attractRange)
-            {
-                isReadyToCollect = true;
-                readyTime = Time.time;
-            }
-        }
+    private void StartFlyToUI()
+    {
+        if (isFlyingToUI) return;
+        isFlyingToUI = true;
+        flyTween?.Kill();
 
-        // Hút sau delay
-        if (isReadyToCollect && !isCollecting && Time.time - readyTime >= collectDelayAfterReady)
-        {
-            isCollecting = true;
-        }
+        Vector3 start  = transform.position;
+        Vector3 target = currencyType == CurrencyType.Gold
+            ? CurrencyUI.Instance.GoldTargetWorldPos
+            : CurrencyUI.Instance.GemTargetWorldPos;
 
-        // Đang hút
-        if (isCollecting)
-        {
-            Vector3 target = player.position;
-            transform.position = Vector3.MoveTowards(transform.position, target, attractSpeed * Time.deltaTime);
+        // Arc đơn giản
+        Vector3 mid = (start + target) * 0.5f + Vector3.up * arcHeight;
 
-            if (Vector3.Distance(transform.position, target) <= pickupDistance)
-            {
-                Collect();
-            }
-        }
+        flyTween = transform
+            .DOPath(new[] { mid, target }, flyToUIDuration, PathType.CatmullRom)
+            .SetEase(Ease.InOutSine)   // chậm → nhanh dần → chậm
+            .OnComplete(Collect);
     }
 
     private void Collect()
@@ -88,17 +83,19 @@ public class CurrencyItem : MonoBehaviour, IPooledObject
         {
             case CurrencyType.Gold:
                 CurrencyManager.Instance.AddGold(value);
-                FloatingTextSpawner.Instance.SpawnText("+ Gold :" + value, transform.position, Color.yellow);
+                CurrencyUI.Instance.PlayGoldCollectEffect();
                 break;
-
             case CurrencyType.Gem:
                 CurrencyManager.Instance.AddGems(value);
-                FloatingTextSpawner.Instance.SpawnText("+ Gem :" + value, transform.position, Color.magenta);
+                CurrencyUI.Instance.PlayGemCollectEffect();
                 break;
         }
-
         AudioManager.Instance.PlaySFX("PickUp");
-
         gameObject.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        flyTween?.Kill();
     }
 }

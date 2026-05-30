@@ -12,10 +12,6 @@ public class StageData
              "Stage 1 (base map) để trống vì base map đã có sẵn trong scene.")]
     public GameObject mapPrefab;
 
-    [Header("Reward khi clear stage")]
-    public int bonusGold = 0;
-    public int bonusExp  = 0;
-
     [Header("Wave Config (Override)")]
     [Tooltip("Bật để dùng config riêng cho stage này thay vì config mặc định trong WaveManager.")]
     public bool useWaveConfigOverride;

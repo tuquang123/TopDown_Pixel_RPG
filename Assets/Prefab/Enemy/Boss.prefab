@@ -51,7 +51,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6378732232669590760
 Transform:
   m_ObjectHideFlags: 0
@@ -165,6 +165,8 @@ MonoBehaviour:
   separationRadius: 0.6
   separationWeight: 1.2
   maxSeparationNeighbors: 8
+  acceleration: 20
+  separationSmoothSpeed: 8
   knockForce: 3
   knockDuration: 0.3
   damagedStunTime: 0

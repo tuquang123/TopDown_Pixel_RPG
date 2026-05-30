@@ -4898,6 +4898,11 @@ MonoBehaviour:
   attackCooldown: 3.5
   skipHurtAnimation: 0
   moveSpeed: 0.7
+  separationRadius: 0.6
+  separationWeight: 1.2
+  maxSeparationNeighbors: 8
+  acceleration: 20
+  separationSmoothSpeed: 8
   knockForce: 1.5
   knockDuration: 0.2
   damagedStunTime: 0.2
@@ -4923,7 +4928,7 @@ MonoBehaviour:
   patrolWaitTime: 2
   exp: 3
   selectionCircle: {fileID: 3061788636479384840}
-  aggroIcon: {fileID: 4944632009777208948}
+  aggroIcon: {fileID: 0}
   aggroLoseTime: 5
   killObjectiveID: 
 --- !u!1 &2340316211728648110
