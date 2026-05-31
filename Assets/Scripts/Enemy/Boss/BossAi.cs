@@ -202,7 +202,8 @@ public class BossAI : EnemyAI
         bossHealthUI?.Hide();
 
         RaiseDeathEvent();
-        QuestManager.Instance.ReportProgress("BossKilled", EnemyName, 1);
+        QuestManager.Instance?.ReportProgressByObjectiveName(EnemyName, 1);
+        QuestManager.Instance?.ReportProgressByObjectiveName("Boss", 1);
         GoldDropHelper.SpawnGoldBurst(
             transform.position,
             UnityEngine.Random.Range(10, 20),

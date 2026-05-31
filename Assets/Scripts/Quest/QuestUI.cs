@@ -93,6 +93,15 @@ public class QuestUI : MonoBehaviour
             if (qp.quest.reward.gemReward > 0)
                 text += $"<color=#3BA4FF>+{qp.quest.reward.gemReward} Gem</color>\n";
 
+            if (qp.quest.reward.attackReward > 0)
+                text += $"<color=#FF8C00>+{qp.quest.reward.attackReward} Attack</color>\n";
+
+            if (qp.quest.reward.hpReward > 0)
+                text += $"<color=#FF3333>+{qp.quest.reward.hpReward} HP</color>\n";
+
+            if (!string.IsNullOrEmpty(qp.quest.reward.titleReward))
+                text += $"<color=#FFD700>{qp.quest.reward.titleReward}</color>\n";
+
             if (qp.quest.reward.itemIDs != null)
             {
                 foreach (var item in qp.quest.reward.itemIDs)

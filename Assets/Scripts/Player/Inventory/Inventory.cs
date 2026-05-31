@@ -63,7 +63,17 @@ public class Inventory : Singleton<Inventory>
     {
         if (item == null || item.itemData == null) return;
         items.Add(item);
+        QuestManager.Instance?.ReportEquipmentOwnedCount(GetUniqueEquipmentCount());
         OnInventoryChanged?.Invoke();
+    }
+
+    private int GetUniqueEquipmentCount()
+    {
+        return items
+            .Where(i => i?.itemData != null && i.itemData.itemType != ItemType.Consumable)
+            .Select(i => i.itemData.itemID)
+            .Distinct()
+            .Count();
     }
 
     public bool RemoveItem(ItemInstance item)

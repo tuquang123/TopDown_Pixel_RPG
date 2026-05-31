@@ -124,6 +124,7 @@ public class GachaPopup : BasePopup
         }
 
         Inventory.Instance.AddItem(item);
+        QuestManager.Instance?.ReportProgressByObjectiveName("Gacha", 1);
         ShowItemWithEffect(item, 0);
 
         DOVirtual.DelayedCall(0.8f, () => { isRolling = false; });
@@ -154,6 +155,7 @@ public class GachaPopup : BasePopup
             if (item == null) continue;
 
             Inventory.Instance.AddItem(item);
+            QuestManager.Instance?.ReportProgressByObjectiveName("Gacha", 1);
             ShowItemWithEffect(item, i);
         }
 

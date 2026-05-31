@@ -9,6 +9,7 @@ public struct EnemySpawnEntry
 {
     public GameObject prefab;
     [Min(1)]    public int   minStage;
+    [Min(0)]    public int   maxStage;
     [Min(0.1f)] public float weight;
 }
 
@@ -268,8 +269,10 @@ public class WaveManager : Singleton<WaveManager>
 
     private void AdvanceStage()
     {
+        int completedStage = currentStage;
         currentStage++;
         ApplyStageData(currentStage);
+        QuestManager.Instance?.ReportStageCompleted(completedStage);
         OnStageChanged?.Invoke(currentStage);
     }
 
@@ -866,7 +869,11 @@ public class WaveManager : Singleton<WaveManager>
 
     private GameObject GetRandomEnemyPrefab()
     {
-        var avail = enemySpawnEntries.FindAll(e => e.prefab != null && currentStage >= e.minStage);
+        var avail = enemySpawnEntries.FindAll(e => 
+            e.prefab != null && 
+            currentStage >= e.minStage &&
+            (e.maxStage == 0 || currentStage <= e.maxStage));
+
         if (avail.Count == 0)
         {
             avail = enemySpawnEntries.FindAll(e => e.prefab != null);
@@ -890,7 +897,6 @@ public class WaveManager : Singleton<WaveManager>
         }
         return avail[avail.Count - 1].prefab;
     }
-
     private void EnsureHealthUI(GameObject obj, EnemyAI ai)
     {
         if (ai.EnemyHealthUI != null) return;

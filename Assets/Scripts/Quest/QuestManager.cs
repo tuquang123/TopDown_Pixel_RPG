@@ -72,8 +72,9 @@ public class QuestManager : Singleton<QuestManager>
         QuestProgress qpNew = new QuestProgress(quest);
         qpNew.state = QuestState.InProgress;
         activeQuests.Add(qpNew);
+        RefreshSnapshotProgress(qpNew);
         OnQuestChanged?.Invoke();
-        questUI?.UpdateQuestProgress(qpNew);
+        questUI?.UpdateQuestProgress(qpNew, qpNew.state == QuestState.Completed);
         Debug.Log($"Started Quest: {quest.questName}");
         UpdateArrow();
     }
@@ -116,6 +117,150 @@ public class QuestManager : Singleton<QuestManager>
         OnQuestChanged?.Invoke();
         UpdateArrow();
         questUI?.UpdateQuestProgress(qp, qp.state == QuestState.Completed);
+    }
+
+    public void ReportProgressByObjectiveName(string objectiveName, int amount = 1)
+    {
+        foreach (var qp in activeQuests)
+        {
+            if (qp.state != QuestState.InProgress || qp.quest?.objectives == null) continue;
+
+            bool changed = false;
+            foreach (var obj in qp.quest.objectives)
+            {
+                bool matchedObjective = string.Equals(obj.objectiveName, objectiveName, System.StringComparison.OrdinalIgnoreCase);
+                bool matchedTarget = string.Equals(obj.targetID, objectiveName, System.StringComparison.OrdinalIgnoreCase);
+                if (!matchedObjective && !matchedTarget) continue;
+
+                AddObjectiveProgress(qp, obj, amount);
+                changed = true;
+            }
+
+            if (changed)
+                questUI?.UpdateQuestProgress(qp, qp.state == QuestState.Completed);
+        }
+
+        OnQuestChanged?.Invoke();
+        UpdateArrow();
+    }
+
+    public void ReportObjectiveValue(string objectiveName, int value)
+    {
+        foreach (var qp in activeQuests)
+        {
+            if (qp.state != QuestState.InProgress || qp.quest?.objectives == null) continue;
+
+            bool changed = false;
+            foreach (var obj in qp.quest.objectives)
+            {
+                bool matchedObjective = string.Equals(obj.objectiveName, objectiveName, System.StringComparison.OrdinalIgnoreCase);
+                bool matchedTarget = string.Equals(obj.targetID, objectiveName, System.StringComparison.OrdinalIgnoreCase);
+                if (!matchedObjective && !matchedTarget) continue;
+
+                qp.progress[obj.objectiveName] = value;
+                CompleteQuestIfReady(qp);
+                changed = true;
+            }
+
+            if (changed)
+                questUI?.UpdateQuestProgress(qp, qp.state == QuestState.Completed);
+        }
+
+        OnQuestChanged?.Invoke();
+        UpdateArrow();
+    }
+
+    public void ReportStageCompleted(int completedStage)
+    {
+        ReportObjectiveValue("Stage", completedStage);
+    }
+
+    public void ReportEquipmentOwnedCount(int count)
+    {
+        ReportObjectiveValue("EquipmentOwned", count);
+    }
+
+    public void ReportItemUpgrade(int upgradeLevel)
+    {
+        ReportProgressByObjectiveName("UpgradeItem", 1);
+        ReportObjectiveValue("UpgradeItemLevel", upgradeLevel);
+    }
+
+    private void AddObjectiveProgress(QuestProgress qp, QuestObjective obj, int amount)
+    {
+        if (!qp.progress.ContainsKey(obj.objectiveName))
+            qp.progress[obj.objectiveName] = 0;
+
+        qp.progress[obj.objectiveName] += amount;
+        CompleteQuestIfReady(qp);
+    }
+
+    private void CompleteQuestIfReady(QuestProgress qp)
+    {
+        if (!qp.IsCompleted()) return;
+
+        if (!readyToTurnInQuests.Contains(qp))
+        {
+            readyToTurnInQuests.Add(qp);
+            qp.state = QuestState.Completed;
+            Debug.Log($"Quest {qp.quest.questName} completed!");
+        }
+    }
+
+    private void RefreshSnapshotProgress(QuestProgress qp)
+    {
+        if (qp?.quest?.objectives == null) return;
+
+        foreach (var obj in qp.quest.objectives)
+        {
+            int value = -1;
+
+            if (string.Equals(obj.objectiveName, "Gem", System.StringComparison.OrdinalIgnoreCase))
+                value = CurrencyManager.Instance != null ? CurrencyManager.Instance.Gems : 0;
+            else if (string.Equals(obj.objectiveName, "EquipmentOwned", System.StringComparison.OrdinalIgnoreCase))
+                value = GetUniqueEquipmentCount();
+            else if (string.Equals(obj.objectiveName, "UpgradeItemLevel", System.StringComparison.OrdinalIgnoreCase))
+                value = GetHighestItemUpgradeLevel();
+            else if (string.Equals(obj.objectiveName, "Stage", System.StringComparison.OrdinalIgnoreCase))
+            {
+                var waveManager = FindFirstObjectByType<WaveManager>();
+                value = waveManager != null ? Mathf.Max(0, waveManager.CurrentStage - 1) : 0;
+            }
+
+            if (value >= 0)
+                qp.progress[obj.objectiveName] = value;
+        }
+
+        CompleteQuestIfReady(qp);
+    }
+
+    private int GetUniqueEquipmentCount()
+    {
+        if (Inventory.Instance == null || Inventory.Instance.items == null) return 0;
+
+        HashSet<string> ids = new HashSet<string>();
+        foreach (var item in Inventory.Instance.items)
+        {
+            if (item?.itemData == null || item.itemData.itemType == ItemType.Consumable) continue;
+            ids.Add(item.itemData.itemID);
+        }
+
+        return ids.Count;
+    }
+
+    private int GetHighestItemUpgradeLevel()
+    {
+        if (Inventory.Instance == null || Inventory.Instance.items == null) return 0;
+
+        int highest = 0;
+        foreach (var item in Inventory.Instance.items)
+        {
+            if (item?.itemData == null) continue;
+            if (item.upgradeLevel > highest)
+                highest = item.upgradeLevel;
+        }
+
+        return highest;
     }
 
     // Gọi từ NPC → mở popup trước
@@ -161,6 +306,7 @@ public class QuestManager : Singleton<QuestManager>
         Quest quest = qp.quest;
         int exp = quest.reward.experienceReward;
         int gold = quest.reward.goldReward;
+        int gems = quest.reward.gemReward;
 
         if (PlayerStats.Instance != null)
         {
@@ -170,15 +316,31 @@ public class QuestManager : Singleton<QuestManager>
                 playerLevel.levelSystem.AddExp(exp);
                 FloatingTextSpawner.Instance.SpawnText("+ EXP :" + exp, transform.position, Color.magenta);
             }
+
+            if (quest.reward.attackReward != 0)
+                PlayerStats.Instance.attack.baseValue += quest.reward.attackReward;
+
+            if (quest.reward.hpReward != 0)
+            {
+                PlayerStats.Instance.maxHealth.baseValue += quest.reward.hpReward;
+                PlayerStats.Instance.Heal(quest.reward.hpReward);
+            }
+
+            if (quest.reward.attackReward != 0 || quest.reward.hpReward != 0)
+                PlayerStats.Instance.ApplyStatModifier();
         }
 
         CurrencyManager.Instance.AddGold(gold);
+        CurrencyManager.Instance.AddGems(gems);
 
         if (exp > 0)
             RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconExp, "EXP", exp);
 
         if (gold > 0)
             RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconGold, "Vàng", gold);
+
+        if (gems > 0)
+            RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconGold, "Gem", gems);
 
         foreach (var itemID in quest.reward.itemIDs)
         {
