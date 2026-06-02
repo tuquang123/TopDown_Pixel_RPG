@@ -93,24 +93,19 @@ public class QuestUI : MonoBehaviour
             if (qp.quest.reward.gemReward > 0)
                 text += $"<color=#3BA4FF>+{qp.quest.reward.gemReward} Gem</color>\n";
 
-            if (qp.quest.reward.attackReward > 0)
-                text += $"<color=#FF8C00>+{qp.quest.reward.attackReward} Attack</color>\n";
-
-            if (qp.quest.reward.hpReward > 0)
-                text += $"<color=#FF3333>+{qp.quest.reward.hpReward} HP</color>\n";
-
-            if (!string.IsNullOrEmpty(qp.quest.reward.titleReward))
-                text += $"<color=#FFD700>{qp.quest.reward.titleReward}</color>\n";
-
             if (qp.quest.reward.itemIDs != null)
             {
                 foreach (var item in qp.quest.reward.itemIDs)
-                    text += $"• {item}\n";
+                    text += $"â€¢ {item}\n";
             }
+
+
+            if (qp.quest.reward.rewardItem != null && qp.quest.reward.rewardItem.itemData != null)
+                text += $"- {qp.quest.reward.rewardItem.itemData.itemName}\n";
         }
 
         if (readyToTurnIn)
-            text += "\n<color=yellow>Hoàn thành! Nhấn Claim để nhận thưởng.</color>";
+            text += "\n<color=yellow>HoĂ n thĂ nh! Nháº¥n Claim Ä‘á»ƒ nháº­n thÆ°á»Ÿng.</color>";
 
         questProgressText.text = text;
 
@@ -121,7 +116,7 @@ public class QuestUI : MonoBehaviour
     public void Clear()
     {
         currentQuest = null;
-        questProgressText.text = "Không có nhiệm vụ\nHãy đi tìm NPC";
+        questProgressText.text = "KhĂ´ng cĂ³ nhiá»‡m vá»¥\nHĂ£y Ä‘i tĂ¬m NPC";
 
         if (claimButton != null)
             claimButton.gameObject.SetActive(false);

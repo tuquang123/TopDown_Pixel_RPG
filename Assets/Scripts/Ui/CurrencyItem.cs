@@ -1,79 +1,106 @@
 ﻿using UnityEngine;
 using DG.Tweening;
 
-public enum CurrencyType { Gold, Gem }
+public enum CurrencyType
+{
+    Gold,
+    Gem
+}
 
 public class CurrencyItem : MonoBehaviour, IPooledObject
 {
-    [Header("Currency Settings")]
+    [Header("Currency")]
     public CurrencyType currencyType = CurrencyType.Gold;
     public int value = 1;
 
-    [Header("Spawn")]
-    public float bounceDuration = 0.4f;
-    public float bounceDistance = 1.5f;
+    [Header("Visual")]
+    [Range(0.1f, 2f)]
+    public float coinScale = 0.5f; // 50% kích thước
+
+    [Header("Spawn Effect")]
+    public float bounceDuration = 0.25f;
+    public float bounceDistance = 1.2f;
 
     [Header("Auto Collect")]
     public float autoCollectDelay = 0.6f;
-    public float attractRange = 4f;
 
     [Header("Fly To UI")]
-    public float flyToUIDuration = 0.7f;   // chậm rãi
-    public float arcHeight = 1.5f;
+    public float flyToUIDuration = 0.7f;
+    public float minArcHeight = 0.8f;
+    public float maxArcHeight = 2.0f;
+    public float arcRandomX = 1.2f;
 
     private Tween flyTween;
-    private float spawnTime;
-    private bool isFlyingToUI = false;
-    private Transform player;
+    private bool isFlyingToUI;
 
     public void OnObjectSpawn()
     {
-        if (player == null)
-            player = PlayerController.Instance?.transform;
-
         isFlyingToUI = false;
-        spawnTime = Time.time;
-        transform.localScale = Vector3.one;
-        transform.rotation = Quaternion.identity;
 
         flyTween?.Kill();
 
-        // Bounce ra ngẫu nhiên, giữ nguyên kích thước
-        Vector2 dir = Random.insideUnitCircle.normalized;
-        Vector3 offset = new Vector3(dir.x, Mathf.Abs(dir.y) * 0.5f + 0.3f, 0f)
-                         * Random.Range(1f, bounceDistance);
+        // Giảm kích thước coin xuống 50%
+        transform.localScale = Vector3.one * coinScale;
+        transform.rotation = Quaternion.identity;
 
-        flyTween = transform
-            .DOMove(transform.position + offset, bounceDuration)
+        Vector3 startPos = transform.position;
+
+        Vector2 randomDir = Random.insideUnitCircle.normalized;
+
+        Vector3 scatterOffset =
+            new Vector3(
+                randomDir.x,
+                Mathf.Abs(randomDir.y) + 0.4f,
+                0f
+            ) * Random.Range(0.5f, bounceDistance);
+
+        transform.DOMove(startPos + scatterOffset, bounceDuration)
             .SetEase(Ease.OutQuad);
-    }
 
-    private void Update()
-    {
-        if (isFlyingToUI || player == null) return;
-        if (Time.time - spawnTime < autoCollectDelay) return;
-
-        if (Vector3.Distance(transform.position, player.position) <= attractRange)
-            StartFlyToUI();
+        DOVirtual.DelayedCall(
+            autoCollectDelay + Random.Range(0f, 0.15f),
+            () =>
+            {
+                if (gameObject.activeInHierarchy)
+                    StartFlyToUI();
+            });
     }
 
     private void StartFlyToUI()
     {
-        if (isFlyingToUI) return;
+        if (isFlyingToUI)
+            return;
+
         isFlyingToUI = true;
+
         flyTween?.Kill();
 
-        Vector3 start  = transform.position;
-        Vector3 target = currencyType == CurrencyType.Gold
-            ? CurrencyUI.Instance.GoldTargetWorldPos
-            : CurrencyUI.Instance.GemTargetWorldPos;
+        Vector3 start = transform.position;
 
-        // Arc đơn giản
-        Vector3 mid = (start + target) * 0.5f + Vector3.up * arcHeight;
+        Vector3 target =
+            currencyType == CurrencyType.Gold
+                ? CurrencyUI.Instance.GoldTargetWorldPos
+                : CurrencyUI.Instance.GemTargetWorldPos;
+
+        float randomX = Random.Range(-arcRandomX, arcRandomX);
+        float randomY = Random.Range(minArcHeight, maxArcHeight);
+
+        Vector3 mid =
+            (start + target) * 0.5f +
+            new Vector3(randomX, randomY, 0f);
 
         flyTween = transform
-            .DOPath(new[] { mid, target }, flyToUIDuration, PathType.CatmullRom)
-            .SetEase(Ease.InOutSine)   // chậm → nhanh dần → chậm
+            .DOPath(
+                new Vector3[]
+                {
+                    start,
+                    mid,
+                    target
+                },
+                flyToUIDuration + Random.Range(-0.1f, 0.15f),
+                PathType.CatmullRom
+            )
+            .SetEase(Ease.InQuad)
             .OnComplete(Collect);
     }
 
@@ -85,12 +112,15 @@ public class CurrencyItem : MonoBehaviour, IPooledObject
                 CurrencyManager.Instance.AddGold(value);
                 CurrencyUI.Instance.PlayGoldCollectEffect();
                 break;
+
             case CurrencyType.Gem:
                 CurrencyManager.Instance.AddGems(value);
                 CurrencyUI.Instance.PlayGemCollectEffect();
                 break;
         }
+
         AudioManager.Instance.PlaySFX("PickUp");
+
         gameObject.SetActive(false);
     }
 

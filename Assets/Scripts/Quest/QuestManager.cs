@@ -47,7 +47,7 @@ public class QuestManager : Singleton<QuestManager>
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Debug.Log("[QuestManager] Scene Loaded → Delay Update Arrow");
+        Debug.Log("[QuestManager] Scene Loaded â†’ Delay Update Arrow");
         StartCoroutine(DelayUpdateArrow());
     }
 
@@ -263,7 +263,7 @@ public class QuestManager : Singleton<QuestManager>
         return highest;
     }
 
-    // Gọi từ NPC → mở popup trước
+    // Gá»i tá»« NPC â†’ má»Ÿ popup trÆ°á»›c
     public void TurnInQuest(QuestProgress qp)
     {
         if (!readyToTurnInQuests.Contains(qp)) return;
@@ -279,7 +279,7 @@ public class QuestManager : Singleton<QuestManager>
         FinalizeTurnIn(qp);
     }
 
-    // Gọi từ popup khi bấm "Nhận thưởng", hoặc từ cheat/dev (bypass popup)
+    // Gá»i tá»« popup khi báº¥m "Nháº­n thÆ°á»Ÿng", hoáº·c tá»« cheat/dev (bypass popup)
     public void FinalizeTurnIn(QuestProgress qp)
     {
         if (!readyToTurnInQuests.Contains(qp)) return;
@@ -287,6 +287,7 @@ public class QuestManager : Singleton<QuestManager>
         readyToTurnInQuests.Remove(qp);
         activeQuests.Remove(qp);
         completedQuests.Add(qp);
+
 
         qp.state = QuestState.Rewarded;
         AwardQuestReward(qp);
@@ -314,20 +315,9 @@ public class QuestManager : Singleton<QuestManager>
             if (playerLevel != null)
             {
                 playerLevel.levelSystem.AddExp(exp);
-                FloatingTextSpawner.Instance.SpawnText("+ EXP :" + exp, transform.position, Color.magenta);
+                if (exp > 0)
+                    FloatingTextSpawner.Instance.SpawnText("+ EXP :" + exp, transform.position, Color.magenta);
             }
-
-            if (quest.reward.attackReward != 0)
-                PlayerStats.Instance.attack.baseValue += quest.reward.attackReward;
-
-            if (quest.reward.hpReward != 0)
-            {
-                PlayerStats.Instance.maxHealth.baseValue += quest.reward.hpReward;
-                PlayerStats.Instance.Heal(quest.reward.hpReward);
-            }
-
-            if (quest.reward.attackReward != 0 || quest.reward.hpReward != 0)
-                PlayerStats.Instance.ApplyStatModifier();
         }
 
         CurrencyManager.Instance.AddGold(gold);
@@ -337,7 +327,7 @@ public class QuestManager : Singleton<QuestManager>
             RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconExp, "EXP", exp);
 
         if (gold > 0)
-            RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconGold, "Vàng", gold);
+            RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconGold, "VĂ ng", gold);
 
         if (gems > 0)
             RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconGold, "Gem", gems);
@@ -347,14 +337,27 @@ public class QuestManager : Singleton<QuestManager>
             ItemData itemData = CommonReferent.Instance.itemDatabase.GetItemByID(itemID);
             if (itemData == null)
             {
-                Debug.LogWarning($"Item ID không tồn tại: {itemID}");
+                Debug.LogWarning($"Item ID khĂ´ng tá»“n táº¡i: {itemID}");
                 continue;
             }
 
             ItemInstance itemInstance = new ItemInstance(itemData);
             Inventory.Instance.AddItem(itemInstance);
             RewardPopupManager.Instance.ShowReward(itemData.icon, itemData.itemName, 1);
-            Debug.Log($"Đã nhận item từ nhiệm vụ: {itemData.itemName}");
+            Debug.Log($"ÄĂ£ nháº­n item tá»« nhiá»‡m vá»¥: {itemData.itemName}");
+        }
+
+        if (quest.reward.rewardItem != null && quest.reward.rewardItem.itemData != null)
+        {
+            ItemInstance itemInstance = new ItemInstance(
+                quest.reward.rewardItem.itemData,
+                quest.reward.rewardItem.upgradeLevel,
+                locked: quest.reward.rewardItem.isLocked
+            );
+
+            Inventory.Instance.AddItem(itemInstance);
+            RewardPopupManager.Instance.ShowReward(itemInstance.itemData.icon, itemInstance.itemData.itemName, 1);
+            Debug.Log($"Da nhan rewardItem tu nhiem vu: {itemInstance.itemData.itemName}");
         }
 
         qp.state = QuestState.Rewarded;
@@ -422,7 +425,7 @@ public class QuestManager : Singleton<QuestManager>
         var qp = activeQuests.Find(q => q.quest.questID == questID);
         if (qp == null)
         {
-            Debug.LogWarning("Quest không tồn tại hoặc chưa được nhận.");
+            Debug.LogWarning("Quest khĂ´ng tá»“n táº¡i hoáº·c chÆ°a Ä‘Æ°á»£c nháº­n.");
             return;
         }
 
@@ -447,7 +450,7 @@ public class QuestManager : Singleton<QuestManager>
         var qp = activeQuests.Find(q => q.state == QuestState.InProgress);
         if (qp == null)
         {
-            Debug.LogWarning("Không có quest nào đang làm.");
+            Debug.LogWarning("KhĂ´ng cĂ³ quest nĂ o Ä‘ang lĂ m.");
             return;
         }
 
@@ -466,7 +469,7 @@ public class QuestManager : Singleton<QuestManager>
 
     public void DevQuestStep()
     {
-        // 1. Có quest Completed → TurnIn (bypass popup)
+        // 1. CĂ³ quest Completed â†’ TurnIn (bypass popup)
         if (readyToTurnInQuests.Count > 0)
         {
             FinalizeTurnIn(readyToTurnInQuests[0]);
@@ -474,7 +477,7 @@ public class QuestManager : Singleton<QuestManager>
             return;
         }
 
-        // 2. Có quest InProgress → Complete
+        // 2. CĂ³ quest InProgress â†’ Complete
         var inProgress = activeQuests.Find(q => q.state == QuestState.InProgress);
         if (inProgress != null)
         {
@@ -492,7 +495,7 @@ public class QuestManager : Singleton<QuestManager>
             return;
         }
 
-        // 3. Không có quest → Start quest tiếp theo
+        // 3. KhĂ´ng cĂ³ quest â†’ Start quest tiáº¿p theo
         foreach (var quest in questDatabase.allQuests)
         {
             if (GetQuestProgressByID(quest.questID) == null)
@@ -503,7 +506,7 @@ public class QuestManager : Singleton<QuestManager>
             }
         }
 
-        Debug.Log("Dev Cheat: Không còn quest nào.");
+        Debug.Log("Dev Cheat: KhĂ´ng cĂ²n quest nĂ o.");
     }
 
     // ====================== REPORT SPECIAL ======================
@@ -685,7 +688,7 @@ public class QuestManager : Singleton<QuestManager>
         }
 
         //questArrow.SetTarget(null);
-        Debug.LogWarning("Không tìm thấy target cho quest!");
+        Debug.LogWarning("KhĂ´ng tĂ¬m tháº¥y target cho quest!");
     }
 
     public void ForceClearArrow()
@@ -782,7 +785,7 @@ public class QuestManager : Singleton<QuestManager>
         GameObject go = GameObject.Find(name);
         if (go != null) return go.transform;
 
-        Debug.LogWarning($"❌ Không tìm thấy NPC với ID: {name}");
+        Debug.LogWarning($"âŒ KhĂ´ng tĂ¬m tháº¥y NPC vá»›i ID: {name}");
         return null;
     }
 
@@ -800,7 +803,7 @@ public class QuestManager : Singleton<QuestManager>
             if (npc != null) return npc;
         }
 
-        Debug.LogWarning($"Không tìm thấy NPC nhận thưởng cho quest: {quest.questName}");
+        Debug.LogWarning($"KhĂ´ng tĂ¬m tháº¥y NPC nháº­n thÆ°á»Ÿng cho quest: {quest.questName}");
         return null;
     }
 
@@ -889,7 +892,7 @@ public class QuestManager : Singleton<QuestManager>
 
         if (triggers == null || triggers.Length == 0)
         {
-            Debug.LogWarning("[Quest] Không tìm thấy LevelTrigger trong scene!");
+            Debug.LogWarning("[Quest] KhĂ´ng tĂ¬m tháº¥y LevelTrigger trong scene!");
             return null;
         }
 
@@ -915,7 +918,7 @@ public class QuestManager : Singleton<QuestManager>
         }
 
         if (best == null)
-            Debug.LogWarning("[Quest] Không tìm được trigger phù hợp!");
+            Debug.LogWarning("[Quest] KhĂ´ng tĂ¬m Ä‘Æ°á»£c trigger phĂ¹ há»£p!");
 
         return best;
     }

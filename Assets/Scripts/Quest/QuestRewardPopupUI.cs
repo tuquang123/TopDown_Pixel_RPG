@@ -72,14 +72,24 @@ public class QuestRewardPopupUI : BasePopup
         if (reward.gemReward > 0)
             rewards.Add($"Ngọc quý x{reward.gemReward}");
 
-        if (reward.attackReward > 0)
-            rewards.Add($"Attack +{reward.attackReward}");
+        if (reward.experienceReward > 0)
+            rewards.Add($"EXP x{reward.experienceReward}");
 
-        if (reward.hpReward > 0)
-            rewards.Add($"HP +{reward.hpReward}");
+        if (reward.itemIDs != null)
+        {
+            foreach (var itemID in reward.itemIDs)
+            {
+                string itemName = itemID;
+                ItemData item = CommonReferent.Instance?.itemDatabase?.GetItemByID(itemID);
+                if (item != null)
+                    itemName = item.itemName;
 
-        if (!string.IsNullOrEmpty(reward.titleReward))
-            rewards.Add(reward.titleReward);
+                rewards.Add($"{itemName} x1");
+            }
+        }
+
+        if (reward.rewardItem != null && reward.rewardItem.itemData != null)
+            rewards.Add($"{reward.rewardItem.itemData.itemName} x1");
 
         string rewardText = string.Join(" & ", rewards);
 
