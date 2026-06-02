@@ -72,6 +72,15 @@ public class QuestRewardPopupUI : BasePopup
         if (reward.gemReward > 0)
             rewards.Add($"Ngọc quý x{reward.gemReward}");
 
+        if (reward.attackReward > 0)
+            rewards.Add($"Attack +{reward.attackReward}");
+
+        if (reward.hpReward > 0)
+            rewards.Add($"HP +{reward.hpReward}");
+
+        if (!string.IsNullOrEmpty(reward.titleReward))
+            rewards.Add(reward.titleReward);
+
         string rewardText = string.Join(" & ", rewards);
 
         if (string.IsNullOrEmpty(questName))

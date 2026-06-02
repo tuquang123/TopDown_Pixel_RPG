@@ -251,6 +251,7 @@ public class ItemDetailPanel : MonoBehaviour
         float beforePower = PlayerStats.Instance.CurrentPower;
 
         inventoryUI.equipmentUi.EquipItem(currentItem);
+        QuestManager.Instance?.ReportProgressByObjectiveName("EquipItem", 1);
 
         PlayerStats.Instance.CalculatePower();
 
@@ -296,6 +297,7 @@ public class ItemDetailPanel : MonoBehaviour
         }
 
         currentItem.upgradeLevel++;
+        QuestManager.Instance?.ReportItemUpgrade(currentItem.upgradeLevel);
         GameEvents.OnShowToast.Raise("Nâng cấp thành công!");
         RefreshUI();
     }

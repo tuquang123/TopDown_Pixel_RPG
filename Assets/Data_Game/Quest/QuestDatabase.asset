@@ -13,133 +13,422 @@ MonoBehaviour:
   m_Name: QuestDatabase
   m_EditorClassIdentifier: 
   allQuests:
+  - questID: NV1
+    questName: "T\xE2n Binh Ra Tr\u1EADn"
+    description: "V\u01B0\u1EE3t Stage 1"
+    objectives:
+    - objectiveName: Stage
+      type: 4
+      requiredAmount: 1
+      targetID: Stage
+    reward:
+      experienceReward: 0
+      goldReward: 100
+      gemReward: 0
+      attackReward: 0
+      hpReward: 0
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
   - questID: NV2
-    questName: Kill Goblin
-    description: "Ti\xEAu di\u1EC7t Goblin \u0111ang qu\u1EA5y ph\xE1 khu r\u1EEBng"
+    questName: "Di\u1EC7t Goblin"
+    description: "Ti\xEAu di\u1EC7t 10 Goblin"
     objectives:
     - objectiveName: Goblin
       type: 0
-      requiredAmount: 5
+      requiredAmount: 10
       targetID: Goblin
     reward:
-      experienceReward: 70
-      goldReward: 30
+      experienceReward: 0
+      goldReward: 150
       gemReward: 0
+      attackReward: 0
+      hpReward: 0
+      titleReward: 
       itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV3
-    questName: Heal at Arena
-    description: "H\u1ED3i m\xE1u t\u1EA1i Healing Arena"
-    objectives:
-    - objectiveName: EnterZone
-      type: 6
-      requiredAmount: 1
-      targetID: HealingZone
-    reward:
-      experienceReward: 30
-      goldReward: 10
-      gemReward: 1
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV4
-    questName: Kill Silentmaw
-    description: "Ti\xEAu di\u1EC7t Silentmaw \u2013 qu\xE1i \u1EA9n th\xE2n nguy
-      hi\u1EC3m"
-    objectives:
-    - objectiveName: Silentmaw
-      type: 0
-      requiredAmount: 3
-      targetID: Silentmaw
-    reward:
-      experienceReward: 100
-      goldReward: 50
-      gemReward: 2
-      itemIDs:
-      - 
-    turnInNPCName: NPC_0
-  - questID: NV5
-    questName: Use Potion
-    description: "S\u1EED d\u1EE5ng potion \u0111\u1EC3 h\u1ED3i m\xE1u"
-    objectives:
-    - objectiveName: 
-      type: 7
-      requiredAmount: 1
-      targetID: hpc
-    reward:
-      experienceReward: 50
-      goldReward: 20
-      gemReward: 0
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV6
-    questName: Level Up
-    description: "L\xEAn c\u1EA5p 5 m\xE0 kh\xF4ng ch\u1EBFt"
-    objectives:
-    - objectiveName: 
-      type: 8
-      requiredAmount: 5
-      targetID: 
-    reward:
-      experienceReward: 50
-      goldReward: 50
-      gemReward: 1
-      itemIDs: []
-    turnInNPCName: NPC_0
-  - questID: NV7
-    questName: Collect Gold
-    description: "Thu th\u1EADp 200 v\xE0ng t\u1EEB qu\xE1i ho\u1EB7c nhi\u1EC7m
-      v\u1EE5"
+    questName: "Thu Th\u1EADp Chi\u1EBFn L\u1EE3i Ph\u1EA9m"
+    description: "Nh\u1EADn t\u1ED5ng c\u1ED9ng 100 Gold"
     objectives:
     - objectiveName: Gold
       type: 1
-      requiredAmount: 50
-      targetID: 
+      requiredAmount: 100
+      targetID: Gold
     reward:
-      experienceReward: 50
-      goldReward: 30
-      gemReward: 0
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 10
+      attackReward: 0
+      hpReward: 0
+      titleReward: 
       itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV4
+    questName: "Trang B\u1ECB \u0110\u1EA7u Ti\xEAn"
+    description: "Mua 1 trang b\u1ECB b\u1EA5t k\u1EF3"
+    objectives:
+    - objectiveName: BuyItem
+      type: 4
+      requiredAmount: 1
+      targetID: Shop
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 5
+      attackReward: 0
+      hpReward: 0
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV5
+    questName: "S\u1EE9c M\u1EA1nh Gia T\u0103ng"
+    description: "Trang b\u1ECB 1 m\xF3n \u0111\u1ED3"
+    objectives:
+    - objectiveName: EquipItem
+      type: 4
+      requiredAmount: 1
+      targetID: Player
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      attackReward: 5
+      hpReward: 0
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV6
+    questName: "K\u1EBB S\u0103n Skeleton"
+    description: "Ti\xEAu di\u1EC7t 10 Skeleton"
+    objectives:
+    - objectiveName: Skeleton
+      type: 0
+      requiredAmount: 10
+      targetID: Skeleton
+    reward:
+      experienceReward: 0
+      goldReward: 300
+      gemReward: 0
+      attackReward: 0
+      hpReward: 0
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV7
+    questName: "Nh\xE0 N\xE2ng C\u1EA5p"
+    description: "N\xE2ng c\u1EA5p trang b\u1ECB 3 l\u1EA7n"
+    objectives:
+    - objectiveName: UpgradeItem
+      type: 4
+      requiredAmount: 3
+      targetID: Item
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      attackReward: 10
+      hpReward: 0
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV8
-    questName: Buy Item
-    description: "Mua 1 v\u1EADt ph\u1EA9m trong shop"
+    questName: "K\u1EBB Chinh Ph\u1EE5c"
+    description: "Ho\xE0n th\xE0nh 5 Stage"
     objectives:
-    - objectiveName: 
-      type: 1
-      requiredAmount: 1
-      targetID: 
+    - objectiveName: Stage
+      type: 4
+      requiredAmount: 5
+      targetID: Stage
     reward:
-      experienceReward: 50
-      goldReward: 50
-      gemReward: 0
-      itemIDs:
-      - 
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 20
+      attackReward: 0
+      hpReward: 0
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV9
-    questName: Equip Item
-    description: "Trang b\u1ECB v\u1EADt ph\u1EA9m v\u1EEBa mua"
+    questName: "Gacha T\xE2n Th\u1EE7"
+    description: "Quay Gacha 5 l\u1EA7n"
     objectives:
-    - objectiveName: 
-      type: 5
-      requiredAmount: 1
-      targetID: 
+    - objectiveName: Gacha
+      type: 4
+      requiredAmount: 5
+      targetID: Gacha
     reward:
-      experienceReward: 10
-      goldReward: 20
-      gemReward: 0
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 10
+      attackReward: 0
+      hpReward: 0
+      titleReward: 
       itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV10
-    questName: Upgrade Item +5
-    description: "N\xE2ng c\u1EA5p 1 trang b\u1ECB l\xEAn +5"
+    questName: "K\u1EBB H\u1EE7y Di\u1EC7t Gravok"
+    description: "Ti\xEAu di\u1EC7t 15 Gravok"
     objectives:
-    - objectiveName: 
-      type: 1
-      requiredAmount: 0
-      targetID: 
+    - objectiveName: Gravok
+      type: 0
+      requiredAmount: 15
+      targetID: Gravok
     reward:
-      experienceReward: 20
-      goldReward: 30
+      experienceReward: 0
+      goldReward: 500
       gemReward: 0
+      attackReward: 0
+      hpReward: 0
+      titleReward: 
       itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
     turnInNPCName: NPC_0
+  - questID: NV11
+    questName: "Kho B\xE1u Nh\u1ECF"
+    description: "T\xEDch l\u0169y 50 Gem"
+    objectives:
+    - objectiveName: Gem
+      type: 1
+      requiredAmount: 50
+      targetID: Gem
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      attackReward: 0
+      hpReward: 0
+      titleReward: "1 V\xE9 Gacha"
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV12
+    questName: "V\u0169 Kh\xED C\u01B0\u1EDDng H\xF3a"
+    description: "N\xE2ng 1 trang b\u1ECB l\xEAn +10"
+    objectives:
+    - objectiveName: UpgradeItemLevel
+      type: 4
+      requiredAmount: 10
+      targetID: Item
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      attackReward: 25
+      hpReward: 0
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV13
+    questName: "Th\u1EE3 S\u0103n Silentmaw"
+    description: "Ti\xEAu di\u1EC7t 10 Silentmaw"
+    objectives:
+    - objectiveName: Silentmaw
+      type: 0
+      requiredAmount: 10
+      targetID: Silentmaw
+    reward:
+      experienceReward: 0
+      goldReward: 700
+      gemReward: 0
+      attackReward: 0
+      hpReward: 0
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV14
+    questName: "Th\u1EED Th\xE1ch Boss"
+    description: "\u0110\xE1nh b\u1EA1i Boss 1"
+    objectives:
+    - objectiveName: Boss
+      type: 0
+      requiredAmount: 1
+      targetID: Boss
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 50
+      attackReward: 0
+      hpReward: 0
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV15
+    questName: "B\u1ED9 S\u01B0u T\u1EADp"
+    description: "S\u1EDF h\u1EEFu 5 trang b\u1ECB kh\xE1c nhau"
+    objectives:
+    - objectiveName: EquipmentOwned
+      type: 4
+      requiredAmount: 5
+      targetID: Inventory
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      attackReward: 0
+      hpReward: 50
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV16
+    questName: "Th\u1EE3 S\u0103n Ravageron"
+    description: "Ti\xEAu di\u1EC7t 20 Ravageron"
+    objectives:
+    - objectiveName: Ravageron
+      type: 0
+      requiredAmount: 20
+      targetID: Ravageron
+    reward:
+      experienceReward: 0
+      goldReward: 1000
+      gemReward: 0
+      attackReward: 0
+      hpReward: 0
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV17
+    questName: "Ng\u01B0\u1EDDi May M\u1EAFn"
+    description: "Quay Gacha 20 l\u1EA7n"
+    objectives:
+    - objectiveName: Gacha
+      type: 4
+      requiredAmount: 20
+      targetID: Gacha
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      attackReward: 0
+      hpReward: 0
+      titleReward: "Trang b\u1ECB hi\u1EBFm ng\u1EABu nhi\xEAn"
+      itemIDs:
+      - armor8
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV18
+    questName: "Fargrider Kh\xF4ng Th\u1EC3 C\u1EA3n"
+    description: "Ti\xEAu di\u1EC7t 25 Fargrider"
+    objectives:
+    - objectiveName: Fargrider
+      type: 0
+      requiredAmount: 25
+      targetID: Fangrider
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      attackReward: 50
+      hpReward: 0
+      titleReward: 
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV19
+    questName: "Ch\xFAa T\u1EC3 Cu\u1ED1i C\xF9ng"
+    description: "\u0110\xE1nh b\u1EA1i Boss 2"
+    objectives:
+    - objectiveName: Boss
+      type: 0
+      requiredAmount: 1
+      targetID: Boss
+    reward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 500
+      attackReward: 100
+      hpReward: 500
+      titleReward: Slayer of Fang
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: 

@@ -162,6 +162,7 @@ public class ShopUI : BasePopup
         }
 
         playerInventory.AddItem(new ItemInstance(data));
+        QuestManager.Instance?.ReportProgressByObjectiveName("BuyItem", 1);
         ApplyFilter(currentFilterType);
         GameEvents.OnShowToast.Raise("Success purchase Item!");
     }
