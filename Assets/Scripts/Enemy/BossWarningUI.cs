@@ -3,11 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// <summary>
-/// Gắn vào root "BossWarning".
-/// Hiệu ứng: pulse alpha mượt + scale nhẹ, không blink cứng.
-/// WaveManager gọi SetVisible() để bật/tắt — coroutine chạy trên WaveManager.
-/// </summary>
 public class BossWarningUI : MonoBehaviour
 {
     [Header("Pulse Settings")]

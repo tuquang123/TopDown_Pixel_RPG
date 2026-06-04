@@ -59,6 +59,13 @@ public class WaveManager : Singleton<WaveManager>
     [Tooltip("Kéo object BossWarning trong scene vào đây.")]
     [SerializeField] private BossWarningUI bossWarningUI;
 
+    [Header("Wave Announcement UI")]
+    [Tooltip("Kéo object WaveAnnouncement trong scene vào đây.")]
+    [SerializeField] private WaveAnnouncementUI waveAnnouncementUI;
+
+    [Tooltip("Delay (giây) trước khi hiện thông báo wave (sau khi wave bắt đầu).")]
+    [SerializeField, Min(0f)] private float waveAnnounceDelay = 1f;
+    
     [Header("Spawn Distance")]
     [Tooltip("Quái không spawn trong bán kính này quanh player (tính theo tile).")]
     [SerializeField, Min(0f)] private float minSpawnDistanceFromPlayer = 4f;
@@ -457,6 +464,9 @@ public class WaveManager : Singleton<WaveManager>
         SaveProgress();
         OnWaveStarted?.Invoke(currentWave, currentStage, isBossWave);
 
+        if (waveAnnouncementUI != null)
+            StartCoroutine(DelayedAnnounce(currentWave, currentStage, isBossWave));
+
         StartCoroutine(OutOfBoundsChecker());
 
         if (isBossWave)
@@ -473,7 +483,11 @@ public class WaveManager : Singleton<WaveManager>
 
         StartCoroutine(SpawnWaveRoutine(count, interval));
     }
-
+    private IEnumerator DelayedAnnounce(int wave, int stage, bool isBossWave)
+    {
+        yield return new WaitForSeconds(waveAnnounceDelay);
+        waveAnnouncementUI.Show(wave, stage, isBossWave);
+    }
     private IEnumerator SpawnWaveRoutine(int count, float interval)
     {
         for (int i = 0; i < count; i++)
