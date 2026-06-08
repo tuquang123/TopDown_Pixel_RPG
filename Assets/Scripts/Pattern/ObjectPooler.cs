@@ -175,5 +175,49 @@ public class ObjectPooler : MonoBehaviour
     
         Debug.Log("Đã clear toàn bộ pool!");
     }
+  
+    public GameObject SpawnFromPool(string tag, Vector3 position, Quaternion rotation, System.Action<GameObject> beforeSpawn = null)
+    {
+        if (!poolMap.TryGetValue(tag, out var queue))
+        {
+            Debug.LogError($"Không tìm thấy pool '{tag}'!");
+            return null;
+        }
 
+        var config = configMap[tag];
+        GameObject objToSpawn = null;
+
+        foreach (var obj in queue)
+        {
+            if (obj == null) continue;
+            if (!obj.activeInHierarchy)
+            {
+                objToSpawn = obj;
+                break;
+            }
+        }
+
+        if (objToSpawn == null)
+        {
+            if (config.expandable)
+            {
+                objToSpawn = Instantiate(config.prefab, parentMap[tag]);
+                queue.Enqueue(objToSpawn);
+            }
+            else
+            {
+                Debug.LogWarning($"Pool '{tag}' đã hết object và không thể mở rộng!");
+                return null;
+            }
+        }
+
+        objToSpawn.transform.SetPositionAndRotation(position, rotation);
+        beforeSpawn?.Invoke(objToSpawn); // ← set flag TRƯỚC khi active + OnObjectSpawn
+        objToSpawn.SetActive(true);
+
+        if (objToSpawn.TryGetComponent<IPooledObject>(out var pooled))
+            pooled.OnObjectSpawn();
+
+        return objToSpawn;
+    }
 }

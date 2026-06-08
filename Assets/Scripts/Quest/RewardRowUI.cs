@@ -60,21 +60,15 @@ public class QuestRewardPopup : BasePopup
         if (quest.reward.gemReward > 0)
             SpawnRow(CommonReferent.Instance.iconGold, "Gem", $"+{quest.reward.gemReward}");
 
-        if (quest.reward.attackReward > 0)
-            SpawnRow(CommonReferent.Instance.iconGold, "Attack", $"+{quest.reward.attackReward}");
-
-        if (quest.reward.hpReward > 0)
-            SpawnRow(CommonReferent.Instance.iconGold, "HP", $"+{quest.reward.hpReward}");
-
-        if (!string.IsNullOrEmpty(quest.reward.titleReward))
-            SpawnRow(CommonReferent.Instance.iconGold, "Danh hiệu", quest.reward.titleReward);
-
         foreach (var itemID in quest.reward.itemIDs)
         {
             ItemData item = CommonReferent.Instance.itemDatabase.GetItemByID(itemID);
             if (item == null) continue;
             SpawnRow(item.icon, item.itemName, "x1");
         }
+
+        if (quest.reward.rewardItem != null && quest.reward.rewardItem.itemData != null)
+            SpawnRow(quest.reward.rewardItem.itemData.icon, quest.reward.rewardItem.itemData.itemName, "x1");
     }
 
     private void SpawnRow(Sprite icon, string label, string value)

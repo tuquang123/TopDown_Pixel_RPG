@@ -17,6 +17,10 @@ public class QuestRewardPopupUI : BasePopup
     [SerializeField] private GameObject gemSlot;
     [SerializeField] private TextMeshProUGUI gemAmountText;
 
+    [Header("EXP Slot")]
+    [SerializeField] private GameObject expSlot;
+    [SerializeField] private TextMeshProUGUI expAmountText;
+
     [Header("Button")]
     [SerializeField] private Button confirmButton;
 
@@ -42,9 +46,7 @@ public class QuestRewardPopupUI : BasePopup
             titleText.text = "Xin chúc mừng!";
 
         if (subtitleText != null)
-        {
             subtitleText.text = GetRewardSubtitle(reward, questName);
-        }
 
         bool hasGold = reward.goldReward > 0;
         if (goldSlot != null) goldSlot.SetActive(hasGold);
@@ -56,11 +58,15 @@ public class QuestRewardPopupUI : BasePopup
         if (hasGem && gemAmountText != null)
             gemAmountText.text = reward.gemReward.ToString();
 
+        bool hasExp = reward.experienceReward > 0;
+        if (expSlot != null) expSlot.SetActive(hasExp);
+        if (hasExp && expAmountText != null)
+            expAmountText.text = reward.experienceReward.ToString();
+
         base.Show();
         StopAllCoroutines();
         StartCoroutine(AnimateIn());
     }
-
     private string GetRewardSubtitle(QuestReward reward, string questName)
     {
         // Tạo danh sách phần thưởng
@@ -72,14 +78,24 @@ public class QuestRewardPopupUI : BasePopup
         if (reward.gemReward > 0)
             rewards.Add($"Ngọc quý x{reward.gemReward}");
 
-        if (reward.attackReward > 0)
-            rewards.Add($"Attack +{reward.attackReward}");
+        if (reward.experienceReward > 0)
+            rewards.Add($"EXP x{reward.experienceReward}");
 
-        if (reward.hpReward > 0)
-            rewards.Add($"HP +{reward.hpReward}");
+        if (reward.itemIDs != null)
+        {
+            foreach (var itemID in reward.itemIDs)
+            {
+                string itemName = itemID;
+                ItemData item = CommonReferent.Instance?.itemDatabase?.GetItemByID(itemID);
+                if (item != null)
+                    itemName = item.itemName;
 
-        if (!string.IsNullOrEmpty(reward.titleReward))
-            rewards.Add(reward.titleReward);
+                rewards.Add($"{itemName} x1");
+            }
+        }
+
+        if (reward.rewardItem != null && reward.rewardItem.itemData != null)
+            rewards.Add($"{reward.rewardItem.itemData.itemName} x1");
 
         string rewardText = string.Join(" & ", rewards);
 

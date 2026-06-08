@@ -39,9 +39,6 @@ public class QuestReward
     public int experienceReward;
     public int goldReward;
     public int gemReward;
-    public int attackReward;
-    public int hpReward;
-    public string titleReward;
     public List<string> itemIDs;
     public ItemInstance rewardItem; // item nhận được, để null nếu không có
 }
