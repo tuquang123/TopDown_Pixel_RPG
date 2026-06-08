@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8200690810575141942}
   - component: {fileID: 3618146786890850661}
   - component: {fileID: 947561247961398324}
+  - component: {fileID: 5956684299342192694}
   m_Layer: 0
   m_Name: GoldItem
   m_TagString: Untagged
@@ -103,12 +104,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currencyType: 0
   value: 5
+  coinScale: 0.5
+  burstCount: 5
+  scatterRadius: 0.45
+  scatterDuration: 0.18
+  flyDelay: 0.15
   flyDuration: 0.3
-  autoCollectDelay: 0.5
-  collectDelayAfterReady: 0.2
-  attractRange: 3
-  pickupDistance: 0.25
-  attractSpeed: 10
+  arcHeight: 0.6
+  isBurstCoin: 0
 --- !u!96 &947561247961398324
 TrailRenderer:
   serializedVersion: 3
@@ -225,3 +228,49 @@ TrailRenderer:
   m_Autodestruct: 1
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!61 &5956684299342192694
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4356269681339680784}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.01429683, y: -0.00000023841858}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.71, y: 0.7}
+    newSize: {x: 0.15, y: 0.13}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 2.778246, y: 2.8540258}
+  m_EdgeRadius: 0

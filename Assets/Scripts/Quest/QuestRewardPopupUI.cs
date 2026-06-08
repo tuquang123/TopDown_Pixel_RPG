@@ -17,6 +17,10 @@ public class QuestRewardPopupUI : BasePopup
     [SerializeField] private GameObject gemSlot;
     [SerializeField] private TextMeshProUGUI gemAmountText;
 
+    [Header("EXP Slot")]
+    [SerializeField] private GameObject expSlot;
+    [SerializeField] private TextMeshProUGUI expAmountText;
+
     [Header("Button")]
     [SerializeField] private Button confirmButton;
 
@@ -42,9 +46,7 @@ public class QuestRewardPopupUI : BasePopup
             titleText.text = "Xin chúc mừng!";
 
         if (subtitleText != null)
-        {
             subtitleText.text = GetRewardSubtitle(reward, questName);
-        }
 
         bool hasGold = reward.goldReward > 0;
         if (goldSlot != null) goldSlot.SetActive(hasGold);
@@ -56,11 +58,15 @@ public class QuestRewardPopupUI : BasePopup
         if (hasGem && gemAmountText != null)
             gemAmountText.text = reward.gemReward.ToString();
 
+        bool hasExp = reward.experienceReward > 0;
+        if (expSlot != null) expSlot.SetActive(hasExp);
+        if (hasExp && expAmountText != null)
+            expAmountText.text = reward.experienceReward.ToString();
+
         base.Show();
         StopAllCoroutines();
         StartCoroutine(AnimateIn());
     }
-
     private string GetRewardSubtitle(QuestReward reward, string questName)
     {
         // Tạo danh sách phần thưởng

@@ -5,84 +5,92 @@ public class GoldItem : MonoBehaviour, IPooledObject
 {
     public int value = 1;
 
-    [Header("Timings")]
-    public float flyDuration = 0.3f;               // thời gian bay ra ban đầu
-    public float autoCollectDelay = 0.5f;          // thời gian đứng yên trước khi xét hút
-    public float collectDelayAfterReady = 0.2f;    // delay thêm trước khi hút
+    [Header("Visual")]
+    public float goldScale = 0.5f;
 
-    [Header("Collect Settings")]
-    public float attractRange = 3f;
-    public float pickupDistance = 0.25f;
-    public float attractSpeed = 10f;
+    [Header("Spawn Effect")]
+    public float bounceDuration = 0.15f;
+    public float bounceDistance = 0.2f;
 
-    private Transform player;
-    private Tween flyTween;
+    [Header("Auto Collect")]
+    public float autoCollectDelay = 0.4f;
 
-    private float spawnTime;
-    private float readyTime;
+    [Header("Fly To UI")]
+    public float flyToUIDuration = 0.45f;
 
-    private bool isReadyToCollect = false;
-    private bool isCollecting = false;
+    private Tween moveTween;
+    private Tween autoCollectTween;
+    private bool isFlyingToUI;
 
     public void OnObjectSpawn()
     {
-        if (player == null)
-            player = PlayerController.Instance?.transform;
+        isFlyingToUI = false;
 
-        isReadyToCollect = false;
-        isCollecting = false;
-        spawnTime = Time.time;
+        moveTween?.Kill();
+        autoCollectTween?.Kill();
 
-        // Kill tween bay nếu có
-        flyTween?.Kill();
+        transform.localScale = Vector3.one * goldScale;
+        transform.rotation = Quaternion.identity;
 
-        // Vàng bay nhẹ ra hướng ngẫu nhiên
-        Vector3 offset = new Vector3(Random.Range(-0.5f, 0.5f), Random.Range(0.2f, 0.6f), 0f);
-        Vector3 targetPos = transform.position + offset;
+        Vector3 startPos = transform.position;
 
-        flyTween = transform.DOMove(targetPos, flyDuration)
+        Vector2 randomDir = Random.insideUnitCircle.normalized;
+
+        Vector3 scatterOffset =
+            new Vector3(
+                randomDir.x,
+                randomDir.y,
+                0f
+            ) * Random.Range(0.05f, bounceDistance);
+
+        moveTween = transform
+            .DOMove(startPos + scatterOffset, bounceDuration)
             .SetEase(Ease.OutQuad);
+
+        autoCollectTween = DOVirtual.DelayedCall(
+            autoCollectDelay,
+            () =>
+            {
+                if (gameObject.activeInHierarchy)
+                    StartFlyToUI();
+            });
     }
 
-    private void Update()
+    private void StartFlyToUI()
     {
-        if (player == null) return;
+        if (isFlyingToUI)
+            return;
 
-        float timeSinceSpawn = Time.time - spawnTime;
+        isFlyingToUI = true;
 
-        // Sau thời gian delay, kiểm tra khoảng cách để chuẩn bị hút
-        if (!isReadyToCollect && timeSinceSpawn >= autoCollectDelay)
-        {
-            if (Vector3.Distance(transform.position, player.position) <= attractRange)
-            {
-                isReadyToCollect = true;
-                readyTime = Time.time;
-            }
-        }
+        moveTween?.Kill();
+        autoCollectTween?.Kill();
 
-        // Sau delay hút → bắt đầu hút
-        if (isReadyToCollect && !isCollecting && Time.time - readyTime >= collectDelayAfterReady)
-        {
-            isCollecting = true;
-        }
+        Vector3 target = CurrencyUI.Instance.GoldTargetWorldPos;
 
-        // Đang hút → bay về theo vị trí sống của Player
-        if (isCollecting)
-        {
-            Vector3 target = player.position;
-            transform.position = Vector3.MoveTowards(transform.position, target, attractSpeed * Time.deltaTime);
-
-            if (Vector3.Distance(transform.position, target) <= pickupDistance)
-            {
-                Collect();
-            }
-        }
+        moveTween = transform
+            .DOMove(
+                target,
+                flyToUIDuration + Random.Range(-0.05f, 0.05f)
+            )
+            .SetEase(Ease.InQuad)
+            .OnComplete(Collect);
     }
 
     private void Collect()
     {
         CurrencyManager.Instance.AddGold(value);
-        FloatingTextSpawner.Instance.SpawnText("+" + value, transform.position, Color.yellow);
+
+        CurrencyUI.Instance.PlayGoldCollectEffect();
+
+        AudioManager.Instance.PlaySFX("PickUp");
+
         gameObject.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        moveTween?.Kill();
+        autoCollectTween?.Kill();
     }
 }

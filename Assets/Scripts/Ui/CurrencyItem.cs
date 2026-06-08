@@ -1,11 +1,7 @@
 ﻿using UnityEngine;
 using DG.Tweening;
 
-public enum CurrencyType
-{
-    Gold,
-    Gem
-}
+public enum CurrencyType { Gold, Gem }
 
 public class CurrencyItem : MonoBehaviour, IPooledObject
 {
@@ -15,117 +11,151 @@ public class CurrencyItem : MonoBehaviour, IPooledObject
 
     [Header("Visual")]
     [Range(0.1f, 2f)]
-    public float coinScale = 0.5f; // 50% kích thước
+    public float coinScale = 0.5f;
 
-    [Header("Spawn Effect")]
-    public float bounceDuration = 0.25f;
-    public float bounceDistance = 1.2f;
-
-    [Header("Auto Collect")]
-    public float autoCollectDelay = 0.6f;
+    [Header("Burst")]
+    public int burstCount = 5;
+    public float scatterRadius = 0.45f;
+    public float scatterDuration = 0.18f;
+    public float flyDelay = 0.1f;
 
     [Header("Fly To UI")]
-    public float flyToUIDuration = 0.7f;
-    public float minArcHeight = 0.8f;
-    public float maxArcHeight = 2.0f;
-    public float arcRandomX = 1.2f;
+    public float flyDuration = 0.4f;
+    public float arcHeight = 0.5f;
 
-    private Tween flyTween;
-    private bool isFlyingToUI;
+    // Set bởi beforeSpawn trước khi OnObjectSpawn chạy
+    [HideInInspector] public bool isBurstCoin = false;
+
+    private Tween moveTween;
+    private Tween delayTween;
+    private bool isCollecting;
 
     public void OnObjectSpawn()
     {
-        isFlyingToUI = false;
+        isCollecting = false;
+        moveTween?.Kill();
+        delayTween?.Kill();
 
-        flyTween?.Kill();
-
-        // Giảm kích thước coin xuống 50%
         transform.localScale = Vector3.one * coinScale;
         transform.rotation = Quaternion.identity;
 
+        if (!isBurstCoin) return; // coin gốc chờ trigger
+
+        // ── Burst coin: scatter ra → delay → fly lên UI ──
         Vector3 startPos = transform.position;
+        float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+        float dist  = Random.Range(scatterRadius * 0.4f, scatterRadius);
 
-        Vector2 randomDir = Random.insideUnitCircle.normalized;
+        Vector3 scatterTarget = startPos + new Vector3(
+            Mathf.Cos(angle),
+            Mathf.Sin(angle) * 0.7f,
+            0f) * dist;
 
-        Vector3 scatterOffset =
-            new Vector3(
-                randomDir.x,
-                Mathf.Abs(randomDir.y) + 0.4f,
-                0f
-            ) * Random.Range(0.5f, bounceDistance);
+        // Pop scale
+        transform.localScale = Vector3.zero;
+        transform.DOScale(coinScale, scatterDuration * 0.5f).SetEase(Ease.OutBack);
 
-        transform.DOMove(startPos + scatterOffset, bounceDuration)
+        // Di chuyển tỏa ra
+        moveTween = transform
+            .DOMove(scatterTarget, scatterDuration)
             .SetEase(Ease.OutQuad);
 
-        DOVirtual.DelayedCall(
-            autoCollectDelay + Random.Range(0f, 0.15f),
-            () =>
-            {
-                if (gameObject.activeInHierarchy)
-                    StartFlyToUI();
-            });
+        // Sau khi scatter xong → bay lên UI
+        delayTween = DOVirtual.DelayedCall(
+            scatterDuration + flyDelay,
+            () => { if (gameObject.activeInHierarchy) FlyToUI(); });
     }
 
-    private void StartFlyToUI()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (isFlyingToUI)
-            return;
+        if (isBurstCoin) return;  // burst coin tự handle, không trigger
+        if (isCollecting) return;
+        if (!other.CompareTag("Player")) return;
 
-        isFlyingToUI = true;
-
-        flyTween?.Kill();
-
-        Vector3 start = transform.position;
-
-        Vector3 target =
-            currencyType == CurrencyType.Gold
-                ? CurrencyUI.Instance.GoldTargetWorldPos
-                : CurrencyUI.Instance.GemTargetWorldPos;
-
-        float randomX = Random.Range(-arcRandomX, arcRandomX);
-        float randomY = Random.Range(minArcHeight, maxArcHeight);
-
-        Vector3 mid =
-            (start + target) * 0.5f +
-            new Vector3(randomX, randomY, 0f);
-
-        flyTween = transform
-            .DOPath(
-                new Vector3[]
-                {
-                    start,
-                    mid,
-                    target
-                },
-                flyToUIDuration + Random.Range(-0.1f, 0.15f),
-                PathType.CatmullRom
-            )
-            .SetEase(Ease.InQuad)
-            .OnComplete(Collect);
+        isCollecting = true;
+        AddCurrency();
+        SpawnBurstCoins();
+        gameObject.SetActive(false); // coin gốc ẩn ngay
     }
 
-    private void Collect()
+    private void SpawnBurstCoins()
+    {
+        string tag = gameObject.name.Replace("(Clone)", "").Trim();
+
+        for (int i = 0; i < burstCount; i++)
+        {
+            ObjectPooler.Instance.SpawnFromPool(
+                tag,
+                transform.position,
+                Quaternion.identity,
+                obj =>
+                {
+                    if (obj.TryGetComponent<CurrencyItem>(out var coin))
+                        coin.isBurstCoin = true;
+                });
+        }
+    }
+
+    private void FlyToUI()
+    {
+        moveTween?.Kill();
+
+        Vector3 start  = transform.position;
+        Vector3 target = currencyType == CurrencyType.Gold
+            ? CurrencyUI.Instance.GoldTargetWorldPos
+            : CurrencyUI.Instance.GemTargetWorldPos;
+
+        Vector3 mid = (start + target) * 0.5f
+            + Vector3.up   * Random.Range(arcHeight * 0.5f, arcHeight)
+            + Vector3.right * Random.Range(-0.2f, 0.2f);
+
+        float duration = flyDuration + Random.Range(-0.06f, 0.06f);
+
+        transform.DOScale(0f, duration).SetEase(Ease.InQuad);
+
+        moveTween = transform
+            .DOPath(
+                new Vector3[] { start, mid, target },
+                duration,
+                PathType.CatmullRom)
+            .SetEase(Ease.InQuad)
+            .OnComplete(OnArriveUI);
+    }
+
+    private void AddCurrency()
     {
         switch (currencyType)
         {
             case CurrencyType.Gold:
                 CurrencyManager.Instance.AddGold(value);
-                CurrencyUI.Instance.PlayGoldCollectEffect();
                 break;
-
             case CurrencyType.Gem:
                 CurrencyManager.Instance.AddGems(value);
+                break;
+        }
+    }
+
+    private void OnArriveUI()
+    {
+        switch (currencyType)
+        {
+            case CurrencyType.Gold:
+                CurrencyUI.Instance.PlayGoldCollectEffect();
+                break;
+            case CurrencyType.Gem:
                 CurrencyUI.Instance.PlayGemCollectEffect();
                 break;
         }
 
         AudioManager.Instance.PlaySFX("PickUp");
-
         gameObject.SetActive(false);
     }
 
     private void OnDisable()
     {
-        flyTween?.Kill();
+        moveTween?.Kill();
+        delayTween?.Kill();
+        isBurstCoin  = false; // reset sạch khi về pool
+        isCollecting = false;
     }
 }
