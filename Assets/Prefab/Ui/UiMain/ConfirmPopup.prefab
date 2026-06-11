@@ -155,10 +155,10 @@ RectTransform:
   - {fileID: 5571824650692898315}
   m_Father: {fileID: 2649909296731711319}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 66.97058}
-  m_SizeDelta: {x: 1193.786, y: 2483.7935}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 4.517, y: 51.796}
+  m_SizeDelta: {x: 246.561, y: 1514.49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7059342102523168253
 CanvasRenderer:
@@ -1130,6 +1130,7 @@ GameObject:
   - component: {fileID: 8852129146065726509}
   - component: {fileID: 6882316724955462240}
   - component: {fileID: 6123839258030252458}
+  - component: {fileID: 4881285611678996708}
   m_Layer: 5
   m_Name: ConfirmPopup
   m_TagString: Untagged
@@ -1217,3 +1218,15 @@ MonoBehaviour:
   titleText: {fileID: 7557093399723289784}
   messageText: {fileID: 2884678044633833148}
   backgroundButton: {fileID: 3325489982054977040}
+--- !u!225 &4881285611678996708
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9184380358419500052}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

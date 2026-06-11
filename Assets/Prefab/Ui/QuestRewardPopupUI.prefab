@@ -594,8 +594,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0000054836, y: 1.5262}
-  m_SizeDelta: {x: 166.23, y: 163.8}
+  m_AnchoredPosition: {x: 0.558, y: 0.8472}
+  m_SizeDelta: {x: 139.805, y: 134.31}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1670292009994507320
 CanvasRenderer:
@@ -625,7 +625,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -199644854353079308, guid: 36b1b2a60a181d04590bdd35295ac922, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3b6b568ee5936411984359316412b01d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1176,6 +1176,8 @@ MonoBehaviour:
   goldAmountText: {fileID: 5378500725491677175}
   gemSlot: {fileID: 295341966221775083}
   gemAmountText: {fileID: 6412625255732133879}
+  expSlot: {fileID: 0}
+  expAmountText: {fileID: 0}
   confirmButton: {fileID: 4164934433882419199}
   animDuration: 0.35
 --- !u!1 &8006398683642701080

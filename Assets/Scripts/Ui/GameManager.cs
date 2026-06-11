@@ -72,7 +72,13 @@ public class GameManager : MonoBehaviour
         );
 
         if (loaded)
+        {
             c.playerLevelUI.RefreshUI();
+
+            // Refresh lock state sau khi load xong
+            foreach (var btn in FindObjectsOfType<FeatureButtonUI>())
+                btn.RefreshLockState();
+        }
     }
 
     #endregion

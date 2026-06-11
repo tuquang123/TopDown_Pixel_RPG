@@ -44,18 +44,13 @@ public class PlayerLevel : MonoBehaviour
         playerStats.skillPoints = skillPoints;
         playerStats.CalculatePower();
         QuestManager.Instance.ReportLevelUp(newLevel);
-
         Debug.Log($"Level Up → Level {newLevel}");
 
-        // === DÙNG UIMANAGER ĐỂ MỞ POPUP ===
         if (UIManager.Instance != null)
         {
             var popup = UIManager.Instance.ShowPopupByType(PopupType.LevelUpSkill) as LevelUpSkillPopup;
-        
             if (popup != null)
-            {
                 popup.ShowLevelUpPopup(newLevel);
-            }
         }
     }
     private void GainExp(float amount)

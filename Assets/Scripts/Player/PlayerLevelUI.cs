@@ -13,6 +13,7 @@ public class PlayerLevelUI : MonoBehaviour
         {
             var system = playerLevel.levelSystem;
             system.OnLevelUp += UpdateLevelText;
+            system.OnLevelUp += OnLevelUp;
             system.OnExpChanged += UpdateExpText;
 
             UpdateLevelText(system.level);
@@ -26,9 +27,17 @@ public class PlayerLevelUI : MonoBehaviour
         {
             var system = playerLevel.levelSystem;
             system.OnLevelUp -= UpdateLevelText;
+            system.OnLevelUp -= OnLevelUp;
             system.OnExpChanged -= UpdateExpText;
         }
     }
+
+    private void OnLevelUp(int newLevel)
+    {
+        foreach (var btn in FindObjectsOfType<FeatureButtonUI>())
+            btn.RefreshLockState();
+    }
+
     public void RefreshUI()
     {
         if (playerLevel == null) return;
@@ -36,7 +45,7 @@ public class PlayerLevelUI : MonoBehaviour
         UpdateLevelText(system.level);
         UpdateExpText(system.exp, system.ExpRequired);
     }
-    
+
     private void UpdateLevelText(int level)
     {
         levelText.text = $"{level}";
@@ -46,5 +55,4 @@ public class PlayerLevelUI : MonoBehaviour
     {
         expText.text = $"EXP: {Mathf.FloorToInt(current)} / {Mathf.FloorToInt(required)}";
     }
-
 }

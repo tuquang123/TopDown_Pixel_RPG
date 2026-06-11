@@ -15,6 +15,25 @@ MonoBehaviour:
   allQuests:
   - questID: NV1
     questName: "T\xE2n Binh Ra Tr\u1EADn"
+    description: "Ti\xEAu di\u1EC7t 5 Goblin"
+    objectives:
+    - objectiveName: Goblin
+      type: 0
+      requiredAmount: 5
+      targetID: Goblin
+    reward:
+      experienceReward: 30
+      goldReward: 150
+      gemReward: 0
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV2
+    questName: "Ho\xE0n th\xE0nh th\u1EED th\xE1ch "
     description: "V\u01B0\u1EE3t Stage 1"
     objectives:
     - objectiveName: Stage
@@ -28,25 +47,6 @@ MonoBehaviour:
       itemIDs: []
       rewardItem:
         itemData: {fileID: 11400000, guid: 05286bc7c7604724f885df8b699f40cf, type: 2}
-        isLocked: 0
-        upgradeLevel: 0
-        instanceID: 0
-    turnInNPCName: NPC_0
-  - questID: NV2
-    questName: "Di\u1EC7t Goblin"
-    description: "Ti\xEAu di\u1EC7t 10 Goblin"
-    objectives:
-    - objectiveName: Goblin
-      type: 0
-      requiredAmount: 10
-      targetID: Goblin
-    reward:
-      experienceReward: 30
-      goldReward: 150
-      gemReward: 0
-      itemIDs: []
-      rewardItem:
-        itemData: {fileID: 0}
         isLocked: 0
         upgradeLevel: 0
         instanceID: 0
