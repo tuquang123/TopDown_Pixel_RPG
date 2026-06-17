@@ -96,7 +96,7 @@ public class QuestUI : MonoBehaviour
             if (qp.quest.reward.itemIDs != null)
             {
                 foreach (var item in qp.quest.reward.itemIDs)
-                    text += $"â€¢ {item}\n";
+                    text += $"- {item}\n";
             }
 
 
@@ -105,7 +105,7 @@ public class QuestUI : MonoBehaviour
         }
 
         if (readyToTurnIn)
-            text += "\n<color=yellow>HoĂ n thĂ nh! Nháº¥n Claim Ä‘á»ƒ nháº­n thÆ°á»Ÿng.</color>";
+            text += "\n<color=yellow>Completed! Press Claim to receive your reward.</color>";
 
         questProgressText.text = text;
 
@@ -116,7 +116,7 @@ public class QuestUI : MonoBehaviour
     public void Clear()
     {
         currentQuest = null;
-        questProgressText.text = "KhĂ´ng cĂ³ nhiá»‡m vá»¥\nHĂ£y Ä‘i tĂ¬m NPC";
+        questProgressText.text = "No active quest\nFind an NPC for a quest";
 
         if (claimButton != null)
             claimButton.gameObject.SetActive(false);
