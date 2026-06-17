@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allQuests:
   - questID: NV1
-    questName: "T\xE2n Binh Ra Tr\u1EADn"
-    description: "Ti\xEAu di\u1EC7t 5 Goblin"
+    questName: "Rookie Goes to Battle"
+    description: "Defeat 5 Goblins"
     objectives:
     - objectiveName: Goblin
       type: 0
@@ -33,8 +33,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV2
-    questName: "Ho\xE0n th\xE0nh th\u1EED th\xE1ch "
-    description: "V\u01B0\u1EE3t Stage 1"
+    questName: "Complete the Challenge"
+    description: "Clear Stage 1"
     objectives:
     - objectiveName: Stage
       type: 4
@@ -52,8 +52,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV3
-    questName: "Thu Th\u1EADp Chi\u1EBFn L\u1EE3i Ph\u1EA9m"
-    description: "Nh\u1EADn t\u1ED5ng c\u1ED9ng 100 Gold"
+    questName: "Collect Battle Spoils"
+    description: "Collect a total of 100 Gold"
     objectives:
     - objectiveName: Gold
       type: 1
@@ -71,8 +71,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV4
-    questName: "Trang B\u1ECB \u0110\u1EA7u Ti\xEAn"
-    description: "Mua 1 trang b\u1ECB b\u1EA5t k\u1EF3"
+    questName: "First Equipment"
+    description: "Buy any 1 equipment item"
     objectives:
     - objectiveName: BuyItem
       type: 4
@@ -90,8 +90,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV5
-    questName: "S\u1EE9c M\u1EA1nh Gia T\u0103ng"
-    description: "Trang b\u1ECB 1 m\xF3n \u0111\u1ED3"
+    questName: "Growing Power"
+    description: "Equip 1 item"
     objectives:
     - objectiveName: EquipItem
       type: 4
@@ -109,8 +109,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV6
-    questName: "K\u1EBB S\u0103n Skeleton"
-    description: "Ti\xEAu di\u1EC7t 10 Skeleton"
+    questName: "Skeleton Hunter"
+    description: "Defeat 10 Skeletons"
     objectives:
     - objectiveName: Skeleton
       type: 0
@@ -128,8 +128,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV7
-    questName: "Nh\xE0 N\xE2ng C\u1EA5p"
-    description: "N\xE2ng c\u1EA5p trang b\u1ECB 3 l\u1EA7n"
+    questName: "The Upgrader"
+    description: "Upgrade equipment 3 times"
     objectives:
     - objectiveName: UpgradeItem
       type: 4
@@ -147,8 +147,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV8
-    questName: "K\u1EBB Chinh Ph\u1EE5c"
-    description: "Ho\xE0n th\xE0nh 5 Stage"
+    questName: "Conqueror"
+    description: "Complete 5 Stages"
     objectives:
     - objectiveName: Stage
       type: 4
@@ -166,8 +166,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV9
-    questName: "Gacha T\xE2n Th\u1EE7"
-    description: "Quay Gacha 5 l\u1EA7n"
+    questName: "Rookie Gacha"
+    description: "Roll Gacha 5 times"
     objectives:
     - objectiveName: Gacha
       type: 4
@@ -185,8 +185,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV10
-    questName: "K\u1EBB H\u1EE7y Di\u1EC7t Gravok"
-    description: "Ti\xEAu di\u1EC7t 15 Gravok"
+    questName: "Gravok Destroyer"
+    description: "Defeat 15 Gravok"
     objectives:
     - objectiveName: Gravok
       type: 0
@@ -204,8 +204,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV11
-    questName: "Kho B\xE1u Nh\u1ECF"
-    description: "T\xEDch l\u0169y 50 Gem"
+    questName: "Small Treasure"
+    description: "Collect 50 Gems"
     objectives:
     - objectiveName: Gem
       type: 1
@@ -223,8 +223,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV12
-    questName: "V\u0169 Kh\xED C\u01B0\u1EDDng H\xF3a"
-    description: "N\xE2ng 1 trang b\u1ECB l\xEAn +10"
+    questName: "Enhanced Weapon"
+    description: "Upgrade 1 equipment item to +10"
     objectives:
     - objectiveName: UpgradeItemLevel
       type: 4
@@ -242,8 +242,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV13
-    questName: "Th\u1EE3 S\u0103n Silentmaw"
-    description: "Ti\xEAu di\u1EC7t 10 Silentmaw"
+    questName: "Silentmaw Hunter"
+    description: "Defeat 10 Silentmaw"
     objectives:
     - objectiveName: Silentmaw
       type: 0
@@ -261,8 +261,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV14
-    questName: "Th\u1EED Th\xE1ch Boss"
-    description: "\u0110\xE1nh b\u1EA1i Boss 1"
+    questName: "Boss Challenge"
+    description: "Defeat Boss 1"
     objectives:
     - objectiveName: Boss
       type: 0
@@ -280,8 +280,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV15
-    questName: "B\u1ED9 S\u01B0u T\u1EADp"
-    description: "S\u1EDF h\u1EEFu 5 trang b\u1ECB kh\xE1c nhau"
+    questName: "The Collection"
+    description: "Own 5 different equipment items"
     objectives:
     - objectiveName: EquipmentOwned
       type: 4
@@ -299,8 +299,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV16
-    questName: "Th\u1EE3 S\u0103n Ravageron"
-    description: "Ti\xEAu di\u1EC7t 20 Ravageron"
+    questName: "Ravageron Hunter"
+    description: "Defeat 20 Ravageron"
     objectives:
     - objectiveName: Ravageron
       type: 0
@@ -318,8 +318,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV17
-    questName: "Ng\u01B0\u1EDDi May M\u1EAFn"
-    description: "Quay Gacha 20 l\u1EA7n"
+    questName: "Lucky One"
+    description: "Roll Gacha 20 times"
     objectives:
     - objectiveName: Gacha
       type: 4
@@ -338,8 +338,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV18
-    questName: "Fargrider Kh\xF4ng Th\u1EC3 C\u1EA3n"
-    description: "Ti\xEAu di\u1EC7t 25 Fargrider"
+    questName: "Unstoppable Fargrider"
+    description: "Defeat 25 Fargrider"
     objectives:
     - objectiveName: Fargrider
       type: 0
@@ -357,8 +357,8 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV19
-    questName: "Ch\xFAa T\u1EC3 Cu\u1ED1i C\xF9ng"
-    description: "\u0110\xE1nh b\u1EA1i Boss 2"
+    questName: "Final Lord"
+    description: "Defeat Boss 2"
     objectives:
     - objectiveName: Boss
       type: 0

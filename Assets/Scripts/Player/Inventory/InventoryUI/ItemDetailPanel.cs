@@ -161,15 +161,15 @@ public class ItemDetailPanel : MonoBehaviour
             switch (data.weaponCategory)
             {
                 case WeaponCategory.Melee:
-                    weaponCategoryText.text = "Cận chiến";
+                    weaponCategoryText.text = "Melee";
                     weaponCategoryText.color = Color.white;
                     break;
                 case WeaponCategory.Ranged:
-                    weaponCategoryText.text = "Đánh xa";
+                    weaponCategoryText.text = "Ranged";
                     weaponCategoryText.color = new Color(0.6f, 0.8f, 1f);
                     break;
                 case WeaponCategory.HeavyMelee:
-                    weaponCategoryText.text = "Cận nặng";
+                    weaponCategoryText.text = "Heavy Melee";
                     weaponCategoryText.color = new Color(1f, 0.7f, 0.4f);
                     break;
             }
@@ -187,7 +187,7 @@ public class ItemDetailPanel : MonoBehaviour
 
         if (isEquipped)
         {
-            // hiển thị stat sẽ mất khi tháo
+            // show the stat that will be lost if unequipped
             statDisplayComponent.SetUnequipStats(currentItem);
         }
         else
@@ -210,7 +210,7 @@ public class ItemDetailPanel : MonoBehaviour
 
         if (data.itemType == ItemType.Consumable)
         {
-            equipButton.GetComponentInChildren<TMP_Text>().text = "Dùng";
+            equipButton.GetComponentInChildren<TMP_Text>().text = "Equip";
             equipButton.onClick.AddListener(ConsumeItem);
 
             upgradeButton.gameObject.SetActive(false);
@@ -218,19 +218,19 @@ public class ItemDetailPanel : MonoBehaviour
         }
         else
         {
-            equipButton.GetComponentInChildren<TMP_Text>().text = "Trang bị";
+            equipButton.GetComponentInChildren<TMP_Text>().text = "Equip";
             equipButton.onClick.AddListener(EquipItem);
 
             upgradeButton.gameObject.SetActive(!isEquipped);
             sellButton.gameObject.SetActive(!isEquipped);
 
             int upgradeCost = data.baseUpgradeCost * (item.upgradeLevel + 1);
-            upgradeCostText.text = $"Nâng cấp ({upgradeCost} <sprite name=\"gold_icon\">)";
+            upgradeCostText.text = $"Upgrade ({upgradeCost} <sprite name=\"gold_icon\">)";
             upgradeButton.onClick.AddListener(ShowUpgradeConfirm);
         }
 
         int sellPrice = CalculateSellPrice(item);
-        sellPriceText.text = $"Bán ({sellPrice} <sprite name=\"gold_icon\">)";
+        sellPriceText.text = $"Sell ({sellPrice} <sprite name=\"gold_icon\">)";
         sellButton.onClick.AddListener(ShowSellConfirm);
         lockButton.onClick.RemoveAllListeners();
         lockButton.onClick.AddListener(ToggleLock);
@@ -270,9 +270,9 @@ public class ItemDetailPanel : MonoBehaviour
         string text;
 
         if (diff > 0)
-            text = $"<color=#00FF00>+{diff:N0} Chiến lực</color>";
+            text = $"<color=#00FF00>+{diff:N0} Power</color>";
         else
-            text = $"<color=#FF4D4D>{diff:N0} Chiến lực</color>";
+            text = $"<color=#FF4D4D>{diff:N0} Power</color>";
 
         GameEvents.OnShowToast.Raise(text);
     }
@@ -292,13 +292,13 @@ public class ItemDetailPanel : MonoBehaviour
 
         if (!CurrencyManager.Instance.SpendGold(cost))
         {
-            GameEvents.OnShowToast.Raise("Không đủ vàng");
+            GameEvents.OnShowToast.Raise("Not enough Gold");
             return;
         }
 
         currentItem.upgradeLevel++;
         QuestManager.Instance?.ReportItemUpgrade(currentItem.upgradeLevel);
-        GameEvents.OnShowToast.Raise("Nâng cấp thành công!");
+        GameEvents.OnShowToast.Raise("Upgrade successful!");
         RefreshUI();
     }
 
@@ -310,7 +310,7 @@ public class ItemDetailPanel : MonoBehaviour
         inventoryUI.Inventory.RemoveItem(currentItem);
         inventoryUI.UpdateInventoryUI();
 
-        GameEvents.OnShowToast.Raise($"Đã bán {currentItem.itemData.itemName}");
+        GameEvents.OnShowToast.Raise($"Sold {currentItem.itemData.itemName}");
         Hide();
     }
 
@@ -329,10 +329,10 @@ public class ItemDetailPanel : MonoBehaviour
             && popup is ConfirmPopup confirm)
         {
             confirm.Show(
-                "Nâng cấp",
+                "Upgrade",
                 $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel - 1} → +{next - 1}\n" +
                 statText +
-                $"\n\nGiá: {cost} vàng",
+                $"\n\nPrice: {cost} Gold",
                 UpgradeItem
             );
         }
@@ -414,8 +414,8 @@ public class ItemDetailPanel : MonoBehaviour
             && popup is ConfirmPopup confirm)
         {
             confirm.Show(
-                "Xác nhận bán",
-                $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel}\nGiá: {price} vàng",
+                "Confirm Sale",
+                $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel}\nPrice: {price} Gold",
                 SellItem
             );
         }
@@ -444,7 +444,7 @@ public class ItemDetailPanel : MonoBehaviour
     {
         currentItem.isLocked = !currentItem.isLocked;
 
-        GameEvents.OnShowToast.Raise(currentItem.isLocked ? "Đã khóa vật phẩm" : "Đã mở khóa vật phẩm");
+        GameEvents.OnShowToast.Raise("Action failed");
 
         RefreshLockVisual();
         inventoryUI.RefreshCurrentSelectedItemLock();

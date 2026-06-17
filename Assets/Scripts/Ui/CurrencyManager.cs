@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -36,7 +36,7 @@ public class CurrencyManager : MonoBehaviour
         OnGoldChanged?.Invoke(Gold);
         QuestManager.Instance?.ReportProgressByObjectiveName("Gold", amount);
         SaveCurrency();
-        Debug.Log($"Đã thêm {amount} vàng. Tổng vàng: {Gold}");
+        Debug.Log($"Added {amount} Gold. Total Gold: {Gold}");
     }
 
     public void AddGems(int amount)
@@ -45,20 +45,20 @@ public class CurrencyManager : MonoBehaviour
         OnGemsChanged?.Invoke(Gems);
         QuestManager.Instance?.ReportObjectiveValue("Gem", Gems);
         SaveCurrency();
-        Debug.Log($"Đã thêm {amount} ngọc. Tổng ngọc: {Gems}");
+        Debug.Log($"Added {amount} Gems. Total Gems: {Gems}");
     }
 
     public bool SpendGold(int amount)
     {
         if (Gold < amount)
         {
-            Debug.Log($"Không đủ vàng để tiêu {amount}. Tổng vàng hiện tại: {Gold}");
+            Debug.Log($"Not enough Gold to spend {amount}. Current Gold: {Gold}");
             return false;
         }
         Gold -= amount;
         OnGoldChanged?.Invoke(Gold);
         SaveCurrency();
-        Debug.Log($"Đã tiêu {amount} vàng. Tổng vàng: {Gold}");
+        Debug.Log($"Spent {amount} Gold. Total Gold: {Gold}");
         return true;
     }
 
@@ -66,13 +66,13 @@ public class CurrencyManager : MonoBehaviour
     {
         if (Gems < amount)
         {
-            Debug.Log($"Không đủ ngọc để tiêu {amount}. Tổng ngọc hiện tại: {Gems}");
+            Debug.Log($"Not enough Gems to spend {amount}. Current Gems: {Gems}");
             return false;
         }
         Gems -= amount;
         OnGemsChanged?.Invoke(Gems);
         SaveCurrency();
-        Debug.Log($"Đã tiêu {amount} ngọc. Tổng ngọc: {Gems}");
+        Debug.Log($"Spent {amount} Gems. Total Gems: {Gems}");
         return true;
     }
 

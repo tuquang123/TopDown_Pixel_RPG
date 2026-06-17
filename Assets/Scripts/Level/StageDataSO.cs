@@ -1,10 +1,16 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
 public class StageData
 {
     [Header("Info")]
+    [Tooltip("Map data này áp dụng từ stage này trở đi (cho đến khi gặp entry có fromStage lớn hơn).\n" +
+             "Ví dụ: entry A có fromStage = 1, entry B có fromStage = 5 → stage 2, 3, 4 vẫn dùng map/config của entry A.")]
+    [Min(1)]
+    public int fromStage = 1;
+
     public string stageName = "Stage 1";
 
     [Header("Map")]
@@ -42,20 +48,48 @@ public struct StageWaveConfig
 [CreateAssetMenu(fileName = "StageDatabase", menuName = "Data/StageDatabase")]
 public class StageDataSO : ScriptableObject
 {
-    [Tooltip("Danh sách stage theo thứ tự. Index 0 = Stage 1, Index 1 = Stage 2, ...")]
+    [Tooltip("Danh sách các entry stage. Không cần khai báo liên tục từng stage —\n" +
+             "chỉ cần khai báo những stage nào có thay đổi (map mới / config mới),\n" +
+             "các stage ở giữa sẽ tự dùng lại entry gần nhất phía trước (theo fromStage).")]
     public List<StageData> stages = new();
 
-    public StageData Get(int stageNumber)
-    {
-        int index = stageNumber - 1;
-        if (index < 0 || index >= stages.Count) return null;
-        return stages[index];
-    }
-
+    /// <summary>
+    /// Lấy entry áp dụng cho đúng stageNumber này: entry có fromStage lớn nhất
+    /// nhưng vẫn <= stageNumber. Nếu vượt quá entry cuối cùng thì giữ nguyên entry cuối
+    /// (không lặp vòng lại từ đầu).
+    /// </summary>
     public StageData GetOrLast(int stageNumber)
     {
         if (stages == null || stages.Count == 0) return null;
-        int index = (stageNumber - 1) % stages.Count;
-        return stages[index];
+
+        StageData best = null;
+
+        foreach (var s in stages)
+        {
+            if (s == null) continue;
+
+            if (s.fromStage <= stageNumber)
+            {
+                if (best == null || s.fromStage > best.fromStage)
+                    best = s;
+            }
+        }
+
+        // Nếu stageNumber nhỏ hơn cả entry đầu tiên (ví dụ thiếu entry fromStage = 1),
+        // fallback về entry có fromStage nhỏ nhất để không trả về null.
+        if (best == null)
+            best = stages.Where(s => s != null).OrderBy(s => s.fromStage).FirstOrDefault();
+
+        return best;
+    }
+
+    /// <summary>
+    /// Lấy đúng entry khớp chính xác fromStage == stageNumber (không fallback).
+    /// Trả về null nếu không có entry nào khai báo đúng stage này.
+    /// </summary>
+    public StageData Get(int stageNumber)
+    {
+        if (stages == null) return null;
+        return stages.FirstOrDefault(s => s != null && s.fromStage == stageNumber);
     }
 }

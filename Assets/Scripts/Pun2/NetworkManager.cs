@@ -130,7 +130,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (player != null)
         {
             Debug.Log($"✅ [Network] Player spawned successfully: {player.name}");
-            Debug.Log($"[Network] PhotonView ID: {player.GetComponent<PhotonView>()?.ViewID}");
+            Debug.Log("Info.");
         }
         else
         {

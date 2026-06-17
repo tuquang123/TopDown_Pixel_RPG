@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,7 +43,7 @@ public class QuestRewardPopupUI : BasePopup
         if (reward == null) return;
 
         if (titleText != null)
-            titleText.text = "Xin chúc mừng!";
+            titleText.text = "Congratulations!";
 
         if (subtitleText != null)
             subtitleText.text = GetRewardSubtitle(reward, questName);
@@ -69,14 +69,14 @@ public class QuestRewardPopupUI : BasePopup
     }
     private string GetRewardSubtitle(QuestReward reward, string questName)
     {
-        // Tạo danh sách phần thưởng
+        // Táº¡o danh sĂ¡ch pháº§n thÆ°á»Ÿng
         var rewards = new System.Collections.Generic.List<string>();
         
         if (reward.goldReward > 0)
-            rewards.Add($"Vàng x{reward.goldReward}");
+            rewards.Add($"Gold x{reward.goldReward}");
 
         if (reward.gemReward > 0)
-            rewards.Add($"Ngọc quý x{reward.gemReward}");
+            rewards.Add($"Gems x{reward.gemReward}");
 
         if (reward.experienceReward > 0)
             rewards.Add($"EXP x{reward.experienceReward}");
@@ -102,20 +102,20 @@ public class QuestRewardPopupUI : BasePopup
         if (string.IsNullOrEmpty(questName))
         {
             if (rewards.Count == 0)
-                return "Bạn đã hoàn thành nhiệm vụ!";
+                return "You completed the quest!";
             else if (rewards.Count == 1)
-                return $"Nhận được {rewardText}!";
+                return $"Received {rewardText}!";
             else
-                return $"Nhận được {rewardText}!";
+                return $"Received {rewardText}!";
         }
         else
         {
             if (rewards.Count == 0)
-                return $"Hoàn thành: {questName}";
+                return $"Completed: {questName}";
             else if (rewards.Count == 1)
-                return $"Hoàn thành: {questName}\nNhận được {rewardText}!";
+                return $"Received {rewardText}!";
             else
-                return $"Hoàn thành: {questName}\nNhận được {rewardText}!";
+                return $"Received {rewardText}!";
         }
     }
 
