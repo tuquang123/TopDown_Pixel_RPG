@@ -4,10 +4,8 @@ using UnityEngine.UI;
 using System;
 
 public class ConfirmPopup : BasePopup
-
 {
     [Header("UI")]
-   
     public Button confirmButton;
     public Button cancelButton;
     public TMP_Text titleText;
@@ -28,14 +26,12 @@ public class ConfirmPopup : BasePopup
             backgroundButton.onClick.AddListener(Hide);
     }
 
-
     public void Show(string title, string message, Action confirmAction)
     {
         titleText.text = title;
         messageText.text = message;
         onConfirm = confirmAction;
     }
-
 
     private void OnConfirmClicked()
     {
@@ -47,9 +43,11 @@ public class ConfirmPopup : BasePopup
     {
         messageText.text = "";
         onConfirm = null;
-
         OnClosed?.Invoke();
         base.Hide();
-    }
 
+        UIManager.Instance.UnregisterPopup(PopupType.ItemConfirm);
+        UIManager.Instance.UpdateBlurState();
+        Destroy(gameObject);
+    }
 }

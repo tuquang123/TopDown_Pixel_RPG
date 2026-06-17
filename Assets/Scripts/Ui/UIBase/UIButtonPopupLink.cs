@@ -8,32 +8,30 @@ public class UIButtonPopupLink : MonoBehaviour
     [Header("Options")]
     [SerializeField] private bool hideOthers = false;
 
-    /// <summary>
-    /// Mở popup
-    /// </summary>
+    // FeatureButtonUI set cái này
+    [HideInInspector] public bool isLocked = false;
+
     public void Open()
     {
+        if (isLocked) return; // ← chặn tại đây
+
         if (hideOthers)
-        {
             UIManager.Instance.HideAllPopups();
-        }
 
         UIManager.Instance.ShowPopupByType(popupType);
     }
 
-    /// <summary>
-    /// Đóng popup
-    /// </summary>
     public void Close()
     {
         UIManager.Instance.HidePopupByType(popupType);
     }
-
-    /// <summary>
-    /// Bật / tắt popup
-    /// </summary>
+    
     public void Toggle()
     {
+        if (isLocked) return;
+
+        Debug.Log($"[UIButtonPopupLink] Toggle | popupType={popupType} | isOpen={UIManager.Instance.IsPopupOpen(popupType)}");
+
         if (UIManager.Instance.IsPopupOpen(popupType))
         {
             UIManager.Instance.HidePopupByType(popupType);
@@ -41,9 +39,7 @@ public class UIButtonPopupLink : MonoBehaviour
         else
         {
             if (hideOthers)
-            {
                 UIManager.Instance.HideAllPopups();
-            }
 
             UIManager.Instance.ShowPopupByType(popupType);
         }

@@ -29,6 +29,7 @@ public class CommonReferent : Singleton<CommonReferent>
     public GameObject dialogShopBtn;
     public Sprite iconGold;
     public Sprite iconExp;
+    public Sprite iconGem;
     public GameObject itemDropPrefab;
     public GameObject surikenPrefab;
     public ItemTierColorConfig itemTierColorConfig;

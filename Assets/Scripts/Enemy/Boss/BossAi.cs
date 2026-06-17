@@ -212,12 +212,19 @@ public class BossAI : EnemyAI
 
         StartCoroutine(DisableBossAfterDelay(2f));
     }
-
     private IEnumerator DisableBossAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        gameObject.SetActive(false);
+
+        // Chờ thêm phần còn lại của animation Death
+        float remaining = anim.GetCurrentAnimatorStateInfo(0).length
+                          * (1f - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
+        if (remaining > 0f)
+            yield return new WaitForSeconds(remaining);
+
+        Destroy(gameObject);
     }
+   
 
     private void OnDisable() => bossHealthUI?.Hide();
     private void OnDestroy() => bossHealthUI?.Hide();

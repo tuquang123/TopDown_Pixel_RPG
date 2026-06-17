@@ -168,7 +168,11 @@ public class UIManager : Singleton<UIManager>
 
         return instance;
     }
-    
+    public void UnregisterPopup(PopupType type)
+    {
+        if (activePopups.ContainsKey(type))
+            activePopups.Remove(type);
+    }
     public bool TryGetPopup(PopupType type, out BasePopup popup)
     {
         return activePopups.TryGetValue(type, out popup);
