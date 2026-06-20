@@ -210,21 +210,22 @@ public class BossAI : EnemyAI
             CommonReferent.Instance.goldPrefab
         );
 
-        StartCoroutine(DisableBossAfterDelay(2f));
+        StartCoroutine(DisableBossAfterDelay());
     }
-    private IEnumerator DisableBossAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
 
-        // Chờ thêm phần còn lại của animation Death
-        float remaining = anim.GetCurrentAnimatorStateInfo(0).length
-                          * (1f - anim.GetCurrentAnimatorStateInfo(0).normalizedTime);
-        if (remaining > 0f)
-            yield return new WaitForSeconds(remaining);
+    private IEnumerator DisableBossAfterDelay()
+    {
+        // Đợi Animator chuyển hẳn vào state Death (qua hết transition crossfade nếu có)
+        yield return null;
+        while (anim.IsInTransition(0))
+            yield return null;
+
+        // Lấy đúng length thật của animation Death rồi đợi đúng bằng nó, không dư frame
+        float deathLength = anim.GetCurrentAnimatorStateInfo(0).length;
+        yield return new WaitForSeconds(deathLength);
 
         Destroy(gameObject);
     }
-   
 
     private void OnDisable() => bossHealthUI?.Hide();
     private void OnDestroy() => bossHealthUI?.Hide();

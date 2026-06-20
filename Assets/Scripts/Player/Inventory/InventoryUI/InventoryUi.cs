@@ -119,8 +119,8 @@ public class InventoryUI : BasePopup
 
         var filteredItems = ItemFilter
             .FilterInventoryByType(inventory.items, type)
-            .OrderBy(i => i.itemData.tier) // 🔥 cùi → vip
-            .ThenBy(i => i.itemData.price) // cùng tier → rẻ trước
+            .OrderBy(i => i.itemData.tier) // 🔥 low tier → high tier
+            .ThenBy(i => i.itemData.price) // same tier → cheaper first
             .ToList();
 
         foreach (ItemInstance item in filteredItems)
@@ -146,7 +146,7 @@ public class InventoryUI : BasePopup
         currentSelectedItem = newItem;
         currentSelectedItem.SetSelected(true);
 
-        // Hiển thị detail panel
+        // Show the detail panel
         itemDetailPanel.gameObject.SetActive(true);
 
     }
@@ -162,11 +162,11 @@ public class InventoryUI : BasePopup
 
         UpdateInventoryUI();
 
-        // Auto chọn filter All khi mở
+        // Auto select the All filter when opened
         if (filterButtons != null && filterButtons.Count > 0)
         {
             SelectFilter(filterButtons[0]);
-            FilterInventory(null); // 🔥 QUAN TRỌNG
+            FilterInventory(null); // 🔥 IMPORTANT
         }
     }
 
@@ -284,11 +284,11 @@ public class InventoryUI : BasePopup
 
             if (diff > 0)
             {
-                text = $"<color=#00FF00>+{diff:N0} Chiến lực</color>";
+                text = $"<color=#00FF00>+{diff:N0} Power</color>";
             }
             else
             {
-                text = $"<color=#FF4D4D>{diff:N0} Chiến lực</color>";
+                text = $"<color=#FF4D4D>{diff:N0} Power</color>";
             }
 
             GameEvents.OnShowToast.Raise(text);
@@ -318,7 +318,7 @@ public class InventoryUI : BasePopup
         }
         if (itemCount == 0)
         {
-            GameEvents.OnShowToast.Raise("Không có đồ để bán");
+            GameEvents.OnShowToast.Raise("No items to sell");
             return;
         }
         UIManager.Instance.ShowPopupByType(PopupType.ItemConfirm);
@@ -328,7 +328,7 @@ public class InventoryUI : BasePopup
         {
             confirm.Show(
                 "Sell All",
-                $"Bán {itemCount} món đồ\nNhận <color=#FFD700>{totalGold:N0} vàng</color>?",
+                $"Sell {itemCount} items\nReceive <color=#FFD700>{totalGold:N0} Gold</color>?",
                 SellAllItems
             );
         }
@@ -355,7 +355,7 @@ public class InventoryUI : BasePopup
 
         if (itemsToRemove.Count == 0)
         {
-            GameEvents.OnShowToast.Raise("Không có đồ để bán");
+            GameEvents.OnShowToast.Raise("No items to sell");
             return;
         }
 
@@ -366,7 +366,7 @@ public class InventoryUI : BasePopup
 
         CurrencyManager.Instance.AddGold(totalGold);
 
-        GameEvents.OnShowToast.Raise($"Bán thành công\n+{totalGold:N0} vàng");
+        GameEvents.OnShowToast.Raise($"Sold successfully\n+{totalGold:N0} Gold");
 
         UpdateInventoryUI();
     }
@@ -400,8 +400,8 @@ public class InventoryUI : BasePopup
         if (diff != 0)
         {
             string text = diff > 0
-                ? $"<color=#00FF88>+{diff:N0} Chiến lực</color>"
-                : $"<color=#FF5555>{diff:N0} Chiến lực</color>";
+                ? $"<color=#00FF88>+{diff:N0} Power</color>"
+                : $"<color=#FF5555>{diff:N0} Power</color>";
 
             GameEvents.OnShowToast.Raise(text);
         }

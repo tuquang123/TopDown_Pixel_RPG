@@ -33,8 +33,8 @@ public class LevelUpSkillPopup : BasePopup
         if (rerollButton  != null) rerollButton.onClick.AddListener(RerollSkills);
         if (confirmButton != null) confirmButton.onClick.AddListener(ConfirmSelectedSkill);
 
-        if (mainTitleText != null) mainTitleText.text = "Chọn 1 kỹ năng Passive mới";
-        if (subTitleText  != null) subTitleText.text  = "Kỹ năng sẽ được áp dụng ngay lập tức";
+        if (mainTitleText != null) mainTitleText.text = "Choose 1 new Passive skill";
+        if (subTitleText  != null) subTitleText.text  = "The skill will be applied immediately";
 
         SetConfirmButton(false);
     }
@@ -42,9 +42,9 @@ public class LevelUpSkillPopup : BasePopup
     public void ShowLevelUpPopup(int newLevel)
     {
         if (levelText != null)
-            levelText.text = $"LEVEL UP — CẤP {newLevel}";
+            levelText.text = $"LEVEL UP — LEVEL {newLevel}";
 
-        Time.timeScale = 0f; // ← Dừng thời gian
+        Time.timeScale = 0f; // ← Pause time
         Show();
         RerollSkills();
     }
@@ -60,10 +60,10 @@ public class LevelUpSkillPopup : BasePopup
             .Where(s => skillSystem.GetSkillLevel(s.skillID) < s.maxLevel) // ← fix
             .ToList();
 
-        // Xử lý khi không đủ 3 skill để chọn
+        // Handle the case where there aren't enough skills to choose from
         if (passiveSkills.Count == 0)
         {
-            Debug.Log("[LevelUp] Tất cả skill đã max cấp!");
+            Debug.Log("[LevelUp] All skills are already max level!");
             UIManager.Instance.HidePopupByType(PopupType.LevelUpSkill);
             return;
         }
@@ -78,12 +78,12 @@ public class LevelUpSkillPopup : BasePopup
         currentSkills = shuffled.Take(Mathf.Min(3, shuffled.Count)).ToList();
         selectedIndex = -1;
 
-        // Ẩn hết 3 slot trước
+        // Hide all 3 slots first
         for (int i = 0; i < 3; i++)
             if (skillDisplays[i] != null)
                 skillDisplays[i].gameObject.SetActive(false);
 
-        // Chỉ hiện số slot bằng số skill còn lại
+        // Only show as many slots as there are remaining skills
         for (int i = 0; i < currentSkills.Count; i++)
         {
             if (skillDisplays[i] != null)
@@ -122,15 +122,15 @@ public class LevelUpSkillPopup : BasePopup
     // ====================== OVERRIDE HIDE ======================
     public override void Hide()
     {
-        // Nếu chưa chọn skill thì tự random
+        // If no skill was selected, pick one at random
         if (selectedIndex < 0 && currentSkills.Count > 0)
         {
             int randomIndex = Random.Range(0, currentSkills.Count);
             ApplySkill(currentSkills[randomIndex]);
-            Debug.Log($"[LevelUp] Tự động chọn random: {currentSkills[randomIndex].skillName}");
+            Debug.Log($"[LevelUp] Auto-selected at random: {currentSkills[randomIndex].skillName}");
         }
 
-        Time.timeScale = 1f; // ← Khôi phục thời gian
+        Time.timeScale = 1f; // ← Restore time
         base.Hide();
     }
 
@@ -151,7 +151,7 @@ public class LevelUpSkillPopup : BasePopup
 
         bool success = skillSystem.UnlockSkill(skill.skillID);
 
-        if (success) Debug.Log($"[LevelUp] Đã áp dụng: {skill.skillName}");
-        else         Debug.LogWarning($"[LevelUp] Không thể unlock: {skill.skillName}");
+        if (success) Debug.Log($"[LevelUp] Applied: {skill.skillName}");
+        else         Debug.LogWarning($"[LevelUp] Could not unlock: {skill.skillName}");
     }
 }

@@ -105,7 +105,7 @@ public class GachaPopup : BasePopup
     {
         if (!CurrencyManager.Instance.SpendGems(gemCost))
         {
-            GameEvents.OnShowToast.Raise("Không đủ Gem");
+            GameEvents.OnShowToast.Raise("Not enough Gems");
             return;
         }
 
@@ -138,7 +138,7 @@ public class GachaPopup : BasePopup
 
         if (!CurrencyManager.Instance.SpendGems(cost))
         {
-            GameEvents.OnShowToast.Raise("Không đủ Gem");
+            GameEvents.OnShowToast.Raise("Not enough Gems");
             return;
         }
 
