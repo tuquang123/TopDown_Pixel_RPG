@@ -221,8 +221,9 @@ public class ItemDetailPanel : MonoBehaviour
             equipButton.GetComponentInChildren<TMP_Text>().text = "Equip";
             equipButton.onClick.AddListener(EquipItem);
 
-            upgradeButton.gameObject.SetActive(!isEquipped);
-            sellButton.gameObject.SetActive(!isEquipped);
+            // Upgrade và Sell luôn hiện, kể cả khi item đang được mặc
+            upgradeButton.gameObject.SetActive(true);
+            sellButton.gameObject.SetActive(true);
 
             int upgradeCost = data.baseUpgradeCost * (item.upgradeLevel + 1);
             upgradeCostText.text = $"Upgrade ({upgradeCost} <sprite name=\"gold_icon\">)";
@@ -305,6 +306,12 @@ public class ItemDetailPanel : MonoBehaviour
     private void SellItem()
     {
         int gold = CalculateSellPrice(currentItem);
+        
+        if (inventoryUI.equipmentUi.IsItemEquipped(currentItem))
+        {
+            inventoryUI.equipmentUi.UnequipItem(currentItem.itemData.itemType);
+        }
+
         CurrencyManager.Instance.AddGold(gold);
 
         inventoryUI.Inventory.RemoveItem(currentItem);

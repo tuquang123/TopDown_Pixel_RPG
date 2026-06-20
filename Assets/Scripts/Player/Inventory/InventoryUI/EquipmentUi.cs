@@ -53,7 +53,7 @@ public class EquipmentUI : MonoBehaviour
             slotUI.button.onClick.AddListener(() => UnequipItem(capturedType));
             slotUI.iconButton.onClick.AddListener(() =>
             {
-                SelectSlot(slotUI); // làm sáng slot được bấm
+                SelectSlot(slotUI); // highlight the clicked slot
                 ShowEquippedItemDetail(capturedType);
             });
         }
@@ -63,9 +63,11 @@ public class EquipmentUI : MonoBehaviour
     
     public bool IsItemEquipped(ItemInstance item)
     {
+        if (item == null) return false;
+
         foreach (var equipped in equipmentManager.equippedItems.Values)
         {
-            if (equipped == item)
+            if (equipped != null && equipped.instanceID == item.instanceID)
                 return true;
         }
         return false;
@@ -85,7 +87,7 @@ public class EquipmentUI : MonoBehaviour
             inventoryUI.itemDetailPanel.Hide();
         });
 
-        inventoryUI.itemDetailPanel.equipButton.GetComponentInChildren<TMPro.TMP_Text>().text = "Gỡ trang bị";
+        inventoryUI.itemDetailPanel.equipButton.GetComponentInChildren<TMPro.TMP_Text>().text = "Unequip";
     }
     
     public void EquipItem(ItemInstance itemInstance)
@@ -139,7 +141,7 @@ public class EquipmentUI : MonoBehaviour
                 slotUI.iconDefault.gameObject.SetActive(false);
 
                 slotUI.background.sprite = CommonReferent.Instance.itemTierColorConfig.GetBackground(item.itemData.tier);
-                slotUI.background.color = Color.white; // BẮT BUỘC, nếu không sprite sẽ trong suốt
+                slotUI.background.color = Color.white; // REQUIRED, otherwise the sprite will be transparent
 
                 slotUI.button.gameObject.SetActive(true);
             }
@@ -148,7 +150,7 @@ public class EquipmentUI : MonoBehaviour
                 slotUI.icon.HideAllIcons();
                 slotUI.iconDefault.gameObject.SetActive(true);
                 slotUI.background.sprite = null;
-                slotUI.background.color = new Color(1, 1, 1, 0); // trong suốt
+                slotUI.background.color = new Color(1, 1, 1, 0); // transparent
                 slotUI.button.gameObject.SetActive(false);
             }
 
@@ -160,10 +162,10 @@ public class EquipmentUI : MonoBehaviour
     public void SelectSlot(EquipmentSlotUI newSlot)
     {
         if (currentSelectedSlot != null)
-            currentSelectedSlot.SetSelected(false); // tắt sáng slot cũ
+            currentSelectedSlot.SetSelected(false); // turn off the old slot's highlight
 
         currentSelectedSlot = newSlot;
-        currentSelectedSlot.SetSelected(true); // bật sáng slot mới
+        currentSelectedSlot.SetSelected(true); // turn on the new slot's highlight
     }
     public ItemInstance GetEquippedItem(ItemType type)
     {
@@ -178,9 +180,9 @@ public class EquipmentUI : MonoBehaviour
         string text;
 
         if (diff > 0)
-            text = $"<color=#00FF00>+{diff:N0} Chiến lực</color>";
+            text = $"<color=#00FF00>+{diff:N0} Power</color>";
         else
-            text = $"<color=#FF4D4D>{diff:N0} Chiến lực</color>";
+            text = $"<color=#FF4D4D>{diff:N0} Power</color>";
 
         GameEvents.OnShowToast.Raise(text);
     }
