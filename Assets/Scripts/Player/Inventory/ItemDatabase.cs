@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Sirenix.OdinInspector;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 // Bộ lọc hiển thị dễ chọn
 public enum FilterItemType
@@ -298,4 +301,88 @@ public class ItemDatabase : ScriptableObject
 
         return pool[Random.Range(0, pool.Count)];
     }
+
+#if UNITY_EDITOR
+    [BoxGroup("Tools")]
+    [InfoBox("Đổi tên file asset của item theo itemName (snake_case), giữ nguyên GUID/ref bằng AssetDatabase.RenameAsset.")]
+    [Button("Rename Item Assets From itemName")]
+    public void RenameItemAssetsFromItemName()
+    {
+        var usedNames = new HashSet<string>();
+        int renamedCount = 0;
+
+        foreach (var item in allItems)
+        {
+            if (item == null)
+                continue;
+
+            string path = AssetDatabase.GetAssetPath(item);
+            if (string.IsNullOrEmpty(path))
+                continue;
+
+            string targetBaseName = BuildUniqueFileName(MakeSnakeCase(item.itemName), usedNames);
+            string currentBaseName = System.IO.Path.GetFileNameWithoutExtension(path);
+
+            if (currentBaseName == targetBaseName)
+                continue;
+
+            string error = AssetDatabase.RenameAsset(path, targetBaseName);
+            if (!string.IsNullOrEmpty(error))
+            {
+                Debug.LogWarning($"Rename failed: '{currentBaseName}' -> '{targetBaseName}'. Error: {error}");
+                continue;
+            }
+
+            renamedCount++;
+        }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log($"Renamed {renamedCount} item assets theo itemName.");
+    }
+
+    private static string BuildUniqueFileName(string baseName, HashSet<string> usedNames)
+    {
+        string candidate = baseName;
+        int index = 2;
+
+        while (!usedNames.Add(candidate))
+        {
+            candidate = $"{baseName}_{index}";
+            index++;
+        }
+
+        return candidate;
+    }
+
+    private static string MakeSnakeCase(string source)
+    {
+        if (string.IsNullOrWhiteSpace(source))
+            return "item";
+
+        var chars = source.Trim().ToLowerInvariant().ToCharArray();
+        var buffer = new System.Text.StringBuilder(chars.Length);
+        bool prevUnderscore = false;
+
+        foreach (char c in chars)
+        {
+            if (char.IsLetterOrDigit(c))
+            {
+                buffer.Append(c);
+                prevUnderscore = false;
+                continue;
+            }
+
+            if (!prevUnderscore && buffer.Length > 0)
+            {
+                buffer.Append('_');
+                prevUnderscore = true;
+            }
+        }
+
+        string result = buffer.ToString().Trim('_');
+        return string.IsNullOrEmpty(result) ? "item" : result;
+    }
+#endif
+
 }
