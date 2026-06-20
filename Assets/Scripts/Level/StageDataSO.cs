@@ -19,20 +19,33 @@ public class StageData
     public GameObject mapPrefab;
 
     [Header("Wave Config (Override)")]
-    [Tooltip("Bật để dùng config riêng cho stage này thay vì config mặc định trong WaveManager.")]
+    [Tooltip("Bật để dùng config riêng cho stage này thay vì config mặc định trong WaveManagerConfigSO.")]
     public bool useWaveConfigOverride;
+
+    [Tooltip("Override số lượng quái, tốc độ spawn và chu kỳ boss cho stage này. Dùng để designer cân bằng difficulty từng stage.")]
     public StageWaveConfig waveConfigOverride = StageWaveConfig.Default;
 }
 
 [System.Serializable]
 public struct StageWaveConfig
 {
-    [Min(1)]  public int enemiesBaseCount;
-    [Min(0)]  public int enemiesPerWave;
+    [Tooltip("Số quái cơ bản ở wave 1 của stage này.")]
+    [Min(1)] public int enemiesBaseCount;
+
+    [Tooltip("Số quái cộng thêm sau mỗi wave trong stage này.")]
+    [Min(0)] public int enemiesPerWave;
+
+    [Tooltip("Thời gian giữa mỗi lần spawn ở wave 1 của stage này.")]
     [Min(0f)] public float baseSpawnInterval;
+
+    [Tooltip("Mỗi wave sẽ giảm spawn interval bao nhiêu giây trong stage này.")]
     [Min(0f)] public float spawnIntervalDecayPerWave;
+
+    [Tooltip("Spawn interval thấp nhất để tránh spawn quá dày.")]
     [Min(0.05f)] public float minSpawnInterval;
-    [Min(1)]  public int bossWaveFrequency;
+
+    [Tooltip("Cứ bao nhiêu wave thì gặp boss trong stage này.")]
+    [Min(1)] public int bossWaveFrequency;
 
     public static StageWaveConfig Default => new()
     {

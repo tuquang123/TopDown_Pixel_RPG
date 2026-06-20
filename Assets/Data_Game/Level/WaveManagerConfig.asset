@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce9f01da6fa24756a439e7be3e54f224, type: 3}
+  m_Name: WaveManagerConfig
+  m_EditorClassIdentifier: 
+  description: 'Default wave balance config. Designer can tune enemy pools, boss timing,
+    spawn pacing, stat scaling, respawn grace and OOB behavior here instead of on the scene WaveManager.'
+  spawnZoneTilemapName: SpawnZone
+  enemySpawnEntries:
+  - prefab: {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
+    minStage: 1
+    maxStage: 5
+    weight: 4
+  - prefab: {fileID: 2970206300379713479, guid: a69260f2b7402d149a15e280862de3b1, type: 3}
+    minStage: 5
+    maxStage: 50
+    weight: 7
+  - prefab: {fileID: 5634296991342189632, guid: dd2863eb08f385441b6a304493f4ba76, type: 3}
+    minStage: 7
+    maxStage: 70
+    weight: 7
+  - prefab: {fileID: 2226953740800684622, guid: a71482f615f20dc47a5c1bfb89b8aed0, type: 3}
+    minStage: 10
+    maxStage: 0
+    weight: 7
+  bossStageOverrides:
+  - stage: 1
+    bossPrefab: {fileID: 5987872608596408159, guid: 52810d9e1e4a87c47a293bd3c1ee4e0f, type: 3}
+  - stage: 2
+    bossPrefab: {fileID: 5987872608596408159, guid: ef6a5168382f276418d774279dcf143b, type: 3}
+  startWave: 1
+  defaultEnemiesBaseCount: 4
+  defaultEnemiesPerWave: 2
+  defaultBaseSpawnInterval: 0.8
+  defaultSpawnIntervalDecayPerWave: 0.02
+  defaultMinSpawnInterval: 0.15
+  defaultBossWaveFrequency: 5
+  bossSpawnDelay: 3
+  bossWaveClearDelay: 3
+  waveAnnounceDelay: 1
+  minSpawnDistanceFromPlayer: 4
+  oobCheckInterval: 0.5
+  oobBoundsPadding: 1
+  enemyLayerName: Enemy
+  respawnDelay: 1.5
+  graceAfterRespawn: 3
+  postRespawnMinSpawnDistance: 10
+  baseHealth: 50
+  baseDamage: 8
+  baseMoveSpeed: 2
+  baseAttackRange: 1.2
+  baseDetectRange: 6
+  baseAttackCooldown: 1.5
+  waveHealthGrowth: 0.15
+  waveDamageGrowth: 0.1
+  waveSpeedGrowth: 0.02
+  healthScalePerStage: 0.2
+  damageScalePerStage: 0.15
+  moveSpeedScalePerStage: 0.03
+  cooldownReductionPerStage: 0.01
+  minAttackCooldown: 0.2
+  bossHealthMult: 5
+  bossDamageMult: 2
+  bossLevelBonus: 2
+  weightGrowthPerStage: 0.1
