@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce9f01da6fa24756a439e7be3e54f224, type: 3}
   m_Name: WaveManagerConfig
   m_EditorClassIdentifier: 
-  description: 'Default wave balance config. Designer can tune enemy pools, boss timing,
-    spawn pacing, stat scaling, respawn grace and OOB behavior here instead of on the scene WaveManager.'
+  description: Default wave balance config. Designer can tune enemy pools, boss timing,
+    spawn pacing, stat scaling, respawn grace and OOB behavior here instead of on
+    the scene WaveManager.
   spawnZoneTilemapName: SpawnZone
   enemySpawnEntries:
   - prefab: {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}

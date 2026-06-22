@@ -1074,7 +1074,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 569
+      value: 410
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1150,7 +1150,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 216.2845
+      value: 136.7845
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -2922,15 +2922,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   popupParent: {fileID: 4957217676682613903}
   rewardPrefab: {fileID: 1504160025356792608, guid: 8c9cd3140453f61428b159dbbd74c390, type: 3}
-  scaleDuration: 0.3
-  moveInDuration: 0.3
-  visibleDuration: 1.2
-  moveOutDuration: 0.5
-  fadeDuration: 0.5
-  startYOffset: -200
-  endYOffset: 200
   expIcon: {fileID: 21300000, guid: a2af0f3b72d83431ba35eaa1cc13556d, type: 3}
   goldIcon: {fileID: 21300000, guid: c5616c84b14514750bd5bf1954c6a065, type: 3}
+  maxVisible: 4
+  spacing: 8
+  slotHeightOverride: 141
+  stackBottomY: 0
+  slideStartX: 400
+  slideInDuration: 0.25
+  scaleDuration: 0.3
+  visibleDuration: 1.2
+  flyUpY: 250
+  flyDuration: 0.5
+  fadeDuration: 0.5
 --- !u!114 &1263587080341960995
 MonoBehaviour:
   m_ObjectHideFlags: 0
