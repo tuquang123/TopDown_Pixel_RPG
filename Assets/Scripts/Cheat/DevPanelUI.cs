@@ -107,7 +107,7 @@ public class DevPanelUI : MonoBehaviour
     }
 
     public void SetSpeed1x() => SetGameSpeed(1f);
-    public void SetSpeed2x() => SetGameSpeed(2f);
+  
     public void SetSpeed3x() => SetGameSpeed(3f);
 
     // ========================= CHEAT HELPERS =========================
@@ -168,10 +168,6 @@ public class DevPanelUI : MonoBehaviour
         SaveGame();
     }
 
-    /// <summary>
-    /// [CHEAT] Bắt đầu wave tiếp theo ngay lập tức.
-    /// Quái wave cũ vẫn còn sống — chỉ spawn thêm quái wave mới chồng lên.
-    /// </summary>
     public void CheatNextWave()
     {
         WaveManager.Instance?.ForceNextWave();
