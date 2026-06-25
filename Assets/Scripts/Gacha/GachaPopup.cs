@@ -230,4 +230,5 @@ public class GachaPopup : BasePopup
     {
         transform.DOKill();
     }
+    
 }
