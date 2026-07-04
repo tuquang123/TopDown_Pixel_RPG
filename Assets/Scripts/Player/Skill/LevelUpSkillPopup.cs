@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,9 +45,28 @@ public class LevelUpSkillPopup : BasePopup
         if (levelText != null)
             levelText.text = $"LEVEL UP — LEVEL {newLevel}";
 
-        Time.timeScale = 0f; // ← Pause time
+        Time.timeScale = 0f; // Pause time
         Show();
+
+        // FIX: Show() (kế thừa từ BasePopup) có thể chạy DOTween fade/scale bằng
+        // scaled time (mặc định). Khi timeScale = 0, các tween đó sẽ bị đứng hình
+        // ngay giữa animation. Ép toàn bộ tween đang chạy trên popup này (và các
+        // object con) sang dùng unscaled time để animation show vẫn mượt dù đang pause.
+        ForceUnscaledTweens();
+
         RerollSkills();
+    }
+
+    // FIX: quét mọi tween đang chạy trên GameObject này + transform, ép SetUpdate(true)
+    private void ForceUnscaledTweens()
+    {
+        var tweensOnObject = DOTween.TweensByTarget(gameObject, true);
+        if (tweensOnObject != null)
+            foreach (var t in tweensOnObject) t?.SetUpdate(true);
+
+        var tweensOnTransform = DOTween.TweensByTarget(transform, true);
+        if (tweensOnTransform != null)
+            foreach (var t in tweensOnTransform) t?.SetUpdate(true);
     }
 
     // ====================== REROLL ======================
@@ -91,6 +111,12 @@ public class LevelUpSkillPopup : BasePopup
                 skillDisplays[i].gameObject.SetActive(true);
                 skillDisplays[i].ForceReset();
                 skillDisplays[i].DisplaySkill(currentSkills[i], i, OnSkillClicked);
+
+                // FIX: DisplaySkill có thể tự chạy tween riêng (fade/scale slot).
+                // Đảm bảo các tween này cũng không bị đứng khi timeScale = 0.
+                var tweens = DOTween.TweensByTarget(skillDisplays[i].gameObject, true);
+                if (tweens != null)
+                    foreach (var t in tweens) t?.SetUpdate(true);
             }
         }
 
@@ -130,8 +156,18 @@ public class LevelUpSkillPopup : BasePopup
             Debug.Log($"[LevelUp] Auto-selected at random: {currentSkills[randomIndex].skillName}");
         }
 
-        Time.timeScale = 1f; // ← Restore time
+        // FIX: base.Hide() có thể chạy tween fade-out bằng scaled time.
+        // Ép unscaled TRƯỚC khi restore timeScale = 1, để nếu Hide() start tween
+        // ngay trong lúc timeScale vẫn = 0, nó vẫn chạy được thay vì đứng hình
+        // cho tới khi có ai đó vô tình set lại timeScale.
+        ForceUnscaledTweens();
+
+        Time.timeScale = 1f; // Restore time
         base.Hide();
+
+        // FIX: phòng trường hợp base.Hide() mới là nơi khởi tạo tween (thay vì
+        // trước đó), quét lại lần nữa sau khi gọi base.Hide().
+        ForceUnscaledTweens();
     }
 
     // ====================== CONFIRM ======================

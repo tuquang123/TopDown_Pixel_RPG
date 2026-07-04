@@ -2,7 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using DG.Tweening; // <-- Thêm dòng này
+using DG.Tweening;
 
 public class ToastUI : MonoBehaviour, IGameEventListener<string>
 {
@@ -14,7 +14,13 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
     [SerializeField] private float stackSpacing = 62f;
     [SerializeField] private int maxVisibleToasts = 5;
 
-    private readonly Queue<string> pendingMessages = new();
+    // FIX: cho phép script khác lấy giá trị mặc định để tự tính (VD: showDuration * 0.5f)
+    public float DefaultShowDuration => showDuration;
+
+    public static ToastUI Instance { get; private set; }
+
+    // FIX: queue giờ lưu kèm duration riêng cho từng toast (-1 = dùng mặc định)
+    private readonly Queue<(string message, float duration)> pendingMessages = new();
     private readonly List<RectTransform> activeToasts = new();
     private Coroutine queueRunner;
     private Vector2 templateAnchoredPos;
@@ -22,6 +28,8 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
 
     private void Awake()
     {
+        Instance = this;
+
         if (toastCanvasGroup == null)
             return;
 
@@ -53,12 +61,21 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
         activeToasts.Clear();
     }
 
+    // Đường cũ — dùng cho mọi toast raise qua GameEvents (giữ nguyên showDuration mặc định)
     public void OnEventRaised(string message)
+    {
+        ShowToast(message);
+    }
+
+    // FIX: API mới — cho phép gọi trực tiếp kèm duration riêng.
+    // customDuration = null -> dùng showDuration mặc định như trước giờ.
+    public void ShowToast(string message, float? customDuration = null)
     {
         if (string.IsNullOrWhiteSpace(message) || toastCanvasGroup == null)
             return;
 
-        pendingMessages.Enqueue(message);
+        float duration = customDuration ?? showDuration;
+        pendingMessages.Enqueue((message, duration));
 
         if (queueRunner == null)
             queueRunner = StartCoroutine(ProcessQueue());
@@ -68,14 +85,15 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
     {
         while (pendingMessages.Count > 0)
         {
-            SpawnToastNow(pendingMessages.Dequeue());
+            var (message, duration) = pendingMessages.Dequeue();
+            SpawnToastNow(message, duration);
             yield return new WaitForSecondsRealtime(spawnInterval);
         }
 
         queueRunner = null;
     }
 
-    private void SpawnToastNow(string message)
+    private void SpawnToastNow(string message, float duration)
     {
         GameObject toastObj = Instantiate(toastCanvasGroup.gameObject, templateParent);
         toastObj.SetActive(true);
@@ -101,8 +119,8 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
 
         Sequence seq = DOTween.Sequence().SetUpdate(true);
         seq.Join(cg.DOFade(1f, fadeDuration));
-        seq.Join(rect.DOAnchorPosY(templateAnchoredPos.y + riseDistance, showDuration + fadeDuration).SetEase(Ease.OutCubic));
-        seq.AppendInterval(showDuration);
+        seq.Join(rect.DOAnchorPosY(templateAnchoredPos.y + riseDistance, duration + fadeDuration).SetEase(Ease.OutCubic));
+        seq.AppendInterval(duration); // FIX: dùng duration riêng thay vì showDuration cố định
         seq.Append(cg.DOFade(0f, fadeDuration));
         seq.OnComplete(() =>
         {

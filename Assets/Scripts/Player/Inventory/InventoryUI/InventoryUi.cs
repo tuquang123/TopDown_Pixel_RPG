@@ -196,6 +196,8 @@ public class InventoryUI : BasePopup
 
     private void Start()
     {
+        inventory = CommonReferent.Instance.playerPrefab.GetComponent<Inventory>();
+
         if (autoEquipButton != null)
         {
             autoEquipButton.onClick.AddListener(AutoEquipBestItems);
@@ -219,84 +221,7 @@ public class InventoryUI : BasePopup
     {
         UIManager.Instance.HidePopupByType(PopupType.Inventory);
     }
-
-    public void AutoEquipBestItems()
-    {
-        if (inventory == null) return;
-
-        float beforePower = PlayerStats.Instance.CurrentPower;
-
-        Dictionary<ItemType, ItemInstance> bestItems = new();
-
-        foreach (var item in inventory.items)
-        {
-            if (item.isLocked) continue;
-
-            ItemType type = item.itemData.itemType;
-
-            if (!bestItems.ContainsKey(type))
-                bestItems[type] = item;
-            else
-            {
-                ItemInstance currentBest = bestItems[type];
-
-                bool isBetter =
-                    item.itemData.tier > currentBest.itemData.tier ||
-                    (item.itemData.tier == currentBest.itemData.tier &&
-                     item.itemData.price > currentBest.itemData.price);
-
-                if (isBetter)
-                    bestItems[type] = item;
-            }
-        }
-
-        foreach (var kvp in bestItems)
-        {
-            ItemType type = kvp.Key;
-            ItemInstance bestItem = kvp.Value;
-
-            ItemInstance currentEquipped = equipmentUi.GetEquippedItem(type);
-
-            if (currentEquipped == null)
-            {
-                equipmentUi.EquipItem(bestItem);
-            }
-            else
-            {
-                bool isBetter =
-                    bestItem.itemData.tier > currentEquipped.itemData.tier ||
-                    (bestItem.itemData.tier == currentEquipped.itemData.tier &&
-                     bestItem.itemData.price > currentEquipped.itemData.price);
-
-                if (isBetter)
-                    equipmentUi.EquipItem(bestItem);
-            }
-        }
-
-        PlayerStats.Instance.CalculatePower();
-
-        float afterPower = PlayerStats.Instance.CurrentPower;
-        float diff = afterPower - beforePower;
-
-        if (diff != 0)
-        {
-            string text;
-
-            if (diff > 0)
-            {
-                text = $"<color=#00FF00>+{diff:N0} Power</color>";
-            }
-            else
-            {
-                text = $"<color=#FF4D4D>{diff:N0} Power</color>";
-            }
-
-            GameEvents.OnShowToast.Raise(text);
-        }
-
-        equipmentUi.UpdateEquipmentUI();
-        UpdateInventoryUI();
-    }
+    
     
     public void OnClickSellAll()
     {
@@ -377,39 +302,7 @@ public class InventoryUI : BasePopup
         float multi = 0.6f + item.upgradeLevel * 0.2f;
         return Mathf.RoundToInt(baseValue * multi);
     }
-    public void UnequipAllItems()
-    {
-        if (inventory == null) return;
-
-        float beforePower = PlayerStats.Instance.CurrentPower;
-
-        var equippedTypes = new List<ItemType>(
-            equipmentUi.GetAllEquippedTypes()
-        );
-
-        foreach (var type in equippedTypes)
-        {
-            equipmentUi.UnequipItem(type);
-        }
-
-        PlayerStats.Instance.CalculatePower();
-
-        float afterPower = PlayerStats.Instance.CurrentPower;
-        float diff = afterPower - beforePower;
-
-        if (diff != 0)
-        {
-            string text = diff > 0
-                ? $"<color=#00FF88>+{diff:N0} Power</color>"
-                : $"<color=#FF5555>{diff:N0} Power</color>";
-
-            GameEvents.OnShowToast.Raise(text);
-        }
-
-        equipmentUi.UpdateEquipmentUI();
-        UpdateInventoryUI();
-    }
-
+    
     public void RefreshCurrentSelectedItemLock()
     {
         if (currentSelectedItem != null)
@@ -421,4 +314,117 @@ public class InventoryUI : BasePopup
     [SerializeField] private TMPro.TMP_Text sellAllText;
     [SerializeField] private TMPro.TMP_Text unequipAllText;
     
+    public void AutoEquipBestItems()
+{
+    if (inventory == null) return;
+
+    float beforePower = PlayerStats.Instance.CurrentPower;
+
+    Dictionary<ItemType, ItemInstance> bestItems = new();
+
+    foreach (var item in inventory.items)
+    {
+        if (item.isLocked) continue;
+
+        ItemType type = item.itemData.itemType;
+
+        if (!bestItems.ContainsKey(type))
+            bestItems[type] = item;
+        else
+        {
+            ItemInstance currentBest = bestItems[type];
+
+            bool isBetter =
+                item.itemData.tier > currentBest.itemData.tier ||
+                (item.itemData.tier == currentBest.itemData.tier &&
+                 item.itemData.price > currentBest.itemData.price);
+
+            if (isBetter)
+                bestItems[type] = item;
+        }
+    }
+
+    foreach (var kvp in bestItems)
+    {
+        ItemType type = kvp.Key;
+        ItemInstance bestItem = kvp.Value;
+
+        ItemInstance currentEquipped = equipmentUi.GetEquippedItem(type);
+
+        if (currentEquipped == null)
+        {
+            equipmentUi.EquipItem(bestItem);
+        }
+        else
+        {
+            bool isBetter =
+                bestItem.itemData.tier > currentEquipped.itemData.tier ||
+                (bestItem.itemData.tier == currentEquipped.itemData.tier &&
+                 bestItem.itemData.price > currentEquipped.itemData.price);
+
+            if (isBetter)
+                equipmentUi.EquipItem(bestItem);
+        }
+    }
+
+    PlayerStats.Instance.CalculatePower();
+
+    float afterPower = PlayerStats.Instance.CurrentPower;
+    float diff = afterPower - beforePower;
+
+    if (diff != 0)
+    {
+        string text = diff > 0
+            ? $"<color=#00FF00>+{diff:N0} Power</color>"
+            : $"<color=#FF4D4D>{diff:N0} Power</color>";
+
+        // FIX: toast Power hiện nửa thời gian so với toast thường.
+        // Null-check ToastUI.Instance để tránh NullReferenceException
+        // nếu ToastUI chưa Awake xong hoặc bị destroy/disable.
+        if (ToastUI.Instance != null)
+            ToastUI.Instance.ShowToast(text, ToastUI.Instance.DefaultShowDuration * 0.5f);
+        else
+            GameEvents.OnShowToast.Raise(text);
+    }
+
+    equipmentUi.UpdateEquipmentUI();
+    UpdateInventoryUI();
+}
+
+public void UnequipAllItems()
+{
+    if (inventory == null) return;
+
+    float beforePower = PlayerStats.Instance.CurrentPower;
+
+    var equippedTypes = new List<ItemType>(
+        equipmentUi.GetAllEquippedTypes()
+    );
+
+    foreach (var type in equippedTypes)
+    {
+        equipmentUi.UnequipItem(type);
+    }
+
+    PlayerStats.Instance.CalculatePower();
+
+    float afterPower = PlayerStats.Instance.CurrentPower;
+    float diff = afterPower - beforePower;
+
+    if (diff != 0)
+    {
+        string text = diff > 0
+            ? $"<color=#00FF88>+{diff:N0} Power</color>"
+            : $"<color=#FF5555>{diff:N0} Power</color>";
+
+        // FIX: cùng cơ chế null-check như trên
+        if (ToastUI.Instance != null)
+            ToastUI.Instance.ShowToast(text, ToastUI.Instance.DefaultShowDuration * 0.5f);
+        else
+            GameEvents.OnShowToast.Raise(text);
+    }
+
+    equipmentUi.UpdateEquipmentUI();
+    UpdateInventoryUI();
+}
 }

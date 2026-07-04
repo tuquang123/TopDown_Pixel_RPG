@@ -275,7 +275,11 @@ public class ItemDetailPanel : MonoBehaviour
         else
             text = $"<color=#FF4D4D>{diff:N0} Power</color>";
 
-        GameEvents.OnShowToast.Raise(text);
+        // FIX: toast Power hiện nửa thời gian so với các toast khác
+        if (ToastUI.Instance != null)
+            ToastUI.Instance.ShowToast(text, ToastUI.Instance.DefaultShowDuration * 0.5f);
+        else
+            GameEvents.OnShowToast.Raise(text); // fallback nếu ToastUI chưa sẵn sàng
     }
 
     private void ConsumeItem()

@@ -121,6 +121,9 @@ public class ItemDrop : MonoBehaviour, IPooledObject
         ItemInstance collected = new ItemInstance(itemInstance.itemData, itemInstance.upgradeLevel);
         Inventory.Instance.AddItem(collected);
 
+        // Popup nhanh hiện tên + icon + chỉ số item vừa nhặt
+        ItemQuickPickupPopupUI.Instance?.Show(collected);
+
         // Hiệu ứng & log
         RewardPopupManager.Instance.ShowReward(itemInstance.itemData.icon, itemInstance.itemData.itemName, quantity);
         FloatingTextSpawner.Instance.SpawnText("+" + itemInstance.itemData.itemName, transform.position, Color.cyan);

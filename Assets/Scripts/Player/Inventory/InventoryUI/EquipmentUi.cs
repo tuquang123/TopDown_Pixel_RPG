@@ -17,19 +17,32 @@ public class EquipmentUI : MonoBehaviour
     public EquipmentSlotUI cloakSlot;
     public EquipmentSlotUI specialArmorSlot;
     public EquipmentSlotUI hairSlot;
+
+    private Dictionary<ItemType, EquipmentSlotUI> slotMapping;
+    private bool isInitialized;
+
     public List<ItemType> GetAllEquippedTypes()
     {
+        EnsureInitialized();
         return new List<ItemType>(equipmentManager.equippedItems.Keys);
     }
 
-
-    private Dictionary<ItemType, EquipmentSlotUI> slotMapping;
-
     private void Start()
     {
+        EnsureInitialized();
+    }
+
+    /// <summary>
+    /// Đảm bảo equipmentManager/playerStats/slotMapping đã sẵn sàng,
+    /// bất kể object này có bị inactive (chưa từng gọi Start) hay không.
+    /// </summary>
+    private void EnsureInitialized()
+    {
+        if (isInitialized) return;
+
         playerStats = CommonReferent.Instance.playerPrefab.GetComponent<PlayerStats>();
         equipmentManager = CommonReferent.Instance.playerPrefab.GetComponent<Equipment>();
-        
+
         slotMapping = new Dictionary<ItemType, EquipmentSlotUI>
         {
             { ItemType.Weapon, weaponSlot },
@@ -41,8 +54,9 @@ public class EquipmentUI : MonoBehaviour
             { ItemType.SpecialArmor, specialArmorSlot },
             { ItemType.Hair, hairSlot }
         };
-        
+
         UpdateEquipmentUI();
+
         foreach (var kvp in slotMapping)
         {
             ItemType type = kvp.Key;
@@ -58,11 +72,12 @@ public class EquipmentUI : MonoBehaviour
             });
         }
 
+        isInitialized = true;
     }
 
-    
     public bool IsItemEquipped(ItemInstance item)
     {
+        EnsureInitialized();
         if (item == null) return false;
 
         foreach (var equipped in equipmentManager.equippedItems.Values)
@@ -73,7 +88,6 @@ public class EquipmentUI : MonoBehaviour
         return false;
     }
 
-    
     private void ShowEquippedItemDetail(ItemType type)
     {
         if (!equipmentManager.equippedItems.TryGetValue(type, out ItemInstance instance)) return;
@@ -92,6 +106,8 @@ public class EquipmentUI : MonoBehaviour
     
     public void EquipItem(ItemInstance itemInstance)
     {
+        EnsureInitialized();
+
         if (itemInstance == null || itemInstance.itemData == null) return;
 
         ItemType type = itemInstance.itemData.itemType;
@@ -112,6 +128,8 @@ public class EquipmentUI : MonoBehaviour
     
     public void UnequipItem(ItemType itemType)
     {
+        EnsureInitialized();
+
         float beforePower = PlayerStats.Instance.CurrentPower;
 
         ItemInstance unequipped = equipmentManager.UnequipItem(itemType, playerStats);
@@ -130,6 +148,8 @@ public class EquipmentUI : MonoBehaviour
     
     public void UpdateEquipmentUI()
     {
+        if (slotMapping == null) return;
+
         foreach (var kvp in slotMapping)
         {
             ItemType type = kvp.Key;
@@ -153,7 +173,6 @@ public class EquipmentUI : MonoBehaviour
                 slotUI.background.color = new Color(1, 1, 1, 0); // transparent
                 slotUI.button.gameObject.SetActive(false);
             }
-
         }
     }
     
@@ -167,11 +186,14 @@ public class EquipmentUI : MonoBehaviour
         currentSelectedSlot = newSlot;
         currentSelectedSlot.SetSelected(true); // turn on the new slot's highlight
     }
+
     public ItemInstance GetEquippedItem(ItemType type)
     {
+        EnsureInitialized();
         equipmentManager.equippedItems.TryGetValue(type, out var item);
         return item;
     }
+
     private void ShowPowerDiff(float before, float after)
     {
         float diff = after - before;
