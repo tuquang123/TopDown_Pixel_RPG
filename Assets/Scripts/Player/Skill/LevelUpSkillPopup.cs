@@ -24,8 +24,38 @@ public class LevelUpSkillPopup : BasePopup
     public Color confirmDisabledColor = new Color(0.4f, 0.4f, 0.4f, 1f);
     public Color confirmEnabledColor  = new Color(1f, 0.85f, 0.2f, 1f);
 
+    [Header("Effect Settings")]
+    [Tooltip("Thời gian card scale vào")]
+    public float cardEntranceDuration = 0.4f;
+    [Tooltip("Delay giữa các card để tạo hiệu ứng so le")]
+    public float cardEntranceDelay = 0.08f;
+    [Tooltip("Scale bắt đầu của card trước khi nảy vào")]
+    public float cardEntranceStartScale = 0.7f;
+    public Ease cardEntranceEase = Ease.OutBack;
+
+    [Tooltip("Độ mạnh punch khi chọn card")]
+    public float selectPunchScale = 0.15f;
+    public float selectPunchDuration = 0.3f;
+
+    [Tooltip("Scale tối đa khi nút Confirm tự pulse")]
+    public float confirmPulseScale = 1.08f;
+    public float confirmPulseDuration = 0.6f;
+
+    [Header("Confirm Flourish Settings")]
+    [Tooltip("Độ mạnh punch của nút Confirm khi bấm")]
+    public float confirmPunchScale = 0.25f;
+    public float confirmPunchDuration = 0.35f;
+    [Tooltip("Card được chọn phóng to lên bao nhiêu khi xác nhận")]
+    public float confirmSelectedScale = 1.15f;
+    [Tooltip("Card không được chọn thu nhỏ còn bao nhiêu khi xác nhận")]
+    public float confirmLoserScale = 0.8f;
+    public float confirmCardAnimDuration = 0.35f;
+    [Tooltip("Thời gian chờ trước khi thực sự apply skill và đóng popup, để thấy hiệu ứng")]
+    public float confirmDelayBeforeHide = 0.35f;
+
     private List<SkillData> currentSkills = new List<SkillData>();
     private int selectedIndex = -1;
+    private Tween confirmPulseTween;
 
     protected override void Awake()
     {
@@ -98,6 +128,9 @@ public class LevelUpSkillPopup : BasePopup
         currentSkills = shuffled.Take(Mathf.Min(3, shuffled.Count)).ToList();
         selectedIndex = -1;
 
+        // Đảm bảo nút không bị kẹt ở trạng thái disable từ lần confirm trước
+        if (rerollButton != null) rerollButton.interactable = true;
+
         // Hide all 3 slots first
         for (int i = 0; i < 3; i++)
             if (skillDisplays[i] != null)
@@ -117,6 +150,15 @@ public class LevelUpSkillPopup : BasePopup
                 var tweens = DOTween.TweensByTarget(skillDisplays[i].gameObject, true);
                 if (tweens != null)
                     foreach (var t in tweens) t?.SetUpdate(true);
+
+                // EFFECT: card bay vào so le, nảy nhẹ (OutBack), không phụ thuộc timeScale
+                Transform cardTf = skillDisplays[i].transform;
+                cardTf.DOKill();
+                cardTf.localScale = Vector3.one * cardEntranceStartScale;
+                cardTf.DOScale(1f, cardEntranceDuration)
+                    .SetEase(cardEntranceEase)
+                    .SetDelay(i * cardEntranceDelay)
+                    .SetUpdate(true);
             }
         }
 
@@ -131,6 +173,16 @@ public class LevelUpSkillPopup : BasePopup
             if (skillDisplays[i] != null)
                 skillDisplays[i].SetSelected(i == index);
 
+        // EFFECT: punch scale cho card vừa được chọn
+        if (skillDisplays[index] != null)
+        {
+            Transform cardTf = skillDisplays[index].transform;
+            cardTf.DOKill();
+            cardTf.localScale = Vector3.one;
+            cardTf.DOPunchScale(Vector3.one * selectPunchScale, selectPunchDuration, 8, 0.8f)
+                .SetUpdate(true);
+        }
+
         SetConfirmButton(true);
     }
 
@@ -143,6 +195,22 @@ public class LevelUpSkillPopup : BasePopup
         var img = confirmButton.GetComponent<Image>();
         if (img != null)
             img.color = interactable ? confirmEnabledColor : confirmDisabledColor;
+
+        // EFFECT: nút Confirm tự pulse nhẹ khi có thể bấm, để hút mắt người chơi
+        if (confirmPulseTween != null)
+        {
+            confirmPulseTween.Kill();
+            confirmPulseTween = null;
+        }
+        confirmButton.transform.localScale = Vector3.one;
+
+        if (interactable)
+        {
+            confirmPulseTween = confirmButton.transform.DOScale(confirmPulseScale, confirmPulseDuration)
+                .SetLoops(-1, LoopType.Yoyo)
+                .SetEase(Ease.InOutSine)
+                .SetUpdate(true);
+        }
     }
 
     // ====================== OVERRIDE HIDE ======================
@@ -155,6 +223,15 @@ public class LevelUpSkillPopup : BasePopup
             ApplySkill(currentSkills[randomIndex]);
             Debug.Log($"[LevelUp] Auto-selected at random: {currentSkills[randomIndex].skillName}");
         }
+
+        // Dọn tween pulse của confirm để tránh leak khi popup ẩn
+        if (confirmPulseTween != null)
+        {
+            confirmPulseTween.Kill();
+            confirmPulseTween = null;
+        }
+        if (confirmButton != null)
+            confirmButton.transform.localScale = Vector3.one;
 
         // FIX: base.Hide() có thể chạy tween fade-out bằng scaled time.
         // Ép unscaled TRƯỚC khi restore timeScale = 1, để nếu Hide() start tween
@@ -175,8 +252,60 @@ public class LevelUpSkillPopup : BasePopup
     {
         if (selectedIndex < 0 || selectedIndex >= currentSkills.Count) return;
 
-        ApplySkill(currentSkills[selectedIndex]);
-        UIManager.Instance.HidePopupByType(PopupType.LevelUpSkill);
+        SkillData chosen = currentSkills[selectedIndex];
+
+        // Chặn bấm nhiều lần trong lúc hiệu ứng đang chạy
+        if (confirmButton != null) confirmButton.interactable = false;
+        if (rerollButton  != null) rerollButton.interactable  = false;
+
+        // Dừng pulse đang chạy trên nút Confirm
+        if (confirmPulseTween != null)
+        {
+            confirmPulseTween.Kill();
+            confirmPulseTween = null;
+        }
+
+        // EFFECT: nút Confirm nảy mạnh khi bấm
+        if (confirmButton != null)
+        {
+            confirmButton.transform.DOKill();
+            confirmButton.transform.localScale = Vector3.one;
+            confirmButton.transform.DOPunchScale(Vector3.one * confirmPunchScale, confirmPunchDuration, 10, 1f)
+                .SetUpdate(true);
+        }
+
+        // EFFECT: card được chọn bật to lên nổi bật, 2 card còn lại thu nhỏ + mờ dần
+        for (int i = 0; i < currentSkills.Count; i++)
+        {
+            if (skillDisplays[i] == null) continue;
+
+            Transform cardTf = skillDisplays[i].transform;
+            cardTf.DOKill();
+
+            if (i == selectedIndex)
+            {
+                cardTf.DOScale(confirmSelectedScale, confirmCardAnimDuration)
+                    .SetEase(Ease.OutBack)
+                    .SetUpdate(true);
+            }
+            else
+            {
+                cardTf.DOScale(confirmLoserScale, confirmCardAnimDuration)
+                    .SetEase(Ease.InBack)
+                    .SetUpdate(true);
+
+                var cg = skillDisplays[i].GetComponent<CanvasGroup>();
+                if (cg != null)
+                    cg.DOFade(0f, confirmCardAnimDuration).SetUpdate(true);
+            }
+        }
+
+        // Chờ hiệu ứng chạy xong rồi mới thật sự apply skill + đóng popup
+        DOVirtual.DelayedCall(confirmDelayBeforeHide, () =>
+        {
+            ApplySkill(chosen);
+            UIManager.Instance.HidePopupByType(PopupType.LevelUpSkill);
+        }).SetUpdate(true);
     }
 
     // ====================== APPLY SKILL ======================
