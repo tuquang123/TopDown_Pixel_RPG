@@ -43,7 +43,7 @@ public class SkillFactory
             case SkillID.LifeDrain:
                 return new LifeDrainSkill();
             default:
-                throw new ArgumentException("Không tìm thấy kỹ năng với ID này.");
+                throw new ArgumentException("Skill not found for this ID.");
         }
     }
 }
@@ -225,7 +225,7 @@ public class SkillSystem : MonoBehaviour
             OnSkillLevelChanged?.Invoke(skillID, state.level);
         }
 
-        ApplyPassiveSkill(skillID); // chỉ gọi 1 lần duy nhất
+        ApplyPassiveSkill(skillID);
         return true;
     }
     private void ApplyPassiveSkill(SkillID skillID)
@@ -249,17 +249,17 @@ public class SkillSystem : MonoBehaviour
     {
         if (slotIndex < 0 || slotIndex >= 5)
         {
-            Debug.Log("Slot không hợp lệ.");
+            Debug.Log("Invalid slot.");
             return;
         }
 
         if (!unlockedSkills.ContainsKey(skillID) && skillID != SkillID.None)
         {
-            Debug.Log("Kỹ năng chưa được mở khóa.");
+            Debug.Log("Skill is not unlocked.");
             return;
         }
 
-        // Gỡ kỹ năng khỏi slot cũ nếu đã gán ở đâu đó
+        // Remove the skill from any old slot before assigning it here.
         foreach (var kvp in assignedSkills)
         {
             if (kvp.Value == skillID)
@@ -270,14 +270,14 @@ public class SkillSystem : MonoBehaviour
             }
         }
 
-        // Gán kỹ năng mới
+        // Assign the new skill.
         assignedSkills[slotIndex] = skillID;
         OnSkillAssigned?.Invoke(slotIndex, skillID);
 
         if (skillID != SkillID.None)
-            Debug.Log($"Đã gán kỹ năng {skillID} vào ô {slotIndex + 1}");
+            Debug.Log($"Assigned skill {skillID} to slot {slotIndex + 1}");
         else
-            Debug.Log($"Đã xoá kỹ năng khỏi ô {slotIndex + 1}");
+            Debug.Log($"Cleared skill from slot {slotIndex + 1}");
     }
 
 
@@ -289,11 +289,11 @@ public class SkillSystem : MonoBehaviour
             CommonReferent.Instance.playerLevel.skillPoints = _playerStats.skillPoints;
             CommonReferent.Instance.playerLevel.levelSystem.skillPoints = _playerStats.skillPoints;
             
-            Debug.Log($"Điểm kỹ năng còn lại: {_playerStats.skillPoints}");
+            Debug.Log($"Skill points remaining: {_playerStats.skillPoints}");
         }
         else
         {
-            Debug.Log("Không còn điểm kỹ năng.");
+            Debug.Log("No skill points remaining.");
         }
     }
     
@@ -355,7 +355,7 @@ public class SkillSystem : MonoBehaviour
         
         if (_playerStats.currentMana < currentLevelStat.manaCost)
         {
-            Debug.Log("Không đủ mana.");
+            Debug.Log("Not enough Mana.");
             return;
         }
 

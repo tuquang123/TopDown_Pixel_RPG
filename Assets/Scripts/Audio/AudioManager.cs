@@ -66,4 +66,25 @@ public class AudioManager : Singleton<AudioManager>
             Debug.LogWarning($"SFX '{clipName}' không tìm thấy.");
         }
     }
+
+    public void PlaySFX(AudioClip clip, float volumeScale = 1f, float pitch = 1f)
+    {
+        if (clip == null || sfxSource == null)
+            return;
+
+        GameObject oneShot = new GameObject($"SFX_{clip.name}");
+        oneShot.transform.SetParent(transform);
+
+        AudioSource source = oneShot.AddComponent<AudioSource>();
+        source.outputAudioMixerGroup = sfxSource.outputAudioMixerGroup;
+        source.volume = sfxSource.volume * volumeScale;
+        source.pitch = pitch;
+        source.spatialBlend = sfxSource.spatialBlend;
+        source.playOnAwake = false;
+        source.clip = clip;
+        source.Play();
+
+        float lifetime = clip.length / Mathf.Max(0.01f, Mathf.Abs(pitch));
+        Destroy(oneShot, lifetime + 0.1f);
+    }
 }

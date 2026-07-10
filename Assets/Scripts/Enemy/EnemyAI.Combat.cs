@@ -33,7 +33,7 @@ public partial class EnemyAI
         transform.localScale = new Vector3(Mathf.Sign(direction) * -1f, 1f, 1f);
     }
 
-    private Transform _attackSnapshot;
+    protected Transform attackSnapshot;
 
     protected virtual void AttackTarget()
     {
@@ -45,25 +45,32 @@ public partial class EnemyAI
         if (Time.time - lastAttackTime < attackCooldown)
             return;
 
-        _attackSnapshot = target; // lưu target tại thời điểm đánh
+        attackSnapshot = target; // lưu target tại thời điểm đánh
         anim.SetBool(MoveBool, false);
         anim.SetTrigger(isHoldingSpear ? LongAttack : AttackTrigger);
         lastAttackTime = Time.time;
     }
 
-    public void DealDamageToTarget()
+    public virtual void DealDamageToTarget()
     {
         if (isDead) return;
 
         // Dùng snapshot — target đã được validate lúc AttackTarget() gọi
         // Không check distance lại vì enemy có thể dịch chuyển trong lúc animation play
-        Transform attackTarget = _attackSnapshot != null ? _attackSnapshot : target;
+        Transform attackTarget = attackSnapshot != null ? attackSnapshot : target;
 
         if (attackTarget == null || !attackTarget.gameObject.activeInHierarchy)
             return;
 
         if (attackTarget.TryGetComponent(out IDamageable damageable))
-            damageable.TakeDamage(attackDamage);
+        {
+            bool isCrit = UnityEngine.Random.Range(0f, 100f) < criticalChance;
+            int finalDamage = isCrit
+                ? Mathf.RoundToInt(attackDamage * criticalDamageMultiplier)
+                : attackDamage;
+
+            damageable.TakeDamage(finalDamage, isCrit);
+        }
     }
 
     protected void RegisterRangedPressure()

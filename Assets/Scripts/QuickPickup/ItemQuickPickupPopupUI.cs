@@ -28,6 +28,11 @@ public class ItemQuickPickupPopupUI : MonoBehaviour
     [Header("Equip")]
     public Button equipButton;
 
+    [Header("Feature Lock")]
+    [SerializeField] private FeatureUnlockData unlockData;
+    [SerializeField] private FeatureType requiredFeature = FeatureType.Inventory;
+    private PlayerLevel _playerLevel;
+
     [Header("Timing")]
     public float showDuration = 0.25f;
     public float stayDuration = 20f;
@@ -45,16 +50,23 @@ public class ItemQuickPickupPopupUI : MonoBehaviour
         root.localScale = Vector3.zero;
         gameObject.SetActive(false);
 
+        _playerLevel = FindObjectOfType<PlayerLevel>();
+
         if (equipButton != null)
             equipButton.onClick.AddListener(OnEquipClicked);
     }
 
     /// <summary>
     /// Gọi hàm này ở chỗ nhặt item để hiện popup.
+    /// Nếu tính năng (inventory) chưa unlock theo level (theo FeatureUnlockData),
+    /// popup sẽ KHÔNG hiện lên.
     /// Nếu popup đang hiện item khác, sẽ bị đè ngay bằng item mới.
     /// </summary>
     public void Show(ItemInstance itemInstance)
     {
+        if (!IsFeatureUnlocked())
+            return; // chưa đủ level mở inventory → không hiện popup luôn
+
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
 
@@ -63,6 +75,20 @@ public class ItemQuickPickupPopupUI : MonoBehaviour
         gameObject.SetActive(true);
         PopulateData(itemInstance);
         currentRoutine = StartCoroutine(PlaySequence());
+    }
+
+    private bool IsFeatureUnlocked()
+    {
+        if (unlockData == null) return true; // không gán data thì coi như luôn được phép hiện
+
+        var entry = unlockData.Get(requiredFeature);
+        if (entry == null) return true;
+
+        if (_playerLevel == null)
+            _playerLevel = FindObjectOfType<PlayerLevel>();
+
+        int currentLevel = _playerLevel != null ? _playerLevel.levelSystem.level : 1;
+        return currentLevel >= entry.requiredLevel;
     }
 
     private IEnumerator PlaySequence()
@@ -104,6 +130,7 @@ public class ItemQuickPickupPopupUI : MonoBehaviour
 
         UpdatePowerPreview(itemInstance);
     }
+
     /// <summary>
     /// Equip tạm item này để tính power sẽ thay đổi bao nhiêu, rồi revert lại ngay.
     /// Toàn bộ diễn ra trong cùng 1 frame (trước khi Unity render) nên không gây

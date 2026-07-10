@@ -61,6 +61,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     public bool isUsingSkill;
     [ReadOnly, ShowInInspector] public bool isDead { get; private set; }
     [SerializeField] private PlayerStatsSO baseStatsSO;
+    [SerializeField] private bool playHurtAnimationWhenNotAttacking = false;
     public float CurrentPower { get; private set; }
     public PlayerStatsData RuntimeStats { get; private set; }
     
@@ -153,16 +154,24 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
         currentHealth -= actualDamage;
         currentHealth = Mathf.Clamp(currentHealth, 0, (int)maxHealth.Value);
 
-        GetComponentInChildren<Animator>().SetTrigger(HurtAnm);
-        StartCoroutine(HurtEffect());
+        PlayerController controller = GetComponent<PlayerController>();
+        controller?.NotifyHit();
+
+        if (playHurtAnimationWhenNotAttacking && controller != null && !controller.IsAttacking)
+            GetComponentInChildren<Animator>().SetTrigger(HurtAnm);
 
         CameraFollow.Instance.Shake(0.25f, 1f);
         OnHealthChanged?.Invoke();
 
+        Color damageColor = actualDamage == 0 ? Color.yellow : new Color(1f, 0.08f, 0.05f);
+        string damageText = isCrit && actualDamage > 0 ? $"-{actualDamage} CRIT!" : $"-{actualDamage}";
+        float fontSize = isCrit && actualDamage > 0 ? 64f : 50f;
+
         FloatingTextSpawner.Instance.SpawnText(
-            $"-{actualDamage}",
+            damageText,
             transform.position + Vector3.up * 0.85f,
-            actualDamage == 0 ? Color.yellow : Color.white);
+            damageColor,
+            fontSize);
 
         if (currentHealth <= 0)
         {
@@ -172,12 +181,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
 
     private IEnumerator HurtEffect()
     {
-        float stunTime = 0.12f;
-        GetComponent<PlayerController>().enabled = false;
-
-        yield return new WaitForSeconds(stunTime);
-
-        GetComponent<PlayerController>().enabled = true;
+        yield return null;
     }
     
     public void UseMana(int amount)

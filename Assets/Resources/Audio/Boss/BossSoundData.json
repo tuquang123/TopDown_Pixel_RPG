@@ -1,0 +1,115 @@
+{
+  "profiles": [
+    {
+      "bossId": "default",
+      "events": [
+        {
+          "eventType": "Spawn",
+          "clips": [
+            {
+              "resourcesPath": "Audio/Boss/Common/Boss_Roar_Deep",
+              "volume": 0.85,
+              "pitchMin": 0.9,
+              "pitchMax": 1.0
+            },
+            {
+              "resourcesPath": "Audio/Boss/Common/Boss_Spawn_01",
+              "volume": 0.9,
+              "pitchMin": 0.8,
+              "pitchMax": 0.95
+            }
+          ]
+        },
+        {
+          "eventType": "Attack",
+          "clips": [
+            {
+              "resourcesPath": "Audio/Boss/Common/Boss_Attack_01",
+              "volume": 0.85,
+              "pitchMin": 0.85,
+              "pitchMax": 1.05
+            },
+            {
+              "resourcesPath": "Audio/Boss/Common/Boss_Attack_02",
+              "volume": 0.85,
+              "pitchMin": 0.85,
+              "pitchMax": 1.05
+            }
+          ]
+        },
+        {
+          "eventType": "HitPlayer",
+          "clips": [
+            {
+              "resourcesPath": "Audio/Boss/Common/Boss_Attack_02",
+              "volume": 0.95,
+              "pitchMin": 0.75,
+              "pitchMax": 0.95
+            }
+          ]
+        },
+        {
+          "eventType": "Hurt",
+          "clips": [
+            {
+              "resourcesPath": "Audio/Boss/Common/Boss_Hurt_01",
+              "volume": 0.8,
+              "pitchMin": 0.8,
+              "pitchMax": 1.0
+            },
+            {
+              "resourcesPath": "Audio/Boss/Common/Boss_Hurt_02",
+              "volume": 0.8,
+              "pitchMin": 0.8,
+              "pitchMax": 1.0
+            }
+          ]
+        },
+        {
+          "eventType": "Death",
+          "clips": [
+            {
+              "resourcesPath": "Audio/Boss/Common/Boss_Death_01",
+              "volume": 1.0,
+              "pitchMin": 0.75,
+              "pitchMax": 0.9
+            }
+          ]
+        },
+        {
+          "eventType": "Summon",
+          "clips": [
+            {
+              "resourcesPath": "Audio/Boss/Common/Boss_Summon_01",
+              "volume": 0.85,
+              "pitchMin": 0.85,
+              "pitchMax": 1.0
+            }
+          ]
+        },
+        {
+          "eventType": "Dash",
+          "clips": [
+            {
+              "resourcesPath": "Audio/Boss/Common/Boss_Dash_01",
+              "volume": 0.9,
+              "pitchMin": 0.75,
+              "pitchMax": 0.9
+            }
+          ]
+        },
+        {
+          "eventType": "Shoot",
+          "clips": [
+            {
+              "resourcesPath": "Audio/Boss/Common/Boss_Shoot_01",
+              "volume": 0.85,
+              "pitchMin": 0.85,
+              "pitchMax": 1.05
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

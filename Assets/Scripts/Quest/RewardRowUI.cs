@@ -1,11 +1,7 @@
-// ================= QuestRewardPopup.cs =================
-// Chứa 2 class, Unity vẫn chấp nhận
-
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-// ── class phụ, không cần file riêng ──────────────────────
 public class RewardRowUI : MonoBehaviour
 {
     [SerializeField] private Image iconImage;
@@ -20,7 +16,6 @@ public class RewardRowUI : MonoBehaviour
     }
 }
 
-// ── class chính, tên khớp tên file ───────────────────────
 public class QuestRewardPopup : BasePopup
 {
     [Header("Header")]
@@ -55,7 +50,7 @@ public class QuestRewardPopup : BasePopup
             SpawnRow(CommonReferent.Instance.iconExp, "EXP", $"+{quest.reward.experienceReward}");
 
         if (quest.reward.goldReward > 0)
-            SpawnRow(CommonReferent.Instance.iconGold, "Vàng", $"+{quest.reward.goldReward}");
+            SpawnRow(CommonReferent.Instance.iconGold, "Gold", $"+{quest.reward.goldReward}");
 
         if (quest.reward.gemReward > 0)
             SpawnRow(CommonReferent.Instance.iconGold, "Gem", $"+{quest.reward.gemReward}");

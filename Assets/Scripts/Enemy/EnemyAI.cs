@@ -45,6 +45,12 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     [BoxGroup("Combat"), LabelText("Skip Hurt Animation")] [SerializeField]
     protected bool skipHurtAnimation;
 
+    [BoxGroup("Combat"), LabelText("Critical Chance %"), Range(0f, 100f)] [SerializeField]
+    protected float criticalChance;
+
+    [BoxGroup("Combat"), LabelText("Critical Damage Multiplier"), Min(1f)] [SerializeField]
+    protected float criticalDamageMultiplier = 1.5f;
+
     #endregion
 
     #region Movement

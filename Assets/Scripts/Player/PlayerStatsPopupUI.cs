@@ -4,6 +4,8 @@ using TMPro;
 using DG.Tweening; 
 public class PlayerStatsPopupUI : BasePopup
 {
+    private const string PreviousStatRequiredMessage = "Requires previous stat upgrade";
+
     public StatDisplayComponent statDisplayComponent;
 
     [SerializeField] private PlayerStatsDataSO dataAsset;
@@ -19,8 +21,15 @@ public class PlayerStatsPopupUI : BasePopup
     [Header("Multiplier Buttons")]
     [SerializeField] private Button btnX1, btnX10, btnX100;
 
+    [Header("Insufficient Gold Toast Limit")]
+    [SerializeField] private int maxInsufficientGoldToasts = 3;
+    [SerializeField] private float insufficientGoldStreakResetGap = 0.5f;
+
     private PlayerStatsDataContainer data => dataAsset.stats;
     private int currentMultiplier = 1;
+
+    private int insufficientGoldStreak = 0;
+    private float lastInsufficientGoldTime = -999f;
 
     public override void Show()
     {
@@ -28,6 +37,7 @@ public class PlayerStatsPopupUI : BasePopup
         dataAsset.Load();
         ApplyBaseStatsOnly();
         SetMultiplier(1);
+        insufficientGoldStreak = 0;
     }
 
     private void SetMultiplier(int value)
@@ -86,7 +96,7 @@ public class PlayerStatsPopupUI : BasePopup
         string current = FormatStatValue(currentValue, isPercent);
         string next    = FormatStatValue(nextValue,    isPercent);
 
-        text.text = $"<color=#AAAAAA>Lv.{currentLvl}</color>  {current} <color=#888888>>></color> <color=#00FF99>{next}</color>  <color=#AAAAAA>(→Lv.{nextLvl})</color>";
+        text.text = $"<color=#AAAAAA>Lv.{currentLvl}</color>  {current} <color=#888888>>></color> <color=#00FF99>{next}</color>  <color=#AAAAAA>(to Lv.{nextLvl})</color>";
     }
     private string FormatStatValue(float value, bool isPercent)
     {
@@ -110,6 +120,17 @@ public class PlayerStatsPopupUI : BasePopup
     private void SetCostText(TextMeshProUGUI text, PlayerStatData stat, int times)
     {
         if (text == null) return;
+
+        if (!CanUpgradeStat(stat, out _))
+        {
+            text.enableAutoSizing = false;
+            text.enableWordWrapping = false;
+            text.text = "<color=#FFB84D>Locked</color>";
+            return;
+        }
+
+        text.enableAutoSizing = false;
+        text.enableWordWrapping = false;
 
         long cost      = CalculateTotalCost(stat, times);
         int  safeCost  = cost > int.MaxValue ? int.MaxValue : (int)cost;
@@ -153,7 +174,6 @@ public class PlayerStatsPopupUI : BasePopup
         var ps = PlayerStats.Instance;
         if (ps == null) return 0;
 
-        // Cost nâng cấp phải bám theo base stat đã nâng cấp (không tính buff tạm thời từ modifier).
         float runtimeValue = GetUpgradeableRuntimeValueForStat(ps, stat);
         int currentLevel = stat.GetLevelFromValue(runtimeValue);
 
@@ -168,7 +188,6 @@ public class PlayerStatsPopupUI : BasePopup
 
     private float GetUpgradeableRuntimeValueForStat(PlayerStats ps, PlayerStatData stat)
     {
-        // Dùng baseValue để level/cost không bị lệch bởi buff/debuff runtime.
         if (stat == data.attack) return ps.attack.baseValue;
         if (stat == data.defense) return ps.defense.baseValue;
         if (stat == data.speed) return ps.speed.baseValue;
@@ -183,14 +202,22 @@ public class PlayerStatsPopupUI : BasePopup
 
     private void TryUpgrade(PlayerStatData stat, System.Func<PlayerStats, Stat> getter, int times, Transform animTarget = null)
     {
+        if (!CanUpgradeStat(stat, out PlayerStatData requiredStat))
+        {
+            GameEvents.OnShowToast.Raise(GetPreviousStatRequiredText(requiredStat));
+            return;
+        }
+
         long totalCost = CalculateTotalCost(stat, times);
         int  safeCost  = totalCost > int.MaxValue ? int.MaxValue : (int)totalCost;
 
         if (!CurrencyManager.Instance.SpendGold(safeCost))
         {
-            GameEvents.OnShowToast.Raise("Không đủ Vàng");
+            ShowInsufficientGoldToastLimited();
             return;
         }
+
+        insufficientGoldStreak = 0;
 
         var ps           = PlayerStats.Instance;
         var playerStat   = getter(ps);
@@ -226,6 +253,65 @@ public class PlayerStatsPopupUI : BasePopup
             animTarget.DOPunchScale(Vector3.one * 0.25f, 0.4f, 8, 0.5f);
         }
     }
+
+    private void ShowInsufficientGoldToastLimited()
+    {
+        float now = Time.unscaledTime;
+
+        if (now - lastInsufficientGoldTime > insufficientGoldStreakResetGap)
+            insufficientGoldStreak = 0;
+
+        lastInsufficientGoldTime = now;
+        insufficientGoldStreak++;
+
+        if (insufficientGoldStreak <= maxInsufficientGoldToasts)
+            GameEvents.OnShowToast.Raise("Not enough Gold");
+    }
+
+    private bool CanUpgradeStat(PlayerStatData stat, out PlayerStatData requiredStat)
+    {
+        requiredStat = GetRequiredPreviousStat(stat);
+        if (requiredStat == null)
+            return true;
+
+        return dataAsset.GetSavedLevel(requiredStat) > 0;
+    }
+
+    private PlayerStatData GetRequiredPreviousStat(PlayerStatData stat)
+    {
+        if (stat == data.defense)     return data.attack;
+        if (stat == data.health)      return data.defense;
+        if (stat == data.mana)        return data.health;
+        if (stat == data.speed)       return data.mana;
+        if (stat == data.attackSpeed) return data.speed;
+        if (stat == data.crit)        return data.attackSpeed;
+        if (stat == data.lifesteal)   return data.crit;
+
+        return null;
+    }
+
+    private string GetPreviousStatRequiredText(PlayerStatData requiredStat)
+    {
+        string requiredName = GetStatDisplayName(requiredStat);
+        return string.IsNullOrEmpty(requiredName)
+            ? PreviousStatRequiredMessage
+            : $"{PreviousStatRequiredMessage}: {requiredName}";
+    }
+
+    private string GetStatDisplayName(PlayerStatData stat)
+    {
+        if (stat == data.attack)      return "Attack";
+        if (stat == data.defense)     return "Defense";
+        if (stat == data.health)      return "HP";
+        if (stat == data.mana)        return "Mana";
+        if (stat == data.speed)       return "Speed";
+        if (stat == data.attackSpeed) return "Atk Speed";
+        if (stat == data.crit)        return "Crit";
+        if (stat == data.lifesteal)   return "Life Steal";
+
+        return "";
+    }
+
     public void OnClickX1()   => SetMultiplier(1);
     public void OnClickX10()  => SetMultiplier(10);
     public void OnClickX100() => SetMultiplier(100);

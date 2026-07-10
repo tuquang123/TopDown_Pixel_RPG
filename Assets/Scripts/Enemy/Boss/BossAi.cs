@@ -5,6 +5,7 @@ public class BossAI : EnemyAI
 {
     [Header("Boss Special Settings")]
     [SerializeField] private BossHealthUI bossHealthUI;
+    [SerializeField] private string bossSoundId = "default";
 
     [Header("Boss Skills")]
     [SerializeField] private GameObject minionPrefab;
@@ -36,6 +37,7 @@ public class BossAI : EnemyAI
         base.Start();
         bossHealthUI?.SetMaxHealth(maxHealth);
         skipHurtAnimation = true;
+        PlayBossSound(BossSoundEvent.Spawn);
     }
 
     private void Update()
@@ -93,6 +95,7 @@ public class BossAI : EnemyAI
     private IEnumerator Skill_SpawnMinions()
     {
         _isPerformingSkill = true;
+        PlayBossSound(BossSoundEvent.Summon);
         anim.SetTrigger(AttackTrigger);
         yield return new WaitForSeconds(0.5f); // delay gồng trước khi triệu hồi
 
@@ -145,6 +148,7 @@ public class BossAI : EnemyAI
     private IEnumerator Skill_Dash()
     {
         _isPerformingSkill = true;
+        PlayBossSound(BossSoundEvent.Dash);
         anim.SetTrigger(AttackTrigger);
 
         yield return new WaitForSeconds(0.3f); // gồng nhẹ
@@ -167,6 +171,7 @@ public class BossAI : EnemyAI
     private IEnumerator Skill_Shoot()
     {
         _isPerformingSkill = true;
+        PlayBossSound(BossSoundEvent.Shoot);
         anim.SetTrigger(AttackTrigger);
         yield return new WaitForSeconds(0.3f);
 
@@ -188,6 +193,36 @@ public class BossAI : EnemyAI
     {
         base.TakeDamage(damage, isCrit);
         bossHealthUI?.UpdateHealth(currentHealth);
+
+        if (!isDead)
+            PlayBossSound(BossSoundEvent.Hurt);
+    }
+
+    protected override void AttackTarget()
+    {
+        bool canAttack = target != null
+                         && !isTakingDamage
+                         && !isDead
+                         && anim != null
+                         && Time.time - lastAttackTime >= attackCooldown;
+
+        base.AttackTarget();
+
+        if (canAttack)
+            PlayBossSound(BossSoundEvent.Attack);
+    }
+
+    public override void DealDamageToTarget()
+    {
+        Transform attackTarget = attackSnapshot != null ? attackSnapshot : target;
+        bool hasValidHit = attackTarget != null
+                           && attackTarget.gameObject.activeInHierarchy
+                           && attackTarget.TryGetComponent(out IDamageable _);
+
+        base.DealDamageToTarget();
+
+        if (hasValidHit)
+            PlayBossSound(BossSoundEvent.HitPlayer);
     }
 
     protected override void Die()
@@ -195,6 +230,7 @@ public class BossAI : EnemyAI
         if (isDead) return;
         isDead = true;
 
+        PlayBossSound(BossSoundEvent.Death);
         anim.SetTrigger(DieTrigger);
         GetComponent<Collider2D>().enabled = false;
         enabled = false;
@@ -229,4 +265,9 @@ public class BossAI : EnemyAI
 
     private void OnDisable() => bossHealthUI?.Hide();
     private void OnDestroy() => bossHealthUI?.Hide();
+
+    private void PlayBossSound(BossSoundEvent soundEvent)
+    {
+        BossSoundDatabase.Play(bossSoundId, soundEvent);
+    }
 }
