@@ -99,7 +99,13 @@ public class UIManager : Singleton<UIManager>
         if (!activePopups.TryGetValue(type, out var popup))
             return;
 
-        popup.Hide(); // popup tự Destroy
+        if (popup is LevelUpSkillPopup levelUpSkillPopup && !levelUpSkillPopup.CanClose)
+        {
+            popup.Hide();
+            return;
+        }
+
+        popup.Hide();
         activePopups.Remove(type);
 
         UpdateBlurState();
@@ -108,13 +114,24 @@ public class UIManager : Singleton<UIManager>
 
     public void HideAllPopups()
     {
-        foreach (var popup in activePopups.Values)
+        var closedTypes = new List<PopupType>();
+
+        foreach (var pair in activePopups)
         {
+            var popup = pair.Value;
+
+            if (popup is LevelUpSkillPopup levelUpSkillPopup && !levelUpSkillPopup.CanClose)
+                continue;
+
             if (popup != null)
                 popup.Hide();
+
+            closedTypes.Add(pair.Key);
         }
 
-        activePopups.Clear();
+        foreach (var type in closedTypes)
+            activePopups.Remove(type);
+
         UpdateBlurState();
         UpdateTimeScale();
     }

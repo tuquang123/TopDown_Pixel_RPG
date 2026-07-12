@@ -57,6 +57,8 @@ public class LevelUpSkillPopup : BasePopup
     private int selectedIndex = -1;
     private Tween confirmPulseTween;
     private int currentPlayerLevel = 1;
+    private bool allowClose;
+    public bool CanClose => allowClose;
 
     protected override void Awake()
     {
@@ -74,6 +76,7 @@ public class LevelUpSkillPopup : BasePopup
     public void ShowLevelUpPopup(int newLevel)
     {
         currentPlayerLevel = Mathf.Max(1, newLevel);
+        allowClose = false;
 
         if (levelText != null)
             levelText.text = $"LEVEL UP - LEVEL {newLevel}";
@@ -119,6 +122,7 @@ public class LevelUpSkillPopup : BasePopup
         if (passiveSkills.Count == 0)
         {
             Debug.Log("[LevelUp] All skills are already max level!");
+            allowClose = true;
             UIManager.Instance.HidePopupByType(PopupType.LevelUpSkill);
             return;
         }
@@ -212,11 +216,10 @@ public class LevelUpSkillPopup : BasePopup
 
     public override void Hide()
     {
-        if (selectedIndex < 0 && currentSkills.Count > 0)
+        if (!allowClose)
         {
-            int randomIndex = Random.Range(0, currentSkills.Count);
-            ApplySkill(currentSkills[randomIndex]);
-            Debug.Log($"[LevelUp] Auto-selected at random: {currentSkills[randomIndex].skillName}");
+            GameEvents.OnShowToast.Raise("Hay chon 1 skill truoc");
+            return;
         }
 
         if (confirmPulseTween != null)
@@ -286,6 +289,7 @@ public class LevelUpSkillPopup : BasePopup
         DOVirtual.DelayedCall(confirmDelayBeforeHide, () =>
         {
             ApplySkill(chosen);
+            allowClose = true;
             UIManager.Instance.HidePopupByType(PopupType.LevelUpSkill);
         }).SetUpdate(true);
     }
@@ -297,7 +301,14 @@ public class LevelUpSkillPopup : BasePopup
 
         bool success = skillSystem.UnlockSkill(skill.skillID);
 
-        if (success) Debug.Log($"[LevelUp] Applied: {skill.skillName}");
-        else         Debug.LogWarning($"[LevelUp] Could not unlock: {skill.skillName}");
+        if (success)
+        {
+            skillSystem.DecrementSkillPoint();
+            Debug.Log($"[LevelUp] Applied: {skill.skillName}");
+        }
+        else
+        {
+            Debug.LogWarning($"[LevelUp] Could not unlock: {skill.skillName}");
+        }
     }
 }

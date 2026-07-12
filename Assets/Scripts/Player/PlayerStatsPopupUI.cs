@@ -4,11 +4,12 @@ using TMPro;
 using DG.Tweening; 
 public class PlayerStatsPopupUI : BasePopup
 {
-    private const string PreviousStatRequiredMessage = "Requires previous stat upgrade";
+    private const string PreviousStatRequiredMessage = "Requires previous stat";
 
     public StatDisplayComponent statDisplayComponent;
 
     [SerializeField] private PlayerStatsDataSO dataAsset;
+    [SerializeField] private int unlockStep = 5;
 
     [Header("Cost Texts")]
     [SerializeField] private TextMeshProUGUI attackCostText, defenseCostText, speedCostText, critCostText,
@@ -20,6 +21,17 @@ public class PlayerStatsPopupUI : BasePopup
 
     [Header("Multiplier Buttons")]
     [SerializeField] private Button btnX1, btnX10, btnX100;
+
+    [Header("Requirement Popups")]
+    [SerializeField] private bool autoCreateRequirementPopups = true;
+    [SerializeField] private GameObject critRequirementPopup;
+    [SerializeField] private TextMeshProUGUI critRequirementText;
+    [SerializeField] private GameObject lifestealRequirementPopup;
+    [SerializeField] private TextMeshProUGUI lifestealRequirementText;
+    [SerializeField] private GameObject attackSpeedRequirementPopup;
+    [SerializeField] private TextMeshProUGUI attackSpeedRequirementText;
+    [SerializeField] private GameObject speedRequirementPopup;
+    [SerializeField] private TextMeshProUGUI speedRequirementText;
 
     [Header("Insufficient Gold Toast Limit")]
     [SerializeField] private int maxInsufficientGoldToasts = 3;
@@ -36,6 +48,7 @@ public class PlayerStatsPopupUI : BasePopup
         base.Show();
         dataAsset.Load();
         ApplyBaseStatsOnly();
+        EnsureRequirementPopups();
         SetMultiplier(1);
         insufficientGoldStreak = 0;
     }
@@ -56,6 +69,7 @@ public class PlayerStatsPopupUI : BasePopup
         statDisplayComponent.SetStats(PlayerStats.Instance);
         RefreshCostTexts();
         RefreshPreviewTexts();
+        RefreshRequirementPopups();
     }
 
     private void RefreshCostTexts()
@@ -121,11 +135,11 @@ public class PlayerStatsPopupUI : BasePopup
     {
         if (text == null) return;
 
-        if (!CanUpgradeStat(stat, out _))
+        if (!CanUpgradeStat(stat, times, out PlayerStatData requiredStat, out int requiredLevel, out int currentRequiredLevel))
         {
             text.enableAutoSizing = false;
             text.enableWordWrapping = false;
-            text.text = "<color=#FFB84D>Locked</color>";
+            text.text = "<color=#151515>Locked</color>";
             return;
         }
 
@@ -202,9 +216,9 @@ public class PlayerStatsPopupUI : BasePopup
 
     private void TryUpgrade(PlayerStatData stat, System.Func<PlayerStats, Stat> getter, int times, Transform animTarget = null)
     {
-        if (!CanUpgradeStat(stat, out PlayerStatData requiredStat))
+        if (!CanUpgradeStat(stat, times, out PlayerStatData requiredStat, out int requiredLevel, out int currentRequiredLevel))
         {
-            GameEvents.OnShowToast.Raise(GetPreviousStatRequiredText(requiredStat));
+            GameEvents.OnShowToast.Raise(GetPreviousStatRequiredText(requiredStat, requiredLevel, currentRequiredLevel));
             return;
         }
 
@@ -268,48 +282,157 @@ public class PlayerStatsPopupUI : BasePopup
             GameEvents.OnShowToast.Raise("Not enough Gold");
     }
 
-    private bool CanUpgradeStat(PlayerStatData stat, out PlayerStatData requiredStat)
+    private bool CanUpgradeStat(
+        PlayerStatData stat,
+        int times,
+        out PlayerStatData requiredStat,
+        out int requiredLevel,
+        out int currentRequiredLevel)
     {
+        requiredLevel = 0;
+        currentRequiredLevel = 0;
         requiredStat = GetRequiredPreviousStat(stat);
         if (requiredStat == null)
             return true;
 
-        return dataAsset.GetSavedLevel(requiredStat) > 0;
+        int nextLevel = dataAsset.GetSavedLevel(stat) + Mathf.Max(1, times);
+        requiredLevel = nextLevel * Mathf.Max(1, unlockStep);
+        currentRequiredLevel = dataAsset.GetSavedLevel(requiredStat);
+
+        return currentRequiredLevel >= requiredLevel;
     }
 
     private PlayerStatData GetRequiredPreviousStat(PlayerStatData stat)
     {
-        if (stat == data.defense)     return data.attack;
-        if (stat == data.health)      return data.defense;
-        if (stat == data.mana)        return data.health;
-        if (stat == data.speed)       return data.mana;
-        if (stat == data.attackSpeed) return data.speed;
-        if (stat == data.crit)        return data.attackSpeed;
+        if (stat == data.crit)        return data.attack;
         if (stat == data.lifesteal)   return data.crit;
+        if (stat == data.attackSpeed) return data.lifesteal;
+        if (stat == data.speed)       return data.attackSpeed;
 
         return null;
     }
 
-    private string GetPreviousStatRequiredText(PlayerStatData requiredStat)
+    private string GetPreviousStatRequiredText(PlayerStatData requiredStat, int requiredLevel, int currentRequiredLevel)
     {
         string requiredName = GetStatDisplayName(requiredStat);
         return string.IsNullOrEmpty(requiredName)
             ? PreviousStatRequiredMessage
-            : $"{PreviousStatRequiredMessage}: {requiredName}";
+            : $"{PreviousStatRequiredMessage}: {requiredName} Lv.{requiredLevel} ({currentRequiredLevel}/{requiredLevel})";
+    }
+
+    private string GetShortRequirementText(PlayerStatData requiredStat, int requiredLevel)
+    {
+        string requiredName = GetStatDisplayName(requiredStat);
+        return string.IsNullOrEmpty(requiredName)
+            ? "Locked"
+            : $"Requires {requiredName} Lv.{requiredLevel}";
+    }
+
+    private void RefreshRequirementPopups()
+    {
+        RefreshRequirementPopup(data.crit, critRequirementPopup, critRequirementText);
+        RefreshRequirementPopup(data.lifesteal, lifestealRequirementPopup, lifestealRequirementText);
+        RefreshRequirementPopup(data.attackSpeed, attackSpeedRequirementPopup, attackSpeedRequirementText);
+        RefreshRequirementPopup(data.speed, speedRequirementPopup, speedRequirementText);
+    }
+
+    private void RefreshRequirementPopup(PlayerStatData stat, GameObject popup, TextMeshProUGUI text)
+    {
+        if (popup == null) return;
+
+        bool unlocked = CanUpgradeStat(stat, currentMultiplier, out PlayerStatData requiredStat, out int requiredLevel, out int currentRequiredLevel);
+        popup.SetActive(!unlocked);
+
+        if (!unlocked && text != null)
+            text.text = GetButtonRequirementText(requiredStat, requiredLevel);
+    }
+
+    private void EnsureRequirementPopups()
+    {
+        if (!autoCreateRequirementPopups) return;
+
+        EnsureRequirementPopup(ref critRequirementPopup, ref critRequirementText, critPreview, critCostText);
+        EnsureRequirementPopup(ref lifestealRequirementPopup, ref lifestealRequirementText, lifestealPreview, lifestealCostText);
+        EnsureRequirementPopup(ref attackSpeedRequirementPopup, ref attackSpeedRequirementText, attackSpeedPreview, attackSpeedCostText);
+        EnsureRequirementPopup(ref speedRequirementPopup, ref speedRequirementText, speedPreview, speedCostText);
+    }
+
+    private void EnsureRequirementPopup(
+        ref GameObject popup,
+        ref TextMeshProUGUI popupText,
+        TextMeshProUGUI previewText,
+        TextMeshProUGUI costText)
+    {
+        if (popup != null) return;
+
+        Transform buttonRoot = costText != null ? costText.transform.parent : previewText?.transform.parent;
+        if (buttonRoot == null) return;
+
+        popup = new GameObject("UpgradeLockBadge", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Outline), typeof(Shadow));
+        popup.transform.SetParent(buttonRoot, false);
+        popup.transform.SetAsLastSibling();
+
+        RectTransform rect = popup.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.offsetMin = new Vector2(8f, 8f);
+        rect.offsetMax = new Vector2(-8f, -8f);
+
+        Image image = popup.GetComponent<Image>();
+        image.color = new Color(0f, 0f, 0f, 0.96f);
+        image.raycastTarget = false;
+
+        Outline outline = popup.GetComponent<Outline>();
+        outline.effectColor = new Color(0.02f, 0.02f, 0.02f, 1f);
+        outline.effectDistance = new Vector2(2f, -2f);
+
+        Shadow[] shadows = popup.GetComponents<Shadow>();
+        Shadow shadow = shadows[shadows.Length - 1];
+        shadow.effectColor = new Color(0f, 0f, 0f, 0.8f);
+        shadow.effectDistance = new Vector2(0f, -6f);
+
+        GameObject textObject = new GameObject("RequirementText", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+        textObject.transform.SetParent(popup.transform, false);
+
+        RectTransform textRect = textObject.GetComponent<RectTransform>();
+        textRect.anchorMin = new Vector2(0.06f, 0.08f);
+        textRect.anchorMax = new Vector2(0.94f, 0.92f);
+        textRect.offsetMin = Vector2.zero;
+        textRect.offsetMax = Vector2.zero;
+
+        popupText = textObject.GetComponent<TextMeshProUGUI>();
+        popupText.alignment = TextAlignmentOptions.Center;
+        popupText.enableAutoSizing = true;
+        popupText.fontSizeMin = 10f;
+        popupText.fontSizeMax = 24f;
+        popupText.color = new Color(0.95f, 0.08f, 0.06f, 1f);
+        popupText.raycastTarget = false;
+
+        popup.SetActive(false);
     }
 
     private string GetStatDisplayName(PlayerStatData stat)
     {
-        if (stat == data.attack)      return "Attack";
+        if (stat == data.attack)      return "Damage";
         if (stat == data.defense)     return "Defense";
         if (stat == data.health)      return "HP";
         if (stat == data.mana)        return "Mana";
         if (stat == data.speed)       return "Speed";
-        if (stat == data.attackSpeed) return "Atk Speed";
-        if (stat == data.crit)        return "Crit";
+        if (stat == data.attackSpeed) return "Attack Speed";
+        if (stat == data.crit)        return "Critical";
         if (stat == data.lifesteal)   return "Life Steal";
 
         return "";
+    }
+
+    private string GetButtonRequirementText(PlayerStatData requiredStat, int requiredLevel)
+    {
+        string requiredName = GetStatDisplayName(requiredStat);
+        return string.IsNullOrEmpty(requiredName)
+            ? "Locked"
+            : $"LOCKED\nRequires {requiredName} Lv.{requiredLevel}";
     }
 
     public void OnClickX1()   => SetMultiplier(1);

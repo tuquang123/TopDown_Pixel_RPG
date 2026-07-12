@@ -2888,6 +2888,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statDisplayComponent: {fileID: 4136541468996188794}
   dataAsset: {fileID: 11400000, guid: 329e2587ab210724dba4003b5d1dd0f5, type: 2}
+  unlockStep: 5
   attackCostText: {fileID: 821798092366810713}
   defenseCostText: {fileID: 6756216468005950644}
   speedCostText: {fileID: 9159878272332251582}
@@ -2907,6 +2908,13 @@ MonoBehaviour:
   btnX1: {fileID: 2758547295644163678}
   btnX10: {fileID: 5862780302064531992}
   btnX100: {fileID: 2412320365619327330}
+  autoCreateRequirementPopups: 0
+  critRequirementPopup: {fileID: 0}
+  critRequirementText: {fileID: 0}
+  lifestealRequirementPopup: {fileID: 0}
+  lifestealRequirementText: {fileID: 0}
+  attackSpeedRequirementPopup: {fileID: 0}
+  attackSpeedRequirementText: {fileID: 0}
   maxInsufficientGoldToasts: 3
   insufficientGoldStreakResetGap: 0.5
 --- !u!1 &3443120902810181665

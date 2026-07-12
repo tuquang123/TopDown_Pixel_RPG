@@ -41,7 +41,7 @@ public class WaveAnnouncementUI : MonoBehaviour
         if (txtLabel != null)
             txtLabel.text = isBossWave
                 ? $"Stage {stage}  — BOSS WAVE —"
-                : $"Stage {stage}  Wave {wave}";
+                : $"Stage {stage}";
 
         _canvasGroup.DOKill();
         _canvasGroup.alpha = 0f;
