@@ -22,6 +22,7 @@ public class SkillDisplayUI : MonoBehaviour
     private Coroutine _pulseCoroutine;
     private int       _index;
     private Action<int> _onClickCallback;
+    private SkillData _data;
 
     // ====================== INIT ======================
     private void Awake()
@@ -33,14 +34,26 @@ public class SkillDisplayUI : MonoBehaviour
         SetOverlayActive(false);
     }
 
+    private void OnEnable()
+    {
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged += RefreshLanguage;
+    }
+
+    private void OnDisable()
+    {
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLanguage;
+    }
+
     // ====================== DISPLAY ======================
     public void DisplaySkill(SkillData data, int index, Action<int> onClick)
     {
+        _data           = data;
         _index           = index;
         _onClickCallback = onClick;
 
-        if (skillName != null) skillName.text = data.skillName;
-        if (skillDesc != null) skillDesc.text = data.GetDescriptionAtLevel(1);
+        RefreshLanguage();
 
         if (skillIcon != null && data.icon != null)
             skillIcon.sprite = data.icon;
@@ -55,6 +68,18 @@ public class SkillDisplayUI : MonoBehaviour
 
         // Reset sạch trạng thái cũ
         ForceReset();
+    }
+
+    private void RefreshLanguage()
+    {
+        if (_data == null)
+            return;
+
+        if (skillName != null)
+            skillName.text = _data.skillName;
+
+        if (skillDesc != null)
+            skillDesc.text = _data.GetDescriptionAtLevel(1);
     }
 
     // ====================== SELECT ======================

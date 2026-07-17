@@ -38,6 +38,30 @@ public class SkillDetailPanel : MonoBehaviour
     private CanvasGroup canvasGroup;
     private Coroutine animCoroutine;
 
+    private void OnEnable()
+    {
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged += RefreshLanguage;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLanguage;
+        }
+    }
+
+    private void RefreshLanguage()
+    {
+        if (currentSkill != null && skillSystem != null)
+        {
+            RefreshUI();
+        }
+    }
+
     // =========================
     // SETUP
     // =========================
@@ -61,11 +85,14 @@ public class SkillDetailPanel : MonoBehaviour
         bool isMaxLevel = currentLevel >= currentSkill.maxLevel;
         bool isActive = currentSkill.skillType == SkillType.Active;
 
-        skillPointText.text = $"Skill Point : {skillPoint}";
+        string skillPointLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("skill_point") : "Skill Point";
+        string levelLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("level") : "Level";
+
+        skillPointText.text = $"{skillPointLabel}: {skillPoint}";
         nameText.text = currentSkill.skillName;
         iconImage.sprite = currentSkill.icon;
 
-        levelText.text = $"Level: {currentLevel}/{currentSkill.maxLevel}";
+        levelText.text = $"{levelLabel}: {currentLevel}/{currentSkill.maxLevel}";
         descriptionText.text = BuildDescription(currentLevel);
 
         if (!isUnlocked)
@@ -77,7 +104,7 @@ public class SkillDetailPanel : MonoBehaviour
             {
                 learnButton.gameObject.SetActive(true);
                 learnButton.interactable = true;
-                learnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Learn";
+                learnButton.GetComponentInChildren<TextMeshProUGUI>().text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("learn") : "Learn";
             }
         }
         else
@@ -89,7 +116,7 @@ public class SkillDetailPanel : MonoBehaviour
             {
                 learnButton.gameObject.SetActive(true);
                 learnButton.interactable = true;
-                learnButton.GetComponentInChildren<TextMeshProUGUI>().text = "Upgrade";
+                learnButton.GetComponentInChildren<TextMeshProUGUI>().text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("upgrade") : "Upgrade";
             }
 
             if (isActive)
@@ -124,7 +151,9 @@ public class SkillDetailPanel : MonoBehaviour
             SkillLevelStat currentStat = currentSkill.GetLevelStat(currentLevel);
             if (currentStat != null)
             {
-                result += $"<b>Current (Level {currentLevel}):</b>\n";
+                string currentLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("current") : "Current";
+                string levelLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("level") : "Level";
+                result += $"<b>{currentLabel} ({levelLabel} {currentLevel}):</b>\n";
                 result += FormatDesc(currentStat) + "\n\n";
             }
         }
@@ -135,7 +164,9 @@ public class SkillDetailPanel : MonoBehaviour
             SkillLevelStat nextStat = currentSkill.GetLevelStat(nextLevel);
             if (nextStat != null)
             {
-                result += $"<b>Next (Level {nextLevel}):</b>\n";
+                string nextLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("next") : "Next";
+                string levelLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("level") : "Level";
+                result += $"<b>{nextLabel} ({levelLabel} {nextLevel}):</b>\n";
                 result += FormatDesc(nextStat);
             }
         }
@@ -200,7 +231,7 @@ public class SkillDetailPanel : MonoBehaviour
     // =========================
     // LOCK STATE
     // =========================
-  
+
 
     private void ShowLocked()
     {
@@ -299,5 +330,5 @@ public class SkillDetailPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    
+
 }

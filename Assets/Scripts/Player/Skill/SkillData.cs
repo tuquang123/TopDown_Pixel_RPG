@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using Sirenix.OdinInspector;
 using System.Collections.Generic;
 
@@ -18,7 +19,13 @@ public class SkillData : ScriptableObject
     public SkillID skillID;
     
     [Title("Skill Name")]
-    public string skillName;
+    [FormerlySerializedAs("skillName")]
+    [SerializeField] private string _skillName;
+    public string skillName
+    {
+        get => (LanguageManager.Instance != null && skillID != SkillID.None) ? LanguageManager.Instance.GetTranslation(skillID.ToString()) : _skillName;
+        set => _skillName = value;
+    }
     
     [Title("Skill Type")]
     public SkillType skillType;
@@ -40,9 +47,21 @@ public class SkillData : ScriptableObject
 
     [Title("Description")]
     [TextArea(3, 5)]  // Min 3 dòng, max 5 dòng (có thể điều chỉnh)
-    public string descriptionTemplate;
+    [FormerlySerializedAs("descriptionTemplate")]
+    [SerializeField] private string _descriptionTemplate;
+    public string descriptionTemplate
+    {
+        get => (LanguageManager.Instance != null && skillID != SkillID.None) ? LanguageManager.Instance.GetTranslation(skillID.ToString() + "_des_template") : _descriptionTemplate;
+        set => _descriptionTemplate = value;
+    }
 
-    public string description;  
+    [FormerlySerializedAs("description")]
+    [SerializeField] private string _description;
+    public string description
+    {
+        get => (LanguageManager.Instance != null && skillID != SkillID.None) ? LanguageManager.Instance.GetTranslation(skillID.ToString() + "_des") : _description;
+        set => _description = value;
+    }
 
     [HideInInspector] public int maxLevel => levelStats.Count;
     

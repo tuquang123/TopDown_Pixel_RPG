@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -201,19 +201,54 @@ public class InventoryUI : BasePopup
         if (autoEquipButton != null)
         {
             autoEquipButton.onClick.AddListener(AutoEquipBestItems);
-            autoEquipText.text = "Auto Equip";
         }
 
         if (sellAllButton != null)
         {
             sellAllButton.onClick.AddListener(OnClickSellAll);
-            sellAllText.text = "Sell All";
         }
 
         if (unequipAllButton != null)
         {
             unequipAllButton.onClick.AddListener(UnequipAllItems);
-            unequipAllText.text = "Unequip All";
+        }
+
+        UpdateLocalizedStaticText();
+    }
+
+    private void OnEnable()
+    {
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged += UpdateLocalizedStaticText;
+        }
+
+        UpdateLocalizedStaticText();
+    }
+
+    private void OnDisable()
+    {
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged -= UpdateLocalizedStaticText;
+        }
+    }
+
+    private void UpdateLocalizedStaticText()
+    {
+        if (autoEquipText != null)
+        {
+            autoEquipText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("auto_equip") : "Auto Equip";
+        }
+
+        if (sellAllText != null)
+        {
+            sellAllText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("sell_all") : "Sell All";
+        }
+
+        if (unequipAllText != null)
+        {
+            unequipAllText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("unequip_all") : "Unequip All";
         }
     }
 

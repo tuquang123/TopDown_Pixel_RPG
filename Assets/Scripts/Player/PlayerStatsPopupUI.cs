@@ -1,11 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using DG.Tweening; 
+using DG.Tweening;
 public class PlayerStatsPopupUI : BasePopup
 {
-    private const string PreviousStatRequiredMessage = "Requires previous stat";
-
     public StatDisplayComponent statDisplayComponent;
 
     [SerializeField] private PlayerStatsDataSO dataAsset;
@@ -70,6 +68,8 @@ public class PlayerStatsPopupUI : BasePopup
         RefreshCostTexts();
         RefreshPreviewTexts();
         RefreshRequirementPopups();
+        NormalizeStatsUiText();
+        UpdateLocalizedStaticText();
     }
 
     private void RefreshCostTexts()
@@ -102,6 +102,7 @@ public class PlayerStatsPopupUI : BasePopup
     private void SetPreviewText(TextMeshProUGUI text, PlayerStatData stat, float currentValue, int times, bool isPercent)
     {
         if (text == null) return;
+        PreparePreviewText(text);
 
         float nextValue  = currentValue + times * stat.increasePerLevel;
         int   currentLvl = stat.GetLevelFromValue(currentValue);
@@ -110,7 +111,9 @@ public class PlayerStatsPopupUI : BasePopup
         string current = FormatStatValue(currentValue, isPercent);
         string next    = FormatStatValue(nextValue,    isPercent);
 
-        text.text = $"<color=#AAAAAA>Lv.{currentLvl}</color>  {current} <color=#888888>>></color> <color=#00FF99>{next}</color>  <color=#AAAAAA>(to Lv.{nextLvl})</color>";
+        string levelLabel = T("lv", "Lv");
+        string toLabel = IsVietnamese() ? "l\u00ean" : "to";
+        text.text = $"<color=#AAAAAA>{levelLabel}.{currentLvl}</color>  {current} <color=#888888>>></color> <color=#00FF99>{next}</color>  <color=#AAAAAA>({toLabel} {levelLabel}.{nextLvl})</color>";
     }
     private string FormatStatValue(float value, bool isPercent)
     {
@@ -134,17 +137,14 @@ public class PlayerStatsPopupUI : BasePopup
     private void SetCostText(TextMeshProUGUI text, PlayerStatData stat, int times)
     {
         if (text == null) return;
+        PrepareCostText(text);
 
         if (!CanUpgradeStat(stat, times, out PlayerStatData requiredStat, out int requiredLevel, out int currentRequiredLevel))
         {
-            text.enableAutoSizing = false;
-            text.enableWordWrapping = false;
-            text.text = "<color=#151515>Locked</color>";
+            string lockedText = T("locked", "Locked");
+            text.text = $"<color=#151515>{lockedText}</color>";
             return;
         }
-
-        text.enableAutoSizing = false;
-        text.enableWordWrapping = false;
 
         long cost      = CalculateTotalCost(stat, times);
         int  safeCost  = cost > int.MaxValue ? int.MaxValue : (int)cost;
@@ -155,7 +155,110 @@ public class PlayerStatsPopupUI : BasePopup
             ? $"<color=#FFFFFF>{display}</color> <sprite name=\"gold_icon\">"
             : $"<color=#FF4444>{display}</color> <sprite name=\"gold_icon\">";
     }
-    
+
+    private void NormalizeStatsUiText()
+    {
+        NormalizeButtonTexts();
+        PreparePreviewText(attackPreview);
+        PreparePreviewText(defensePreview);
+        PreparePreviewText(speedPreview);
+        PreparePreviewText(critPreview);
+        PreparePreviewText(lifestealPreview);
+        PreparePreviewText(attackSpeedPreview);
+        PreparePreviewText(healthPreview);
+        PreparePreviewText(manaPreview);
+        PrepareCostText(attackCostText);
+        PrepareCostText(defenseCostText);
+        PrepareCostText(speedCostText);
+        PrepareCostText(critCostText);
+        PrepareCostText(lifestealCostText);
+        PrepareCostText(attackSpeedCostText);
+        PrepareCostText(healthCostText);
+        PrepareCostText(manaCostText);
+    }
+
+    private void NormalizeButtonTexts()
+    {
+        TextMeshProUGUI[] labels = GetComponentsInChildren<TextMeshProUGUI>(true);
+        foreach (var label in labels)
+        {
+            if (label == null) continue;
+
+            string raw = label.text.Trim();
+            bool isButtonLabel = IsLevelUpText(raw) || IsLockedText(raw);
+            if (!isButtonLabel) continue;
+
+            label.enableWordWrapping = false;
+            label.overflowMode = TextOverflowModes.Ellipsis;
+            label.alignment = TextAlignmentOptions.Center;
+        }
+    }
+
+    private void UpdateLocalizedStaticText()
+    {
+        TextMeshProUGUI[] labels = GetComponentsInChildren<TextMeshProUGUI>(true);
+        foreach (var label in labels)
+        {
+            if (label == null) continue;
+
+            string raw = label.text.Trim();
+            if (IsLevelUpText(raw))
+            {
+                label.text = T("level_up", "Level Up");
+            }
+            else if (IsLockedText(raw))
+            {
+                label.text = T("locked", "Locked");
+            }
+            else if (IsStatsTitleText(raw))
+            {
+                label.text = T("stats", "Stats");
+            }
+        }
+    }
+
+    private bool IsLevelUpText(string text)
+    {
+        return text == "Level Up"
+            || text == "LEVEL UP"
+            || text == "N\u00e2ng C\u1ea5p"
+            || text == "N\u00c2NG C\u1ea4P";
+    }
+
+    private bool IsLockedText(string text)
+    {
+        return text == "Locked"
+            || text == "LOCKED"
+            || text == "\u0110\u00e3 Kh\u00f3a"
+            || text == "\u0110\u00c3 KH\u00d3A";
+    }
+
+    private bool IsStatsTitleText(string text)
+    {
+        return text == "Stats"
+            || text == "STATS"
+            || text == "Ch\u1ec9 S\u1ed1"
+            || text == "CH\u1ec8 S\u1ed0";
+    }
+
+    private void PreparePreviewText(TextMeshProUGUI text)
+    {
+        if (text == null) return;
+
+        text.enableWordWrapping = false;
+        text.overflowMode = TextOverflowModes.Ellipsis;
+        text.alignment = TextAlignmentOptions.MidlineLeft;
+    }
+
+    private void PrepareCostText(TextMeshProUGUI text)
+    {
+        if (text == null) return;
+
+        text.enableWordWrapping = false;
+        text.overflowMode = TextOverflowModes.Ellipsis;
+        text.alignment = TextAlignmentOptions.Center;
+    }
+
     private void ApplyBaseStatsOnly()
     {
         var ps = PlayerStats.Instance;
@@ -259,7 +362,6 @@ public class PlayerStatsPopupUI : BasePopup
         dataAsset.Save();
         RefreshUI();
 
-     
         if (animTarget != null)
         {
             animTarget.DOKill();
@@ -279,7 +381,7 @@ public class PlayerStatsPopupUI : BasePopup
         insufficientGoldStreak++;
 
         if (insufficientGoldStreak <= maxInsufficientGoldToasts)
-            GameEvents.OnShowToast.Raise("Not enough Gold");
+            GameEvents.OnShowToast.Raise(T("not_enough_gold", "Not enough Gold"));
     }
 
     private bool CanUpgradeStat(
@@ -315,17 +417,21 @@ public class PlayerStatsPopupUI : BasePopup
     private string GetPreviousStatRequiredText(PlayerStatData requiredStat, int requiredLevel, int currentRequiredLevel)
     {
         string requiredName = GetStatDisplayName(requiredStat);
+        string message = IsVietnamese()
+            ? "Y\u00eau c\u1ea7u stat tr\u01b0\u1edbc"
+            : "Requires previous stat";
+
         return string.IsNullOrEmpty(requiredName)
-            ? PreviousStatRequiredMessage
-            : $"{PreviousStatRequiredMessage}: {requiredName} Lv.{requiredLevel} ({currentRequiredLevel}/{requiredLevel})";
+            ? message
+            : $"{message}: {requiredName} Lv.{requiredLevel} ({currentRequiredLevel}/{requiredLevel})";
     }
 
     private string GetShortRequirementText(PlayerStatData requiredStat, int requiredLevel)
     {
         string requiredName = GetStatDisplayName(requiredStat);
         return string.IsNullOrEmpty(requiredName)
-            ? "Locked"
-            : $"Requires {requiredName} Lv.{requiredLevel}";
+            ? T("locked", "Locked")
+            : FormatRequiresText(requiredName, requiredLevel);
     }
 
     private void RefreshRequirementPopups()
@@ -415,14 +521,14 @@ public class PlayerStatsPopupUI : BasePopup
 
     private string GetStatDisplayName(PlayerStatData stat)
     {
-        if (stat == data.attack)      return "Damage";
-        if (stat == data.defense)     return "Defense";
-        if (stat == data.health)      return "HP";
-        if (stat == data.mana)        return "Mana";
-        if (stat == data.speed)       return "Speed";
-        if (stat == data.attackSpeed) return "Attack Speed";
-        if (stat == data.crit)        return "Critical";
-        if (stat == data.lifesteal)   return "Life Steal";
+        if (stat == data.attack)      return T("attack", "Attack");
+        if (stat == data.defense)     return T("defense", "Defense");
+        if (stat == data.health)      return T("hp", "HP");
+        if (stat == data.mana)        return T("mana", "Mana");
+        if (stat == data.speed)       return T("speed", "Speed");
+        if (stat == data.attackSpeed) return T("attack_speed", "Attack Speed");
+        if (stat == data.crit)        return T("crit", "Critical");
+        if (stat == data.lifesteal)   return T("life_steal", "Life Steal");
 
         return "";
     }
@@ -430,9 +536,27 @@ public class PlayerStatsPopupUI : BasePopup
     private string GetButtonRequirementText(PlayerStatData requiredStat, int requiredLevel)
     {
         string requiredName = GetStatDisplayName(requiredStat);
+        string lockedText = T("locked", "Locked");
         return string.IsNullOrEmpty(requiredName)
-            ? "Locked"
-            : $"LOCKED\nRequires {requiredName} Lv.{requiredLevel}";
+            ? lockedText
+            : $"{lockedText.ToUpperInvariant()}\n{FormatRequiresText(requiredName, requiredLevel)}";
+    }
+
+    private string FormatRequiresText(string requiredName, int requiredLevel)
+    {
+        return IsVietnamese()
+            ? $"Y\u00eau c\u1ea7u {requiredName} Lv.{requiredLevel}"
+            : $"Requires {requiredName} Lv.{requiredLevel}";
+    }
+
+    private string T(string key, string fallback)
+    {
+        return LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation(key) : fallback;
+    }
+
+    private bool IsVietnamese()
+    {
+        return LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi";
     }
 
     public void OnClickX1()   => SetMultiplier(1);

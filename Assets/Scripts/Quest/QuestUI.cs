@@ -8,6 +8,7 @@ public class QuestUI : MonoBehaviour
     [SerializeField] private Button claimButton;
 
     private QuestProgress currentQuest;
+    private bool currentReadyToTurnIn;
 
     private void Awake()
     {
@@ -19,6 +20,30 @@ public class QuestUI : MonoBehaviour
             claimButton.onClick.AddListener(OnClickClaim);
             claimButton.gameObject.SetActive(false);
         }
+
+        Clear();
+    }
+
+    private void OnEnable()
+    {
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged += RefreshLanguage;
+    }
+
+    private void OnDisable()
+    {
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLanguage;
+    }
+
+    private void RefreshLanguage()
+    {
+        RefreshClaimButtonLabel();
+
+        if (currentQuest != null)
+            UpdateQuestProgress(currentQuest, currentReadyToTurnIn);
+        else
+            Clear();
     }
 
     private void EnsureClaimButton()
@@ -52,7 +77,7 @@ public class QuestUI : MonoBehaviour
         textRect.offsetMax = Vector2.zero;
 
         var label       = textGO.GetComponent<Text>();
-        label.text      = "Claim";
+        label.text      = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("claim") : "Claim";
         label.alignment = TextAnchor.MiddleCenter;
         label.color     = Color.white;
         label.font      = Resources.GetBuiltinResource<Font>("Arial.ttf");
@@ -61,6 +86,7 @@ public class QuestUI : MonoBehaviour
     public void UpdateQuestProgress(QuestProgress qp, bool readyToTurnIn = false)
     {
         currentQuest = qp;
+        currentReadyToTurnIn = readyToTurnIn;
 
         if (qp == null || qp.quest == null || qp.quest.objectives == null)
         {
@@ -68,46 +94,60 @@ public class QuestUI : MonoBehaviour
             return;
         }
 
-        string text = $"<b>Quest:</b> {qp.quest.questName}\n";
+        string questLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("quest") : "Quest";
+        string rewardLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("reward") : "Reward";
+        string completedLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("completed") : "Completed";
+        string claimLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("claim") : "Claim";
+        string receivedLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("received") : "Received";
+        string goldLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("gold") : "Gold";
+        string gemLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("gem") : "Gem";
+
+        string text = $"<b>{questLabel}:</b> {TranslateRuntimeText(qp.quest.questName)}\n";
 
         foreach (var obj in qp.quest.objectives)
         {
+            if (obj == null || string.IsNullOrEmpty(obj.objectiveName))
+                continue;
+
             int current = 0;
 
             if (qp.progress != null && qp.progress.ContainsKey(obj.objectiveName))
                 current = qp.progress[obj.objectiveName];
 
-            text += $"- {obj.objectiveName}: {current}/{obj.requiredAmount}\n";
+            text += $"- {TranslateRuntimeText(obj.objectiveName)}: {current}/{obj.requiredAmount}\n";
         }
 
         if (qp.quest.reward != null)
         {
-            text += "\n<b><color=#4CAF50>Reward</color></b>\n";
+            text += $"\n<b><color=#4CAF50>{rewardLabel}</color></b>\n";
 
             if (qp.quest.reward.experienceReward > 0)
                 text += $"<color=#C084FC>+{qp.quest.reward.experienceReward} EXP</color>\n";
 
             if (qp.quest.reward.goldReward > 0)
-                text += $"<color=#FFD700>+{qp.quest.reward.goldReward} Gold</color>\n";
+                text += $"<color=#FFD700>+{qp.quest.reward.goldReward} {goldLabel}</color>\n";
 
             if (qp.quest.reward.gemReward > 0)
-                text += $"<color=#3BA4FF>+{qp.quest.reward.gemReward} Gem</color>\n";
+                text += $"<color=#3BA4FF>+{qp.quest.reward.gemReward} {gemLabel}</color>\n";
 
             if (qp.quest.reward.itemIDs != null)
             {
                 foreach (var item in qp.quest.reward.itemIDs)
-                    text += $"- {item}\n";
+                    text += $"- {TranslateRuntimeText(item)}\n";
             }
 
 
             if (qp.quest.reward.rewardItem != null && qp.quest.reward.rewardItem.itemData != null)
-                text += $"- {qp.quest.reward.rewardItem.itemData.itemName}\n";
+                text += $"- {TranslateRuntimeText(qp.quest.reward.rewardItem.itemData.itemName)}\n";
         }
 
         if (readyToTurnIn)
-            text += "\n<color=yellow>Completed! Press Claim to receive your reward.</color>";
+            text += $"\n<color=yellow>{completedLabel}! {claimLabel}: {receivedLabel} {rewardLabel}</color>";
 
-        questProgressText.text = text;
+        if (questProgressText != null)
+            questProgressText.text = text;
+
+        RefreshClaimButtonLabel();
 
         if (claimButton != null)
             claimButton.gameObject.SetActive(readyToTurnIn);
@@ -116,7 +156,13 @@ public class QuestUI : MonoBehaviour
     public void Clear()
     {
         currentQuest = null;
-        questProgressText.text = "No active quest\nFind an NPC for a quest";
+        currentReadyToTurnIn = false;
+        if (questProgressText != null)
+        {
+            questProgressText.text = LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi"
+                ? "Ch\u01b0a c\u00f3 nhi\u1ec7m v\u1ee5\nH\u00e3y t\u00ecm NPC \u0111\u1ec3 nh\u1eadn nhi\u1ec7m v\u1ee5"
+                : "No active quest\nFind an NPC for a quest";
+        }
 
         if (claimButton != null)
             claimButton.gameObject.SetActive(false);
@@ -139,5 +185,26 @@ public class QuestUI : MonoBehaviour
 
         if (claimButton != null)
             claimButton.gameObject.SetActive(false);
+    }
+
+    private void RefreshClaimButtonLabel()
+    {
+        if (claimButton == null)
+            return;
+
+        string claimLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("claim") : "Claim";
+
+        var tmpLabel = claimButton.GetComponentInChildren<TextMeshProUGUI>(true);
+        if (tmpLabel != null)
+            tmpLabel.text = claimLabel;
+
+        var legacyLabel = claimButton.GetComponentInChildren<Text>(true);
+        if (legacyLabel != null)
+            legacyLabel.text = claimLabel;
+    }
+
+    private string TranslateRuntimeText(string value)
+    {
+        return LanguageManager.Instance != null ? LanguageManager.Instance.TranslateText(value) : value;
     }
 }

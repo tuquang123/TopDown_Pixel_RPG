@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &237680984254017800
 GameObject:
@@ -523,6 +523,7 @@ GameObject:
   - component: {fileID: 1665309044576285667}
   - component: {fileID: 3993010962413663420}
   - component: {fileID: 860069866173548425}
+  - component: {fileID: 4970499474716067128}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -650,6 +651,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4970499474716067128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1153918105759522670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 135868d1b3b175446bc6db08629349de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: ok
 --- !u!1 &1176921341067069982
 GameObject:
   m_ObjectHideFlags: 0
@@ -661,6 +675,7 @@ GameObject:
   - component: {fileID: 5004896549400109565}
   - component: {fileID: 4530799747195727461}
   - component: {fileID: 731551669664152430}
+  - component: {fileID: 1982149828389908859}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -786,6 +801,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1982149828389908859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1176921341067069982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 135868d1b3b175446bc6db08629349de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: roll_x5
 --- !u!1 &1982852608358034482
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,6 +825,7 @@ GameObject:
   - component: {fileID: 4872024525548552979}
   - component: {fileID: 1253271876188006531}
   - component: {fileID: 4600352802612541682}
+  - component: {fileID: 551579658476919607}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -922,6 +951,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &551579658476919607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1982852608358034482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 135868d1b3b175446bc6db08629349de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: roll
 --- !u!1 &1984386065689577167
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,18 +19,22 @@ public class SkillUIController : BasePopup
             skillSystem = CommonReferent.Instance.playerPrefab.GetComponent<SkillSystem>();
 
         SkillDetailPanel.OnSkillChanged += OnSkillChanged;
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged += OnSkillChanged;
     }
 
 
     private void OnDisable()
     {
         SkillDetailPanel.OnSkillChanged -= OnSkillChanged;
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged -= OnSkillChanged;
     }
 
     private void OnSkillChanged()
     {
         RefreshSkillButtons();
-        RefreshSkillPoint();   
+        RefreshSkillPoint();
     }
 
     private void RefreshSkillPoint()
@@ -38,7 +42,8 @@ public class SkillUIController : BasePopup
         if (skillSystem == null || skillPointText == null)
             return;
 
-        skillPointText.text = $"Skill Point : {PlayerStats.Instance.skillPoints}";
+        string skillPointLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("skill_point") : "Skill Point";
+        skillPointText.text = $"{skillPointLabel}: {PlayerStats.Instance.skillPoints}";
 
     }
 

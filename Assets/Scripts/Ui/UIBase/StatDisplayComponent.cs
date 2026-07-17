@@ -37,6 +37,9 @@ public class StatDisplayComponent : MonoBehaviour
         string suffix = ""
     )
     {
+        PrepareStatText(text);
+        label = TranslateLabel(label);
+
         float baseValue = stat.baseValue;
         float bonus     = stat.Value - baseValue;
 
@@ -79,6 +82,8 @@ public class StatDisplayComponent : MonoBehaviour
         }
 
         text.gameObject.SetActive(true);
+        PrepareStatText(text);
+        label = TranslateLabel(label);
 
         float raw   = Mathf.Abs(bonus.flat) > 0.01f ? bonus.flat : bonus.percent;
         float value = Equipment.ItemStatCalculator.GetUpgradedValue(raw, level);
@@ -124,6 +129,8 @@ public class StatDisplayComponent : MonoBehaviour
         }
 
         text.gameObject.SetActive(true);
+        PrepareStatText(text);
+        label = TranslateLabel(label);
 
         float previewValue  = GetBonusValue(previewBonus,  previewLv);
         float equippedValue = equippedBonus != null ? GetBonusValue(equippedBonus, equippedLv) : 0;
@@ -178,6 +185,8 @@ public class StatDisplayComponent : MonoBehaviour
         }
 
         text.gameObject.SetActive(true);
+        PrepareStatText(text);
+        label = TranslateLabel(label);
 
         string suffix = percent ? "%" : "";
         text.text =
@@ -203,5 +212,47 @@ public class StatDisplayComponent : MonoBehaviour
         return value % 1 == 0
             ? value.ToString("0")
             : value.ToString("0.0");
+    }
+
+    private string TranslateLabel(string label)
+    {
+        if (LanguageManager.Instance == null) return label;
+
+        if (LanguageManager.Instance.CurrentLanguage == "vi")
+        {
+            return label switch
+            {
+                "Attack" => "T\u1ea5n c\u00f4ng",
+                "Defense" => "Ph\u00f2ng th\u1ee7",
+                "Speed" => "T\u1ed1c \u0111\u1ed9",
+                "Crit" => "Ch\u00ed m\u1ea1ng",
+                "LifeSteal" => "H\u00fat m\u00e1u",
+                "Atk Speed" => "T\u1ed1c \u0111\u00e1nh",
+                "HP" => "M\u00e1u",
+                "Mana" => "Mana",
+                _ => label
+            };
+        }
+
+        return label switch
+        {
+            "Attack" => LanguageManager.Instance.GetTranslation("attack"),
+            "Defense" => LanguageManager.Instance.GetTranslation("defense"),
+            "Speed" => LanguageManager.Instance.GetTranslation("speed"),
+            "Crit" => LanguageManager.Instance.GetTranslation("crit"),
+            "LifeSteal" => LanguageManager.Instance.GetTranslation("life_steal"),
+            "Atk Speed" => LanguageManager.Instance.GetTranslation("attack_speed"),
+            "HP" => LanguageManager.Instance.GetTranslation("hp"),
+            "Mana" => LanguageManager.Instance.GetTranslation("mana"),
+            _ => label
+        };
+    }
+
+    private void PrepareStatText(TextMeshProUGUI text)
+    {
+        if (text == null) return;
+
+        text.enableWordWrapping = false;
+        text.overflowMode = TextOverflowModes.Ellipsis;
     }
 }

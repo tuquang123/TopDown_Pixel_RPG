@@ -29,7 +29,7 @@ public class TeamSlotUI : MonoBehaviour
         }
         else
         {
-            nameText.text = "Empty";
+            nameText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("empty") : "Empty";
             icon.gameObject.SetActive(false);
             removeButton.gameObject.SetActive(false);
         }
@@ -38,7 +38,7 @@ public class TeamSlotUI : MonoBehaviour
     public void ClearSlot()
     {
         icon.sprite = null;
-        nameText.text = "Empty";
+        nameText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("empty") : "Empty";
     }
 
 }

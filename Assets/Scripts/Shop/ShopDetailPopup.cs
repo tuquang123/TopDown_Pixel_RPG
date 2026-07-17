@@ -50,6 +50,11 @@ public class ShopDetailPopup : MonoBehaviour
         fadeTween?.Kill();
         scaleTween?.Kill();
         UnregisterGoldEvent();
+
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLanguage;
+        }
     }
 
     // ================= SHOW / HIDE =================
@@ -69,6 +74,7 @@ public class ShopDetailPopup : MonoBehaviour
 
         gameObject.SetActive(true);
         RegisterGoldEvent();
+        RegisterLanguageEvent();
         PlayShowAnimation();
     }
 
@@ -122,6 +128,7 @@ public class ShopDetailPopup : MonoBehaviour
             {
                 currentItem = null;
                 UnregisterGoldEvent();
+                UnregisterLanguageEvent();
                 gameObject.SetActive(false);
             });
     }
@@ -142,7 +149,7 @@ public class ShopDetailPopup : MonoBehaviour
             CommonReferent.Instance.itemTierColorConfig.GetBackground(data.tier);
         tierBackground.color = Color.white;
 
-        tierText.text = data.tier.ToString();
+        tierText.text = ItemUtility.GetLocalizedTier(data.tier);
         tierText.color = ItemUtility.GetColorByTier(data.tier);
 
         // Description
@@ -174,15 +181,15 @@ public class ShopDetailPopup : MonoBehaviour
         switch (data.weaponCategory)
         {
             case WeaponCategory.Melee:
-                weaponCategoryText.text = "Melee";
+                weaponCategoryText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("melee") : "Melee";
                 weaponCategoryText.color = Color.white;
                 break;
             case WeaponCategory.Ranged:
-                weaponCategoryText.text = "Ranged";
+                weaponCategoryText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("ranged") : "Ranged";
                 weaponCategoryText.color = new Color(0.6f, 0.8f, 1f);
                 break;
             case WeaponCategory.HeavyMelee:
-                weaponCategoryText.text = "Heavy Melee";
+                weaponCategoryText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("heavy_melee") : "Heavy Melee";
                 weaponCategoryText.color = new Color(1f, 0.7f, 0.4f);
                 break;
         }
@@ -195,6 +202,14 @@ public class ShopDetailPopup : MonoBehaviour
         buyButton.onClick.RemoveAllListeners();
         cancelButton.onClick.RemoveAllListeners();
 
+        TMP_Text buyText = buyButton.GetComponentInChildren<TMP_Text>(true);
+        if (buyText != null)
+            buyText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("buy") : "Buy";
+
+        TMP_Text cancelText = cancelButton.GetComponentInChildren<TMP_Text>(true);
+        if (cancelText != null)
+            cancelText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("close") : "Close";
+
         buyButton.onClick.AddListener(OnClickBuy);
         cancelButton.onClick.AddListener(Hide);
     }
@@ -205,7 +220,7 @@ public class ShopDetailPopup : MonoBehaviour
 
         if (CurrencyManager.Instance.Gold < price)
         {
-            GameEvents.OnShowToast.Raise("Not enough Gold");
+            GameEvents.OnShowToast.Raise(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("not_enough_gold") : "Not enough Gold");
             return;
         }
 
@@ -239,6 +254,31 @@ public class ShopDetailPopup : MonoBehaviour
     {
         if (CurrencyManager.Instance != null)
             CurrencyManager.Instance.OnGoldChanged -= OnGoldChanged;
+    }
+
+    private void RegisterLanguageEvent()
+    {
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLanguage;
+            LanguageManager.Instance.OnLanguageChanged += RefreshLanguage;
+        }
+    }
+
+    private void UnregisterLanguageEvent()
+    {
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLanguage;
+        }
+    }
+
+    private void RefreshLanguage()
+    {
+        if (currentItem != null)
+        {
+            RefreshUI();
+        }
     }
 
     private void OnGoldChanged(int gold)

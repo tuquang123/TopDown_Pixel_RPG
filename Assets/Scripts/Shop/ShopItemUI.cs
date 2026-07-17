@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -16,6 +16,24 @@ public class ShopItemUI : MonoBehaviour
     private ShopUI shopUI;
     private ItemInstance itemInstance;
 
+    private void OnEnable()
+    {
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged += RefreshLocalizedText;
+        }
+
+        RefreshLocalizedText();
+    }
+
+    private void OnDisable()
+    {
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLocalizedText;
+        }
+    }
+
     public void Setup(ItemInstance instance, ShopUI ui)
     {
         itemInstance = instance;
@@ -25,7 +43,7 @@ public class ShopItemUI : MonoBehaviour
         icon.SetupIcons(instance);
 
         nameText.text = data.itemName;
-        tierText.text = data.tier.ToString();
+        tierText.text = ItemUtility.GetLocalizedTier(data.tier);
         priceText.text = $"{data.price} <sprite name=\"gold_icon\">";
 
         backgroundImage.sprite =
@@ -47,6 +65,19 @@ public class ShopItemUI : MonoBehaviour
     public void RefreshState()
     {
         UpdateButtonState(CurrencyManager.Instance.Gold);
+    }
+
+    private void RefreshLocalizedText()
+    {
+        if (itemInstance == null || itemInstance.itemData == null) return;
+
+        nameText.text = itemInstance.itemData.itemName;
+        tierText.text = ItemUtility.GetLocalizedTier(itemInstance.itemData.tier);
+
+        if (CurrencyManager.Instance != null)
+        {
+            UpdateButtonState(CurrencyManager.Instance.Gold);
+        }
     }
 
     private void UpdateButtonState(int gold)
@@ -81,7 +112,7 @@ public class ShopItemUI : MonoBehaviour
         if (isPurchased)
         {
             buyButton.interactable = false;
-            priceText.text = "Đã mua";
+            priceText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("purchased") : "Đã mua";
         }
         else
         {
@@ -94,5 +125,8 @@ public class ShopItemUI : MonoBehaviour
     {
         if (CurrencyManager.Instance != null)
             CurrencyManager.Instance.OnGoldChanged -= UpdateButtonState;
+
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLocalizedText;
     }
 }

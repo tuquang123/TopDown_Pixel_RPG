@@ -7,6 +7,18 @@ public class SkillAssignPanel : MonoBehaviour
     private SkillData skillToAssign;
     private SkillSystem skillSystem;
 
+    private void OnEnable()
+    {
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged += RefreshLanguage;
+    }
+
+    private void OnDisable()
+    {
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLanguage;
+    }
+
     public void Show(SkillData skill, SkillSystem system)
     {
         skillToAssign = skill;
@@ -40,6 +52,21 @@ public class SkillAssignPanel : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+    private void RefreshLanguage()
+    {
+        if (skillSystem == null || assignButtons == null)
+            return;
+
+        for (int i = 0; i < assignButtons.Length; i++)
+        {
+            SkillID existingSkill = skillSystem.GetAssignedSkill(i);
+            SkillData assignedSkill = skillSystem.GetSkillData(existingSkill);
+
+            if (assignedSkill != null && assignButtons[i].nameText != null)
+                assignButtons[i].nameText.text = assignedSkill.skillName;
+        }
+    }
+
     private void AssignToSlot(int index)
     {
         // Gỡ kỹ năng khỏi các ô khác nếu đã gán trước đó
@@ -66,7 +93,7 @@ public class SkillAssignPanel : MonoBehaviour
 
         //gameObject.SetActive(false);
     }
-    
+
     public void Hide()
     {
         gameObject.SetActive(false);

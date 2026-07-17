@@ -67,8 +67,8 @@ public class LevelUpSkillPopup : BasePopup
         if (rerollButton  != null) rerollButton.onClick.AddListener(RerollSkills);
         if (confirmButton != null) confirmButton.onClick.AddListener(ConfirmSelectedSkill);
 
-        if (mainTitleText != null) mainTitleText.text = "Choose 1 new Passive skill";
-        if (subTitleText  != null) subTitleText.text  = "The skill will be applied immediately";
+        if (mainTitleText != null) mainTitleText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("choose_passive_skill") : "Choose 1 new Passive skill";
+        if (subTitleText  != null) subTitleText.text  = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("skill_applied_immediately") : "The skill will be applied immediately";
 
         SetConfirmButton(false);
     }
@@ -79,7 +79,7 @@ public class LevelUpSkillPopup : BasePopup
         allowClose = false;
 
         if (levelText != null)
-            levelText.text = $"LEVEL UP - LEVEL {newLevel}";
+            levelText.text = $"{(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("level_up") : "LEVEL UP")} - {(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("level") : "LEVEL")} {newLevel}";
 
         Time.timeScale = 0f;
         Show();
@@ -218,7 +218,7 @@ public class LevelUpSkillPopup : BasePopup
     {
         if (!allowClose)
         {
-            GameEvents.OnShowToast.Raise("Hay chon 1 skill truoc");
+            GameEvents.OnShowToast.Raise(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("choose_skill_first") : "Choose 1 skill first");
             return;
         }
 

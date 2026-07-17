@@ -108,7 +108,7 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
             return;
         }
 
-        text.text = message;
+        text.text = LanguageManager.Instance != null ? LanguageManager.Instance.TranslateText(message) : message;
         rect.anchoredPosition = templateAnchoredPos;
         cg.alpha = 0f;
 

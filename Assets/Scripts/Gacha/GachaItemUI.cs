@@ -22,7 +22,7 @@ public class GachaItemUI : MonoBehaviour
         icon.SetupIcons(instance);
 
         nameText.text = data.itemName;
-        tierText.text = data.tier.ToString();
+        tierText.text = ItemUtility.GetLocalizedTier(data.tier);
         backgroundImage.sprite =
             CommonReferent.Instance.itemTierColorConfig
                 .GetBackground(data.tier);

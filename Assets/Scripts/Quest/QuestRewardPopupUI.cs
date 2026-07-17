@@ -154,7 +154,9 @@ public class QuestRewardPopupUI : BasePopup
         if (reward == null) return;
 
         if (titleText != null)
-            titleText.text = "Achievement Rewards!";
+            titleText.text = LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi"
+                ? "Ph\u1ea7n Th\u01b0\u1edfng!"
+                : "Achievement Rewards!";
 
         if (subtitleText != null)
             subtitleText.text = GetRewardSubtitle(reward, questName);
@@ -185,8 +187,8 @@ public class QuestRewardPopupUI : BasePopup
     {
         var rewards = new System.Collections.Generic.List<string>();
 
-        if (reward.goldReward > 0)        rewards.Add($"Gold x{reward.goldReward}");
-        if (reward.gemReward > 0)         rewards.Add($"Gems x{reward.gemReward}");
+        if (reward.goldReward > 0)        rewards.Add($"{(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("gold") : "Gold")} x{reward.goldReward}");
+        if (reward.gemReward > 0)         rewards.Add($"{(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("gem") : "Gems")} x{reward.gemReward}");
         if (reward.experienceReward > 0)  rewards.Add($"EXP x{reward.experienceReward}");
 
         if (reward.itemIDs != null)
@@ -206,9 +208,13 @@ public class QuestRewardPopupUI : BasePopup
         string rewardText = string.Join(" & ", rewards);
 
         if (string.IsNullOrEmpty(questName))
-            return rewards.Count == 0 ? "You completed the quest!" : $"Received {rewardText}!";
+            return rewards.Count == 0
+                ? (LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi" ? "B\u1ea1n \u0111\u00e3 ho\u00e0n th\u00e0nh nhi\u1ec7m v\u1ee5!" : "You completed the quest!")
+                : (LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi" ? $"Nh\u1eadn {rewardText}!" : $"Received {rewardText}!");
         else
-            return rewards.Count == 0 ? $"Completed: {questName}" : $"Received {rewardText}!";
+            return rewards.Count == 0
+                ? (LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi" ? $"Ho\u00e0n th\u00e0nh: {questName}" : $"Completed: {questName}")
+                : (LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi" ? $"Nh\u1eadn {rewardText}!" : $"Received {rewardText}!");
     }
 
     // ─── Button ────────────────────────────────────────────────────────────────

@@ -47,7 +47,7 @@ public class PowerUI : MonoBehaviour
     private void UpdatePower()
     {
         if (powerText == null || stats == null) return;
-        powerText.text = "Power: " + stats.CurrentPower.ToString("N0");
+        powerText.text = (LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("power") : "Power") + ": " + stats.CurrentPower.ToString("N0");
     }
 
     private void ResetTime()

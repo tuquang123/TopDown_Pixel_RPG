@@ -157,14 +157,16 @@ public class ShopUI : BasePopup
 
         if (!CurrencyManager.Instance.SpendGold(data.price))
         {
-            GameEvents.OnShowToast.Raise("Gold not enough!");
+            GameEvents.OnShowToast.Raise(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("not_enough_gold") : "Not enough Gold");
             return;
         }
 
         playerInventory.AddItem(new ItemInstance(data));
         QuestManager.Instance?.ReportProgressByObjectiveName("BuyItem", 1);
         ApplyFilter(currentFilterType);
-        GameEvents.OnShowToast.Raise("Success purchase Item!");
+        string itemName = data.itemName;
+        string receiveText = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("receive") : "Receive";
+        GameEvents.OnShowToast.Raise($"{receiveText}: {itemName}");
     }
 
     #endregion

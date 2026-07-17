@@ -68,7 +68,9 @@ public class WaveProgressUI : MonoBehaviour
 
         if (waveText != null)
         {
-            waveText.text = $"Stage {stage}   Wave {wave}";
+            string stageText = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("stage") : "Stage";
+            string waveLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("wave") : "Wave";
+            waveText.text = $"{stageText} {stage}   {waveLabel} {wave}";
         }
 
         Refresh();

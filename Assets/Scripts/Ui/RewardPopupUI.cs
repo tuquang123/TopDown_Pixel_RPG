@@ -19,6 +19,6 @@ public class RewardPopupUI : MonoBehaviour
     public void Setup(Sprite sprite, string text)
     {
         icon.sprite = sprite;
-        label.text = text;
+        label.text = LanguageManager.Instance != null ? LanguageManager.Instance.TranslateText(text) : text;
     }
 }

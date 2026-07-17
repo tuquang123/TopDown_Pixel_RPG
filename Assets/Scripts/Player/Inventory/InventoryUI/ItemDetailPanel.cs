@@ -57,10 +57,31 @@ public class ItemDetailPanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    private void OnEnable()
+    {
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged += RefreshLanguage;
+        }
+    }
+
     private void OnDisable()
     {
         fadeTween?.Kill();
         scaleTween?.Kill();
+
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLanguage;
+        }
+    }
+
+    private void RefreshLanguage()
+    {
+        if (currentItem != null && inventoryUI != null)
+        {
+            RefreshUI();
+        }
     }
 
     // ================= SHOW / HIDE =================
@@ -148,7 +169,7 @@ public class ItemDetailPanel : MonoBehaviour
             CommonReferent.Instance.itemTierColorConfig.GetBackground(data.tier);
         tierBackground.color = Color.white;
 
-        tierText.text = data.tier.ToString();
+        tierText.text = ItemUtility.GetLocalizedTier(data.tier);
         tierText.color = ItemUtility.GetColorByTier(data.tier);
 
         // Description
@@ -161,15 +182,15 @@ public class ItemDetailPanel : MonoBehaviour
             switch (data.weaponCategory)
             {
                 case WeaponCategory.Melee:
-                    weaponCategoryText.text = "Melee";
+                    weaponCategoryText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("melee") : "Melee";
                     weaponCategoryText.color = Color.white;
                     break;
                 case WeaponCategory.Ranged:
-                    weaponCategoryText.text = "Ranged";
+                    weaponCategoryText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("ranged") : "Ranged";
                     weaponCategoryText.color = new Color(0.6f, 0.8f, 1f);
                     break;
                 case WeaponCategory.HeavyMelee:
-                    weaponCategoryText.text = "Heavy Melee";
+                    weaponCategoryText.text = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("heavy_melee") : "Heavy Melee";
                     weaponCategoryText.color = new Color(1f, 0.7f, 0.4f);
                     break;
             }
@@ -208,9 +229,13 @@ public class ItemDetailPanel : MonoBehaviour
         upgradeButton.onClick.RemoveAllListeners();
         sellButton.onClick.RemoveAllListeners();
 
+        string equipText = LanguageManager.Instance != null
+            ? LanguageManager.Instance.GetTranslation(data.itemType == ItemType.Consumable ? "use" : "equip")
+            : "Equip";
+
         if (data.itemType == ItemType.Consumable)
         {
-            equipButton.GetComponentInChildren<TMP_Text>().text = "Equip";
+            equipButton.GetComponentInChildren<TMP_Text>().text = equipText;
             equipButton.onClick.AddListener(ConsumeItem);
 
             upgradeButton.gameObject.SetActive(false);
@@ -218,7 +243,7 @@ public class ItemDetailPanel : MonoBehaviour
         }
         else
         {
-            equipButton.GetComponentInChildren<TMP_Text>().text = "Equip";
+            equipButton.GetComponentInChildren<TMP_Text>().text = equipText;
             equipButton.onClick.AddListener(EquipItem);
 
             // Upgrade và Sell luôn hiện, kể cả khi item đang được mặc
@@ -226,17 +251,17 @@ public class ItemDetailPanel : MonoBehaviour
             sellButton.gameObject.SetActive(true);
 
             int upgradeCost = data.baseUpgradeCost * (item.upgradeLevel + 1);
-            upgradeCostText.text = $"Upgrade ({upgradeCost} <sprite name=\"gold_icon\">)";
+            string upgradeWord = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("upgrade") : "Upgrade";
+            upgradeCostText.text = $"{upgradeWord} ({upgradeCost} <sprite name=\"gold_icon\">)";
             upgradeButton.onClick.AddListener(ShowUpgradeConfirm);
         }
 
         int sellPrice = CalculateSellPrice(item);
-        sellPriceText.text = $"Sell ({sellPrice} <sprite name=\"gold_icon\">)";
+        string sellWord = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("sell") : "Sell";
+        sellPriceText.text = $"{sellWord} ({sellPrice} <sprite name=\"gold_icon\">)";
         sellButton.onClick.AddListener(ShowSellConfirm);
         lockButton.onClick.RemoveAllListeners();
         lockButton.onClick.AddListener(ToggleLock);
-
-      
     }
   private void RefreshLockVisual()
         {
@@ -297,13 +322,13 @@ public class ItemDetailPanel : MonoBehaviour
 
         if (!CurrencyManager.Instance.SpendGold(cost))
         {
-            GameEvents.OnShowToast.Raise("Not enough Gold");
+            GameEvents.OnShowToast.Raise(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("not_enough_gold") : "Not enough Gold");
             return;
         }
 
         currentItem.upgradeLevel++;
         QuestManager.Instance?.ReportItemUpgrade(currentItem.upgradeLevel);
-        GameEvents.OnShowToast.Raise("Upgrade successful!");
+        GameEvents.OnShowToast.Raise(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("upgrade_successful") : "Upgrade successful!");
         RefreshUI();
     }
 
@@ -321,7 +346,8 @@ public class ItemDetailPanel : MonoBehaviour
         inventoryUI.Inventory.RemoveItem(currentItem);
         inventoryUI.UpdateInventoryUI();
 
-        GameEvents.OnShowToast.Raise($"Sold {currentItem.itemData.itemName}");
+        string soldText = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("sold_successfully") : "Sold successfully";
+        GameEvents.OnShowToast.Raise($"{soldText}: {currentItem.itemData.itemName}");
         Hide();
     }
 
@@ -333,6 +359,9 @@ public class ItemDetailPanel : MonoBehaviour
         int cost = currentItem.itemData.baseUpgradeCost * next;
 
         string statText = BuildUpgradeStatText(currentItem);
+        string upgradeText = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("upgrade") : "Upgrade";
+        string priceText = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("price") : "Price";
+        string goldText = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("gold") : "Gold";
 
         UIManager.Instance.ShowPopupByType(PopupType.ItemConfirm);
 
@@ -340,15 +369,14 @@ public class ItemDetailPanel : MonoBehaviour
             && popup is ConfirmPopup confirm)
         {
             confirm.Show(
-                "Upgrade",
-                $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel - 1} → +{next - 1}\n" +
+                upgradeText,
+                $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel - 1} -> +{next - 1}\n" +
                 statText +
-                $"\n\nPrice: {cost} Gold",
+                $"\n\n{priceText}: {cost} {goldText}",
                 UpgradeItem
             );
         }
     }
-
 
     private string BuildUpgradeStatText(ItemInstance item)
     {
@@ -402,8 +430,9 @@ public class ItemDetailPanel : MonoBehaviour
 
         string suffix = isPercent ? "%" : "";
 
+        string translatedLabel = TranslateStatLabel(label);
         text +=
-            $"\n{label}: {Format(cur)}{suffix} → {Format(next)}{suffix} " +
+            $"\n{translatedLabel}: {Format(cur)}{suffix} -> {Format(next)}{suffix} " +
             $"<color=#00FF00>(+{Format(add)}{suffix})</color>";
     }
     
@@ -414,10 +443,31 @@ public class ItemDetailPanel : MonoBehaviour
             : value.ToString("0.0");
     }
 
+    private string TranslateStatLabel(string label)
+    {
+        if (LanguageManager.Instance == null) return label;
+
+        return label switch
+        {
+            "Attack" => LanguageManager.Instance.GetTranslation("attack"),
+            "Defense" => LanguageManager.Instance.GetTranslation("defense"),
+            "Speed" => LanguageManager.Instance.GetTranslation("speed"),
+            "Crit" => LanguageManager.Instance.GetTranslation("crit"),
+            "LifeSteal" => LanguageManager.Instance.GetTranslation("life_steal"),
+            "Atk Speed" => LanguageManager.Instance.GetTranslation("attack_speed"),
+            "HP" => LanguageManager.Instance.GetTranslation("hp"),
+            "Mana" => LanguageManager.Instance.GetTranslation("mana"),
+            _ => label
+        };
+    }
+
 
     private void ShowSellConfirm()
     {
         int price = CalculateSellPrice(currentItem);
+        string confirmText = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("confirm") : "Confirm";
+        string priceText = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("price") : "Price";
+        string goldText = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("gold") : "Gold";
 
         UIManager.Instance.ShowPopupByType(PopupType.ItemConfirm);
 
@@ -425,13 +475,12 @@ public class ItemDetailPanel : MonoBehaviour
             && popup is ConfirmPopup confirm)
         {
             confirm.Show(
-                "Confirm Sale",
-                $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel}\nPrice: {price} Gold",
+                confirmText,
+                $"{currentItem.itemData.itemName} +{currentItem.upgradeLevel}\n{priceText}: {price} {goldText}",
                 SellItem
             );
         }
     }
-
 
     private void ShowConfirm(string title, string message, Action onConfirm)
     {

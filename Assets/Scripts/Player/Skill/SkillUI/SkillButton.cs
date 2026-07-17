@@ -18,13 +18,31 @@ public class SkillButton : MonoBehaviour
     private SkillSystem skillSystem;
     private SkillDetailPanel detailPanel;
 
+    private void OnEnable()
+    {
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged += RefreshLocalizedText;
+        }
+
+        RefreshLocalizedText();
+    }
+
+    private void OnDisable()
+    {
+        if (LanguageManager.Instance != null)
+        {
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLocalizedText;
+        }
+    }
+
     public void Initialize(SkillData data, SkillSystem system, SkillDetailPanel detail)
     {
         skillData = data;
         skillSystem = system;
         detailPanel = detail;
 
-        label.text = data.skillName;
+        RefreshLocalizedText();
         iconImage.sprite = data.icon;
 
         Refresh();
@@ -49,6 +67,14 @@ public class SkillButton : MonoBehaviour
     {
         int currentLevel = skillSystem.GetSkillLevel(skillData.skillID);
         levelText.text = $"{currentLevel}/{skillData.maxLevel}";
+    }
+
+    private void RefreshLocalizedText()
+    {
+        if (skillData != null && label != null)
+        {
+            label.text = skillData.skillName;
+        }
     }
 
     private void RefreshLockState()

@@ -28,8 +28,8 @@ public class ConfirmPopup : BasePopup
 
     public void Show(string title, string message, Action confirmAction)
     {
-        titleText.text = title;
-        messageText.text = message;
+        titleText.text = LanguageManager.Instance != null ? LanguageManager.Instance.TranslateText(title) : title;
+        messageText.text = LanguageManager.Instance != null ? LanguageManager.Instance.TranslateText(message) : message;
         onConfirm = confirmAction;
     }
 

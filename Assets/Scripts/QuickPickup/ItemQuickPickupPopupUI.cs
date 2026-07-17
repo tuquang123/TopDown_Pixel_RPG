@@ -56,6 +56,24 @@ public class ItemQuickPickupPopupUI : MonoBehaviour
             equipButton.onClick.AddListener(OnEquipClicked);
     }
 
+    private void OnEnable()
+    {
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged += RefreshLanguage;
+    }
+
+    private void OnDisable()
+    {
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged -= RefreshLanguage;
+    }
+
+    private void RefreshLanguage()
+    {
+        if (currentItem != null && gameObject.activeInHierarchy)
+            PopulateData(currentItem);
+    }
+
     /// <summary>
     /// Gọi hàm này ở chỗ nhặt item để hiện popup.
     /// Nếu tính năng (inventory) chưa unlock theo level (theo FeatureUnlockData),
@@ -108,7 +126,7 @@ public class ItemQuickPickupPopupUI : MonoBehaviour
         itemNameText.text = data.itemName;
         if (itemTierText != null)
         {
-            itemTierText.text = data.tier.ToString();
+            itemTierText.text = ItemUtility.GetLocalizedTier(data.tier);
             itemTierText.color = ItemUtility.GetColorByTier(data.tier);
         }
         itemIcon.sprite = data.icon;
@@ -179,17 +197,17 @@ public class ItemQuickPickupPopupUI : MonoBehaviour
 
         if (Mathf.Approximately(diff, 0))
         {
-            powerDiffText.text = "Power: +0";
+            powerDiffText.text = $"{(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("power") : "Power")}: +0";
             powerDiffText.color = Color.white;
         }
         else if (diff > 0)
         {
-            powerDiffText.text = $"Power: +{diff:N0}";
+            powerDiffText.text = $"{(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("power") : "Power")}: +{diff:N0}";
             powerDiffText.color = new Color(0.2f, 1f, 0.3f);
         }
         else
         {
-            powerDiffText.text = $"Power: {diff:N0}";
+            powerDiffText.text = $"{(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("power") : "Power")}: {diff:N0}";
             powerDiffText.color = new Color(1f, 0.3f, 0.3f);
         }
     }
@@ -252,8 +270,8 @@ public class ItemQuickPickupPopupUI : MonoBehaviour
         if (Mathf.Approximately(diff, 0)) return;
 
         string text = diff > 0
-            ? $"<color=#00FF00>+{diff:N0} Power</color>"
-            : $"<color=#FF4D4D>{diff:N0} Power</color>";
+            ? $"<color=#00FF00>+{diff:N0} {(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("power") : "Power")}</color>"
+            : $"<color=#FF4D4D>{diff:N0} {(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("power") : "Power")}</color>";
 
         GameEvents.OnShowToast.Raise(text);
     }

@@ -101,7 +101,8 @@ public class EquipmentUI : MonoBehaviour
             inventoryUI.itemDetailPanel.Hide();
         });
 
-        inventoryUI.itemDetailPanel.equipButton.GetComponentInChildren<TMPro.TMP_Text>().text = "Unequip";
+        inventoryUI.itemDetailPanel.equipButton.GetComponentInChildren<TMPro.TMP_Text>().text =
+            LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("unequip") : "Unequip";
     }
     
     public void EquipItem(ItemInstance itemInstance)
@@ -202,9 +203,9 @@ public class EquipmentUI : MonoBehaviour
         string text;
 
         if (diff > 0)
-            text = $"<color=#00FF00>+{diff:N0} Power</color>";
+            text = $"<color=#00FF00>+{diff:N0} {(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("power") : "Power")}</color>";
         else
-            text = $"<color=#FF4D4D>{diff:N0} Power</color>";
+            text = $"<color=#FF4D4D>{diff:N0} {(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("power") : "Power")}</color>";
 
         GameEvents.OnShowToast.Raise(text);
     }

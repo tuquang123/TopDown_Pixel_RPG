@@ -33,6 +33,20 @@ public class EnemyInfoPopupUI : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    private void OnEnable()
+    {
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged += Refresh;
+
+        PrepareTextLayout();
+    }
+
+    private void OnDisable()
+    {
+        if (LanguageManager.Instance != null)
+            LanguageManager.Instance.OnLanguageChanged -= Refresh;
+    }
+
     public void Show(EnemyAI enemy)
     {
         if (enemy == null || enemy.IsDead)
@@ -74,7 +88,7 @@ public class EnemyInfoPopupUI : MonoBehaviour
             nameText.text = currentEnemy.EnemyName;
 
         if (levelText != null)
-            levelText.text = $"Lv {currentEnemy.EnemyLevel}";
+            levelText.text = $"{GetLevelLabel()} {currentEnemy.EnemyLevel}";
 
         float displayHp = Mathf.Max(0, currentEnemy.CurrentHealth);
 
@@ -88,10 +102,10 @@ public class EnemyInfoPopupUI : MonoBehaviour
             hpText.text = $"{displayHp} / {currentEnemy.MaxHealth}";
 
         if (attackDamageText != null)
-            attackDamageText.text = $"ATK: {currentEnemy.AttackDamage}";
+            attackDamageText.text = $"{GetAttackLabel()}: {currentEnemy.AttackDamage}";
 
         if (moveSpeedText != null)
-            moveSpeedText.text = $"SPD: {currentEnemy.MoveSpeed:F1}";
+            moveSpeedText.text = $"{GetSpeedLabel()}: {currentEnemy.MoveSpeed:F1}";
     }
 
     private void Update()
@@ -125,5 +139,46 @@ public class EnemyInfoPopupUI : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         Hide();
+    }
+
+    private void PrepareTextLayout()
+    {
+        PrepareText(nameText, 18f, 43.2f);
+        PrepareText(levelText, 12f, 30.25f);
+        PrepareText(hpText, 12f, 29.85f);
+        PrepareText(attackDamageText, 12f, 36f);
+        PrepareText(moveSpeedText, 12f, 36f);
+    }
+
+    private void PrepareText(TextMeshProUGUI text, float minSize, float maxSize)
+    {
+        if (text == null) return;
+
+        text.enableWordWrapping = false;
+        text.overflowMode = TextOverflowModes.Ellipsis;
+        text.enableAutoSizing = true;
+        text.fontSizeMin = minSize;
+        text.fontSizeMax = maxSize;
+    }
+
+    private string GetLevelLabel()
+    {
+        return LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi"
+            ? "C\u1ea5p"
+            : "Lv";
+    }
+
+    private string GetAttackLabel()
+    {
+        return LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi"
+            ? "TC"
+            : "ATK";
+    }
+
+    private string GetSpeedLabel()
+    {
+        return LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi"
+            ? "T\u0110"
+            : "SPD";
     }
 }
