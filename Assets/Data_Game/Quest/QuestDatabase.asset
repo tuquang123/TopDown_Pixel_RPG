@@ -14,10 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allQuests:
   - questID: NV1
+    questNameKey: 
     questName: Rookie Goes to Battle
+    descriptionKey: 
     description: Defeat 5 Goblins
     objectives:
     - objectiveName: Goblin
+      objectiveTextKey: 
       type: 0
       requiredAmount: 5
       targetID: Goblin
@@ -25,18 +28,22 @@ MonoBehaviour:
       experienceReward: 30
       goldReward: 150
       gemReward: 0
-      itemIDs: []
+      itemIDs:
+      - 
       rewardItem:
-        itemData: {fileID: 0}
+        itemData: {fileID: 11400000, guid: f43632da25776014f91247c1ea6a2c62, type: 2}
         isLocked: 0
         upgradeLevel: 0
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV2
+    questNameKey: 
     questName: Complete the Challenge
+    descriptionKey: 
     description: Clear Stage 1
     objectives:
     - objectiveName: Stage
+      objectiveTextKey: 
       type: 4
       requiredAmount: 1
       targetID: Stage
@@ -52,10 +59,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV3
+    questNameKey: 
     questName: Collect Battle Spoils
+    descriptionKey: 
     description: Collect a total of 100 Gold
     objectives:
     - objectiveName: Gold
+      objectiveTextKey: 
       type: 1
       requiredAmount: 100
       targetID: Gold
@@ -71,10 +81,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV4
+    questNameKey: 
     questName: First Equipment
+    descriptionKey: 
     description: Buy any 1 equipment item
     objectives:
     - objectiveName: BuyItem
+      objectiveTextKey: 
       type: 4
       requiredAmount: 1
       targetID: Shop
@@ -90,10 +103,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV5
+    questNameKey: 
     questName: Growing Power
+    descriptionKey: 
     description: Equip 1 item
     objectives:
     - objectiveName: EquipItem
+      objectiveTextKey: 
       type: 4
       requiredAmount: 1
       targetID: Player
@@ -109,10 +125,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV6
+    questNameKey: 
     questName: Skeleton Hunter
+    descriptionKey: 
     description: Defeat 10 Skeletons
     objectives:
     - objectiveName: Skeleton
+      objectiveTextKey: 
       type: 0
       requiredAmount: 10
       targetID: Skeleton
@@ -128,10 +147,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV7
+    questNameKey: 
     questName: The Upgrader
+    descriptionKey: 
     description: Upgrade equipment 3 times
     objectives:
     - objectiveName: UpgradeItem
+      objectiveTextKey: 
       type: 4
       requiredAmount: 3
       targetID: Item
@@ -147,10 +169,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV8
+    questNameKey: 
     questName: Conqueror
+    descriptionKey: 
     description: Complete 5 Stages
     objectives:
     - objectiveName: Stage
+      objectiveTextKey: 
       type: 4
       requiredAmount: 5
       targetID: Stage
@@ -166,10 +191,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV9
+    questNameKey: 
     questName: Rookie Gacha
+    descriptionKey: 
     description: Roll Gacha 5 times
     objectives:
     - objectiveName: Gacha
+      objectiveTextKey: 
       type: 4
       requiredAmount: 5
       targetID: Gacha
@@ -185,10 +213,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV10
+    questNameKey: 
     questName: Gravok Destroyer
+    descriptionKey: 
     description: Defeat 15 Gravok
     objectives:
     - objectiveName: Gravok
+      objectiveTextKey: 
       type: 0
       requiredAmount: 15
       targetID: Gravok
@@ -204,10 +235,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV11
+    questNameKey: 
     questName: Small Treasure
+    descriptionKey: 
     description: Collect 50 Gems
     objectives:
     - objectiveName: Gem
+      objectiveTextKey: 
       type: 1
       requiredAmount: 50
       targetID: Gem
@@ -223,10 +257,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV12
+    questNameKey: 
     questName: Enhanced Weapon
+    descriptionKey: 
     description: Upgrade 1 equipment item to +10
     objectives:
     - objectiveName: UpgradeItemLevel
+      objectiveTextKey: 
       type: 4
       requiredAmount: 10
       targetID: Item
@@ -242,10 +279,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV13
+    questNameKey: 
     questName: Silentmaw Hunter
+    descriptionKey: 
     description: Defeat 10 Silentmaw
     objectives:
     - objectiveName: Silentmaw
+      objectiveTextKey: 
       type: 0
       requiredAmount: 10
       targetID: Silentmaw
@@ -261,10 +301,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV14
+    questNameKey: 
     questName: Boss Challenge
+    descriptionKey: 
     description: Defeat Boss 1
     objectives:
     - objectiveName: Boss
+      objectiveTextKey: 
       type: 0
       requiredAmount: 1
       targetID: Boss
@@ -280,10 +323,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV15
+    questNameKey: 
     questName: The Collection
+    descriptionKey: 
     description: Own 5 different equipment items
     objectives:
     - objectiveName: EquipmentOwned
+      objectiveTextKey: 
       type: 4
       requiredAmount: 5
       targetID: Inventory
@@ -299,10 +345,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV16
+    questNameKey: 
     questName: Ravageron Hunter
+    descriptionKey: 
     description: Defeat 20 Ravageron
     objectives:
     - objectiveName: Ravageron
+      objectiveTextKey: 
       type: 0
       requiredAmount: 20
       targetID: Ravageron
@@ -318,10 +367,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV17
+    questNameKey: 
     questName: Lucky One
+    descriptionKey: 
     description: Roll Gacha 20 times
     objectives:
     - objectiveName: Gacha
+      objectiveTextKey: 
       type: 4
       requiredAmount: 20
       targetID: Gacha
@@ -338,10 +390,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV18
+    questNameKey: 
     questName: Unstoppable Fargrider
+    descriptionKey: 
     description: Defeat 25 Fargrider
     objectives:
     - objectiveName: Fargrider
+      objectiveTextKey: 
       type: 0
       requiredAmount: 25
       targetID: Fangrider
@@ -357,10 +412,13 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV19
+    questNameKey: 
     questName: Final Lord
+    descriptionKey: 
     description: Defeat Boss 2
     objectives:
     - objectiveName: Boss
+      objectiveTextKey: 
       type: 0
       requiredAmount: 1
       targetID: Boss

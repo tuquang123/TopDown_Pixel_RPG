@@ -88,23 +88,17 @@ public class FeatureButtonUI : MonoBehaviour
 
         if (!unlocked)
         {
-           
-            if (UIManager.Instance.IsPopupOpen(PopupType.ItemConfirm))
-            {
-                UIManager.Instance.HidePopupByType(PopupType.ItemConfirm);
-                return;
-            }
-
             transform.DOKill();
             transform.localScale = Vector3.one;
             transform.DOShakePosition(0.4f, strength: new Vector3(8f, 0f, 0f), vibrato: 20, randomness: 0);
 
-            UIManager.Instance.ShowPopupByType(PopupType.ItemConfirm);
-            if (UIManager.Instance.TryGetPopup(PopupType.ItemConfirm, out var popup)
-                && popup is ConfirmPopup confirm)
-            {
-                confirm.Show("Chưa mở khóa", entry.lockedMessage, null);
-            }
+            string message = GetLockedMessage(entry);
+
+            if (ToastUI.Instance != null)
+                ToastUI.Instance.ShowToast(message);
+            else
+                GameEvents.OnShowToast.Raise(message);
+
             return;
         }
     }
@@ -113,6 +107,34 @@ public class FeatureButtonUI : MonoBehaviour
     {
         if (_playerLevel == null) return 1;
         return _playerLevel.levelSystem.level;
+    }
+
+    private string GetRequiredLevelMessage(int requiredLevel)
+    {
+        string template = LanguageManager.Instance != null
+            ? LanguageManager.Instance.GetTranslationOrFallback("feature_requires_level", "Requires level {0}")
+            : "Requires level {0}";
+
+        return string.Format(template, requiredLevel);
+    }
+
+    private string GetLockedMessage(FeatureUnlockEntry entry)
+    {
+        if (entry == null)
+            return string.Empty;
+
+        string message = entry.lockedMessage;
+        if (string.IsNullOrWhiteSpace(message) || IsDefaultRequiredLevelMessage(message))
+            return GetRequiredLevelMessage(entry.requiredLevel);
+
+        return LanguageManager.Instance != null
+            ? LanguageManager.Instance.TranslateText(message)
+            : message;
+    }
+
+    private bool IsDefaultRequiredLevelMessage(string message)
+    {
+        return message.Trim().StartsWith("Requires level", System.StringComparison.OrdinalIgnoreCase);
     }
 
     private void OnDestroy()

@@ -41,7 +41,7 @@ public class QuestRewardPopup : BasePopup
         pendingQuestProgress = qp;
         Quest quest = qp.quest;
 
-        questNameText.text = quest.questName;
+        questNameText.text = quest.GetDisplayName();
 
         foreach (Transform child in rewardContainer)
             Destroy(child.gameObject);
@@ -50,10 +50,10 @@ public class QuestRewardPopup : BasePopup
             SpawnRow(CommonReferent.Instance.iconExp, "EXP", $"+{quest.reward.experienceReward}");
 
         if (quest.reward.goldReward > 0)
-            SpawnRow(CommonReferent.Instance.iconGold, "Gold", $"+{quest.reward.goldReward}");
+            SpawnRow(CommonReferent.Instance.iconGold, T("gold", "Gold"), $"+{quest.reward.goldReward}");
 
         if (quest.reward.gemReward > 0)
-            SpawnRow(CommonReferent.Instance.iconGold, "Gem", $"+{quest.reward.gemReward}");
+            SpawnRow(CommonReferent.Instance.iconGold, T("gem", "Gem"), $"+{quest.reward.gemReward}");
 
         foreach (var itemID in quest.reward.itemIDs)
         {
@@ -70,6 +70,13 @@ public class QuestRewardPopup : BasePopup
     {
         var row = Instantiate(rewardRowPrefab, rewardContainer);
         row.Init(icon, label, value);
+    }
+
+    private string T(string key, string fallback)
+    {
+        return LanguageManager.Instance != null
+            ? LanguageManager.Instance.GetTranslationOrFallback(key, fallback)
+            : fallback;
     }
 
     private void OnClaimClicked()

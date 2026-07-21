@@ -19,6 +19,16 @@ public class ItemUI : MonoBehaviour
     private ItemInstance itemData;
     private InventoryUI inventoryUI;
     public Button button;
+
+    public void SetupDisplayOnly(ItemInstance data)
+    {
+        Setup(data, null);
+
+        selectedImage.gameObject.SetActive(false);
+        if (button != null)
+            button.interactable = false;
+    }
+
     public void RefreshLockState()
     {
         lockIconLocked.SetActive(itemData.isLocked);
@@ -48,6 +58,9 @@ public class ItemUI : MonoBehaviour
 
     private void OnItemClicked()
     {
+        if (inventoryUI == null)
+            return;
+
         inventoryUI.SelectItem(this);
         inventoryUI.itemDetailPanel.Hide();
         inventoryUI.itemDetailPanel.Show(itemData, inventoryUI);

@@ -302,63 +302,7 @@ public class QuestManager : Singleton<QuestManager>
     private void AwardQuestReward(QuestProgress qp)
     {
         if (qp == null || qp.quest == null) return;
-
-        Quest quest = qp.quest;
-        int exp  = quest.reward.experienceReward;
-        int gold = quest.reward.goldReward;
-        int gems = quest.reward.gemReward;
-
-        if (PlayerStats.Instance != null)
-        {
-            var playerLevel = PlayerStats.Instance.GetComponent<PlayerLevel>();
-            if (playerLevel != null)
-            {
-                playerLevel.levelSystem.AddExp(exp);
-                if (exp > 0)
-                    FloatingTextSpawner.Instance.SpawnText("+ EXP :" + exp, transform.position, Color.magenta);
-            }
-        }
-
-        CurrencyManager.Instance.AddGold(gold);
-        CurrencyManager.Instance.AddGems(gems);
-
-        if (exp > 0)
-            RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconExp, "EXP", exp);
-
-        if (gold > 0)
-            RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconGold, "Gold", gold);
-
-        if (gems > 0)
-            RewardPopupManager.Instance.ShowReward(CommonReferent.Instance.iconGem, "Gem", gems);
-
-        foreach (var itemID in quest.reward.itemIDs)
-        {
-            ItemData itemData = CommonReferent.Instance.itemDatabase.GetItemByID(itemID);
-            if (itemData == null)
-            {
-                Debug.LogWarning($"Item ID does not exist: {itemID}");
-                continue;
-            }
-
-            ItemInstance itemInstance = new ItemInstance(itemData);
-            Inventory.Instance.AddItem(itemInstance);
-            RewardPopupManager.Instance.ShowReward(itemData.icon, itemData.itemName, 1);
-            Debug.Log($"Received item from quest reward: {itemData.itemName}");
-        }
-
-        if (quest.reward.rewardItem != null && quest.reward.rewardItem.itemData != null)
-        {
-            ItemInstance itemInstance = new ItemInstance(
-                quest.reward.rewardItem.itemData,
-                quest.reward.rewardItem.upgradeLevel,
-                locked: quest.reward.rewardItem.isLocked
-            );
-
-            Inventory.Instance.AddItem(itemInstance);
-            RewardPopupManager.Instance.ShowReward(itemInstance.itemData.icon, itemInstance.itemData.itemName, 1);
-            Debug.Log($"Received reward item from quest: {itemInstance.itemData.itemName}");
-        }
-
+        RewardGrantUtility.Grant(qp.quest.reward, transform);
         qp.state = QuestState.Rewarded;
     }
 

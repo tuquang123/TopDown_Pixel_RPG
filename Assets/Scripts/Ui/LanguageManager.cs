@@ -36,6 +36,20 @@ public class LanguageManager : MonoBehaviour
     private int _refreshFramesRemaining;
     private Font _defaultLegacyFont;
 
+    [Serializable]
+    private class TranslationFile
+    {
+        public string language;
+        public TranslationEntry[] entries;
+    }
+
+    [Serializable]
+    private class TranslationEntry
+    {
+        public string key;
+        public string value;
+    }
+
     public string CurrentLanguage => _currentLanguage;
 
     private Dictionary<string, Dictionary<string, string>> _translations = new()
@@ -649,6 +663,7 @@ public class LanguageManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
 
+        LoadResourceTranslations();
         LoadLanguage();
     }
 
@@ -682,8 +697,52 @@ public class LanguageManager : MonoBehaviour
         _currentLanguage = PlayerPrefs.GetString(LANGUAGE_PREF_KEY, "en");
     }
 
+    private void LoadResourceTranslations()
+    {
+        TextAsset[] files = Resources.LoadAll<TextAsset>("Localization");
+        foreach (TextAsset file in files)
+        {
+            if (file == null || string.IsNullOrWhiteSpace(file.text))
+                continue;
+
+            TranslationFile translationFile = null;
+            try
+            {
+                translationFile = JsonUtility.FromJson<TranslationFile>(file.text);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[LanguageManager] Could not parse localization file '{file.name}': {ex.Message}");
+            }
+
+            if (translationFile?.entries == null)
+                continue;
+
+            string language = string.IsNullOrWhiteSpace(translationFile.language)
+                ? file.name
+                : translationFile.language.Trim();
+
+            if (!_translations.TryGetValue(language, out var languageTable))
+            {
+                languageTable = new Dictionary<string, string>();
+                _translations[language] = languageTable;
+            }
+
+            foreach (TranslationEntry entry in translationFile.entries)
+            {
+                if (entry == null || string.IsNullOrWhiteSpace(entry.key))
+                    continue;
+
+                languageTable[entry.key.Trim()] = entry.value ?? string.Empty;
+            }
+        }
+    }
+
     public string GetTranslation(string key)
     {
+        if (string.IsNullOrWhiteSpace(key))
+            return string.Empty;
+
         string hardcoded = GetCoreTranslation(key);
         if (!string.IsNullOrEmpty(hardcoded))
         {
@@ -706,6 +765,33 @@ public class LanguageManager : MonoBehaviour
         }
 
         return key; // Fallback to returning key
+    }
+
+    public bool HasTranslation(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+            return false;
+
+        if (!string.IsNullOrEmpty(GetCoreTranslation(key)))
+            return true;
+
+        return _translations.TryGetValue(_currentLanguage, out var langDict)
+            && langDict.ContainsKey(key);
+    }
+
+    public string GetTranslationOrFallback(string key, string fallback)
+    {
+        if (!string.IsNullOrWhiteSpace(key))
+        {
+            string translated = GetTranslation(key);
+            if (!string.IsNullOrWhiteSpace(translated) && translated != key)
+                return translated;
+        }
+
+        if (!string.IsNullOrWhiteSpace(fallback))
+            return TranslateText(fallback);
+
+        return string.IsNullOrWhiteSpace(key) ? string.Empty : key;
     }
 
     public void RequestRefresh()
@@ -823,7 +909,6 @@ public class LanguageManager : MonoBehaviour
         ReplaceToken(ref result, "Cheat", "cheat");
         ReplaceToken(ref result, "ROLL X5", "roll_x5");
         ReplaceToken(ref result, "ROLL", "roll");
-        ReplaceToken(ref result, "XP", "xp");
         ReplaceToken(ref result, "Lv", "lv");
         ReplaceToken(ref result, "ATK", "atk");
         ReplaceToken(ref result, "DEF", "def");
@@ -968,7 +1053,7 @@ public class LanguageManager : MonoBehaviour
             "auto_equip", "melee", "ranged", "heavy_melee", "claim", "next", "map", "gacha",
             "equipment", "locked", "skill_point", "level", "current", "price", "power", "stage",
             "wave", "chapter", "attack", "defense", "speed", "crit", "life_steal", "attack_speed",
-            "hp", "mana", "gold", "gem", "quest", "quest_failed", "reward", "received", "completed",
+            "hp", "mana", "gold", "gem", "quest", "quest_failed", "reward", "received", "completed", "feature_requires_level",
             "hero", "empty", "button", "new_text", "dialog", "boss", "cheat", "tap_to_start",
             "not_ready", "next_wave", "xp", "lv", "atk", "def", "spd",
             "choose_passive_skill", "skill_applied_immediately", "choose_skill_first",
@@ -1149,9 +1234,14 @@ public class LanguageManager : MonoBehaviour
                 "gem" => "Gem",
                 "quest" => "Quest",
                 "quest_failed" => "Quest Failed",
+                "no_active_quest" => "No active quest",
+                "find_npc_for_quest" => "Find an NPC for a quest",
+                "achievement_rewards" => "Achievement Rewards!",
+                "quest_completed_message" => "You completed the quest!",
                 "reward" => "Reward",
                 "received" => "Received",
                 "completed" => "Completed",
+                "feature_requires_level" => "Requires level {0}",
                 "hero" => "Hero",
                 "empty" => "Empty",
                 "button" => "Button",
@@ -1288,20 +1378,25 @@ public class LanguageManager : MonoBehaviour
             "gem" => "Ng\u1ecdc",
             "quest" => "Nhi\u1ec7m V\u1ee5",
             "quest_failed" => "Nhi\u1ec7m V\u1ee5 Th\u1ea5t B\u1ea1i",
+            "no_active_quest" => "Ch\u01b0a c\u00f3 nhi\u1ec7m v\u1ee5",
+            "find_npc_for_quest" => "H\u00e3y t\u00ecm NPC \u0111\u1ec3 nh\u1eadn nhi\u1ec7m v\u1ee5",
+            "achievement_rewards" => "Ph\u1ea7n Th\u01b0\u1edfng!",
+            "quest_completed_message" => "B\u1ea1n \u0111\u00e3 ho\u00e0n th\u00e0nh nhi\u1ec7m v\u1ee5!",
             "reward" => "Ph\u1ea7n Th\u01b0\u1edfng",
             "received" => "\u0110\u00e3 Nh\u1eadn",
             "completed" => "Ho\u00e0n Th\u00e0nh",
+            "feature_requires_level" => "Y\u00eau c\u1ea7u c\u1ea5p {0}",
             "hero" => "Anh H\u00f9ng",
             "empty" => "Tr\u1ed1ng",
             "button" => "N\u00fat",
             "new_text" => "Ch\u1eef M\u1edbi",
             "dialog" => "H\u1ed9i Tho\u1ea1i",
-            "boss" => "Tr\u00f9m",
+            "boss" => "Boss",
             "cheat" => "Gian L\u1eadn",
             "tap_to_start" => "CH\u1ea0M \u0110\u1ec2 B\u1eaeT \u0110\u1ea6U",
             "not_ready" => "B\u1ea1n ch\u01b0a s\u1eb5n s\u00e0ng",
             "next_wave" => "\u0110\u1ee3t Ti\u1ebfp",
-            "xp" => "KN",
+            "xp" => "EXP",
             "lv" => "C\u1ea5p",
             "atk" => "TC",
             "def" => "PT",

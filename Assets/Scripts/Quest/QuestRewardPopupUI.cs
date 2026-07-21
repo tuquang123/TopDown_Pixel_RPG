@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -22,6 +24,10 @@ public class QuestRewardPopupUI : BasePopup
     [SerializeField] private GameObject expSlot;
     [SerializeField] private TextMeshProUGUI expAmountText;
 
+    [Header("Item Slots")]
+    [SerializeField] private Transform itemContainer;
+    [SerializeField] private ItemUI itemButtonPrefab;
+
     [Header("Button")]
     [SerializeField] private Button confirmButton;
 
@@ -36,6 +42,8 @@ public class QuestRewardPopupUI : BasePopup
 
     private Sequence _burstSequence;
     private CanvasGroup _canvasGroup;
+    private readonly List<GameObject> _spawnedItemSlots = new();
+    private Action _onConfirm;
 
     protected override void Awake()
     {
@@ -151,12 +159,16 @@ public class QuestRewardPopupUI : BasePopup
     // ─── Public API ────────────────────────────────────────────────────────────
     public void ShowReward(QuestReward reward, string questName = "")
     {
+        ShowReward(reward, questName, null);
+    }
+
+    public void ShowReward(QuestReward reward, string questName, Action onConfirm)
+    {
         if (reward == null) return;
+        _onConfirm = onConfirm;
 
         if (titleText != null)
-            titleText.text = LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi"
-                ? "Ph\u1ea7n Th\u01b0\u1edfng!"
-                : "Achievement Rewards!";
+            titleText.text = T("achievement_rewards", "Achievement Rewards!");
 
         if (subtitleText != null)
             subtitleText.text = GetRewardSubtitle(reward, questName);
@@ -176,10 +188,88 @@ public class QuestRewardPopupUI : BasePopup
         if (hasExp && expAmountText != null)
             expAmountText.text = reward.experienceReward.ToString();
 
+        RefreshItemSlots(reward);
+
         base.Show();
         StopAllCoroutines();
         StartCoroutine(AnimateIn());
         PlayBurstEffect();
+    }
+
+    private void RefreshItemSlots(QuestReward reward)
+    {
+        ClearItemSlots();
+
+        if (itemButtonPrefab == null)
+            return;
+
+        Transform parent = itemContainer != null
+            ? itemContainer
+            : expSlot != null
+                ? expSlot.transform.parent
+                : transform;
+
+        if (reward.itemIDs != null)
+        {
+            foreach (var itemID in reward.itemIDs)
+            {
+                ItemData item = CommonReferent.Instance?.itemDatabase?.GetItemByID(itemID);
+                if (item == null) continue;
+                SpawnItemSlot(new ItemInstance(item), parent);
+            }
+        }
+
+        if (reward.rewardItem != null && reward.rewardItem.itemData != null)
+        {
+            var rewardItem = new ItemInstance(
+                reward.rewardItem.itemData,
+                reward.rewardItem.upgradeLevel,
+                reward.rewardItem.instanceID,
+                reward.rewardItem.isLocked
+            );
+            SpawnItemSlot(rewardItem, parent);
+        }
+    }
+
+    private void SpawnItemSlot(ItemInstance item, Transform parent)
+    {
+        var slot = Instantiate(itemButtonPrefab, parent);
+        MatchCurrencySlotSize(slot.transform as RectTransform);
+        slot.SetupDisplayOnly(item);
+        _spawnedItemSlots.Add(slot.gameObject);
+    }
+
+    private void MatchCurrencySlotSize(RectTransform itemRect)
+    {
+        if (itemRect == null)
+            return;
+
+        RectTransform referenceRect = GetRewardSlotRect(goldSlot)
+                                   ?? GetRewardSlotRect(gemSlot)
+                                   ?? GetRewardSlotRect(expSlot);
+
+        if (referenceRect == null)
+            return;
+
+        itemRect.anchorMin = referenceRect.anchorMin;
+        itemRect.anchorMax = referenceRect.anchorMax;
+        itemRect.pivot = referenceRect.pivot;
+        itemRect.sizeDelta = referenceRect.sizeDelta;
+        itemRect.localScale = referenceRect.localScale;
+    }
+
+    private RectTransform GetRewardSlotRect(GameObject slot)
+    {
+        return slot != null ? slot.transform as RectTransform : null;
+    }
+
+    private void ClearItemSlots()
+    {
+        foreach (var slot in _spawnedItemSlots)
+            if (slot != null)
+                Destroy(slot);
+
+        _spawnedItemSlots.Clear();
     }
 
     // ─── Subtitle ──────────────────────────────────────────────────────────────
@@ -187,8 +277,8 @@ public class QuestRewardPopupUI : BasePopup
     {
         var rewards = new System.Collections.Generic.List<string>();
 
-        if (reward.goldReward > 0)        rewards.Add($"{(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("gold") : "Gold")} x{reward.goldReward}");
-        if (reward.gemReward > 0)         rewards.Add($"{(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("gem") : "Gems")} x{reward.gemReward}");
+        if (reward.goldReward > 0)        rewards.Add($"{T("gold", "Gold")} x{reward.goldReward}");
+        if (reward.gemReward > 0)         rewards.Add($"{T("gem", "Gems")} x{reward.gemReward}");
         if (reward.experienceReward > 0)  rewards.Add($"EXP x{reward.experienceReward}");
 
         if (reward.itemIDs != null)
@@ -209,17 +299,27 @@ public class QuestRewardPopupUI : BasePopup
 
         if (string.IsNullOrEmpty(questName))
             return rewards.Count == 0
-                ? (LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi" ? "B\u1ea1n \u0111\u00e3 ho\u00e0n th\u00e0nh nhi\u1ec7m v\u1ee5!" : "You completed the quest!")
-                : (LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi" ? $"Nh\u1eadn {rewardText}!" : $"Received {rewardText}!");
+                ? T("quest_completed_message", "You completed the quest!")
+                : $"{T("received", "Received")} {rewardText}!";
         else
             return rewards.Count == 0
-                ? (LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi" ? $"Ho\u00e0n th\u00e0nh: {questName}" : $"Completed: {questName}")
-                : (LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi" ? $"Nh\u1eadn {rewardText}!" : $"Received {rewardText}!");
+                ? $"{T("completed", "Completed")}: {questName}"
+                : $"{T("received", "Received")} {rewardText}!";
+    }
+
+    private string T(string key, string fallback)
+    {
+        return LanguageManager.Instance != null
+            ? LanguageManager.Instance.GetTranslationOrFallback(key, fallback)
+            : fallback;
     }
 
     // ─── Button ────────────────────────────────────────────────────────────────
     private void OnConfirmClick()
     {
+        Action onConfirm = _onConfirm;
+        _onConfirm = null;
+        onConfirm?.Invoke();
         UIManager.Instance.HidePopupByType(PopupType.QuestReward);
     }
 
@@ -228,6 +328,8 @@ public class QuestRewardPopupUI : BasePopup
     {
         StopAllCoroutines();
         StopBurstEffect();
+        _onConfirm = null;
+        ClearItemSlots();
         StartCoroutine(AnimateOut());
     }
 

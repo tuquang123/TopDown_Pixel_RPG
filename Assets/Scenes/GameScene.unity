@@ -1079,7 +1079,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 554
+      value: 432
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1155,7 +1155,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 208.7845
+      value: 147.7845
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -3553,7 +3553,8 @@ MonoBehaviour:
   spawnInterval: 0.08
   riseDistance: 70
   stackSpacing: 62
-  maxVisibleToasts: 5
+  maxVisibleToasts: 3
+  durationMultiplier: 0.33333334
 --- !u!225 &2320599417014575562
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -5736,6 +5737,10 @@ PrefabInstance:
     - target: {fileID: 3220023995490613436, guid: ac8ec9c5ceb4f1e429eedad32e006341, type: 3}
       propertyPath: m_Name
       value: QuestUi
+      objectReference: {fileID: 0}
+    - target: {fileID: 3220023995490613436, guid: ac8ec9c5ceb4f1e429eedad32e006341, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5982106655120312781, guid: ac8ec9c5ceb4f1e429eedad32e006341, type: 3}
       propertyPath: m_fontSize

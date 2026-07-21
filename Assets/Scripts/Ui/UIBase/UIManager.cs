@@ -80,13 +80,13 @@ public class UIManager : Singleton<UIManager>
     /// <summary>
     /// Hiển thị Quest Reward Popup
     /// </summary>
-    public QuestRewardPopupUI ShowQuestRewardPopup(QuestReward reward, string questName = "")
+    public QuestRewardPopupUI ShowQuestRewardPopup(QuestReward reward, string questName = "", Action onConfirm = null)
     {
         var popup = ShowPopupByType(PopupType.QuestReward) as QuestRewardPopupUI;
         
         if (popup != null)
         {
-            popup.ShowReward(reward, questName);
+            popup.ShowReward(reward, questName, onConfirm);
         }
         
         return popup;

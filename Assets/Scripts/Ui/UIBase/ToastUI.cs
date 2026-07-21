@@ -12,7 +12,8 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
     [SerializeField] private float spawnInterval = 0.08f;
     [SerializeField] private float riseDistance = 70f;
     [SerializeField] private float stackSpacing = 62f;
-    [SerializeField] private int maxVisibleToasts = 5;
+    [SerializeField] private int maxVisibleToasts = 3;
+    [SerializeField] private float durationMultiplier = 0.33333334f;
 
     // FIX: cho phép script khác lấy giá trị mặc định để tự tính (VD: showDuration * 0.5f)
     public float DefaultShowDuration => showDuration;
@@ -74,7 +75,10 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
         if (string.IsNullOrWhiteSpace(message) || toastCanvasGroup == null)
             return;
 
-        float duration = customDuration ?? showDuration;
+        if (activeToasts.Count + pendingMessages.Count >= maxVisibleToasts)
+            return;
+
+        float duration = (customDuration ?? showDuration) * durationMultiplier;
         pendingMessages.Enqueue((message, duration));
 
         if (queueRunner == null)

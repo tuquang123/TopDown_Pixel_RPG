@@ -305,16 +305,21 @@ public class ItemData : ScriptableObject
     public string itemID;
 
     [BoxGroup("General Info")] [LabelWidth(100)]
+    [Tooltip("Localization key for item name. Example: item.iron_sword.name")]
+    public string itemNameKey;
+
+    [BoxGroup("General Info")] [LabelWidth(100)]
     [FormerlySerializedAs("itemName")]
     [SerializeField] private string _itemName;
     public string itemName
     {
         get
         {
-            if (LanguageManager.Instance != null && !string.IsNullOrEmpty(itemID))
+            if (LanguageManager.Instance != null)
             {
-                string translated = LanguageManager.Instance.GetTranslation(itemID);
-                if (!string.IsNullOrWhiteSpace(translated) && translated != itemID)
+                string key = ResolveItemNameKey();
+                string translated = LanguageManager.Instance.GetTranslation(key);
+                if (!string.IsNullOrWhiteSpace(translated) && translated != key)
                     return translated;
             }
 
@@ -338,6 +343,10 @@ public class ItemData : ScriptableObject
     [BoxGroup("General Info")] [LabelWidth(100)]
     public int price;
 
+    [BoxGroup("General Info")] [LabelWidth(100)]
+    [Tooltip("Localization key for item description. Example: item.iron_sword.description")]
+    public string descriptionKey;
+
     [BoxGroup("General Info")] [MultiLineProperty(3)]
     [FormerlySerializedAs("description")]
     [SerializeField] private string _description;
@@ -345,9 +354,9 @@ public class ItemData : ScriptableObject
     {
         get
         {
-            if (LanguageManager.Instance != null && !string.IsNullOrEmpty(itemID))
+            if (LanguageManager.Instance != null)
             {
-                string key = itemID + "_des";
+                string key = ResolveItemDescriptionKey();
                 string translated = LanguageManager.Instance.GetTranslation(key);
                 if (!string.IsNullOrWhiteSpace(translated) && translated != key)
                     return translated;
@@ -356,6 +365,38 @@ public class ItemData : ScriptableObject
             return ItemUtility.GetLocalizedDescription(itemID, BuildContextualDescription());
         }
         set => _description = value;
+    }
+
+    private string ResolveItemNameKey()
+    {
+        if (!string.IsNullOrWhiteSpace(itemNameKey))
+            return itemNameKey;
+
+        string tableKey = BuildItemTableKey("name");
+        if (LanguageManager.Instance != null && LanguageManager.Instance.HasTranslation(tableKey))
+            return tableKey;
+
+        return itemID;
+    }
+
+    private string ResolveItemDescriptionKey()
+    {
+        if (!string.IsNullOrWhiteSpace(descriptionKey))
+            return descriptionKey;
+
+        string tableKey = BuildItemTableKey("description");
+        if (LanguageManager.Instance != null && LanguageManager.Instance.HasTranslation(tableKey))
+            return tableKey;
+
+        return string.IsNullOrWhiteSpace(itemID) ? string.Empty : itemID + "_des";
+    }
+
+    private string BuildItemTableKey(string suffix)
+    {
+        if (string.IsNullOrWhiteSpace(itemID))
+            return string.Empty;
+
+        return $"item.{itemID.Trim().ToLowerInvariant().Replace(' ', '_')}.{suffix}";
     }
 
     [BoxGroup("Stats"), HideLabel] [FoldoutGroup("Stats/Battle Stats")] [LabelText("ATK")]

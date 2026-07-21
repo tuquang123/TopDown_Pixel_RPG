@@ -13,8 +13,10 @@ public class DialoguePopup : BasePopup
     [SerializeField] private Button skipButton;
 
     private Queue<DialogueLine> lines;
+    private Dialogue currentDialogue;
     private Coroutine typingCoroutine;
     private string currentSentence;
+    private int currentLineIndex;
     private bool isTyping;
     private System.Action onComplete;
 
@@ -29,6 +31,8 @@ public class DialoguePopup : BasePopup
     public void ShowDialogue(Dialogue dialogue, System.Action onComplete)
     {
         this.onComplete = onComplete;
+        currentDialogue = dialogue;
+        currentLineIndex = 0;
         lines = new Queue<DialogueLine>(dialogue.lines);
 
         Show();
@@ -58,8 +62,9 @@ public class DialoguePopup : BasePopup
         }
 
         var line = lines.Dequeue();
-        nameText.text = line.speakerName;
-        currentSentence = line.sentence;
+        int lineIndex = currentLineIndex++;
+        nameText.text = line.GetSpeakerText();
+        currentSentence = line.GetSentenceText(currentDialogue != null ? currentDialogue.id : string.Empty, lineIndex);
 
         typingCoroutine = StartCoroutine(TypeSentence(currentSentence));
     }
@@ -83,5 +88,6 @@ public class DialoguePopup : BasePopup
         Hide();
         onComplete?.Invoke();
         onComplete = null;
+        currentDialogue = null;
     }
 }

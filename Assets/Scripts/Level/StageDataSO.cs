@@ -24,6 +24,10 @@ public class StageData
 
     [Tooltip("Override số lượng quái, tốc độ spawn và chu kỳ boss cho stage này. Dùng để designer cân bằng difficulty từng stage.")]
     public StageWaveConfig waveConfigOverride = StageWaveConfig.Default;
+
+    [Header("Clear Reward")]
+    [Tooltip("Phan thuong nhan khi clear dung stage nay. De trong hoac 0 neu stage khong co thuong.")]
+    public QuestReward clearReward;
 }
 
 [System.Serializable]

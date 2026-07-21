@@ -190,13 +190,43 @@ public class WaveManager : Singleton<WaveManager>
     //  STAGE
     // ═══════════════════════════════════════════════════════════════
 
-    private void AdvanceStage()
+    private bool AdvanceStage(Action onRewardClaimed = null)
     {
         int completedStage = currentStage;
+        StageData completedStageData = stageDatabase?.Get(completedStage);
+
         currentStage++;
         ApplyStageData(currentStage);
         QuestManager.Instance?.ReportStageCompleted(completedStage);
         OnStageChanged?.Invoke(currentStage);
+
+        return ShowStageReward(completedStageData, completedStage, onRewardClaimed);
+    }
+
+    private bool ShowStageReward(StageData completedStageData, int completedStage, Action onRewardClaimed)
+    {
+        QuestReward reward = completedStageData?.clearReward;
+        if (reward == null || !RewardGrantUtility.HasAnyReward(reward))
+            return false;
+
+        string stageText = LanguageManager.Instance != null
+            ? LanguageManager.Instance.GetTranslationOrFallback("stage", "Stage")
+            : "Stage";
+
+        void ClaimReward()
+        {
+            RewardGrantUtility.Grant(reward, transform);
+            onRewardClaimed?.Invoke();
+        }
+
+        var popup = UIManager.Instance?.ShowQuestRewardPopup(reward, $"{stageText} {completedStage}", ClaimReward);
+        if (popup == null)
+        {
+            RewardGrantUtility.Grant(reward, transform);
+            return false;
+        }
+
+        return true;
     }
 
     private void ApplyStageData(int stageNumber)
@@ -684,8 +714,10 @@ public class WaveManager : Singleton<WaveManager>
     {
         Debug.Log($"[WaveManager] Boss đã chết! Nghỉ {delay}s trước wave tiếp...");
         yield return new WaitForSeconds(delay);
-        AdvanceStage();
-        StartNextWave();
+
+        bool waitingForReward = AdvanceStage(StartNextWave);
+        if (!waitingForReward)
+            StartNextWave();
     }
 
     // ═══════════════════════════════════════════════════════════════

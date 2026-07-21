@@ -13,6 +13,7 @@ public class QuestUI : MonoBehaviour
     private void Awake()
     {
         EnsureClaimButton();
+        ConfigureQuestTextLayout();
 
         if (claimButton != null)
         {
@@ -22,6 +23,19 @@ public class QuestUI : MonoBehaviour
         }
 
         Clear();
+    }
+
+    private void ConfigureQuestTextLayout()
+    {
+        if (questProgressText == null)
+            return;
+
+        questProgressText.enableWordWrapping = true;
+        questProgressText.overflowMode = TextOverflowModes.Truncate;
+        questProgressText.enableAutoSizing = true;
+        questProgressText.fontSizeMin = 8f;
+        questProgressText.fontSizeMax = 22f;
+        questProgressText.margin = new Vector4(12f, 6f, 12f, 8f);
     }
 
     private void OnEnable()
@@ -98,11 +112,10 @@ public class QuestUI : MonoBehaviour
         string rewardLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("reward") : "Reward";
         string completedLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("completed") : "Completed";
         string claimLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("claim") : "Claim";
-        string receivedLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("received") : "Received";
         string goldLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("gold") : "Gold";
         string gemLabel = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("gem") : "Gem";
 
-        string text = $"<b>{questLabel}:</b> {TranslateRuntimeText(qp.quest.questName)}\n";
+        string text = $"<b>{questLabel}:</b> {qp.quest.GetDisplayName()}\n";
 
         foreach (var obj in qp.quest.objectives)
         {
@@ -114,7 +127,7 @@ public class QuestUI : MonoBehaviour
             if (qp.progress != null && qp.progress.ContainsKey(obj.objectiveName))
                 current = qp.progress[obj.objectiveName];
 
-            text += $"- {TranslateRuntimeText(obj.objectiveName)}: {current}/{obj.requiredAmount}\n";
+            text += $"- {qp.quest.GetObjectiveDisplayName(obj)}: {current}/{obj.requiredAmount}\n";
         }
 
         if (qp.quest.reward != null)
@@ -133,16 +146,16 @@ public class QuestUI : MonoBehaviour
             if (qp.quest.reward.itemIDs != null)
             {
                 foreach (var item in qp.quest.reward.itemIDs)
-                    text += $"- {TranslateRuntimeText(item)}\n";
+                    text += $"- {GetRewardItemDisplayName(item)}\n";
             }
 
 
             if (qp.quest.reward.rewardItem != null && qp.quest.reward.rewardItem.itemData != null)
-                text += $"- {TranslateRuntimeText(qp.quest.reward.rewardItem.itemData.itemName)}\n";
+                text += $"- {qp.quest.reward.rewardItem.itemData.itemName}\n";
         }
 
         if (readyToTurnIn)
-            text += $"\n<color=yellow>{completedLabel}! {claimLabel}: {receivedLabel} {rewardLabel}</color>";
+            text += $"\n<color=yellow>{completedLabel}! {claimLabel}</color>";
 
         if (questProgressText != null)
             questProgressText.text = text;
@@ -159,9 +172,14 @@ public class QuestUI : MonoBehaviour
         currentReadyToTurnIn = false;
         if (questProgressText != null)
         {
-            questProgressText.text = LanguageManager.Instance != null && LanguageManager.Instance.CurrentLanguage == "vi"
-                ? "Ch\u01b0a c\u00f3 nhi\u1ec7m v\u1ee5\nH\u00e3y t\u00ecm NPC \u0111\u1ec3 nh\u1eadn nhi\u1ec7m v\u1ee5"
-                : "No active quest\nFind an NPC for a quest";
+            string noActiveQuest = LanguageManager.Instance != null
+                ? LanguageManager.Instance.GetTranslationOrFallback("no_active_quest", "No active quest")
+                : "No active quest";
+            string findNpc = LanguageManager.Instance != null
+                ? LanguageManager.Instance.GetTranslationOrFallback("find_npc_for_quest", "Find an NPC for a quest")
+                : "Find an NPC for a quest";
+
+            questProgressText.text = $"{noActiveQuest}\n{findNpc}";
         }
 
         if (claimButton != null)
@@ -175,13 +193,19 @@ public class QuestUI : MonoBehaviour
 
         if (currentQuest.quest?.reward != null)
         {
-            UIManager.Instance.ShowQuestRewardPopup(
+            var popup = UIManager.Instance.ShowQuestRewardPopup(
                 currentQuest.quest.reward,
-                currentQuest.quest.questName
+                currentQuest.quest.GetDisplayName(),
+                () => QuestManager.Instance?.FinalizeTurnIn(currentQuest)
             );
-        }
 
-        QuestManager.Instance?.TurnInQuest(currentQuest);
+            if (popup == null)
+                QuestManager.Instance?.FinalizeTurnIn(currentQuest);
+        }
+        else
+        {
+            QuestManager.Instance?.FinalizeTurnIn(currentQuest);
+        }
 
         if (claimButton != null)
             claimButton.gameObject.SetActive(false);
@@ -203,8 +227,16 @@ public class QuestUI : MonoBehaviour
             legacyLabel.text = claimLabel;
     }
 
-    private string TranslateRuntimeText(string value)
+    private string GetRewardItemDisplayName(string itemID)
     {
-        return LanguageManager.Instance != null ? LanguageManager.Instance.TranslateText(value) : value;
+        ItemData item = CommonReferent.Instance?.itemDatabase?.GetItemByID(itemID);
+        return item != null ? item.itemName : LocalizeKeyOrText(itemID);
+    }
+
+    private string LocalizeKeyOrText(string value)
+    {
+        return LanguageManager.Instance != null
+            ? LanguageManager.Instance.GetTranslationOrFallback(value, value)
+            : value;
     }
 }
