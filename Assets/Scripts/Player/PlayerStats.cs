@@ -18,25 +18,25 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
     public void NotifyStatsChanged()   => OnStatsChanged?.Invoke();
     [Title("Stats")]
     [BoxGroup("Stats")]
-    public Stat maxHealth = new(100);
+    public Stat maxHealth = new(120);
 
     [BoxGroup("Stats")]
-    public Stat maxMana = new(50);
+    public Stat maxMana = new(60);
 
     [BoxGroup("Stats")]
-    public Stat attack = new(10);
+    public Stat attack = new(14);
 
     [BoxGroup("Stats")]
     public Stat defense = new(5);
 
     [BoxGroup("Stats")]
-    public Stat speed = new(2);
+    public Stat speed = new(2.2f);
 
     [BoxGroup("Stats")]
     public Stat critChance = new(10); // %
 
     [BoxGroup("Stats")]
-    public Stat lifeSteal = new(5); // %
+    public Stat lifeSteal = new(0); // %
 
     [BoxGroup("Stats")]
     public Stat attackSpeed = new(1f);

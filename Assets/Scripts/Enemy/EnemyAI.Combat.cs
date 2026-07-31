@@ -30,7 +30,8 @@ public partial class EnemyAI
         if (Mathf.Approximately(direction, 0f))
             return;
 
-        transform.localScale = new Vector3(Mathf.Sign(direction) * -1f, 1f, 1f);
+        float facingSign = invertFacingDirection ? 1f : -1f;
+        transform.localScale = new Vector3(Mathf.Sign(direction) * facingSign, 1f, 1f);
     }
 
     protected Transform attackSnapshot;

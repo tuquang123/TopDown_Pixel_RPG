@@ -250,7 +250,7 @@ public class ItemDetailPanel : MonoBehaviour
             upgradeButton.gameObject.SetActive(true);
             sellButton.gameObject.SetActive(true);
 
-            int upgradeCost = data.baseUpgradeCost * (item.upgradeLevel + 1);
+            int upgradeCost = CalculateUpgradeCost(item);
             string upgradeWord = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("upgrade") : "Upgrade";
             upgradeCostText.text = $"{upgradeWord} ({upgradeCost} <sprite name=\"gold_icon\">)";
             upgradeButton.onClick.AddListener(ShowUpgradeConfirm);
@@ -318,7 +318,7 @@ public class ItemDetailPanel : MonoBehaviour
 
     private void UpgradeItem()
     {
-        int cost = currentItem.itemData.baseUpgradeCost * (currentItem.upgradeLevel + 1);
+        int cost = CalculateUpgradeCost(currentItem);
 
         if (!CurrencyManager.Instance.SpendGold(cost))
         {
@@ -356,7 +356,7 @@ public class ItemDetailPanel : MonoBehaviour
     private void ShowUpgradeConfirm()
     {
         int next = currentItem.upgradeLevel + 1;
-        int cost = currentItem.itemData.baseUpgradeCost * next;
+        int cost = CalculateUpgradeCost(currentItem);
 
         string statText = BuildUpgradeStatText(currentItem);
         string upgradeText = LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("upgrade") : "Upgrade";
@@ -499,6 +499,14 @@ public class ItemDetailPanel : MonoBehaviour
         int baseValue = item.itemData.baseUpgradeCost;
         float multi = 0.6f + item.upgradeLevel * 0.2f;
         return Mathf.RoundToInt(baseValue * multi);
+    }
+
+    private int CalculateUpgradeCost(ItemInstance item)
+    {
+        int baseValue = Mathf.Max(1, item.itemData.baseUpgradeCost);
+        int nextLevel = Mathf.Max(2, item.upgradeLevel + 1);
+        float step = nextLevel - 1;
+        return Mathf.Max(1, Mathf.RoundToInt(baseValue * (1f + Mathf.Pow(step, 1.08f) * 0.38f)));
     }
     private void ToggleLock()
     {

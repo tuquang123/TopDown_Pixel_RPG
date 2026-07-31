@@ -13,116 +13,116 @@ MonoBehaviour:
   m_Name: ItemTierConfig
   m_EditorClassIdentifier: 
   common:
-    priceRange: {x: 100, y: 500}
-    upgradeCostRange: {x: 50, y: 300}
-    atkFlatRange: {x: 10, y: 100}
+    priceRange: {x: 100, y: 160}
+    upgradeCostRange: {x: 25, y: 45}
+    atkFlatRange: {x: 14, y: 22}
     atkPercentRange: {x: 0, y: 0}
-    defFlatRange: {x: 1, y: 20}
+    defFlatRange: {x: 2, y: 6}
     defPercentRange: {x: 0, y: 0}
-    healthFlatRange: {x: 100, y: 1000}
+    healthFlatRange: {x: 35, y: 140}
     healthPercentRange: {x: 0, y: 0}
-    manaFlatRange: {x: 50, y: 300}
+    manaFlatRange: {x: 10, y: 40}
     manaPercentRange: {x: 0, y: 0}
-    critFlatRange: {x: 0, y: 20}
+    critFlatRange: {x: 0, y: 3}
     critPercentRange: {x: 0, y: 0}
-    attackSpeedFlatRange: {x: 0, y: 0.5}
+    attackSpeedFlatRange: {x: 0, y: 0.07}
     attackSpeedPercentRange: {x: 0, y: 0}
-    lifeStealFlatRange: {x: 0, y: 10}
+    lifeStealFlatRange: {x: 0, y: 1}
     lifeStealPercentRange: {x: 0, y: 0}
-    speedFlatRange: {x: 0, y: 1}
+    speedFlatRange: {x: 0, y: 0.1}
     speedPercentRange: {x: 0, y: 0}
   uncommon:
-    priceRange: {x: 120, y: 600}
-    upgradeCostRange: {x: 60, y: 360}
-    atkFlatRange: {x: 12, y: 120.00001}
+    priceRange: {x: 180, y: 280}
+    upgradeCostRange: {x: 45, y: 75}
+    atkFlatRange: {x: 22, y: 32}
     atkPercentRange: {x: 0, y: 0}
-    defFlatRange: {x: 1.2, y: 24}
+    defFlatRange: {x: 3, y: 9}
     defPercentRange: {x: 0, y: 0}
-    healthFlatRange: {x: 120.00001, y: 1200}
+    healthFlatRange: {x: 50, y: 220}
     healthPercentRange: {x: 0, y: 0}
-    manaFlatRange: {x: 60.000004, y: 360}
+    manaFlatRange: {x: 16, y: 60}
     manaPercentRange: {x: 0, y: 0}
-    critFlatRange: {x: 0, y: 24}
+    critFlatRange: {x: 1, y: 4}
     critPercentRange: {x: 0, y: 0}
-    attackSpeedFlatRange: {x: 0, y: 0.6}
+    attackSpeedFlatRange: {x: 0.03, y: 0.09}
     attackSpeedPercentRange: {x: 0, y: 0}
-    lifeStealFlatRange: {x: 0, y: 12}
+    lifeStealFlatRange: {x: 0, y: 2}
     lifeStealPercentRange: {x: 0, y: 0}
-    speedFlatRange: {x: 0, y: 1.2}
+    speedFlatRange: {x: 0.04, y: 0.16}
     speedPercentRange: {x: 0, y: 0}
   rare:
-    priceRange: {x: 150, y: 750}
-    upgradeCostRange: {x: 75, y: 450}
-    atkFlatRange: {x: 15, y: 150}
+    priceRange: {x: 340, y: 520}
+    upgradeCostRange: {x: 80, y: 125}
+    atkFlatRange: {x: 32, y: 48}
     atkPercentRange: {x: 0, y: 0}
-    defFlatRange: {x: 1.5, y: 30}
+    defFlatRange: {x: 5, y: 14}
     defPercentRange: {x: 0, y: 0}
-    healthFlatRange: {x: 150, y: 1500}
+    healthFlatRange: {x: 70, y: 330}
     healthPercentRange: {x: 0, y: 0}
-    manaFlatRange: {x: 75, y: 450}
+    manaFlatRange: {x: 24, y: 90}
     manaPercentRange: {x: 0, y: 0}
-    critFlatRange: {x: 0, y: 30}
+    critFlatRange: {x: 2, y: 6}
     critPercentRange: {x: 0, y: 0}
-    attackSpeedFlatRange: {x: 0, y: 0.75}
+    attackSpeedFlatRange: {x: 0.05, y: 0.13}
     attackSpeedPercentRange: {x: 0, y: 0}
-    lifeStealFlatRange: {x: 0, y: 15}
+    lifeStealFlatRange: {x: 1, y: 3}
     lifeStealPercentRange: {x: 0, y: 0}
-    speedFlatRange: {x: 0, y: 1.5}
+    speedFlatRange: {x: 0.06, y: 0.24}
     speedPercentRange: {x: 0, y: 0}
   epic:
-    priceRange: {x: 200, y: 1000}
-    upgradeCostRange: {x: 100, y: 600}
-    atkFlatRange: {x: 20, y: 200}
+    priceRange: {x: 620, y: 900}
+    upgradeCostRange: {x: 145, y: 220}
+    atkFlatRange: {x: 48, y: 68}
     atkPercentRange: {x: 0, y: 0}
-    defFlatRange: {x: 2, y: 40}
+    defFlatRange: {x: 8, y: 21}
     defPercentRange: {x: 0, y: 0}
-    healthFlatRange: {x: 200, y: 2000}
+    healthFlatRange: {x: 100, y: 480}
     healthPercentRange: {x: 0, y: 0}
-    manaFlatRange: {x: 100, y: 600}
+    manaFlatRange: {x: 36, y: 130}
     manaPercentRange: {x: 0, y: 0}
-    critFlatRange: {x: 0, y: 40}
+    critFlatRange: {x: 4, y: 8}
     critPercentRange: {x: 0, y: 0}
-    attackSpeedFlatRange: {x: 0, y: 1}
+    attackSpeedFlatRange: {x: 0.08, y: 0.17}
     attackSpeedPercentRange: {x: 0, y: 0}
-    lifeStealFlatRange: {x: 0, y: 20}
+    lifeStealFlatRange: {x: 2, y: 5}
     lifeStealPercentRange: {x: 0, y: 0}
-    speedFlatRange: {x: 0, y: 2}
+    speedFlatRange: {x: 0.1, y: 0.34}
     speedPercentRange: {x: 0, y: 0}
   legendary:
-    priceRange: {x: 250, y: 1250}
-    upgradeCostRange: {x: 125, y: 750}
-    atkFlatRange: {x: 25, y: 250}
+    priceRange: {x: 1000, y: 1500}
+    upgradeCostRange: {x: 230, y: 350}
+    atkFlatRange: {x: 68, y: 95}
     atkPercentRange: {x: 0, y: 0}
-    defFlatRange: {x: 2.5, y: 50}
+    defFlatRange: {x: 12, y: 30}
     defPercentRange: {x: 0, y: 0}
-    healthFlatRange: {x: 250, y: 2500}
+    healthFlatRange: {x: 145, y: 700}
     healthPercentRange: {x: 0, y: 0}
-    manaFlatRange: {x: 125, y: 750}
+    manaFlatRange: {x: 52, y: 190}
     manaPercentRange: {x: 0, y: 0}
-    critFlatRange: {x: 0, y: 50}
+    critFlatRange: {x: 6, y: 11}
     critPercentRange: {x: 0, y: 0}
-    attackSpeedFlatRange: {x: 0, y: 1.25}
+    attackSpeedFlatRange: {x: 0.11, y: 0.22}
     attackSpeedPercentRange: {x: 0, y: 0}
-    lifeStealFlatRange: {x: 0, y: 25}
+    lifeStealFlatRange: {x: 3, y: 7}
     lifeStealPercentRange: {x: 0, y: 0}
-    speedFlatRange: {x: 0, y: 2.5}
+    speedFlatRange: {x: 0.14, y: 0.46}
     speedPercentRange: {x: 0, y: 0}
   mythic:
-    priceRange: {x: 300, y: 1500}
-    upgradeCostRange: {x: 150, y: 900}
-    atkFlatRange: {x: 30, y: 300}
+    priceRange: {x: 1500, y: 2300}
+    upgradeCostRange: {x: 340, y: 520}
+    atkFlatRange: {x: 95, y: 135}
     atkPercentRange: {x: 0, y: 0}
-    defFlatRange: {x: 3, y: 60}
+    defFlatRange: {x: 18, y: 42}
     defPercentRange: {x: 0, y: 0}
-    healthFlatRange: {x: 300, y: 3000}
+    healthFlatRange: {x: 210, y: 980}
     healthPercentRange: {x: 0, y: 0}
-    manaFlatRange: {x: 150, y: 900}
+    manaFlatRange: {x: 75, y: 270}
     manaPercentRange: {x: 0, y: 0}
-    critFlatRange: {x: 0, y: 60}
+    critFlatRange: {x: 8, y: 15}
     critPercentRange: {x: 0, y: 0}
-    attackSpeedFlatRange: {x: 0, y: 1.5}
+    attackSpeedFlatRange: {x: 0.15, y: 0.3}
     attackSpeedPercentRange: {x: 0, y: 0}
-    lifeStealFlatRange: {x: 0, y: 30}
+    lifeStealFlatRange: {x: 4, y: 9}
     lifeStealPercentRange: {x: 0, y: 0}
-    speedFlatRange: {x: 0, y: 3}
+    speedFlatRange: {x: 0.18, y: 0.6}
     speedPercentRange: {x: 0, y: 0}

@@ -14,50 +14,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stats:
     attack:
-      baseValue: 10
+      baseValue: 14
       level: 0
-      increasePerLevel: 2
-      goldCost: 50
-      costGrowthRate: 1.07
+      increasePerLevel: 3
+      goldCost: 20
+      costGrowthRate: 1.035
     defense:
       baseValue: 5
       level: 0
-      increasePerLevel: 1
-      goldCost: 40
-      costGrowthRate: 1.07
+      increasePerLevel: 1.2
+      goldCost: 18
+      costGrowthRate: 1.035
     speed:
-      baseValue: 3
+      baseValue: 2.2
       level: 0
-      increasePerLevel: 0.05
-      goldCost: 500
-      costGrowthRate: 1.08
+      increasePerLevel: 0.035
+      goldCost: 35
+      costGrowthRate: 1.038
     crit:
       baseValue: 5
       level: 0
-      increasePerLevel: 0.1
-      goldCost: 300
-      costGrowthRate: 1.08
+      increasePerLevel: 1
+      goldCost: 50
+      costGrowthRate: 1.04
     lifesteal:
-      baseValue: 2
+      baseValue: 0
       level: 0
-      increasePerLevel: 0.1
-      goldCost: 200
-      costGrowthRate: 1.08
+      increasePerLevel: 1
+      goldCost: 60
+      costGrowthRate: 1.04
     attackSpeed:
       baseValue: 1
       level: 0
-      increasePerLevel: 0.05
-      goldCost: 50
-      costGrowthRate: 1.07
+      increasePerLevel: 0.04
+      goldCost: 28
+      costGrowthRate: 1.038
     health:
-      baseValue: 100
+      baseValue: 120
       level: 0
-      increasePerLevel: 10
-      goldCost: 80
-      costGrowthRate: 1.07
+      increasePerLevel: 15
+      goldCost: 25
+      costGrowthRate: 1.035
     mana:
-      baseValue: 50
+      baseValue: 60
       level: 0
-      increasePerLevel: 5
-      goldCost: 60
-      costGrowthRate: 1.07
+      increasePerLevel: 8
+      goldCost: 20
+      costGrowthRate: 1.035

@@ -35,42 +35,46 @@ public class PlayerStatsDataSO : ScriptableObject
 
     private void OnValidate()
     {
-        stats.speed.increasePerLevel       = 0.05f;
-        stats.attackSpeed.increasePerLevel = 0.05f;
-        stats.crit.increasePerLevel        = 0.1f;
-        stats.lifesteal.increasePerLevel   = 0.1f;
+        stats.attack.increasePerLevel      = 3f;
+        stats.defense.increasePerLevel     = 1.2f;
+        stats.speed.increasePerLevel       = 0.035f;
+        stats.attackSpeed.increasePerLevel = 0.04f;
+        stats.crit.increasePerLevel        = 1f;
+        stats.lifesteal.increasePerLevel   = 1f;
+        stats.health.increasePerLevel      = 15f;
+        stats.mana.increasePerLevel        = 8f;
 
-        stats.attack.goldCost      = 50;
-        stats.defense.goldCost     = 40;
-        stats.speed.goldCost       = 500;
-        stats.crit.goldCost        = 300;
-        stats.lifesteal.goldCost   = 200;
-        stats.attackSpeed.goldCost = 50;
-        stats.health.goldCost      = 80;
-        stats.mana.goldCost        = 60;
+        stats.attack.goldCost      = 20;
+        stats.defense.goldCost     = 18;
+        stats.speed.goldCost       = 35;
+        stats.crit.goldCost        = 50;
+        stats.lifesteal.goldCost   = 60;
+        stats.attackSpeed.goldCost = 28;
+        stats.health.goldCost      = 25;
+        stats.mana.goldCost        = 20;
 
-        stats.attack.costGrowthRate      = 1.07f;
-        stats.defense.costGrowthRate     = 1.07f;
-        stats.speed.costGrowthRate       = 1.08f;
-        stats.crit.costGrowthRate        = 1.08f;
-        stats.lifesteal.costGrowthRate   = 1.08f;
-        stats.attackSpeed.costGrowthRate = 1.07f;
-        stats.health.costGrowthRate      = 1.07f;
-        stats.mana.costGrowthRate        = 1.07f;
+        stats.attack.costGrowthRate      = 1.035f;
+        stats.defense.costGrowthRate     = 1.035f;
+        stats.speed.costGrowthRate       = 1.038f;
+        stats.crit.costGrowthRate        = 1.04f;
+        stats.lifesteal.costGrowthRate   = 1.04f;
+        stats.attackSpeed.costGrowthRate = 1.038f;
+        stats.health.costGrowthRate      = 1.035f;
+        stats.mana.costGrowthRate        = 1.035f;
     }
 }
 
 [Serializable]
 public class PlayerStatsDataContainer
 {
-    public PlayerStatData attack      = new PlayerStatData(10,  2f,    50, 1.07f);
-    public PlayerStatData defense     = new PlayerStatData(5,   1f,    40, 1.07f);
-    public PlayerStatData speed       = new PlayerStatData(3,   0.05f, 500, 1.08f);
-    public PlayerStatData crit        = new PlayerStatData(5,   0.1f,  300, 1.08f);
-    public PlayerStatData lifesteal   = new PlayerStatData(2,   0.1f,  200, 1.08f);
-    public PlayerStatData attackSpeed = new PlayerStatData(1,   0.05f, 50, 1.07f);
-    public PlayerStatData health      = new PlayerStatData(100, 10f,   80, 1.07f);
-    public PlayerStatData mana        = new PlayerStatData(50,  5f,    60, 1.07f);
+    public PlayerStatData attack      = new PlayerStatData(14,  3f,     20, 1.035f);
+    public PlayerStatData defense     = new PlayerStatData(5,   1.2f,   18, 1.035f);
+    public PlayerStatData speed       = new PlayerStatData(2.2f, 0.035f, 35, 1.038f);
+    public PlayerStatData crit        = new PlayerStatData(5,   1f,     50, 1.04f);
+    public PlayerStatData lifesteal   = new PlayerStatData(0,   1f,     60, 1.04f);
+    public PlayerStatData attackSpeed = new PlayerStatData(1,   0.04f,  28, 1.038f);
+    public PlayerStatData health      = new PlayerStatData(120, 15f,    25, 1.035f);
+    public PlayerStatData mana        = new PlayerStatData(60,  8f,     20, 1.035f);
 }
 
 [Serializable]

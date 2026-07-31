@@ -360,6 +360,7 @@ public class PlayerStatsPopupUI : BasePopup
         ps.CalculatePower();
         ps.NotifyStatsChanged();
         dataAsset.Save();
+        QuestManager.Instance?.ReportProgressByObjectiveName("UpgradeStat", times);
         RefreshUI();
 
         if (animTarget != null)
@@ -398,8 +399,8 @@ public class PlayerStatsPopupUI : BasePopup
             return true;
 
         int nextLevel = dataAsset.GetSavedLevel(stat) + Mathf.Max(1, times);
-        requiredLevel = nextLevel * Mathf.Max(1, unlockStep);
-        currentRequiredLevel = dataAsset.GetSavedLevel(requiredStat);
+        requiredLevel = GetRequiredStatValue(stat, nextLevel);
+        currentRequiredLevel = Mathf.FloorToInt(GetCurrentRequirementValue(requiredStat));
 
         return currentRequiredLevel >= requiredLevel;
     }
@@ -407,23 +408,53 @@ public class PlayerStatsPopupUI : BasePopup
     private PlayerStatData GetRequiredPreviousStat(PlayerStatData stat)
     {
         if (stat == data.crit)        return data.attack;
-        if (stat == data.lifesteal)   return data.crit;
-        if (stat == data.attackSpeed) return data.lifesteal;
-        if (stat == data.speed)       return data.attackSpeed;
+        if (stat == data.lifesteal)   return data.health;
+        if (stat == data.attackSpeed) return data.attack;
+        if (stat == data.speed)       return data.defense;
 
         return null;
+    }
+
+    private int GetRequiredStatValue(PlayerStatData stat, int nextLevel)
+    {
+        int safeLevel = Mathf.Max(1, nextLevel);
+
+        if (stat == data.crit)        return safeLevel * 50;
+        if (stat == data.lifesteal)   return safeLevel * 100;
+        if (stat == data.attackSpeed) return safeLevel * 40;
+        if (stat == data.speed)       return safeLevel * 10;
+
+        return safeLevel * Mathf.Max(1, unlockStep);
+    }
+
+    private float GetCurrentRequirementValue(PlayerStatData requiredStat)
+    {
+        PlayerStats ps = PlayerStats.Instance;
+        if (ps == null)
+            return requiredStat.GetValueAtLevel(dataAsset.GetSavedLevel(requiredStat));
+
+        if (requiredStat == data.attack)      return ps.attack.Value;
+        if (requiredStat == data.defense)     return ps.defense.Value;
+        if (requiredStat == data.health)      return ps.maxHealth.Value;
+        if (requiredStat == data.mana)        return ps.maxMana.Value;
+        if (requiredStat == data.speed)       return ps.speed.Value;
+        if (requiredStat == data.attackSpeed) return ps.attackSpeed.Value;
+        if (requiredStat == data.crit)        return ps.critChance.Value;
+        if (requiredStat == data.lifesteal)   return ps.lifeSteal.Value;
+
+        return requiredStat.GetValueAtLevel(dataAsset.GetSavedLevel(requiredStat));
     }
 
     private string GetPreviousStatRequiredText(PlayerStatData requiredStat, int requiredLevel, int currentRequiredLevel)
     {
         string requiredName = GetStatDisplayName(requiredStat);
         string message = IsVietnamese()
-            ? "Y\u00eau c\u1ea7u stat tr\u01b0\u1edbc"
-            : "Requires previous stat";
+            ? "Y\u00eau c\u1ea7u ch\u1ec9 s\u1ed1"
+            : "Requires stat";
 
         return string.IsNullOrEmpty(requiredName)
             ? message
-            : $"{message}: {requiredName} Lv.{requiredLevel} ({currentRequiredLevel}/{requiredLevel})";
+            : $"{message}: {requiredName} {requiredLevel} ({currentRequiredLevel}/{requiredLevel})";
     }
 
     private string GetShortRequirementText(PlayerStatData requiredStat, int requiredLevel)
@@ -545,8 +576,8 @@ public class PlayerStatsPopupUI : BasePopup
     private string FormatRequiresText(string requiredName, int requiredLevel)
     {
         return IsVietnamese()
-            ? $"Y\u00eau c\u1ea7u {requiredName} Lv.{requiredLevel}"
-            : $"Requires {requiredName} Lv.{requiredLevel}";
+            ? $"Y\u00eau c\u1ea7u {requiredName} {requiredLevel}"
+            : $"Requires {requiredName} {requiredLevel}";
     }
 
     private string T(string key, string fallback)

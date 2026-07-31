@@ -5934,7 +5934,10 @@ MonoBehaviour:
   detectionRange: 40
   attackCooldown: 1
   skipHurtAnimation: 0
+  criticalChance: 0
+  criticalDamageMultiplier: 1.5
   moveSpeed: 1.5
+  invertFacingDirection: 0
   separationRadius: 0.6
   separationWeight: 1.2
   maxSeparationNeighbors: 8
@@ -5971,9 +5974,6 @@ MonoBehaviour:
   projectilePrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9, type: 3}
   firePoint: {fileID: 323753475188547145}
   projectileSpeed: 3
-  retreatDistance: 5
-  retreatSpeed: 3
-  retreatCooldown: 5
   isHoldingBow: 1
 --- !u!50 &4942316978328193003
 Rigidbody2D:

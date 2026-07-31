@@ -21,25 +21,25 @@ MonoBehaviour:
   price: 120
   description: Lightweight and flexible
   attack:
-    flat: 49
+    flat: 0
     percent: 0
   defense:
-    flat: 10
+    flat: 4
     percent: 0
   health:
-    flat: 328
+    flat: 90
     percent: 0
   mana:
-    flat: 217
+    flat: 10
     percent: 0
   critChance:
-    flat: 2
+    flat: 0
     percent: 0
   attackSpeed:
     flat: 0
     percent: 0
   lifeSteal:
-    flat: 9
+    flat: 0
     percent: 0
   speed:
     flat: 0
@@ -48,7 +48,7 @@ MonoBehaviour:
   iconLeft: {fileID: -9059333892809613461, guid: da6895bd4082d441cbe5911031d0f43b, type: 3}
   iconRight: {fileID: 5974945691945990517, guid: da6895bd4082d441cbe5911031d0f43b, type: 3}
   horseData: {fileID: 0}
-  baseUpgradeCost: 105
+  baseUpgradeCost: 60
   restoresHealth: 0
   healthRestoreAmount: 0
   restoresMana: 0

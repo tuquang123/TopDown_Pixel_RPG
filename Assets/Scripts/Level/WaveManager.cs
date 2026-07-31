@@ -376,6 +376,12 @@ public class WaveManager : Singleton<WaveManager>
         float cd  = Mathf.Max(waveConfig.minAttackCooldown,
                         waveConfig.baseAttackCooldown * Mathf.Pow(1f - waveConfig.cooldownReductionPerStage, s));
 
+        if (!isBoss && currentStage == 1)
+        {
+            hp  = Mathf.Max(1, Mathf.RoundToInt(hp * 0.5f));
+            dmg = Mathf.Max(1, Mathf.RoundToInt(dmg * 0.5f));
+        }
+
         if (isBoss)
         {
             hp  = Mathf.RoundToInt(hp  * waveConfig.bossHealthMult);

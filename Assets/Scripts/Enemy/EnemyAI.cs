@@ -58,6 +58,9 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     [BoxGroup("Movement"), LabelText("Move Speed"), Range(0f, 10f)] [SerializeField]
     protected float moveSpeed = 3f;
 
+    [BoxGroup("Movement"), LabelText("Invert Facing Direction")] [SerializeField]
+    private bool invertFacingDirection;
+
     [BoxGroup("Movement"), LabelText("Separation Radius"), Range(0f, 2f)] [SerializeField]
     private float separationRadius = 0.6f;
 
@@ -74,6 +77,12 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     // ── FIX: Separation lerp speed — làm mượt lực đẩy, tránh dao động ────────
     [BoxGroup("Movement"), LabelText("Separation Smooth Speed"), Range(1f, 20f)] [SerializeField]
     private float separationSmoothSpeed = 8f;
+
+    [BoxGroup("Movement"), LabelText("Hard Separation Strength"), Range(0f, 10f)] [SerializeField]
+    private float hardSeparationStrength = 4f;
+
+    [BoxGroup("Movement"), LabelText("Hard Separation Max Step"), Range(0f, 0.2f)] [SerializeField]
+    private float hardSeparationMaxStep = 0.04f;
 
     #endregion
 
@@ -306,6 +315,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         );
 
         cachedRigidbody.linearVelocity = _smoothedVelocity;
+        ResolveEnemyOverlap();
     }
 
     public void OptimizedUpdate()
@@ -513,7 +523,9 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         if (steeringDirection.sqrMagnitude <= 0.0001f)
             steeringDirection = direction.normalized;
 
-        SetDesiredVelocity(steeringDirection.normalized * moveSpeed);
+        float separationSlowdown = Mathf.Clamp01(1f - _smoothedSeparation.magnitude * 0.18f);
+        float desiredSpeed = Mathf.Lerp(moveSpeed * 0.65f, moveSpeed, separationSlowdown);
+        SetDesiredVelocity(steeringDirection.normalized * desiredSpeed);
     }
 
     // ── FIX: Tách hàm SetDesiredVelocity để cập nhật cả Animator đúng chỗ ─────
@@ -544,21 +556,84 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
             if (otherCollider == null || otherCollider.attachedRigidbody == cachedRigidbody)
                 continue;
 
-            if (!otherCollider.TryGetComponent(out EnemyAI otherEnemy) || otherEnemy.IsDead)
+            EnemyAI otherEnemy = otherCollider.GetComponentInParent<EnemyAI>();
+            if (otherEnemy == null || otherEnemy == this || otherEnemy.IsDead)
                 continue;
 
             Vector2 away      = selfPosition - (Vector2)otherEnemy.transform.position;
-            float sqrDistance = away.sqrMagnitude;
-            if (sqrDistance <= 0.0001f)
-                continue;
+            float distance    = away.magnitude;
+            if (distance <= 0.0001f)
+            {
+                float angle = Mathf.Repeat(GetInstanceID() * 137.508f, 360f) * Mathf.Deg2Rad;
+                away = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+                distance = 0.01f;
+            }
 
-            // ── FIX: Clamp separation tối đa để tránh lực đẩy quá mạnh gây giật
-            float strength = Mathf.Clamp(1f / sqrDistance, 0f, 5f);
+            float closeness = Mathf.Clamp01((separationRadius - distance) / separationRadius);
+            float strength = closeness * closeness;
             separation += away.normalized * strength;
             countedNeighbors++;
         }
 
-        return countedNeighbors > 0 ? separation.normalized * separationWeight : Vector2.zero;
+        if (countedNeighbors <= 0)
+            return Vector2.zero;
+
+        return Vector2.ClampMagnitude(separation * separationWeight, separationWeight);
+    }
+
+    private void ResolveEnemyOverlap()
+    {
+        if (cachedCollider == null || cachedRigidbody == null || !cachedRigidbody.simulated)
+            return;
+
+        if (hardSeparationStrength <= 0f || hardSeparationMaxStep <= 0f)
+            return;
+
+        int hits = Physics2D.OverlapCircleNonAlloc(transform.position, separationRadius, _separationBuffer);
+        if (hits <= 1)
+            return;
+
+        Vector2 correction = Vector2.zero;
+        int countedNeighbors = 0;
+        int allowedNeighbors = Mathf.Min(maxSeparationNeighbors, MaxSeparationBuffer);
+        Vector2 selfPosition = cachedRigidbody.position;
+
+        for (int i = 0; i < hits && countedNeighbors < allowedNeighbors; i++)
+        {
+            Collider2D otherCollider = _separationBuffer[i];
+            if (otherCollider == null || otherCollider == cachedCollider || otherCollider.attachedRigidbody == cachedRigidbody)
+                continue;
+
+            EnemyAI otherEnemy = otherCollider.GetComponentInParent<EnemyAI>();
+            if (otherEnemy == null || otherEnemy == this || otherEnemy.IsDead)
+                continue;
+
+            Vector2 away = selfPosition - (Vector2)otherEnemy.transform.position;
+            float distance = away.magnitude;
+            if (distance <= 0.0001f)
+            {
+                float angle = Mathf.Repeat(GetInstanceID() * 137.508f, 360f) * Mathf.Deg2Rad;
+                away = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+                distance = 0.01f;
+            }
+
+            float overlap = Mathf.Max(0f, separationRadius - distance);
+            if (overlap <= 0f)
+                continue;
+
+            correction += away.normalized * (overlap / separationRadius);
+            countedNeighbors++;
+        }
+
+        if (countedNeighbors <= 0)
+            return;
+
+        Vector2 step = Vector2.ClampMagnitude(
+            correction * hardSeparationStrength * Time.fixedDeltaTime,
+            hardSeparationMaxStep
+        );
+
+        cachedRigidbody.MovePosition(cachedRigidbody.position + step);
     }
 
     // ── FIX: StopMotion chỉ set desired = 0, KHÔNG reset rigidbody velocity thẳng

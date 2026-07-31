@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 6192604586252761562}
   - component: {fileID: 1667529742531076402}
   - component: {fileID: 1314985905453018370}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -496,7 +496,10 @@ MonoBehaviour:
   detectionRange: 40
   attackCooldown: 3.5
   skipHurtAnimation: 0
+  criticalChance: 0
+  criticalDamageMultiplier: 1.5
   moveSpeed: 1
+  invertFacingDirection: 0
   separationRadius: 0.6
   separationWeight: 1.2
   maxSeparationNeighbors: 8

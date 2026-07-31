@@ -42,6 +42,10 @@ public class PlayerLevel : MonoBehaviour
         playerStats.level = newLevel;
         skillPoints = levelSystem.skillPoints;
         playerStats.skillPoints = skillPoints;
+        playerStats.currentHealth = (int)playerStats.maxHealth.Value;
+        playerStats.currentMana = (int)playerStats.maxMana.Value;
+        playerStats.NotifyHealthChanged();
+        playerStats.NotifyManaChanged();
         playerStats.CalculatePower();
         QuestManager.Instance.ReportLevelUp(newLevel);
         Debug.Log($"Level Up → Level {newLevel}");

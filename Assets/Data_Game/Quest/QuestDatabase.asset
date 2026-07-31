@@ -14,65 +14,64 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allQuests:
   - questID: NV1
-    questNameKey: 
-    questName: Rookie Goes to Battle
-    descriptionKey: 
-    description: Defeat 5 Goblins
+    questNameKey: quest.NV1.name
+    questName: First Slimes
+    descriptionKey: quest.NV1.description
+    description: Defeat 6 Small Slimes
     objectives:
-    - objectiveName: Goblin
-      objectiveTextKey: 
+    - objectiveName: Small Slime
+      objectiveTextKey: quest.NV1.objective.1
       type: 0
-      requiredAmount: 5
-      targetID: Goblin
+      requiredAmount: 6
+      targetID: Small Slime
     reward:
-      experienceReward: 30
-      goldReward: 150
+      experienceReward: 25
+      goldReward: 120
       gemReward: 0
-      itemIDs:
-      - 
+      itemIDs: []
       rewardItem:
-        itemData: {fileID: 11400000, guid: f43632da25776014f91247c1ea6a2c62, type: 2}
+        itemData: {fileID: 0}
         isLocked: 0
         upgradeLevel: 0
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV2
-    questNameKey: 
-    questName: Complete the Challenge
-    descriptionKey: 
+    questNameKey: quest.NV2.name
+    questName: First Clear
+    descriptionKey: quest.NV2.description
     description: Clear Stage 1
     objectives:
     - objectiveName: Stage
-      objectiveTextKey: 
+      objectiveTextKey: quest.NV2.objective.1
       type: 4
       requiredAmount: 1
       targetID: Stage
     reward:
-      experienceReward: 20
-      goldReward: 100
-      gemReward: 0
+      experienceReward: 30
+      goldReward: 120
+      gemReward: 5
       itemIDs: []
       rewardItem:
-        itemData: {fileID: 11400000, guid: 05286bc7c7604724f885df8b699f40cf, type: 2}
+        itemData: {fileID: 0}
         isLocked: 0
         upgradeLevel: 0
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV3
-    questNameKey: 
-    questName: Collect Battle Spoils
-    descriptionKey: 
-    description: Collect a total of 100 Gold
+    questNameKey: quest.NV3.name
+    questName: Train Your Body
+    descriptionKey: quest.NV3.description
+    description: Upgrade any stat 3 times
     objectives:
-    - objectiveName: Gold
-      objectiveTextKey: 
-      type: 1
-      requiredAmount: 100
-      targetID: Gold
+    - objectiveName: UpgradeStat
+      objectiveTextKey: quest.NV3.objective.1
+      type: 4
+      requiredAmount: 3
+      targetID: Stats
     reward:
-      experienceReward: 40
-      goldReward: 200
-      gemReward: 10
+      experienceReward: 35
+      goldReward: 180
+      gemReward: 0
       itemIDs: []
       rewardItem:
         itemData: {fileID: 0}
@@ -81,19 +80,19 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV4
-    questNameKey: 
+    questNameKey: quest.NV4.name
     questName: First Equipment
-    descriptionKey: 
+    descriptionKey: quest.NV4.description
     description: Buy any 1 equipment item
     objectives:
     - objectiveName: BuyItem
-      objectiveTextKey: 
+      objectiveTextKey: quest.NV4.objective.1
       type: 4
       requiredAmount: 1
       targetID: Shop
     reward:
-      experienceReward: 50
-      goldReward: 0
+      experienceReward: 40
+      goldReward: 120
       gemReward: 5
       itemIDs: []
       rewardItem:
@@ -103,19 +102,19 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV5
-    questNameKey: 
-    questName: Growing Power
-    descriptionKey: 
+    questNameKey: quest.NV5.name
+    questName: Wear Your Power
+    descriptionKey: quest.NV5.description
     description: Equip 1 item
     objectives:
     - objectiveName: EquipItem
-      objectiveTextKey: 
+      objectiveTextKey: quest.NV5.objective.1
       type: 4
       requiredAmount: 1
       targetID: Player
     reward:
-      experienceReward: 60
-      goldReward: 0
+      experienceReward: 45
+      goldReward: 160
       gemReward: 0
       itemIDs: []
       rewardItem:
@@ -125,16 +124,104 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV6
-    questNameKey: 
-    questName: Skeleton Hunter
-    descriptionKey: 
-    description: Defeat 10 Skeletons
+    questNameKey: quest.NV6.name
+    questName: Goblin Camp
+    descriptionKey: quest.NV6.description
+    description: Defeat 8 Goblins
     objectives:
-    - objectiveName: Skeleton
-      objectiveTextKey: 
+    - objectiveName: Goblin
+      objectiveTextKey: quest.NV6.objective.1
       type: 0
-      requiredAmount: 10
-      targetID: Skeleton
+      requiredAmount: 8
+      targetID: Goblin
+    reward:
+      experienceReward: 55
+      goldReward: 220
+      gemReward: 0
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV7
+    questNameKey: quest.NV7.name
+    questName: Slime Crown
+    descriptionKey: quest.NV7.description
+    description: Defeat King Slime
+    objectives:
+    - objectiveName: King Slime
+      objectiveTextKey: quest.NV7.objective.1
+      type: 0
+      requiredAmount: 1
+      targetID: King Slime
+    reward:
+      experienceReward: 70
+      goldReward: 250
+      gemReward: 10
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV8
+    questNameKey: quest.NV8.name
+    questName: Try Your Luck
+    descriptionKey: quest.NV8.description
+    description: Roll Gacha 1 time
+    objectives:
+    - objectiveName: Gacha
+      objectiveTextKey: quest.NV8.objective.1
+      type: 4
+      requiredAmount: 1
+      targetID: Gacha
+    reward:
+      experienceReward: 60
+      goldReward: 120
+      gemReward: 10
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV9
+    questNameKey: quest.NV9.name
+    questName: Small Collection
+    descriptionKey: quest.NV9.description
+    description: Own 3 different equipment items
+    objectives:
+    - objectiveName: EquipmentOwned
+      objectiveTextKey: quest.NV9.objective.1
+      type: 4
+      requiredAmount: 3
+      targetID: Inventory
+    reward:
+      experienceReward: 75
+      goldReward: 260
+      gemReward: 0
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV10
+    questNameKey: quest.NV10.name
+    questName: Sharpen Gear
+    descriptionKey: quest.NV10.description
+    description: Upgrade equipment 2 times
+    objectives:
+    - objectiveName: UpgradeItem
+      objectiveTextKey: quest.NV10.objective.1
+      type: 4
+      requiredAmount: 2
+      targetID: Item
     reward:
       experienceReward: 80
       goldReward: 300
@@ -146,108 +233,25 @@ MonoBehaviour:
         upgradeLevel: 0
         instanceID: 0
     turnInNPCName: NPC_0
-  - questID: NV7
-    questNameKey: 
-    questName: The Upgrader
-    descriptionKey: 
-    description: Upgrade equipment 3 times
-    objectives:
-    - objectiveName: UpgradeItem
-      objectiveTextKey: 
-      type: 4
-      requiredAmount: 3
-      targetID: Item
-    reward:
-      experienceReward: 100
-      goldReward: 0
-      gemReward: 0
-      itemIDs: []
-      rewardItem:
-        itemData: {fileID: 0}
-        isLocked: 0
-        upgradeLevel: 0
-        instanceID: 0
-    turnInNPCName: NPC_0
-  - questID: NV8
-    questNameKey: 
-    questName: Conqueror
-    descriptionKey: 
-    description: Complete 5 Stages
-    objectives:
-    - objectiveName: Stage
-      objectiveTextKey: 
-      type: 4
-      requiredAmount: 5
-      targetID: Stage
-    reward:
-      experienceReward: 120
-      goldReward: 0
-      gemReward: 20
-      itemIDs: []
-      rewardItem:
-        itemData: {fileID: 0}
-        isLocked: 0
-        upgradeLevel: 0
-        instanceID: 0
-    turnInNPCName: NPC_0
-  - questID: NV9
-    questNameKey: 
-    questName: Rookie Gacha
-    descriptionKey: 
-    description: Roll Gacha 5 times
-    objectives:
-    - objectiveName: Gacha
-      objectiveTextKey: 
-      type: 4
-      requiredAmount: 5
-      targetID: Gacha
-    reward:
-      experienceReward: 140
-      goldReward: 0
-      gemReward: 10
-      itemIDs: []
-      rewardItem:
-        itemData: {fileID: 0}
-        isLocked: 0
-        upgradeLevel: 0
-        instanceID: 0
-    turnInNPCName: NPC_0
-  - questID: NV10
-    questNameKey: 
-    questName: Gravok Destroyer
-    descriptionKey: 
-    description: Defeat 15 Gravok
-    objectives:
-    - objectiveName: Gravok
-      objectiveTextKey: 
-      type: 0
-      requiredAmount: 15
-      targetID: Gravok
-    reward:
-      experienceReward: 170
-      goldReward: 500
-      gemReward: 0
-      itemIDs: []
-      rewardItem:
-        itemData: {fileID: 0}
-        isLocked: 0
-        upgradeLevel: 0
-        instanceID: 0
-    turnInNPCName: NPC_0
   - questID: NV11
-    questNameKey: 
-    questName: Small Treasure
-    descriptionKey: 
-    description: Collect 50 Gems
+    questNameKey: quest.NV11.name
+    questName: Bones Ahead
+    descriptionKey: quest.NV11.description
+    description: Defeat 5 Skeletons and 5 Skeleton 1
     objectives:
-    - objectiveName: Gem
-      objectiveTextKey: 
-      type: 1
-      requiredAmount: 50
-      targetID: Gem
+    - objectiveName: Skeleton
+      objectiveTextKey: quest.NV11.objective.1
+      type: 0
+      requiredAmount: 5
+      targetID: Skeleton
+    - objectiveName: Skeleton 1
+      objectiveTextKey: quest.NV11.objective.2
+      type: 0
+      requiredAmount: 5
+      targetID: Skeleton 1
     reward:
-      experienceReward: 200
-      goldReward: 0
+      experienceReward: 95
+      goldReward: 360
       gemReward: 0
       itemIDs: []
       rewardItem:
@@ -257,20 +261,20 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV12
-    questNameKey: 
-    questName: Enhanced Weapon
-    descriptionKey: 
-    description: Upgrade 1 equipment item to +10
+    questNameKey: quest.NV12.name
+    questName: Goblin King
+    descriptionKey: quest.NV12.description
+    description: Defeat Goblin King Boss
     objectives:
-    - objectiveName: UpgradeItemLevel
-      objectiveTextKey: 
-      type: 4
-      requiredAmount: 10
-      targetID: Item
+    - objectiveName: Goblin King Boss
+      objectiveTextKey: quest.NV12.objective.1
+      type: 0
+      requiredAmount: 1
+      targetID: Goblin King Boss
     reward:
-      experienceReward: 230
-      goldReward: 0
-      gemReward: 0
+      experienceReward: 110
+      goldReward: 420
+      gemReward: 10
       itemIDs: []
       rewardItem:
         itemData: {fileID: 0}
@@ -279,20 +283,20 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV13
-    questNameKey: 
-    questName: Silentmaw Hunter
-    descriptionKey: 
-    description: Defeat 10 Silentmaw
+    questNameKey: quest.NV13.name
+    questName: Stage Climber
+    descriptionKey: quest.NV13.description
+    description: Clear Stage 3
     objectives:
-    - objectiveName: Silentmaw
-      objectiveTextKey: 
-      type: 0
-      requiredAmount: 10
-      targetID: Silentmaw
+    - objectiveName: Stage
+      objectiveTextKey: quest.NV13.objective.1
+      type: 4
+      requiredAmount: 3
+      targetID: Stage
     reward:
-      experienceReward: 260
-      goldReward: 700
-      gemReward: 0
+      experienceReward: 120
+      goldReward: 450
+      gemReward: 10
       itemIDs: []
       rewardItem:
         itemData: {fileID: 0}
@@ -301,41 +305,19 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV14
-    questNameKey: 
-    questName: Boss Challenge
-    descriptionKey: 
-    description: Defeat Boss 1
+    questNameKey: quest.NV14.name
+    questName: Rogue Trouble
+    descriptionKey: quest.NV14.description
+    description: Defeat 10 Rogues
     objectives:
-    - objectiveName: Boss
-      objectiveTextKey: 
+    - objectiveName: Rogue
+      objectiveTextKey: quest.NV14.objective.1
       type: 0
-      requiredAmount: 1
-      targetID: Boss
+      requiredAmount: 10
+      targetID: Rogue
     reward:
-      experienceReward: 300
-      goldReward: 0
-      gemReward: 50
-      itemIDs: []
-      rewardItem:
-        itemData: {fileID: 0}
-        isLocked: 0
-        upgradeLevel: 0
-        instanceID: 0
-    turnInNPCName: NPC_0
-  - questID: NV15
-    questNameKey: 
-    questName: The Collection
-    descriptionKey: 
-    description: Own 5 different equipment items
-    objectives:
-    - objectiveName: EquipmentOwned
-      objectiveTextKey: 
-      type: 4
-      requiredAmount: 5
-      targetID: Inventory
-    reward:
-      experienceReward: 340
-      goldReward: 0
+      experienceReward: 135
+      goldReward: 520
       gemReward: 0
       itemIDs: []
       rewardItem:
@@ -344,20 +326,42 @@ MonoBehaviour:
         upgradeLevel: 0
         instanceID: 0
     turnInNPCName: NPC_0
-  - questID: NV16
-    questNameKey: 
-    questName: Ravageron Hunter
-    descriptionKey: 
-    description: Defeat 20 Ravageron
+  - questID: NV15
+    questNameKey: quest.NV15.name
+    questName: Better Blade
+    descriptionKey: quest.NV15.description
+    description: Upgrade 1 equipment item to +3
     objectives:
-    - objectiveName: Ravageron
-      objectiveTextKey: 
-      type: 0
-      requiredAmount: 20
-      targetID: Ravageron
+    - objectiveName: UpgradeItemLevel
+      objectiveTextKey: quest.NV15.objective.1
+      type: 4
+      requiredAmount: 3
+      targetID: Item
     reward:
-      experienceReward: 380
-      goldReward: 1000
+      experienceReward: 145
+      goldReward: 520
+      gemReward: 5
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV16
+    questNameKey: quest.NV16.name
+    questName: Axe Line
+    descriptionKey: quest.NV16.description
+    description: Defeat 10 Axemen
+    objectives:
+    - objectiveName: Axeman
+      objectiveTextKey: quest.NV16.objective.1
+      type: 0
+      requiredAmount: 10
+      targetID: Axeman
+    reward:
+      experienceReward: 155
+      goldReward: 600
       gemReward: 0
       itemIDs: []
       rewardItem:
@@ -367,22 +371,21 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV17
-    questNameKey: 
-    questName: Lucky One
-    descriptionKey: 
-    description: Roll Gacha 20 times
+    questNameKey: quest.NV17.name
+    questName: Bone Captain
+    descriptionKey: quest.NV17.description
+    description: Defeat Skeleton Boss
     objectives:
-    - objectiveName: Gacha
-      objectiveTextKey: 
-      type: 4
-      requiredAmount: 20
-      targetID: Gacha
+    - objectiveName: Skeleton Boss
+      objectiveTextKey: quest.NV17.objective.1
+      type: 0
+      requiredAmount: 1
+      targetID: Skeleton Boss
     reward:
-      experienceReward: 430
-      goldReward: 0
-      gemReward: 0
-      itemIDs:
-      - armor8
+      experienceReward: 175
+      goldReward: 650
+      gemReward: 15
+      itemIDs: []
       rewardItem:
         itemData: {fileID: 0}
         isLocked: 0
@@ -390,19 +393,19 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV18
-    questNameKey: 
-    questName: Unstoppable Fargrider
-    descriptionKey: 
-    description: Defeat 25 Fargrider
+    questNameKey: quest.NV18.name
+    questName: Gravok Hunt
+    descriptionKey: quest.NV18.description
+    description: Defeat 12 Gravok
     objectives:
-    - objectiveName: Fargrider
-      objectiveTextKey: 
+    - objectiveName: Gravok
+      objectiveTextKey: quest.NV18.objective.1
       type: 0
-      requiredAmount: 25
-      targetID: Fangrider
+      requiredAmount: 12
+      targetID: Gravok
     reward:
-      experienceReward: 480
-      goldReward: 0
+      experienceReward: 190
+      goldReward: 720
       gemReward: 0
       itemIDs: []
       rewardItem:
@@ -412,20 +415,245 @@ MonoBehaviour:
         instanceID: 0
     turnInNPCName: NPC_0
   - questID: NV19
-    questNameKey: 
-    questName: Final Lord
-    descriptionKey: 
-    description: Defeat Boss 2
+    questNameKey: quest.NV19.name
+    questName: Warlock Lesson
+    descriptionKey: quest.NV19.description
+    description: Defeat 12 Warlocks
     objectives:
-    - objectiveName: Boss
-      objectiveTextKey: 
+    - objectiveName: Warlock
+      objectiveTextKey: quest.NV19.objective.1
+      type: 0
+      requiredAmount: 12
+      targetID: Warlock
+    reward:
+      experienceReward: 205
+      goldReward: 800
+      gemReward: 0
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV20
+    questNameKey: quest.NV20.name
+    questName: Build Momentum
+    descriptionKey: quest.NV20.description
+    description: Upgrade any stat 8 more times
+    objectives:
+    - objectiveName: UpgradeStat
+      objectiveTextKey: quest.NV20.objective.1
+      type: 4
+      requiredAmount: 8
+      targetID: Stats
+    reward:
+      experienceReward: 210
+      goldReward: 850
+      gemReward: 10
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV21
+    questNameKey: quest.NV21.name
+    questName: Rare Attempt
+    descriptionKey: quest.NV21.description
+    description: Roll Gacha 5 times
+    objectives:
+    - objectiveName: Gacha
+      objectiveTextKey: quest.NV21.objective.1
+      type: 4
+      requiredAmount: 5
+      targetID: Gacha
+    reward:
+      experienceReward: 230
+      goldReward: 900
+      gemReward: 15
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV22
+    questNameKey: quest.NV22.name
+    questName: Fuller Bag
+    descriptionKey: quest.NV22.description
+    description: Own 5 different equipment items
+    objectives:
+    - objectiveName: EquipmentOwned
+      objectiveTextKey: quest.NV22.objective.1
+      type: 4
+      requiredAmount: 5
+      targetID: Inventory
+    reward:
+      experienceReward: 240
+      goldReward: 950
+      gemReward: 0
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV23
+    questNameKey: quest.NV23.name
+    questName: Silent Hunt
+    descriptionKey: quest.NV23.description
+    description: Defeat 12 Silentmaw
+    objectives:
+    - objectiveName: Silentmaw
+      objectiveTextKey: quest.NV23.objective.1
+      type: 0
+      requiredAmount: 12
+      targetID: Silentmaw
+    reward:
+      experienceReward: 260
+      goldReward: 1050
+      gemReward: 0
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV24
+    questNameKey: quest.NV24.name
+    questName: Elfblade Trial
+    descriptionKey: quest.NV24.description
+    description: Defeat 12 Elfblades
+    objectives:
+    - objectiveName: Elfblade
+      objectiveTextKey: quest.NV24.objective.1
+      type: 0
+      requiredAmount: 12
+      targetID: Elfblade
+    reward:
+      experienceReward: 280
+      goldReward: 1120
+      gemReward: 0
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV25
+    questNameKey: quest.NV25.name
+    questName: Face the Executioner
+    descriptionKey: quest.NV25.description
+    description: Defeat Undead Executioner
+    objectives:
+    - objectiveName: Undead Executioner
+      objectiveTextKey: quest.NV25.objective.1
       type: 0
       requiredAmount: 1
-      targetID: Boss
+      targetID: Undead Executioner
     reward:
-      experienceReward: 650
-      goldReward: 0
-      gemReward: 500
+      experienceReward: 320
+      goldReward: 1250
+      gemReward: 20
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV26
+    questNameKey: quest.NV26.name
+    questName: Heavy Road
+    descriptionKey: quest.NV26.description
+    description: Defeat 8 Ravageron and 8 Fangriders
+    objectives:
+    - objectiveName: Ravageron
+      objectiveTextKey: quest.NV26.objective.1
+      type: 0
+      requiredAmount: 8
+      targetID: Ravageron
+    - objectiveName: Fangrider
+      objectiveTextKey: quest.NV26.objective.2
+      type: 0
+      requiredAmount: 8
+      targetID: Fangrider
+    reward:
+      experienceReward: 340
+      goldReward: 1350
+      gemReward: 0
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV27
+    questNameKey: quest.NV27.name
+    questName: Stone Machine
+    descriptionKey: quest.NV27.description
+    description: Defeat Mecha Stone Golem
+    objectives:
+    - objectiveName: Mecha Stone Golem
+      objectiveTextKey: quest.NV27.objective.1
+      type: 0
+      requiredAmount: 1
+      targetID: Mecha Stone Golem
+    reward:
+      experienceReward: 380
+      goldReward: 1500
+      gemReward: 25
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV28
+    questNameKey: quest.NV28.name
+    questName: Creature Check
+    descriptionKey: quest.NV28.description
+    description: Defeat Boss Creature
+    objectives:
+    - objectiveName: Boss Creature
+      objectiveTextKey: quest.NV28.objective.1
+      type: 0
+      requiredAmount: 1
+      targetID: Boss Creature
+    reward:
+      experienceReward: 420
+      goldReward: 1700
+      gemReward: 30
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
+  - questID: NV29
+    questNameKey: quest.NV29.name
+    questName: Late Game Ready
+    descriptionKey: quest.NV29.description
+    description: Clear Stage 8
+    objectives:
+    - objectiveName: Stage
+      objectiveTextKey: quest.NV29.objective.1
+      type: 4
+      requiredAmount: 8
+      targetID: Stage
+    reward:
+      experienceReward: 460
+      goldReward: 1900
+      gemReward: 35
       itemIDs: []
       rewardItem:
         itemData: {fileID: 0}

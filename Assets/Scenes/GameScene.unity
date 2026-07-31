@@ -1079,7 +1079,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 432
+      value: 474
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
@@ -1155,7 +1155,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 147.7845
+      value: 168.7845
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -3110,6 +3110,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: WaveManager
       objectReference: {fileID: 0}
+    - target: {fileID: 2431658068420218563, guid: 39b9792ff43578f47a129b128a552f16, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2776604855330744611, guid: 39b9792ff43578f47a129b128a552f16, type: 3}
       propertyPath: player
       value: 
@@ -3122,6 +3126,10 @@ PrefabInstance:
       propertyPath: bossWarningUI
       value: 
       objectReference: {fileID: 1358198481}
+    - target: {fileID: 2776604855330744611, guid: 39b9792ff43578f47a129b128a552f16, type: 3}
+      propertyPath: showSpawnGizmos
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2776604855330744611, guid: 39b9792ff43578f47a129b128a552f16, type: 3}
       propertyPath: waveAnnouncementUI
       value: 
@@ -4282,6 +4290,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 483806150923974845, guid: 6ec7cf5129acdf044baf6e9cfbe4389f, type: 3}
+      propertyPath: skillList.Array.size
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 483806150923974845, guid: 6ec7cf5129acdf044baf6e9cfbe4389f, type: 3}
+      propertyPath: 'skillList.Array.data[8]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 6d966789c8247d045aaafe8ca9109750, type: 2}
+    - target: {fileID: 483806150923974845, guid: 6ec7cf5129acdf044baf6e9cfbe4389f, type: 3}
+      propertyPath: 'skillList.Array.data[9]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 6d966789c8247d045aaafe8ca9109750, type: 2}
+    - target: {fileID: 483806150923974845, guid: 6ec7cf5129acdf044baf6e9cfbe4389f, type: 3}
+      propertyPath: 'skillList.Array.data[10]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 6d966789c8247d045aaafe8ca9109750, type: 2}
     - target: {fileID: 842798732958590772, guid: 6ec7cf5129acdf044baf6e9cfbe4389f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

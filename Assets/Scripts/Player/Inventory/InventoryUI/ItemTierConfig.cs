@@ -72,7 +72,7 @@ public class ItemTierConfig : ScriptableObject
         return new StatRange
         {
             priceRange = new Vector2Int((int)(100 * multiplier), (int)(500 * multiplier)),
-            upgradeCostRange = new Vector2Int((int)(50 * multiplier), (int)(300 * multiplier)),
+            upgradeCostRange = new Vector2Int((int)(25 * multiplier), (int)(120 * multiplier)),
 
             atkFlatRange = new Vector2(10, 100) * multiplier,
             atkPercentRange = Vector2.zero,

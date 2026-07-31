@@ -1,6 +1,17 @@
 using System.Collections;
 using UnityEngine;
 
+public enum BossSkillProfile
+{
+    Basic,
+    SummonGravok,
+    LightningStorm,
+    CriticalBite,
+    SummonSlimes,
+    StoneSpikes,
+    PhaseVanish
+}
+
 public class BossAI : EnemyAI
 {
     [Header("Boss Special Settings")]
@@ -8,41 +19,57 @@ public class BossAI : EnemyAI
     [SerializeField] private string bossSoundId = "default";
 
     [Header("Boss Skills")]
+    [SerializeField] private BossSkillProfile skillProfile = BossSkillProfile.Basic;
     [SerializeField] private GameObject minionPrefab;
+    [SerializeField] private GameObject slimeMinionPrefab;
+    [SerializeField] private GameObject lightningPrefab;
+    [SerializeField] private GameObject stoneSpikePrefab;
     [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private bool playMeleeSlashVfx;
+    [SerializeField] private Color meleeSlashColor = new Color(1f, 0.82f, 0.28f, 0.9f);
     [SerializeField] private float dashSpeed = 10f;
     [SerializeField] private float dashDuration = 0.3f;
+    [SerializeField] private float specialCooldown = 8f;
     [SerializeField] private float minionCooldown = 10f;
     [SerializeField] private float dashCooldown = 8f;
     [SerializeField] private float shootCooldown = 6f;
+    [SerializeField] private int gravokSummonCount = 2;
+    [SerializeField] private int slimeSummonCount = 5;
+    [SerializeField] private float areaSkillRadius = 1.15f;
+    [SerializeField] private float vanishDuration = 2.2f;
 
-    private float _lastMinionTime;
-    private float _lastDashTime;
-    private float _lastShootTime;
-
-    private bool _isPerformingSkill = false;
+    private bool isPerformingSkill;
+    private bool isPhased;
+    private float lastSpecialTime;
+    private Collider2D bossCollider;
+    private SpriteRenderer[] renderers;
+    private Color[] normalRendererColors;
 
     protected override void Start()
     {
-        bossHealthUI = CommonReferent.Instance.bossHealthUI;
+        bossHealthUI = CommonReferent.Instance != null ? CommonReferent.Instance.bossHealthUI : null;
         isBoss = true;
 
         if (bossHealthUI == null)
         {
-            bossHealthUI = FindFirstObjectByType<BossHealthUI>(); 
+            bossHealthUI = FindFirstObjectByType<BossHealthUI>();
             if (bossHealthUI == null)
-                Debug.LogWarning("Không tìm thấy BossHealthUI trong scene!");
+                Debug.LogWarning("BossAI: khong tim thay BossHealthUI trong scene.");
         }
 
         base.Start();
         bossHealthUI?.SetMaxHealth(maxHealth);
         skipHurtAnimation = true;
+        bossCollider = GetComponent<Collider2D>();
+        renderers = GetComponentsInChildren<SpriteRenderer>(true);
+        normalRendererColors = CaptureRendererColors(renderers);
         PlayBossSound(BossSoundEvent.Spawn);
     }
 
     private void Update()
     {
-        if (isDead || isTakingDamage || _isPerformingSkill) return;
+        if (isDead || isTakingDamage || isPerformingSkill)
+            return;
 
         FindClosestTarget();
 
@@ -62,9 +89,9 @@ public class BossAI : EnemyAI
 
         if (distanceToTarget <= detectionRange)
         {
-            if (!_isPerformingSkill && !anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack"))
+            if (!anim.GetCurrentAnimatorStateInfo(0).IsTag("Attack"))
                 MoveToAttackPosition();
-        
+
             RotateEnemy(target.position.x - transform.position.x);
         }
         else
@@ -72,125 +99,216 @@ public class BossAI : EnemyAI
             anim.SetBool(MoveBool, false);
         }
 
-        // Gọi skill theo cooldown
-        if (Time.time - _lastMinionTime >= minionCooldown)
-        {
-            StartCoroutine(Skill_SpawnMinions());
-            _lastMinionTime = Time.time;
-        }
-        else if (Time.time - _lastDashTime >= dashCooldown)
-        {
-            StartCoroutine(Skill_Dash());
-            _lastDashTime = Time.time;
-        }
-        else if (Time.time - _lastShootTime >= shootCooldown)
-        {
-            StartCoroutine(Skill_Shoot());
-            _lastShootTime = Time.time;
-        }
+        TryUseSpecialSkill(distanceToTarget);
     }
 
-    // ================== SKILLS ==================
-
-    private IEnumerator Skill_SpawnMinions()
+    private void TryUseSpecialSkill(float distanceToTarget)
     {
-        _isPerformingSkill = true;
+        if (skillProfile == BossSkillProfile.Basic || Time.time - lastSpecialTime < specialCooldown)
+            return;
+
+        bool started = skillProfile switch
+        {
+            BossSkillProfile.SummonGravok => StartSkill(Skill_SpawnMinions(minionPrefab, gravokSummonCount, 1.5f)),
+            BossSkillProfile.LightningStorm => StartSkill(Skill_LightningStorm()),
+            BossSkillProfile.CriticalBite => distanceToTarget <= attackRange + 1.2f && StartSkill(Skill_CriticalBite()),
+            BossSkillProfile.SummonSlimes => StartSkill(Skill_SpawnMinions(slimeMinionPrefab, slimeSummonCount, 2f)),
+            BossSkillProfile.StoneSpikes => StartSkill(Skill_StoneSpikes()),
+            BossSkillProfile.PhaseVanish => StartSkill(Skill_PhaseVanish()),
+            _ => false
+        };
+
+        if (started)
+            lastSpecialTime = Time.time;
+    }
+
+    private bool StartSkill(IEnumerator routine)
+    {
+        StartCoroutine(routine);
+        return true;
+    }
+
+    private IEnumerator Skill_SpawnMinions(GameObject spawnPrefab, int count, float radius)
+    {
+        isPerformingSkill = true;
         PlayBossSound(BossSoundEvent.Summon);
         anim.SetTrigger(AttackTrigger);
-        yield return new WaitForSeconds(0.5f); // delay gồng trước khi triệu hồi
+        yield return new WaitForSeconds(0.45f);
 
-        EnemyLevelDatabase levelDB = CommonReferent.Instance.enemyLevelDatabase;
+        EnemyLevelDatabase levelDB = CommonReferent.Instance != null ? CommonReferent.Instance.enemyLevelDatabase : null;
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < count; i++)
         {
-            Vector2 spawnPos = (Vector2)transform.position + Random.insideUnitCircle * 1.5f;
+            float angle = i * Mathf.PI * 2f / Mathf.Max(1, count);
+            Vector2 spawnPos = (Vector2)transform.position + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * radius;
 
-            // --- Lấy quái từ Object Pool ---
-            if (minionPrefab == null)
+            if (spawnPrefab == null)
             {
-                Debug.LogError("BossAI: minionPrefab chưa được gán!");
+                Debug.LogWarning($"BossAI: {skillProfile} chua duoc gan prefab linh.");
                 continue;
             }
 
-            GameObject minion = ObjectPooler.Instance.Get(
-                minionPrefab.name,
-                minionPrefab,
-                spawnPos,
-                Quaternion.identity,
-                initSize: 30,
-                expandable: true
-            );
+            GameObject minion = ObjectPooler.Instance != null
+                ? ObjectPooler.Instance.Get(spawnPrefab.name, spawnPrefab, spawnPos, Quaternion.identity, initSize: 30, expandable: true)
+                : Instantiate(spawnPrefab, spawnPos, Quaternion.identity);
 
-            if (minion == null) continue;
+            if (minion == null)
+                continue;
 
-            // --- Thiết lập dữ liệu quái ---
-            var ai = minion.GetComponent<EnemyAI>();
-            if (ai != null)
+            EnemyAI ai = minion.GetComponent<EnemyAI>();
+            if (ai == null)
             {
-                if (levelDB != null)
-                {
-                    var levelData = levelDB.GetDataByLevel(1); // cấp 1 cho quái con
-                    ai.ApplyLevelData(levelData);
-                }
+                Debug.LogWarning("BossAI: prefab linh khong co EnemyAI.");
+                continue;
+            }
 
-                ai.ResetEnemy();
-            }
-            else
-            {
-                Debug.LogWarning("Prefab minion không có EnemyAI!");
-            }
+            if (levelDB != null)
+                ai.ApplyLevelData(levelDB.GetDataByLevel(1));
+
+            ai.ResetEnemy();
         }
 
         yield return new WaitForSeconds(0.5f);
-        _isPerformingSkill = false;
+        isPerformingSkill = false;
     }
 
-    private IEnumerator Skill_Dash()
+    private IEnumerator Skill_LightningStorm()
     {
-        _isPerformingSkill = true;
-        PlayBossSound(BossSoundEvent.Dash);
-        anim.SetTrigger(AttackTrigger);
-
-        yield return new WaitForSeconds(0.3f); // gồng nhẹ
-
-        Vector2 dir = (target.position - transform.position).normalized;
-        float elapsed = 0f;
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-
-        while (elapsed < dashDuration)
-        {
-            rb.linearVelocity = dir * dashSpeed;
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        rb.linearVelocity = Vector2.zero;
-        _isPerformingSkill = false;
-    }
-
-    private IEnumerator Skill_Shoot()
-    {
-        _isPerformingSkill = true;
+        isPerformingSkill = true;
         PlayBossSound(BossSoundEvent.Shoot);
         anim.SetTrigger(AttackTrigger);
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.35f);
 
-        if (bulletPrefab != null && target != null)
+        Vector2 center = target != null ? target.position : transform.position;
+        SpawnAreaStrike(center, lightningPrefab, BossAreaStrikeVisual.Lightning, areaSkillRadius, attackDamage);
+
+        for (int i = 0; i < 3; i++)
         {
-            Vector2 dir = (target.position - transform.position).normalized;
-            GameObject bullet = Instantiate(bulletPrefab, transform.position + (Vector3)(dir * 0.8f), Quaternion.identity);
-            Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-            rb.linearVelocity = dir * 8f;
+            Vector2 offset = Random.insideUnitCircle.normalized * Random.Range(0.9f, 2.4f);
+            SpawnAreaStrike(center + offset, lightningPrefab, BossAreaStrikeVisual.Lightning, areaSkillRadius * 0.85f, Mathf.RoundToInt(attackDamage * 0.75f));
         }
 
-        yield return new WaitForSeconds(0.5f);
-        _isPerformingSkill = false;
+        yield return new WaitForSeconds(0.6f);
+        isPerformingSkill = false;
     }
 
-    // ================== HEALTH & DEATH ==================
+    private IEnumerator Skill_CriticalBite()
+    {
+        isPerformingSkill = true;
+        PlayBossSound(BossSoundEvent.Attack);
+        anim.SetTrigger(AttackTrigger);
+        yield return new WaitForSeconds(0.25f);
+
+        Transform biteTarget = target;
+        if (biteTarget != null)
+        {
+            Vector2 dir = ((Vector2)biteTarget.position - (Vector2)transform.position).normalized;
+            Rigidbody2D rb = GetComponent<Rigidbody2D>();
+            if (rb != null)
+                rb.linearVelocity = dir * dashSpeed * 0.65f;
+
+            yield return new WaitForSeconds(Mathf.Min(0.18f, dashDuration));
+
+            if (rb != null)
+                rb.linearVelocity = Vector2.zero;
+
+            if (Vector2.Distance(transform.position, biteTarget.position) <= attackRange + 0.9f
+                && biteTarget.TryGetComponent(out IDamageable damageable))
+            {
+                int biteDamage = Mathf.RoundToInt(attackDamage * 2.75f);
+                damageable.TakeDamage(biteDamage, true);
+                PlayBossSound(BossSoundEvent.HitPlayer);
+            }
+        }
+
+        yield return new WaitForSeconds(0.35f);
+        isPerformingSkill = false;
+    }
+
+    private IEnumerator Skill_StoneSpikes()
+    {
+        isPerformingSkill = true;
+        PlayBossSound(BossSoundEvent.Attack);
+        anim.SetTrigger(AttackTrigger);
+        yield return new WaitForSeconds(0.35f);
+
+        Vector2 origin = target != null ? target.position : transform.position;
+        SpawnAreaStrike(origin, stoneSpikePrefab, BossAreaStrikeVisual.StoneSpike, areaSkillRadius, Mathf.RoundToInt(attackDamage * 1.25f));
+
+        Vector2 dir = target != null ? ((Vector2)target.position - (Vector2)transform.position).normalized : Vector2.right;
+        for (int i = 1; i <= 3; i++)
+            SpawnAreaStrike((Vector2)transform.position + dir * (i * 1.15f), stoneSpikePrefab, BossAreaStrikeVisual.StoneSpike, areaSkillRadius * 0.7f, attackDamage);
+
+        yield return new WaitForSeconds(0.75f);
+        isPerformingSkill = false;
+    }
+
+    private IEnumerator Skill_PhaseVanish()
+    {
+        isPerformingSkill = true;
+        isPhased = true;
+        PlayBossSound(BossSoundEvent.Dash);
+        anim.SetTrigger(AttackTrigger);
+        SetPhaseVisual(true);
+        yield return new WaitForSeconds(vanishDuration);
+        SetPhaseVisual(false);
+        isPhased = false;
+        isPerformingSkill = false;
+    }
+
+    private void SpawnAreaStrike(Vector2 position, GameObject prefab, BossAreaStrikeVisual visual, float radius, int damage)
+    {
+        GameObject strike = prefab != null
+            ? Instantiate(prefab, position, Quaternion.identity)
+            : new GameObject($"{visual}Strike");
+
+        strike.transform.position = position;
+        BossAreaStrikeEffect effect = strike.GetComponent<BossAreaStrikeEffect>();
+        if (effect == null)
+            effect = strike.AddComponent<BossAreaStrikeEffect>();
+
+        effect.Initialize(radius, 0.65f, 0.35f, damage, visual);
+    }
+
+    private void SetPhaseVisual(bool phased)
+    {
+        if (bossCollider != null)
+            bossCollider.enabled = !phased;
+
+        renderers ??= GetComponentsInChildren<SpriteRenderer>(true);
+        normalRendererColors ??= CaptureRendererColors(renderers);
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            SpriteRenderer renderer = renderers[i];
+            if (renderer == null)
+                continue;
+
+            Color color = phased ? renderer.color : normalRendererColors[Mathf.Min(i, normalRendererColors.Length - 1)];
+            if (phased)
+                color.a *= 0.18f;
+
+            renderer.color = color;
+        }
+    }
+
+    private static Color[] CaptureRendererColors(SpriteRenderer[] spriteRenderers)
+    {
+        Color[] colors = new Color[spriteRenderers.Length];
+        for (int i = 0; i < spriteRenderers.Length; i++)
+            colors[i] = spriteRenderers[i] != null ? spriteRenderers[i].color : Color.white;
+
+        return colors;
+    }
 
     public override void TakeDamage(int damage, bool isCrit = false)
     {
+        if (isPhased)
+        {
+            FloatingTextSpawner.Instance?.SpawnText("MISS", transform.position + Vector3.up * 1.2f, Color.cyan);
+            return;
+        }
+
         base.TakeDamage(damage, isCrit);
         bossHealthUI?.UpdateHealth(currentHealth);
 
@@ -219,17 +337,60 @@ public class BossAI : EnemyAI
                            && attackTarget.gameObject.activeInHierarchy
                            && attackTarget.TryGetComponent(out IDamageable _);
 
+        if (playMeleeSlashVfx)
+            SpawnMeleeSlashVfx(attackTarget);
+
         base.DealDamageToTarget();
 
         if (hasValidHit)
             PlayBossSound(BossSoundEvent.HitPlayer);
     }
 
+    private void SpawnMeleeSlashVfx(Transform attackTarget)
+    {
+        Vector2 direction = attackTarget != null
+            ? ((Vector2)attackTarget.position - (Vector2)transform.position).normalized
+            : new Vector2(-Mathf.Sign(transform.localScale.x), 0f);
+
+        if (direction.sqrMagnitude <= 0.001f)
+            direction = Vector2.right;
+
+        Vector3 center = transform.position + (Vector3)(direction * 0.75f) + Vector3.up * 0.15f;
+        GameObject slashRoot = new GameObject("Goblin King Slash VFX");
+        slashRoot.transform.position = center;
+        slashRoot.transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject lineObject = new GameObject($"SlashArc_{i + 1}");
+            lineObject.transform.SetParent(slashRoot.transform, false);
+
+            LineRenderer line = lineObject.AddComponent<LineRenderer>();
+            line.useWorldSpace = false;
+            line.positionCount = 3;
+            line.material = new Material(Shader.Find("Sprites/Default"));
+            line.startColor = meleeSlashColor;
+            line.endColor = new Color(meleeSlashColor.r, meleeSlashColor.g, meleeSlashColor.b, 0f);
+            line.startWidth = 0.09f - i * 0.018f;
+            line.endWidth = 0.015f;
+            line.sortingOrder = 85;
+
+            float yOffset = (i - 1) * 0.18f;
+            float length = 0.95f - i * 0.12f;
+            line.SetPosition(0, new Vector3(-0.25f, -0.35f + yOffset, 0f));
+            line.SetPosition(1, new Vector3(0.18f, 0.02f + yOffset, 0f));
+            line.SetPosition(2, new Vector3(length, 0.35f + yOffset, 0f));
+        }
+
+        Destroy(slashRoot, 0.18f);
+    }
+
     protected override void Die()
     {
-        if (isDead) return;
-        isDead = true;
+        if (isDead)
+            return;
 
+        isDead = true;
         PlayBossSound(BossSoundEvent.Death);
         anim.SetTrigger(DieTrigger);
         GetComponent<Collider2D>().enabled = false;
@@ -242,7 +403,7 @@ public class BossAI : EnemyAI
         QuestManager.Instance?.ReportProgressByObjectiveName("Boss", 1);
         GoldDropHelper.SpawnGoldBurst(
             transform.position,
-            UnityEngine.Random.Range(10, 20),
+            Random.Range(10, 20),
             CommonReferent.Instance.goldPrefab
         );
 
@@ -251,12 +412,10 @@ public class BossAI : EnemyAI
 
     private IEnumerator DisableBossAfterDelay()
     {
-        // Đợi Animator chuyển hẳn vào state Death (qua hết transition crossfade nếu có)
         yield return null;
         while (anim.IsInTransition(0))
             yield return null;
 
-        // Lấy đúng length thật của animation Death rồi đợi đúng bằng nó, không dư frame
         float deathLength = anim.GetCurrentAnimatorStateInfo(0).length;
         yield return new WaitForSeconds(deathLength);
 
