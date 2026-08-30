@@ -31,20 +31,26 @@ public class Quest
 
     public string GetDisplayName()
     {
+        if (!string.IsNullOrWhiteSpace(questName))
+            return questName;
+
         string key = !string.IsNullOrWhiteSpace(questNameKey)
             ? questNameKey
             : BuildQuestKey("name");
 
-        return Localize(key, questName);
+        return Localize(key, questID);
     }
 
     public string GetDisplayDescription()
     {
+        if (!string.IsNullOrWhiteSpace(description))
+            return description;
+
         string key = !string.IsNullOrWhiteSpace(descriptionKey)
             ? descriptionKey
             : BuildQuestKey("description");
 
-        return Localize(key, description);
+        return Localize(key, string.Empty);
     }
 
     public string GetObjectiveDisplayName(QuestObjective objective)
@@ -84,6 +90,9 @@ public class QuestObjective
 
     public string GetDisplayName(string questID)
     {
+        if (!string.IsNullOrWhiteSpace(objectiveName))
+            return objectiveName;
+
         string key = !string.IsNullOrWhiteSpace(objectiveTextKey)
             ? objectiveTextKey
             : BuildObjectiveKey(questID);

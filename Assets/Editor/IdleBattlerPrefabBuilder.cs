@@ -16,6 +16,7 @@ public static class IdleBattlerPrefabBuilder
     private const string BossPrefabRoot = PrefabRoot + "/Bosses";
     private const string WaveConfigPath = "Assets/Data_Game/Level/WaveManagerConfig.asset";
     private const float FrameRate = 12f;
+    private const bool AutoBuildOnEditorLoad = false;
     private const string AutoBuildSessionKey = "IdleBattlerPrefabBuilder.AutoBuildQueued.v3";
 
     private sealed class Spec
@@ -37,6 +38,9 @@ public static class IdleBattlerPrefabBuilder
     [InitializeOnLoadMethod]
     private static void AutoBuildWhenImported()
     {
+        if (!AutoBuildOnEditorLoad)
+            return;
+
         if (SessionState.GetBool(AutoBuildSessionKey, false) || GeneratedLooksCurrent())
             return;
 
@@ -46,7 +50,7 @@ public static class IdleBattlerPrefabBuilder
             try
             {
                 Debug.Log("IdleBattlerPrefabBuilder: auto build started.");
-                Build();
+                Build(updateWaveConfig: false);
                 Debug.Log("IdleBattlerPrefabBuilder: auto build finished.");
             }
             catch (System.Exception ex)
@@ -56,7 +60,7 @@ public static class IdleBattlerPrefabBuilder
         };
     }
 
-    public static void Build()
+    public static void Build(bool updateWaveConfig = true)
     {
         EnsureDirectory(SmallPrefabRoot);
         EnsureDirectory(BossPrefabRoot);
@@ -74,7 +78,8 @@ public static class IdleBattlerPrefabBuilder
             CreatePrefab(spec, controller);
         }
 
-        AddToWaveConfig();
+        if (updateWaveConfig)
+            AddToWaveConfig();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -294,7 +299,7 @@ public static class IdleBattlerPrefabBuilder
 
         Animator animator = visual.AddComponent<Animator>();
         animator.runtimeAnimatorController = controller;
-        visual.AddComponent<CommonAnimationEvents>();
+        visual.AddComponent<PlayerAnimationEvents>();
 
         EnemyAI ai = spec.Boss ? root.AddComponent<BossAI>() : root.AddComponent<EnemyAI>();
         SerializedObject so = new SerializedObject(ai);

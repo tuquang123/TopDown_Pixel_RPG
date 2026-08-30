@@ -68,6 +68,10 @@ public class WaveManager : Singleton<WaveManager>
     private Bounds mapBounds;
     private bool   mapBoundsValid = false;
 
+    private const int SpawnCandidateSamples = 32;
+    private const float SpawnEnemySpacing = 1.15f;
+    private const float SpawnJitterRadius = 0.28f;
+
     public int CurrentWave       => currentWave;
     public int CurrentStage      => currentStage;
     public int BossWaveFrequency => GetStageWaveConfig().bossWaveFrequency;
@@ -529,36 +533,73 @@ public class WaveManager : Singleton<WaveManager>
             ? Mathf.Max(waveConfig.minSpawnDistanceFromPlayer, waveConfig.postRespawnMinSpawnDistance)
             : waveConfig.minSpawnDistanceFromPlayer;
 
-        int attempts = Mathf.Min(60, spawnTiles.Count);
-        for (int i = 0; i < attempts; i++)
-        {
-            int idx = UnityEngine.Random.Range(0, spawnTiles.Count);
-            if (Vector2.Distance(spawnTiles[idx], playerPos) >= minDist)
-                return spawnTiles[idx];
-        }
+        float minPlayerDistSqr = minDist * minDist;
+        float hardMinPlayerDistSqr = minPlayerDistSqr * 0.25f;
+        float spacingSqr = SpawnEnemySpacing * SpawnEnemySpacing;
 
-        float   hardMin = minDist * 0.5f;
-        Vector3 best    = spawnTiles[0];
-        float   bestDst = -1f;
-        int     sample  = Mathf.Min(200, spawnTiles.Count);
+        Vector3 best = spawnTiles[UnityEngine.Random.Range(0, spawnTiles.Count)];
+        float bestScore = float.NegativeInfinity;
+        int sample = Mathf.Min(SpawnCandidateSamples, spawnTiles.Count);
 
         for (int i = 0; i < sample; i++)
         {
-            int   idx = UnityEngine.Random.Range(0, spawnTiles.Count);
-            float d   = Vector2.Distance(spawnTiles[idx], playerPos);
-            if (d > bestDst && d >= hardMin) { bestDst = d; best = spawnTiles[idx]; }
-        }
+            int idx = UnityEngine.Random.Range(0, spawnTiles.Count);
+            Vector3 candidate = spawnTiles[idx];
+            float playerDistSqr = Vector2.SqrMagnitude((Vector2)(candidate - playerPos));
+            if (playerDistSqr < hardMinPlayerDistSqr)
+                continue;
 
-        if (bestDst < 0f)
-        {
-            foreach (var t in spawnTiles)
+            float nearestEnemySqr = Mathf.Min(NearestAliveEnemyDistanceSqr(candidate, spacingSqr), spacingSqr * 4f);
+            bool clearsPlayer = playerDistSqr >= minPlayerDistSqr;
+            bool clearsEnemies = nearestEnemySqr >= spacingSqr;
+            float score = playerDistSqr * 0.35f + nearestEnemySqr * 1.65f;
+
+            if (clearsPlayer && clearsEnemies)
+                score += 100000f;
+            else if (clearsPlayer)
+                score += 20000f;
+
+            if (score > bestScore)
             {
-                float d = Vector2.Distance(t, playerPos);
-                if (d > bestDst) { bestDst = d; best = t; }
+                bestScore = score;
+                best = candidate;
             }
         }
 
+        if (bestScore <= float.NegativeInfinity)
+        {
+            foreach (var t in spawnTiles)
+            {
+                float d = Vector2.SqrMagnitude((Vector2)(t - playerPos));
+                if (d > bestScore) { bestScore = d; best = t; }
+            }
+        }
+
+        Vector2 jitter = UnityEngine.Random.insideUnitCircle * SpawnJitterRadius;
+        best.x += jitter.x;
+        best.y += jitter.y;
+        best.z = 0f;
         return best;
+    }
+
+    private float NearestAliveEnemyDistanceSqr(Vector3 candidate, float earlyOutSqr)
+    {
+        float nearest = float.MaxValue;
+        foreach (EnemyAI enemy in aliveEnemies)
+        {
+            if (enemy == null || enemy.IsDead || !enemy.gameObject.activeInHierarchy)
+                continue;
+
+            float distSqr = Vector2.SqrMagnitude((Vector2)(candidate - enemy.transform.position));
+            if (distSqr < nearest)
+            {
+                nearest = distSqr;
+                if (nearest < earlyOutSqr * 0.25f)
+                    return nearest;
+            }
+        }
+
+        return nearest;
     }
 
     // ═══════════════════════════════════════════════════════════════

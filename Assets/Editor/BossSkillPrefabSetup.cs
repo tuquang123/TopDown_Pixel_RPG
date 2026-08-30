@@ -15,6 +15,7 @@ public static class BossSkillPrefabSetup
     private const string GravokPrefab = "Assets/Prefab/Enemy/Gravok.prefab";
     private const string SmallSlimePrefabPath = "Assets/Prefab/Enemy/Small Slime.prefab";
     private const string GoblinBossPrefabPath = PrefabRoot + "/Goblin King Boss.prefab";
+    private const bool AutoSetupOnEditorLoad = false;
     private const string AutoSetupSessionKey = "BossSkillPrefabSetup.AutoSetupQueued.v1";
 
     [MenuItem("Tools/Bosses/Setup Boss Skills")]
@@ -26,6 +27,9 @@ public static class BossSkillPrefabSetup
     [InitializeOnLoadMethod]
     private static void AutoSetupWhenImported()
     {
+        if (!AutoSetupOnEditorLoad)
+            return;
+
         if (SessionState.GetBool(AutoSetupSessionKey, false))
             return;
 
@@ -122,7 +126,7 @@ public static class BossSkillPrefabSetup
         GameObject unitRoot = new GameObject("UnitRoot");
         unitRoot.transform.SetParent(root.transform, false);
         unitRoot.transform.localScale = Vector3.one * 2.6f;
-        unitRoot.AddComponent<CommonAnimationEvents>();
+        unitRoot.AddComponent<PlayerAnimationEvents>();
 
         SpriteRenderer renderer = unitRoot.AddComponent<SpriteRenderer>();
         renderer.sortingOrder = 25;

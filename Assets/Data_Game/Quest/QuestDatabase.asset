@@ -15,15 +15,15 @@ MonoBehaviour:
   allQuests:
   - questID: NV1
     questNameKey: quest.NV1.name
-    questName: First Slimes
+    questName: Goblin Camp
     descriptionKey: quest.NV1.description
-    description: Defeat 6 Small Slimes
+    description: Defeat 3 Goblins
     objectives:
-    - objectiveName: Small Slime
+    - objectiveName: Goblin
       objectiveTextKey: quest.NV1.objective.1
       type: 0
       requiredAmount: 6
-      targetID: Small Slime
+      targetID: Goblin
     reward:
       experienceReward: 25
       goldReward: 120
@@ -37,34 +37,12 @@ MonoBehaviour:
     turnInNPCName: NPC_0
   - questID: NV2
     questNameKey: quest.NV2.name
-    questName: First Clear
-    descriptionKey: quest.NV2.description
-    description: Clear Stage 1
-    objectives:
-    - objectiveName: Stage
-      objectiveTextKey: quest.NV2.objective.1
-      type: 4
-      requiredAmount: 1
-      targetID: Stage
-    reward:
-      experienceReward: 30
-      goldReward: 120
-      gemReward: 5
-      itemIDs: []
-      rewardItem:
-        itemData: {fileID: 0}
-        isLocked: 0
-        upgradeLevel: 0
-        instanceID: 0
-    turnInNPCName: NPC_0
-  - questID: NV3
-    questNameKey: quest.NV3.name
     questName: Train Your Body
-    descriptionKey: quest.NV3.description
+    descriptionKey: quest.NV2.description
     description: Upgrade any stat 3 times
     objectives:
     - objectiveName: UpgradeStat
-      objectiveTextKey: quest.NV3.objective.1
+      objectiveTextKey: quest.NV2.objective.1
       type: 4
       requiredAmount: 3
       targetID: Stats
@@ -79,10 +57,10 @@ MonoBehaviour:
         upgradeLevel: 0
         instanceID: 0
     turnInNPCName: NPC_0
-  - questID: NV4
-    questNameKey: quest.NV4.name
+  - questID: NV3
+    questNameKey: quest.NV3.name
     questName: First Equipment
-    descriptionKey: quest.NV4.description
+    descriptionKey: quest.NV3.description
     description: Buy any 1 equipment item
     objectives:
     - objectiveName: BuyItem
@@ -101,10 +79,10 @@ MonoBehaviour:
         upgradeLevel: 0
         instanceID: 0
     turnInNPCName: NPC_0
-  - questID: NV5
-    questNameKey: quest.NV5.name
+  - questID: NV4
+    questNameKey: quest.NV4.name
     questName: Wear Your Power
-    descriptionKey: quest.NV5.description
+    descriptionKey: quest.NV4.description
     description: Equip 1 item
     objectives:
     - objectiveName: EquipItem
@@ -123,17 +101,39 @@ MonoBehaviour:
         upgradeLevel: 0
         instanceID: 0
     turnInNPCName: NPC_0
+  - questID: NV5
+    questNameKey: quest.NV5.name
+    questName: First Clear
+    descriptionKey: quest.NV5.description
+    description: Clear Stage 1
+    objectives:
+    - objectiveName: Stage
+      objectiveTextKey: quest.NV2.objective.1
+      type: 4
+      requiredAmount: 1
+      targetID: Stage
+    reward:
+      experienceReward: 30
+      goldReward: 120
+      gemReward: 5
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+    turnInNPCName: NPC_0
   - questID: NV6
     questNameKey: quest.NV6.name
-    questName: Goblin Camp
+    questName: Kill Skeleton 1
     descriptionKey: quest.NV6.description
-    description: Defeat 8 Goblins
+    description: Defeat 8 Skeleton 1
     objectives:
-    - objectiveName: Goblin
+    - objectiveName: Skeleton 1
       objectiveTextKey: quest.NV6.objective.1
       type: 0
       requiredAmount: 8
-      targetID: Goblin
+      targetID: Skeleton 1
     reward:
       experienceReward: 55
       goldReward: 220

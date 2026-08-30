@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 9222567058170843357}
   - component: {fileID: 5069536821573421351}
-  - component: {fileID: 6804420577409634546}
   - component: {fileID: 1750297994152376128}
   - component: {fileID: 828249538160736664}
   - component: {fileID: 2696026214560318114}
+  - component: {fileID: 1014593208452581663}
   m_Layer: 26
   m_Name: Arrow
   m_TagString: Ally
@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.32663864, y: 0.17530857, z: 0}
-  m_LocalScale: {x: 0.35, y: 0.35, z: 0.35}
+  m_LocalScale: {x: 0.59346, y: 0.59346, z: 0.59346}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -91,19 +91,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6804420577409634546
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3659391273684521209}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2720fd837aaa45d1b70a9b4b03f7f822, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  arrowTrail: {fileID: 2696026214560318114}
 --- !u!50 &1750297994152376128
 Rigidbody2D:
   serializedVersion: 5
@@ -284,3 +271,16 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &1014593208452581663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3659391273684521209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27421db4e7ce4ab9aa695fdbbb8b0297, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lifetime: 3

@@ -65,10 +65,10 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     private float separationRadius = 0.6f;
 
     [BoxGroup("Movement"), LabelText("Separation Weight"), Range(0f, 3f)] [SerializeField]
-    private float separationWeight = 1.2f;
+    private float separationWeight = 0.75f;
 
     [BoxGroup("Movement"), LabelText("Max Neighbors"), Range(1, 24)] [SerializeField]
-    private int maxSeparationNeighbors = 8;
+    private int maxSeparationNeighbors = 4;
 
     // ── FIX: Smoothing tốc độ tăng/giảm vận tốc, tránh giật cục ──────────────
     [BoxGroup("Movement"), LabelText("Acceleration"), Range(1f, 50f)] [SerializeField]
@@ -76,13 +76,13 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
     // ── FIX: Separation lerp speed — làm mượt lực đẩy, tránh dao động ────────
     [BoxGroup("Movement"), LabelText("Separation Smooth Speed"), Range(1f, 20f)] [SerializeField]
-    private float separationSmoothSpeed = 8f;
+    private float separationSmoothSpeed = 5f;
 
     [BoxGroup("Movement"), LabelText("Hard Separation Strength"), Range(0f, 10f)] [SerializeField]
-    private float hardSeparationStrength = 4f;
+    private float hardSeparationStrength = 0f;
 
     [BoxGroup("Movement"), LabelText("Hard Separation Max Step"), Range(0f, 0.2f)] [SerializeField]
-    private float hardSeparationMaxStep = 0.04f;
+    private float hardSeparationMaxStep = 0.015f;
 
     #endregion
 
@@ -143,8 +143,14 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
     // ── FIX: Cache separation riêng, lerp độc lập tránh dao động ──────────────
     private Vector2 _smoothedSeparation;
+    private Vector2 _cachedRawSeparation;
+    private float _nextSeparationSampleTime;
+    private int _enemyLayerMask = -1;
 
     private const int MaxSeparationBuffer = 24;
+    private const int RuntimeMaxSeparationNeighbors = 4;
+    private const float SeparationSampleInterval = 0.08f;
+    private const bool UseHardOverlapCorrection = false;
     private readonly Collider2D[] _separationBuffer = new Collider2D[MaxSeparationBuffer];
 
     #endregion
@@ -251,6 +257,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     protected virtual void Awake()
     {
         EnsureCachedComponents();
+        EnsureAnimationEventReceivers();
     }
 
     private void OnMouseDown()
@@ -274,6 +281,8 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         _smoothedVelocity   = Vector2.zero;
         _desiredVelocity    = Vector2.zero;
         _smoothedSeparation = Vector2.zero;
+        _cachedRawSeparation = Vector2.zero;
+        _nextSeparationSampleTime = 0f;
     }
 
     private void OnDisable()
@@ -315,7 +324,8 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         );
 
         cachedRigidbody.linearVelocity = _smoothedVelocity;
-        ResolveEnemyOverlap();
+        if (UseHardOverlapCorrection)
+            ResolveEnemyOverlap();
     }
 
     public void OptimizedUpdate()
@@ -497,6 +507,22 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
             if (cachedRigidbody != null)
                 cachedRigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
         }
+
+        if (_enemyLayerMask < 0)
+        {
+            int enemyLayer = LayerMask.NameToLayer("Enemy");
+            _enemyLayerMask = enemyLayer >= 0 ? 1 << enemyLayer : ~0;
+        }
+    }
+
+    protected void EnsureAnimationEventReceivers()
+    {
+        Animator[] animators = GetComponentsInChildren<Animator>(true);
+        foreach (Animator animator in animators)
+        {
+            if (animator != null && animator.GetComponent<PlayerAnimationEvents>() == null)
+                animator.gameObject.AddComponent<PlayerAnimationEvents>();
+        }
     }
 
     protected void MoveInDirection(Vector2 direction)
@@ -509,11 +535,11 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
 
         // ── FIX: Lerp separation force thay vì tính raw mỗi frame ──────────────
         // Tránh separation dao động quá nhanh gây quái khựng/rung
-        Vector2 rawSeparation = CalculateSeparationOffset();
+        Vector2 rawSeparation = GetSampledSeparationOffset();
         _smoothedSeparation = Vector2.Lerp(
             _smoothedSeparation,
             rawSeparation,
-            separationSmoothSpeed * Time.deltaTime
+            1f - Mathf.Exp(-Mathf.Min(separationSmoothSpeed, 5f) * Time.deltaTime)
         );
 
         Vector2 steeringDirection = direction.normalized + _smoothedSeparation;
@@ -523,8 +549,8 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         if (steeringDirection.sqrMagnitude <= 0.0001f)
             steeringDirection = direction.normalized;
 
-        float separationSlowdown = Mathf.Clamp01(1f - _smoothedSeparation.magnitude * 0.18f);
-        float desiredSpeed = Mathf.Lerp(moveSpeed * 0.65f, moveSpeed, separationSlowdown);
+        float separationSlowdown = Mathf.Clamp01(1f - _smoothedSeparation.magnitude * 0.08f);
+        float desiredSpeed = Mathf.Lerp(moveSpeed * 0.85f, moveSpeed, separationSlowdown);
         SetDesiredVelocity(steeringDirection.normalized * desiredSpeed);
     }
 
@@ -536,19 +562,31 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         anim?.SetBool(MoveBool, velocity.sqrMagnitude > 0.01f);
     }
 
+    private Vector2 GetSampledSeparationOffset()
+    {
+        if (Time.time >= _nextSeparationSampleTime)
+        {
+            _cachedRawSeparation = CalculateSeparationOffset();
+            _nextSeparationSampleTime = Time.time + SeparationSampleInterval;
+        }
+
+        return _cachedRawSeparation;
+    }
+
     private Vector2 CalculateSeparationOffset()
     {
         if (separationRadius <= 0f || separationWeight <= 0f)
             return Vector2.zero;
 
-        int hits = Physics2D.OverlapCircleNonAlloc(transform.position, separationRadius, _separationBuffer);
+        int hits = Physics2D.OverlapCircleNonAlloc(transform.position, separationRadius, _separationBuffer, _enemyLayerMask);
         if (hits <= 1)
             return Vector2.zero;
 
         Vector2 separation   = Vector2.zero;
         int countedNeighbors = 0;
-        int allowedNeighbors = Mathf.Min(maxSeparationNeighbors, MaxSeparationBuffer);
+        int allowedNeighbors = Mathf.Min(maxSeparationNeighbors, RuntimeMaxSeparationNeighbors);
         Vector2 selfPosition = transform.position;
+        float effectiveWeight = Mathf.Min(separationWeight, 0.85f);
 
         for (int i = 0; i < hits && countedNeighbors < allowedNeighbors; i++)
         {
@@ -570,7 +608,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
             }
 
             float closeness = Mathf.Clamp01((separationRadius - distance) / separationRadius);
-            float strength = closeness * closeness;
+            float strength = closeness * closeness * 0.75f;
             separation += away.normalized * strength;
             countedNeighbors++;
         }
@@ -578,7 +616,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         if (countedNeighbors <= 0)
             return Vector2.zero;
 
-        return Vector2.ClampMagnitude(separation * separationWeight, separationWeight);
+        return Vector2.ClampMagnitude(separation * effectiveWeight, effectiveWeight);
     }
 
     private void ResolveEnemyOverlap()
@@ -589,13 +627,13 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
         if (hardSeparationStrength <= 0f || hardSeparationMaxStep <= 0f)
             return;
 
-        int hits = Physics2D.OverlapCircleNonAlloc(transform.position, separationRadius, _separationBuffer);
+        int hits = Physics2D.OverlapCircleNonAlloc(transform.position, separationRadius, _separationBuffer, _enemyLayerMask);
         if (hits <= 1)
             return;
 
         Vector2 correction = Vector2.zero;
         int countedNeighbors = 0;
-        int allowedNeighbors = Mathf.Min(maxSeparationNeighbors, MaxSeparationBuffer);
+        int allowedNeighbors = Mathf.Min(maxSeparationNeighbors, RuntimeMaxSeparationNeighbors);
         Vector2 selfPosition = cachedRigidbody.position;
 
         for (int i = 0; i < hits && countedNeighbors < allowedNeighbors; i++)

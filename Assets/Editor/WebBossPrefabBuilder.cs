@@ -12,6 +12,7 @@ public static class WebBossPrefabBuilder
     private const string AnimationRoot = "Assets/Animations/WebBosses";
     private const string PrefabRoot = "Assets/Prefab/Enemy/WebBosses";
     private const float FrameRate = 12f;
+    private const bool AutoBuildOnEditorLoad = false;
     private const string AutoBuildSessionKey = "WebBossPrefabBuilder.AutoBuildQueued.v7";
 
     private sealed class BossSpec
@@ -37,6 +38,9 @@ public static class WebBossPrefabBuilder
     [InitializeOnLoadMethod]
     private static void AutoBuildWhenImported()
     {
+        if (!AutoBuildOnEditorLoad)
+            return;
+
         if (SessionState.GetBool(AutoBuildSessionKey, false))
             return;
 
@@ -300,8 +304,8 @@ public static class WebBossPrefabBuilder
             if (renderer != null)
                 renderer.sprite = LoadSprites($"{FrameRoot}/{spec.Id}/Idle").FirstOrDefault();
 
-            if (unitRoot.GetComponent<CommonAnimationEvents>() == null)
-                unitRoot.gameObject.AddComponent<CommonAnimationEvents>();
+            if (unitRoot.GetComponent<PlayerAnimationEvents>() == null)
+                unitRoot.gameObject.AddComponent<PlayerAnimationEvents>();
         }
 
         if (shadowGroup != null)

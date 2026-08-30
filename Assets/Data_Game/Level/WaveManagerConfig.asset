@@ -17,20 +17,16 @@ MonoBehaviour:
     the scene WaveManager.
   spawnZoneTilemapName: SpawnZone
   enemySpawnEntries:
-  - prefab: {fileID: 5583377977628639771, guid: c57d378c4bcad7043862fd4da9d1feed, type: 3}
-    minStage: 1
-    maxStage: 4
-    weight: 3
   - prefab: {fileID: 1581309216436780966, guid: 9466a1f4c085f2448b11dc9bfd07351c, type: 3}
-    minStage: 2
+    minStage: 1
     maxStage: 7
     weight: 4
   - prefab: {fileID: 2438799242571582111, guid: 08379f2da426f44418533f518b971e8d, type: 3}
-    minStage: 4
+    minStage: 2
     maxStage: 10
     weight: 4
   - prefab: {fileID: 2438799242571582111, guid: ba26189a3812215449ea92e65355c7e2, type: 3}
-    minStage: 5
+    minStage: 2
     maxStage: 11
     weight: 3
   - prefab: {fileID: 6011365164939338036, guid: 82a048ee7a610e344b8c959534450510, type: 3}
@@ -65,86 +61,30 @@ MonoBehaviour:
     minStage: 10
     maxStage: 0
     weight: 4
-  - prefab: {fileID: 4331606263814460301, guid: 9ab166b190b71094b80fadd56042b6b7, type: 3}
-    minStage: 1
-    maxStage: 0
-    weight: 3
-  - prefab: {fileID: 5379725233997165664, guid: c4e7784612fb17443b0aa65ee64273d8, type: 3}
-    minStage: 1
-    maxStage: 0
-    weight: 4
-  - prefab: {fileID: 6121830426982277801, guid: de50d6df7ce441d4eb8371f609e5e0d7, type: 3}
-    minStage: 1
-    maxStage: 0
-    weight: 5
-  - prefab: {fileID: 4875234866903382419, guid: b9ea3bb521f4b5b45ab915b457ce83ed, type: 3}
-    minStage: 1
-    maxStage: 0
-    weight: 3
-  - prefab: {fileID: 5862000231270208590, guid: 18c2e43a9d42a0640957217610d298b2, type: 3}
-    minStage: 2
-    maxStage: 0
-    weight: 4
-  - prefab: {fileID: 4891518850321119487, guid: 18b2b672e5a7a544f8fb55c6c2edf44a, type: 3}
-    minStage: 2
-    maxStage: 0
-    weight: 5
-  - prefab: {fileID: 5865049241625462590, guid: 87f29b1ed78edf746bbe0d6757cd0ee2, type: 3}
-    minStage: 2
-    maxStage: 0
-    weight: 3
-  - prefab: {fileID: 1596156993446107359, guid: 813d708d1f3abb841b20c475ce37fd34, type: 3}
-    minStage: 2
-    maxStage: 0
-    weight: 4
-  - prefab: {fileID: 6349180313913536802, guid: 5645fa50e676c5749935e0d303291c2b, type: 3}
+  - prefab: {fileID: 1039660277152927625, guid: 85dab7e6ed6bde74f83d013e486e3381, type: 3}
     minStage: 3
-    maxStage: 0
-    weight: 5
-  - prefab: {fileID: 8414886651614441518, guid: df087f3109574ac4aace07a5564fec5d, type: 3}
+    maxStage: 10
+    weight: 2
+  - prefab: {fileID: 2838496207427572244, guid: c00d24f29355f694ba958cde7a6fb6c2, type: 3}
     minStage: 3
-    maxStage: 0
+    maxStage: 20
+    weight: 1
+  - prefab: {fileID: 4603433034444118017, guid: d62fce016d1c10943a132f41bb554210, type: 3}
+    minStage: 2
+    maxStage: 5
     weight: 3
-  - prefab: {fileID: 8014090638869273733, guid: 9933ecc695ec62f45b6802f99a06740a, type: 3}
-    minStage: 3
-    maxStage: 0
-    weight: 4
-  - prefab: {fileID: 9162891711929572342, guid: c8ad45d3beb718745addb83758ce7988, type: 3}
-    minStage: 3
-    maxStage: 0
-    weight: 5
-  - prefab: {fileID: 5307221475150801334, guid: e5a0bd8560dd61548be51d6a7c328014, type: 3}
+  - prefab: {fileID: 4230907828111805452, guid: aed241e09c626534ebb0a08fc2571a8f, type: 3}
     minStage: 4
+    maxStage: 20
+    weight: 2
+  - prefab: {fileID: 0}
+    minStage: 0
     maxStage: 0
-    weight: 3
-  - prefab: {fileID: 6790188074221420707, guid: 04475be8c7fef544c9306254baab62a4, type: 3}
-    minStage: 4
-    maxStage: 0
-    weight: 4
-  - prefab: {fileID: 5702633128465228734, guid: ca9588f721be9144794b93a8cb900e91, type: 3}
-    minStage: 4
-    maxStage: 0
-    weight: 5
-  - prefab: {fileID: 1274731265624038895, guid: 16ebceba09e8c95438a824bd9aa0566b, type: 3}
-    minStage: 4
-    maxStage: 0
-    weight: 3
-  - prefab: {fileID: 7447768294311627838, guid: e0b99954cbf3a1d439704d12f3a78de4, type: 3}
-    minStage: 5
-    maxStage: 0
-    weight: 4
-  - prefab: {fileID: 5752275494792807391, guid: c7df9f71f5e8a8e4ca78db863d246a1d, type: 3}
-    minStage: 5
-    maxStage: 0
-    weight: 5
-  - prefab: {fileID: 3837957716032372146, guid: 597a9668a9e49f642ade58a7ee9a2d3a, type: 3}
-    minStage: 5
-    maxStage: 0
-    weight: 3
-  - prefab: {fileID: 5569111157870943859, guid: 5ee416ab9160f664a820598ff6a780ef, type: 3}
-    minStage: 5
-    maxStage: 0
-    weight: 4
+    weight: 0
+  - prefab: {fileID: 7415609004832041580, guid: 231526f7741bf4948a7dbd6ca51b6485, type: 3}
+    minStage: 0
+    maxStage: 6
+    weight: 2
   bossStageOverrides:
   - stage: 1
     bossPrefab: {fileID: 7632601714659811928, guid: 2bc07ce1549b47c419aa8b983f1d0ba9, type: 3}
@@ -164,26 +104,6 @@ MonoBehaviour:
     bossPrefab: {fileID: 7252085876435940123, guid: 0b7f60d544cb2784c9816b34e334b662, type: 3}
   - stage: 9
     bossPrefab: {fileID: 1760415874760453847, guid: 5e872abd0e62f3e4a8b1d3e3aa40d86f, type: 3}
-  - stage: 9
-    bossPrefab: {fileID: 4947946949793625085, guid: d0ac3b77583d4510be327e388a7af3ab, type: 3}
-  - stage: 10
-    bossPrefab: {fileID: 5819507797409827445, guid: 8e3e1f9b6ed9479497bc07b9f3714097, type: 3}
-  - stage: 11
-    bossPrefab: {fileID: 1713311053733776562, guid: 1285ae86f2f74621bb094cd968946c94, type: 3}
-  - stage: 12
-    bossPrefab: {fileID: 490226142590303785, guid: 0d8eb860c2e54855852737b01c05166e, type: 3}
-  - stage: 13
-    bossPrefab: {fileID: 1138020060335133474, guid: 29cb87b96e7945bc9053982c793e6bb6, type: 3}
-  - stage: 14
-    bossPrefab: {fileID: 8165340673187207177, guid: 2f62aefaa3754d3bb0d067aa4ba2bc61, type: 3}
-  - stage: 15
-    bossPrefab: {fileID: 2801512075292274225, guid: c388c6fd5a624bec9524cda44ba3782a, type: 3}
-  - stage: 16
-    bossPrefab: {fileID: 5060144401023027063, guid: 6a4069f9333548d3adf5566fa3539080, type: 3}
-  - stage: 17
-    bossPrefab: {fileID: 1340679008985036139, guid: 80214ea006d54e9780bde6ce5256856d, type: 3}
-  - stage: 18
-    bossPrefab: {fileID: 8906045366287186674, guid: fe99bf3be30f46819b1fe951c881cc48, type: 3}
   startWave: 1
   defaultEnemiesBaseCount: 4
   defaultEnemiesPerWave: 2

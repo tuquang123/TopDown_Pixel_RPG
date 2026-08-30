@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public class CommonAnimationEvents : MonoBehaviour
+[DisallowMultipleComponent]
+public class PlayerAnimationEvents : MonoBehaviour
 {
     private PlayerController playerController;
     private EnemyAI enemyAI;

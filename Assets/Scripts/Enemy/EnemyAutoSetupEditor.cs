@@ -34,13 +34,13 @@ public class EnemyAutoSetupEditor : MonoBehaviour
             gameObject.layer = enemyLayer;
         }
 
-        // Thêm CommonAnimationEvents vào UnitRoot
+        // Thêm PlayerAnimationEvents vào UnitRoot
         Transform unitRoot = transform.Find("UnitRoot");
         if (unitRoot != null)
         {
-            if (unitRoot.GetComponent<CommonAnimationEvents>() == null)
+            if (unitRoot.GetComponent<PlayerAnimationEvents>() == null)
             {
-                unitRoot.gameObject.AddComponent<CommonAnimationEvents>();
+                unitRoot.gameObject.AddComponent<PlayerAnimationEvents>();
             }
         }
         else

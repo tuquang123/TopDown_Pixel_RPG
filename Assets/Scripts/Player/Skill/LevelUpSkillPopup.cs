@@ -58,6 +58,7 @@ public class LevelUpSkillPopup : BasePopup
     private Tween confirmPulseTween;
     private int currentPlayerLevel = 1;
     private bool allowClose;
+    private float cachedTimeScale = 1f;
     public bool CanClose => allowClose;
 
     protected override void Awake()
@@ -80,6 +81,9 @@ public class LevelUpSkillPopup : BasePopup
 
         if (levelText != null)
             levelText.text = $"{(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("level_up") : "LEVEL UP")} - {(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("level") : "LEVEL")} {newLevel}";
+
+        // Lưu lại timeScale hiện tại (vd: x3 từ DevPanel) trước khi pause, để Hide() restore đúng giá trị này thay vì hardcode về 1f
+        cachedTimeScale = Time.timeScale > 0f ? Time.timeScale : 1f;
 
         Time.timeScale = 0f;
         Show();
@@ -232,7 +236,8 @@ public class LevelUpSkillPopup : BasePopup
 
         ForceUnscaledTweens();
 
-        Time.timeScale = 1f;
+        // Restore lại timeScale đã lưu trước khi popup mở (vd: x3), thay vì hardcode về 1f
+        Time.timeScale = cachedTimeScale;
         base.Hide();
 
         ForceUnscaledTweens();

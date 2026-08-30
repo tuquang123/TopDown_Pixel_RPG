@@ -38,6 +38,9 @@ public class GachaPopup : BasePopup
 
     public void OnClickInfo()
     {
+        if (gachaData == null || gachaData.items == null)
+            return;
+
         ClearInfo();
         infoPanel.SetActive(true);
         infoPanel.transform.localScale = Vector3.zero;
@@ -45,6 +48,9 @@ public class GachaPopup : BasePopup
 
         foreach (var g in gachaData.items)
         {
+            if (g == null || g.item == null)
+                continue;
+
             var ui = Instantiate(gachaItemPrefab, infoContainer);
             ui.Setup(new ItemInstance(g.item));
         }
@@ -79,18 +85,29 @@ public class GachaPopup : BasePopup
 
     private ItemInstance RollOne()
     {
-        if (gachaData == null || gachaData.items.Count == 0)
+        if (gachaData == null || gachaData.items == null || gachaData.items.Count == 0)
             return null;
 
         float totalRate = 0f;
         foreach (var g in gachaData.items)
+        {
+            if (g == null || g.item == null || g.rate <= 0f)
+                continue;
+
             totalRate += g.rate;
+        }
+
+        if (totalRate <= 0f)
+            return null;
 
         float rand = Random.Range(0, totalRate);
         float current = 0f;
 
         foreach (var g in gachaData.items)
         {
+            if (g == null || g.item == null || g.rate <= 0f)
+                continue;
+
             current += g.rate;
             if (rand <= current)
                 return new ItemInstance(g.item);
