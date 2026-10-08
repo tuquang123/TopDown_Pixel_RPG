@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum BossSkillProfile
@@ -25,6 +26,10 @@ public class BossAI : EnemyAI
     [SerializeField] private GameObject lightningPrefab;
     [SerializeField] private GameObject stoneSpikePrefab;
     [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] private bool useTargetedProjectileAttack;
+    [SerializeField] private float projectileStandOffRange = 2.25f;
+    [SerializeField] private float projectileSpeed = 12f;
+    [SerializeField] private float projectileReleaseDelay = 0.35f;
     [SerializeField] private bool playMeleeSlashVfx;
     [SerializeField] private Color meleeSlashColor = new Color(1f, 0.82f, 0.28f, 0.9f);
     [SerializeField] private float dashSpeed = 10f;
@@ -40,10 +45,12 @@ public class BossAI : EnemyAI
 
     private bool isPerformingSkill;
     private bool isPhased;
+    private bool isProjectileAttack;
     private float lastSpecialTime;
     private Collider2D bossCollider;
     private SpriteRenderer[] renderers;
     private Color[] normalRendererColors;
+    private readonly List<EnemyAI> spawnedMinions = new List<EnemyAI>();
 
     protected override void Start()
     {
@@ -166,6 +173,7 @@ public class BossAI : EnemyAI
                 ai.ApplyLevelData(levelDB.GetDataByLevel(1));
 
             ai.ResetEnemy();
+            spawnedMinions.Add(ai);
         }
 
         yield return new WaitForSeconds(0.5f);
@@ -318,6 +326,28 @@ public class BossAI : EnemyAI
 
     protected override void AttackTarget()
     {
+        if (useTargetedProjectileAttack && target != null)
+        {
+            float targetDistance = Vector2.Distance(transform.position, target.position);
+            if (targetDistance > attackRange + 0.3f && targetDistance <= projectileStandOffRange)
+            {
+                if (isTakingDamage || isDead || anim == null || Time.time - lastAttackTime < attackCooldown)
+                    return;
+
+                RotateEnemy(target.position.x - transform.position.x);
+                attackSnapshot = target;
+                isProjectileAttack = true;
+                anim.SetBool(MoveBool, false);
+                anim.SetTrigger(AttackTrigger);
+                lastAttackTime = Time.time;
+                PlayBossSound(BossSoundEvent.Shoot);
+                SpawnProjectileTelegraph(attackSnapshot.position);
+                StartCoroutine(LaunchTargetedProjectile(attackSnapshot));
+                return;
+            }
+        }
+
+        isProjectileAttack = false;
         bool canAttack = target != null
                          && !isTakingDamage
                          && !isDead
@@ -330,8 +360,29 @@ public class BossAI : EnemyAI
             PlayBossSound(BossSoundEvent.Attack);
     }
 
+    protected override void MoveToAttackPosition()
+    {
+        if (useTargetedProjectileAttack && target != null)
+        {
+            float targetDistance = Vector2.Distance(transform.position, target.position);
+            if (targetDistance <= projectileStandOffRange)
+            {
+                StopMotion();
+                if (Time.time - lastAttackTime >= attackCooldown)
+                    AttackTarget();
+                return;
+            }
+        }
+
+        base.MoveToAttackPosition();
+    }
+
     public override void DealDamageToTarget()
     {
+        // The ranged animation still invokes this event. Damage comes from the projectile on impact.
+        if (isProjectileAttack)
+            return;
+
         Transform attackTarget = attackSnapshot != null ? attackSnapshot : target;
         bool hasValidHit = attackTarget != null
                            && attackTarget.gameObject.activeInHierarchy
@@ -344,6 +395,65 @@ public class BossAI : EnemyAI
 
         if (hasValidHit)
             PlayBossSound(BossSoundEvent.HitPlayer);
+    }
+
+    private IEnumerator LaunchTargetedProjectile(Transform shotTarget)
+    {
+        yield return new WaitForSeconds(projectileReleaseDelay);
+
+        if (isDead || shotTarget == null || !shotTarget.gameObject.activeInHierarchy || bulletPrefab == null)
+            yield break;
+
+        Vector2 direction = ((Vector2)shotTarget.position - (Vector2)transform.position).normalized;
+        if (direction.sqrMagnitude <= 0.001f)
+            direction = Vector2.right;
+
+        Vector3 spawnPosition = transform.position + (Vector3)(direction * 0.65f) + Vector3.up * 0.18f;
+        GameObject projectile = Instantiate(bulletPrefab, spawnPosition, Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg));
+
+        if (projectile.TryGetComponent(out EnemyProjectile legacyProjectile))
+        {
+            legacyProjectile.enabled = false;
+            Destroy(legacyProjectile);
+        }
+
+        if (projectile.TryGetComponent(out Rigidbody2D body))
+        {
+            body.linearVelocity = Vector2.zero;
+            body.simulated = false;
+        }
+
+        BossTargetedProjectile targetedProjectile = projectile.GetComponent<BossTargetedProjectile>();
+        if (targetedProjectile == null)
+            targetedProjectile = projectile.AddComponent<BossTargetedProjectile>();
+
+        targetedProjectile.Initialize(shotTarget, gameObject, attackDamage, projectileSpeed);
+    }
+
+    private void SpawnProjectileTelegraph(Vector3 targetPosition)
+    {
+        GameObject marker = new GameObject("Goblin King Target Marker");
+        marker.transform.position = targetPosition + Vector3.up * 0.02f;
+
+        LineRenderer ring = marker.AddComponent<LineRenderer>();
+        ring.useWorldSpace = false;
+        ring.loop = true;
+        ring.positionCount = 28;
+        ring.startWidth = 0.055f;
+        ring.endWidth = 0.055f;
+        ring.material = new Material(Shader.Find("Sprites/Default"));
+        ring.startColor = new Color(1f, 0.16f, 0.03f, 0.9f);
+        ring.endColor = new Color(1f, 0.8f, 0.12f, 0.9f);
+        ring.sortingOrder = 88;
+
+        const float radius = 0.48f;
+        for (int i = 0; i < ring.positionCount; i++)
+        {
+            float angle = i * Mathf.PI * 2f / ring.positionCount;
+            ring.SetPosition(i, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * radius);
+        }
+
+        Destroy(marker, projectileReleaseDelay);
     }
 
     private void SpawnMeleeSlashVfx(Transform attackTarget)
@@ -391,6 +501,18 @@ public class BossAI : EnemyAI
             return;
 
         isDead = true;
+
+        // Dung coroutine dang cast de khong de them linh sau khi boss chet
+        StopAllCoroutines();
+
+        // Boss chet thi tat het linh da trieu hoi (khong tinh quest/gold)
+        for (int i = 0; i < spawnedMinions.Count; i++)
+        {
+            if (spawnedMinions[i] != null)
+                spawnedMinions[i].gameObject.SetActive(false);
+        }
+        spawnedMinions.Clear();
+
         PlayBossSound(BossSoundEvent.Death);
         anim.SetTrigger(DieTrigger);
         GetComponent<Collider2D>().enabled = false;

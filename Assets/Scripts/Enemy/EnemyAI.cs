@@ -36,7 +36,7 @@ public partial class EnemyAI : MonoBehaviour, IDamageable
     [BoxGroup("Combat"), LabelText("Attack Range"), Range(0.1f, 10f)] [SerializeField]
     protected float attackRange = 1.5f;
 
-    [BoxGroup("Combat"), LabelText("Detection Range"), Range(0.1f, 40f)] [SerializeField]
+    [BoxGroup("Combat"), LabelText("Detection Range"), Range(0.1f, 150f)] [SerializeField]
     protected float detectionRange = 5f;
 
     [BoxGroup("Combat"), LabelText("Attack Cooldown"), Range(0f, 10f)] [SerializeField]

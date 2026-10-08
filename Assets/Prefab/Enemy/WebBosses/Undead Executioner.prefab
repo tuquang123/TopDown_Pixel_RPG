@@ -314,7 +314,7 @@ MonoBehaviour:
   maxHealth: 10000
   attackDamage: 100
   attackRange: 1.5
-  detectionRange: 20
+  detectionRange: 150
   attackCooldown: 2
   skipHurtAnimation: 0
   criticalChance: 0
@@ -326,6 +326,8 @@ MonoBehaviour:
   maxSeparationNeighbors: 8
   acceleration: 20
   separationSmoothSpeed: 8
+  hardSeparationStrength: 0
+  hardSeparationMaxStep: 0.015
   knockForce: 3
   knockDuration: 0.3
   damagedStunTime: 0

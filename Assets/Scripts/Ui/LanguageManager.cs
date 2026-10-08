@@ -86,6 +86,7 @@ public class LanguageManager : MonoBehaviour
                 { "language", "Language" },
                 { "language_en", "English" },
                 { "language_vi", "Tiếng Việt" },
+                { "ToggleLock", "Toggle Lock" },
                 { "purchased", "Purchased" },
                 { "unequip_all", "Unequip All" },
                 { "sell_all", "Sell All" },
@@ -383,6 +384,7 @@ public class LanguageManager : MonoBehaviour
                 { "language", "Ngôn Ngữ" },
                 { "language_en", "English" },
                 { "language_vi", "Tiếng Việt" },
+                { "ToggleLock", "Khóa/Mở khóa" },
                 { "purchased", "Đã Mua" },
                 { "unequip_all", "Tháo Hết" },
                 { "sell_all", "Bán Hết" },
@@ -1050,7 +1052,7 @@ public class LanguageManager : MonoBehaviour
             "shop", "buy", "sell", "upgrade", "unequip", "close", "inventory", "all", "equip", "use",
             "stats", "level_up", "skill", "assign", "learn", "yes", "no", "roll", "roll_x5", "ok", "confirm", "reroll", "congratulations",
             "setting_title", "bgm", "sfx", "language", "purchased", "unequip_all", "sell_all",
-            "auto_equip", "melee", "ranged", "heavy_melee", "claim", "next", "map", "gacha",
+            "auto_equip", "melee", "ranged", "heavy_melee", "ToggleLock", "claim", "next", "map", "gacha",
             "equipment", "locked", "skill_point", "level", "current", "price", "power", "stage",
             "wave", "chapter", "attack", "defense", "speed", "crit", "life_steal", "attack_speed",
             "hp", "mana", "gold", "gem", "quest", "quest_failed", "reward", "received", "completed", "feature_requires_level",
@@ -1103,6 +1105,8 @@ public class LanguageManager : MonoBehaviour
         RegisterTextAlias("Reroll", "reroll");
         RegisterTextAlias("Setting", "setting_title");
         RegisterTextAlias("Language", "language");
+        RegisterTextAlias("ToggleLock", "ToggleLock");
+        RegisterTextAlias("Toggle Lock", "ToggleLock");
         RegisterTextAlias("Purchased", "purchased");
         RegisterTextAlias("Sell All", "sell_all");
         RegisterTextAlias("Auto Equip", "auto_equip");
@@ -1201,6 +1205,7 @@ public class LanguageManager : MonoBehaviour
                 "bgm" => "BGM",
                 "sfx" => "SFX",
                 "language" => "Language",
+                "ToggleLock" => "Toggle Lock",
                 "purchased" => "Purchased",
                 "unequip_all" => "Unequip All",
                 "sell_all" => "Sell All",
@@ -1434,6 +1439,7 @@ public class LanguageManager : MonoBehaviour
             "bgm" => "Nh\u1ea1c N\u1ec1n",
             "sfx" => "\u00c2m Thanh",
             "language" => "Ng\u00f4n Ng\u1eef",
+            "ToggleLock" => "Kh\u00f3a/M\u1edf kh\u00f3a",
             "purchased" => "\u0110\u00e3 Mua",
             "unequip_all" => "Th\u00e1o H\u1ebft",
             "sell_all" => "B\u00e1n H\u1ebft",

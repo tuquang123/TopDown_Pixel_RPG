@@ -421,7 +421,6 @@ GameObject:
   - component: {fileID: 7293346171037001973}
   - component: {fileID: 991678519516922443}
   - component: {fileID: 5609325678899967959}
-  - component: {fileID: 180290000000000004}
   m_Layer: 7
   m_Name: UnitRoot
   m_TagString: Untagged
@@ -4024,7 +4023,7 @@ MonoBehaviour:
   maxHealth: 100
   attackDamage: 10
   attackRange: 3
-  detectionRange: 40
+  detectionRange: 150
   attackCooldown: 1
   skipHurtAnimation: 0
   criticalChance: 0
@@ -4062,7 +4061,7 @@ MonoBehaviour:
   patrolWaitTime: 2
   exp: 3
   selectionCircle: {fileID: 8200975868890891790}
-  aggroIcon: {fileID: 4684085965553098919}
+  aggroIcon: {fileID: 0}
   aggroLoseTime: 5
   killObjectiveID: Skeleton
   projectilePrefab: {fileID: 3659391273684521209, guid: 74e8d529a7dc5bb4585e2f1db5be58a6, type: 3}
@@ -8117,15 +8116,3 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1224943919409809662, guid: e6a16324c34ddd944b3bb6d996ead215, type: 3}
   m_PrefabInstance: {fileID: 7003194293933870832}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &180290000000000004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1447962641414296660}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18c0292a5d8d4edc8d7567ad8c65f323, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

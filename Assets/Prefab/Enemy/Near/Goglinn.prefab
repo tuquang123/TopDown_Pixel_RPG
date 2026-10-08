@@ -2767,6 +2767,7 @@ GameObject:
   - component: {fileID: 3848949953861877950}
   - component: {fileID: 5163912182734064254}
   - component: {fileID: 2530842133963803438}
+  - component: {fileID: 386329302092590614}
   m_Layer: 0
   m_Name: UnitRoot
   m_TagString: Untagged
@@ -2825,6 +2826,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &386329302092590614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4621867111835304126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df6cd91a71ba86d40893f709bcfe868e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4935856407101210293
 GameObject:
   m_ObjectHideFlags: 0
@@ -7435,7 +7448,7 @@ MonoBehaviour:
   maxHealth: 100
   attackDamage: 11
   attackRange: 0.7
-  detectionRange: 40
+  detectionRange: 150
   attackCooldown: 3.5
   skipHurtAnimation: 0
   criticalChance: 0

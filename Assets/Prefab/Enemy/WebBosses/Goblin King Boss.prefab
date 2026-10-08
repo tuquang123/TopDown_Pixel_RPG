@@ -369,7 +369,7 @@ MonoBehaviour:
   maxHealth: 10000
   attackDamage: 100
   attackRange: 1.5
-  detectionRange: 20
+  detectionRange: 150
   attackCooldown: 2
   skipHurtAnimation: 0
   criticalChance: 0
@@ -381,6 +381,8 @@ MonoBehaviour:
   maxSeparationNeighbors: 8
   acceleration: 20
   separationSmoothSpeed: 8
+  hardSeparationStrength: 0
+  hardSeparationMaxStep: 0.015
   knockForce: 3
   knockDuration: 0.3
   damagedStunTime: 0
@@ -411,7 +413,11 @@ MonoBehaviour:
   slimeMinionPrefab: {fileID: 5583377977628639771, guid: c57d378c4bcad7043862fd4da9d1feed, type: 3}
   lightningPrefab: {fileID: 7419438336110740541, guid: 693db1fe3a411b84d9218a060a98adb3, type: 3}
   stoneSpikePrefab: {fileID: 123967842145412307, guid: efc9511855408a540867626327429c9b, type: 3}
-  bulletPrefab: {fileID: 6724435583550609126, guid: ed2899313e3648747a27ccf1db6795e9, type: 3}
+  bulletPrefab: {fileID: 3659391273684521209, guid: 74e8d529a7dc5bb4585e2f1db5be58a6, type: 3}
+  useTargetedProjectileAttack: 1
+  projectileStandOffRange: 2.25
+  projectileSpeed: 12
+  projectileReleaseDelay: 0.35
   playMeleeSlashVfx: 1
   meleeSlashColor: {r: 1, g: 0.82, b: 0.28, a: 0.9}
   dashSpeed: 10

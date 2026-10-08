@@ -7,28 +7,50 @@ public class EnemyRangedAI : EnemyAI
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float projectileSpeed = 10f;
+    [SerializeField] private float chaseSpeed = 2f; // tốc độ chạy đến nhân vật
 
     [Header("Weapon Type")]
     public bool isHoldingBow = false; // nếu true → bắn mũi tên
 
     protected override void MoveToAttackPosition()
     {
+        if (target == null) return;
+
         float distance = Vector2.Distance(transform.position, target.position);
 
-        // trong detection → đứng lại
-        if (distance <= detectionRange)
+        // Ngoài tầm tìm đến → đứng yên
+        if (distance > detectionRange)
         {
             anim.SetBool(MoveBool, false);
-
-            // nếu trong attack range → bắn
-            if (distance <= attackRange && Time.time - lastAttackTime >= attackCooldown)
-            {
-                AttackTarget();
-            }
+            return;
         }
-        else
+
+        // Trong tầm tìm đến nhưng chưa tới tầm đánh → chạy lại gần
+        if (distance > attackRange)
         {
-            anim.SetBool(MoveBool, false);
+            if (isTakingDamage)
+            {
+                anim.SetBool(MoveBool, false);
+                return;
+            }
+
+            RotateEnemy(target.position.x - transform.position.x);
+            anim.SetBool(MoveBool, true);
+
+            transform.position = Vector2.MoveTowards(
+                transform.position,
+                target.position,
+                chaseSpeed * Time.deltaTime
+            );
+            return;
+        }
+
+        // Trong tầm đánh → đứng lại và bắn
+        anim.SetBool(MoveBool, false);
+
+        if (Time.time - lastAttackTime >= attackCooldown)
+        {
+            AttackTarget();
         }
     }
 
@@ -42,10 +64,9 @@ public class EnemyRangedAI : EnemyAI
         {
             anim.SetBool(MoveBool, false);
 
-            // Kiểm tra cầm cung
             if (isHoldingBow)
             {
-                anim.SetTrigger("7_Shoot"); // trigger mới, animation bắn cung
+                anim.SetTrigger("7_Shoot"); // animation bắn cung
             }
             else
             {
@@ -56,18 +77,16 @@ public class EnemyRangedAI : EnemyAI
         }
     }
 
-  
+    // Gọi từ Animation Event
     public void FireProjectile()
     {
-        if (target == null) return;
+        if (target == null || firePoint == null || projectilePrefab == null) return;
 
         Vector2 dir = (target.position - firePoint.position).normalized;
 
         GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
 
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-
-      
         proj.transform.rotation = Quaternion.Euler(0, 0, angle);
 
         if (proj.TryGetComponent(out Rigidbody2D rb))
@@ -79,5 +98,14 @@ public class EnemyRangedAI : EnemyAI
         {
             projectile.Init(attackDamage, gameObject, criticalChance, criticalDamageMultiplier);
         }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

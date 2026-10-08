@@ -36,7 +36,7 @@ MonoBehaviour:
         instanceID: 0
   - fromStage: 2
     stageName: Stage 2
-    mapPrefab: {fileID: 3918573245951797597, guid: eda6804f2e4207f43a59c22e8d88f01f, type: 3}
+    mapPrefab: {fileID: 3918573245951797597, guid: 0a4c3938d840efd4083a7cfb5581980e, type: 3}
     useWaveConfigOverride: 0
     waveConfigOverride:
       enemiesBaseCount: 4
@@ -121,6 +121,48 @@ MonoBehaviour:
   - fromStage: 6
     stageName: Stage 6
     mapPrefab: {fileID: 3918573245951797597, guid: 0e56e1f73a90ff1468eac3a6623d112f, type: 3}
+    useWaveConfigOverride: 0
+    waveConfigOverride:
+      enemiesBaseCount: 4
+      enemiesPerWave: 2
+      baseSpawnInterval: 0.8
+      spawnIntervalDecayPerWave: 0.02
+      minSpawnInterval: 0.15
+      bossWaveFrequency: 5
+    clearReward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+  - fromStage: 7
+    stageName: Stage 7
+    mapPrefab: {fileID: 3918573245951797597, guid: 936fd6977dcfa604eb49d01112cf54aa, type: 3}
+    useWaveConfigOverride: 0
+    waveConfigOverride:
+      enemiesBaseCount: 4
+      enemiesPerWave: 2
+      baseSpawnInterval: 0.8
+      spawnIntervalDecayPerWave: 0.02
+      minSpawnInterval: 0.15
+      bossWaveFrequency: 5
+    clearReward:
+      experienceReward: 0
+      goldReward: 0
+      gemReward: 0
+      itemIDs: []
+      rewardItem:
+        itemData: {fileID: 0}
+        isLocked: 0
+        upgradeLevel: 0
+        instanceID: 0
+  - fromStage: 8
+    stageName: Stage 8
+    mapPrefab: {fileID: 3918573245951797597, guid: df2086d4bfee6944b83212481089df5d, type: 3}
     useWaveConfigOverride: 0
     waveConfigOverride:
       enemiesBaseCount: 4

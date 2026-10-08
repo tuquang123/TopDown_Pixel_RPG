@@ -158,17 +158,20 @@ MonoBehaviour:
   maxHealth: 10000
   attackDamage: 100
   attackRange: 1.5
-  detectionRange: 20
+  detectionRange: 150
   attackCooldown: 2
   skipHurtAnimation: 0
   criticalChance: 0
   criticalDamageMultiplier: 1.5
   moveSpeed: 2
+  invertFacingDirection: 0
   separationRadius: 0.6
   separationWeight: 1.2
   maxSeparationNeighbors: 8
   acceleration: 20
   separationSmoothSpeed: 8
+  hardSeparationStrength: 0
+  hardSeparationMaxStep: 0.015
   knockForce: 3
   knockDuration: 0.3
   damagedStunTime: 0
@@ -200,6 +203,8 @@ MonoBehaviour:
   lightningPrefab: {fileID: 7419438336110740541, guid: 693db1fe3a411b84d9218a060a98adb3, type: 3}
   stoneSpikePrefab: {fileID: 123967842145412307, guid: efc9511855408a540867626327429c9b, type: 3}
   bulletPrefab: {fileID: 0}
+  playMeleeSlashVfx: 0
+  meleeSlashColor: {r: 1, g: 0.82, b: 0.28, a: 0.9}
   dashSpeed: 10
   dashDuration: 0.3
   specialCooldown: 7

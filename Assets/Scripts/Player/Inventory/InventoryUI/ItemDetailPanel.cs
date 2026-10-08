@@ -204,8 +204,6 @@ public class ItemDetailPanel : MonoBehaviour
         var equipped =
             inventoryUI.equipmentUi.GetEquippedItem(currentItem.itemData.itemType);
 
-      
-
         if (isEquipped)
         {
             // show the stat that will be lost if unequipped
@@ -263,11 +261,13 @@ public class ItemDetailPanel : MonoBehaviour
         lockButton.onClick.RemoveAllListeners();
         lockButton.onClick.AddListener(ToggleLock);
     }
-  private void RefreshLockVisual()
-        {
-            lockIconLocked.gameObject.SetActive(currentItem.isLocked);
-            lockIconUnlocked.gameObject.SetActive(!currentItem.isLocked);
-        }
+
+    private void RefreshLockVisual()
+    {
+        lockIconLocked.gameObject.SetActive(currentItem.isLocked);
+        lockIconUnlocked.gameObject.SetActive(!currentItem.isLocked);
+    }
+
     // ================= ACTIONS =================
 
     public void EquipItem()
@@ -335,7 +335,7 @@ public class ItemDetailPanel : MonoBehaviour
     private void SellItem()
     {
         int gold = CalculateSellPrice(currentItem);
-        
+
         if (inventoryUI.equipmentUi.IsItemEquipped(currentItem))
         {
             inventoryUI.equipmentUi.UnequipItem(currentItem.itemData.itemType);
@@ -398,7 +398,6 @@ public class ItemDetailPanel : MonoBehaviour
         return text;
     }
 
-
     private void AppendStat(
         ref string text,
         string label,
@@ -435,7 +434,7 @@ public class ItemDetailPanel : MonoBehaviour
             $"\n{translatedLabel}: {Format(cur)}{suffix} -> {Format(next)}{suffix} " +
             $"<color=#00FF00>(+{Format(add)}{suffix})</color>";
     }
-    
+
     private string Format(float value)
     {
         return value % 1 == 0
@@ -460,7 +459,6 @@ public class ItemDetailPanel : MonoBehaviour
             _ => label
         };
     }
-
 
     private void ShowSellConfirm()
     {
@@ -508,14 +506,19 @@ public class ItemDetailPanel : MonoBehaviour
         float step = nextLevel - 1;
         return Mathf.Max(1, Mathf.RoundToInt(baseValue * (1f + Mathf.Pow(step, 1.08f) * 0.38f)));
     }
+
     private void ToggleLock()
     {
         currentItem.isLocked = !currentItem.isLocked;
 
-        GameEvents.OnShowToast.Raise("Action failed");
+        string key = currentItem.isLocked ? "item_locked" : "item_unlocked";
+        string fallback = currentItem.isLocked ? "Item locked" : "Item unlocked";
+        GameEvents.OnShowToast.Raise(
+            LanguageManager.Instance != null
+                ? LanguageManager.Instance.GetTranslation(key)
+                : fallback);
 
         RefreshLockVisual();
         inventoryUI.RefreshCurrentSelectedItemLock();
     }
-  
 }
