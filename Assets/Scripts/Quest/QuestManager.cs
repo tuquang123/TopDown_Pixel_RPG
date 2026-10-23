@@ -290,6 +290,7 @@ public class QuestManager : Singleton<QuestManager>
 
         qp.state = QuestState.Rewarded;
         AwardQuestReward(qp);
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.QuestReward, 0.9f);
 
         EnsureCurrentQuestAssigned();
         RefreshMainQuestUI();

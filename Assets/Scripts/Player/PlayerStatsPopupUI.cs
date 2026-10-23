@@ -361,6 +361,7 @@ public class PlayerStatsPopupUI : BasePopup
         ps.NotifyStatsChanged();
         dataAsset.Save();
         QuestManager.Instance?.ReportProgressByObjectiveName("UpgradeStat", times);
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.StatUpgrade, 0.85f);
         RefreshUI();
 
         if (animTarget != null)

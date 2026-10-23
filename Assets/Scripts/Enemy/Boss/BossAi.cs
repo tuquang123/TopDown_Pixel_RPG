@@ -70,7 +70,8 @@ public class BossAI : EnemyAI
         bossCollider = GetComponent<Collider2D>();
         renderers = GetComponentsInChildren<SpriteRenderer>(true);
         normalRendererColors = CaptureRendererColors(renderers);
-        PlayBossSound(BossSoundEvent.Spawn);
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.BossWarning, 0.9f);
+        AudioManager.Instance?.PlayBossBattleMusic();
     }
 
     private void Update()
@@ -513,7 +514,8 @@ public class BossAI : EnemyAI
         }
         spawnedMinions.Clear();
 
-        PlayBossSound(BossSoundEvent.Death);
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.BossDefeated, 1f);
+        AudioManager.Instance?.StopBossBattleMusic();
         anim.SetTrigger(DieTrigger);
         GetComponent<Collider2D>().enabled = false;
         enabled = false;
@@ -544,8 +546,17 @@ public class BossAI : EnemyAI
         Destroy(gameObject);
     }
 
-    private void OnDisable() => bossHealthUI?.Hide();
-    private void OnDestroy() => bossHealthUI?.Hide();
+    private void OnDisable()
+    {
+        bossHealthUI?.Hide();
+        AudioManager.Instance?.StopBossBattleMusic();
+    }
+
+    private void OnDestroy()
+    {
+        bossHealthUI?.Hide();
+        AudioManager.Instance?.StopBossBattleMusic();
+    }
 
     private void PlayBossSound(BossSoundEvent soundEvent)
     {

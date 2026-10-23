@@ -10,6 +10,7 @@ public partial class EnemyAI
 
         isDead = true;
         target = null;
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.EnemyDefeated, 0.75f);
 
         // Huỷ toàn bộ Invoke VÀ Coroutine đang chạy dở (attack, hurt, v.v.)
         CancelInvoke();

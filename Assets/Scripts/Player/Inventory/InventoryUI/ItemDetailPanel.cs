@@ -328,6 +328,7 @@ public class ItemDetailPanel : MonoBehaviour
 
         currentItem.upgradeLevel++;
         QuestManager.Instance?.ReportItemUpgrade(currentItem.upgradeLevel);
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.EquipmentUpgrade, 0.9f);
         GameEvents.OnShowToast.Raise(LanguageManager.Instance != null ? LanguageManager.Instance.GetTranslation("upgrade_successful") : "Upgrade successful!");
         RefreshUI();
     }
@@ -342,6 +343,7 @@ public class ItemDetailPanel : MonoBehaviour
         }
 
         CurrencyManager.Instance.AddGold(gold);
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.ItemSell, 0.85f);
 
         inventoryUI.Inventory.RemoveItem(currentItem);
         inventoryUI.UpdateInventoryUI();

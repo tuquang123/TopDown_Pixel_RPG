@@ -225,6 +225,7 @@ public class PlayerStats : Singleton<PlayerStats>, IGameEventListener , IDamagea
 
         isDead = true;
         Debug.Log("Player đã chết!");
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.PlayerDeath, 0.9f);
         anim.SetTrigger(DeathHash);
 OnDeath?.Invoke(); 
         StartCoroutine(HandleDeath());

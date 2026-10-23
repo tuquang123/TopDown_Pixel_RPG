@@ -127,6 +127,7 @@ public class GachaPopup : BasePopup
         }
 
         isRolling = true;
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.GachaRoll, 0.85f);
 
         if (infoPanel != null)
             infoPanel.SetActive(false);
@@ -160,6 +161,7 @@ public class GachaPopup : BasePopup
         }
 
         isRolling = true;
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.GachaRoll, 0.85f);
 
         if (infoPanel != null)
             infoPanel.SetActive(false);

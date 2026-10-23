@@ -106,8 +106,6 @@ public class PlayerCombat
         if (owner.Stats == null || owner.Stats.isDead)
             return;
 
-        AudioManager.Instance?.PlaySFX("Attack");
-
         // ── Enemy target ─────────────────────────────────────────────────────
         if (owner.TargetEnemy != null)
         {

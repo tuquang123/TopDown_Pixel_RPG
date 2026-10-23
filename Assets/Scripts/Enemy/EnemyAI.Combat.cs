@@ -50,6 +50,7 @@ public partial class EnemyAI
         anim.SetBool(MoveBool, false);
         anim.SetTrigger(isHoldingSpear ? LongAttack : AttackTrigger);
         lastAttackTime = Time.time;
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.EnemyAttack, 0.65f);
     }
 
     public virtual void DealDamageToTarget()

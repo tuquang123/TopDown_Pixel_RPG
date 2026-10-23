@@ -39,6 +39,7 @@ public class PlayerLevel : MonoBehaviour
 
     private void HandleLevelUp(int newLevel)
     {
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.PlayerLevelUp, 0.9f);
         playerStats.level = newLevel;
         skillPoints = levelSystem.skillPoints;
         playerStats.skillPoints = skillPoints;

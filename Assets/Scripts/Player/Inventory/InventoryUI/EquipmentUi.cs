@@ -122,6 +122,7 @@ public class EquipmentUI : MonoBehaviour
 
         equipmentManager.EquipItem(itemInstance, playerStats);
         inventoryUI.Inventory.RemoveItem(itemInstance);
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.EquipmentEquip, 0.8f);
 
         UpdateEquipmentUI();
         inventoryUI.UpdateInventoryUI();

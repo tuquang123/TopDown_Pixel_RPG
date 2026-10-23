@@ -1079,11 +1079,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 426
+      value: 478
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 430.56
+      value: 421.91998
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalScale.x
@@ -1131,7 +1131,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 153.9252
+      value: 150.83643
       objectReference: {fileID: 0}
     - target: {fileID: 22461286, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1147,19 +1147,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 146.211
+      value: 143.277
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 146.211
+      value: 143.277
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 139.8945
+      value: 167.36151
       objectReference: {fileID: 0}
     - target: {fileID: 22480134, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 71.31151
+      value: 69.88048
       objectReference: {fileID: 0}
     - target: {fileID: 22491998, guid: b5097e1562b946e40985ba884db7d189, type: 3}
       propertyPath: m_AnchorMax.x
@@ -2172,6 +2172,62 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 126849386209170111}
     m_Modifications:
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: attackSfx
+      value: 
+      objectReference: {fileID: 8300000, guid: 4f94e20fc80b486188e91470b78bf998, type: 3}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: itemBuySfx
+      value: 
+      objectReference: {fileID: 8300000, guid: 2c4e85f46c0f4ccab519d6b77f9b431f, type: 3}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: itemSellSfx
+      value: 
+      objectReference: {fileID: 8300000, guid: 77d54e74f0df4bcf8f1cc37276f36d81, type: 3}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: gachaRollSfx
+      value: 
+      objectReference: {fileID: 8300000, guid: 3b6f40159560489390e511260a8e0f7e, type: 3}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: bossWarningSfx
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: enemyAttackSfx
+      value: 
+      objectReference: {fileID: 8300000, guid: e3e35df33f01475393c99124916f07f4, type: 3}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: playerDeathSfx
+      value: 
+      objectReference: {fileID: 8300000, guid: 3ca4f886c394421fa601b12e6fbbda1c, type: 3}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: questRewardSfx
+      value: 
+      objectReference: {fileID: 8300000, guid: a26844f5239b4d1182c09be2b682a7fd, type: 3}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: statUpgradeSfx
+      value: 
+      objectReference: {fileID: 8300000, guid: 91ee1fa9fb3a413e9e0dd58cbba9ced1, type: 3}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: bossBattleMusic
+      value: 
+      objectReference: {fileID: 8300000, guid: f8ee262d446bf7b4da395e4a020b3806, type: 3}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: enemyDefeatedSfx
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: playerLevelUpSfx
+      value: 
+      objectReference: {fileID: 8300000, guid: 4659e1c0308b4e61b8e3911d807a5152, type: 3}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: equipmentEquipSfx
+      value: 
+      objectReference: {fileID: 8300000, guid: a26844f5239b4d1182c09be2b682a7fd, type: 3}
+    - target: {fileID: 186838614802615149, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
+      propertyPath: equipmentUpgradeSfx
+      value: 
+      objectReference: {fileID: 8300000, guid: cd43dad0baee405cb40e66308ff804dd, type: 3}
     - target: {fileID: 4923574441149519312, guid: 6812ae669f8c74c45adb3d58616d35ee, type: 3}
       propertyPath: m_Name
       value: AudioManager

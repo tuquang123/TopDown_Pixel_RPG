@@ -17,6 +17,8 @@ public class PlayerAnimationEvents : MonoBehaviour
     {
         if (playerController != null)
         {
+            AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.Attack, 0.7f);
+
             if (playerController.typeWeapon == WeaponCategory.Bow)
             {
                 playerController.FireArrow();

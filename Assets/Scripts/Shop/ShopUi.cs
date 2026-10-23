@@ -162,6 +162,7 @@ public class ShopUI : BasePopup
         }
 
         playerInventory.AddItem(new ItemInstance(data));
+        AudioManager.Instance?.PlayIdleGameSfx(IdleGameSfx.ItemBuy, 0.85f);
         QuestManager.Instance?.ReportProgressByObjectiveName("BuyItem", 1);
         ApplyFilter(currentFilterType);
         string itemName = data.itemName;
