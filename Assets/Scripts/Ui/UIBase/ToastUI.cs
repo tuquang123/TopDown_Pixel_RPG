@@ -15,6 +15,10 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
     [SerializeField] private int maxVisibleToasts = 3;
     [SerializeField] private float durationMultiplier = 0.33333334f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip toastSound;
+    [SerializeField, Range(0f, 1f)] private float toastSoundVolume = 1f;
+
     // FIX: cho phép script khác lấy giá trị mặc định để tự tính (VD: showDuration * 0.5f)
     public float DefaultShowDuration => showDuration;
 
@@ -26,10 +30,20 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
     private Coroutine queueRunner;
     private Vector2 templateAnchoredPos;
     private Transform templateParent;
+    private AudioSource toastAudioSource;
 
     private void Awake()
     {
         Instance = this;
+
+        // The AudioSource is created at runtime so only an AudioClip needs to be
+        // assigned in the ToastUI Inspector.
+        toastAudioSource = GetComponent<AudioSource>();
+        if (toastAudioSource == null)
+            toastAudioSource = gameObject.AddComponent<AudioSource>();
+
+        toastAudioSource.playOnAwake = false;
+        toastAudioSource.spatialBlend = 0f;
 
         if (toastCanvasGroup == null)
             return;
@@ -113,6 +127,7 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
         }
 
         text.text = LanguageManager.Instance != null ? LanguageManager.Instance.TranslateText(message) : message;
+        PlayToastSound();
         rect.anchoredPosition = templateAnchoredPos;
         cg.alpha = 0f;
 
@@ -132,6 +147,12 @@ public class ToastUI : MonoBehaviour, IGameEventListener<string>
             if (toastObj != null)
                 Destroy(toastObj);
         });
+    }
+
+    private void PlayToastSound()
+    {
+        if (toastSound != null && toastAudioSource != null)
+            toastAudioSource.PlayOneShot(toastSound, toastSoundVolume);
     }
 
     private void ShiftExistingToastsUp()

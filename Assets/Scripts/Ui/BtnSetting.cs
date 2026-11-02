@@ -13,6 +13,9 @@ public class UISettingController : BasePopup
     [SerializeField] private Color activeLangColor = Color.green;
     [SerializeField] private Color inactiveLangColor = Color.white;
 
+    [Header("Player Stats")]
+    [SerializeField] private StatDisplayComponent statDisplayComponent;
+
     private const string BGM_KEY = "BGM_VOLUME";
     private const string SFX_KEY = "SFX_VOLUME";
 
@@ -33,6 +36,7 @@ public class UISettingController : BasePopup
         LoadVolume();
         InitSliders();
         InitLanguageButtons();
+        RefreshStats();
     }
 
     private void OnEnable()
@@ -42,6 +46,7 @@ public class UISettingController : BasePopup
             LanguageManager.Instance.OnLanguageChanged += UpdateLanguageButtons;
         }
         UpdateLanguageButtons();
+        RefreshStats();
     }
 
     private void OnDisable()
@@ -50,6 +55,20 @@ public class UISettingController : BasePopup
         {
             LanguageManager.Instance.OnLanguageChanged -= UpdateLanguageButtons;
         }
+    }
+
+    public override void Show()
+    {
+        base.Show();
+        RefreshStats();
+    }
+
+    private void RefreshStats()
+    {
+        if (statDisplayComponent == null) return;
+        if (PlayerStats.Instance == null) return;
+
+        statDisplayComponent.SetStats(PlayerStats.Instance);
     }
 
     private void LoadVolume()
@@ -118,6 +137,9 @@ public class UISettingController : BasePopup
         {
             viButton.image.color = current == "vi" ? activeLangColor : inactiveLangColor;
         }
+
+        // Đổi ngôn ngữ thì làm mới luôn text của stat
+        RefreshStats();
     }
 
     public void OpenSetting()
@@ -147,9 +169,9 @@ public class UISettingController : BasePopup
         PlayerPrefs.SetFloat(SFX_KEY, value);
         PlayerPrefs.Save();
     }
+
     public void Close()
     {
         UIManager.Instance.HidePopupByType(PopupType.Settings);
     }
 }
-
